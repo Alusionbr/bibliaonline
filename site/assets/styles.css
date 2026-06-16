@@ -299,3 +299,19 @@ section{padding:52px 0}
 .vs-loading{text-align:center;color:var(--muted);font-size:.9rem;min-height:1.2em;margin:18px 0}
 .vs-sentinel{height:1px}
 .verse-cont{display:block}
+
+/* navegação por livro/capítulo + leitura de capítulo inteiro */
+.book-card .pt-mini{color:var(--muted);margin-top:6px}
+.chapter-grid{gap:10px}
+.chapter-chip{min-width:48px;justify-content:center;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
+.chapter{max-width:var(--read);margin:0 auto}
+.ch-verse{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.ch-verse:last-child{border-bottom:0}
+.ch-num{flex:0 0 auto;min-width:1.8em;text-align:right;color:var(--gold-deep);font-weight:700;
+  font-variant-numeric:tabular-nums;text-decoration:none;padding-top:2px}
+.ch-num:hover{text-decoration:underline}
+.ch-body{flex:1 1 auto;min-width:0}
+.ch-body .orig{margin:0 0 4px}
+.ch-body .translit{margin:0 0 4px;color:var(--muted)}
+.ch-body .pt{margin:0}
+.ch-body .pt-missing{color:var(--muted)}

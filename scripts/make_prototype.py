@@ -136,7 +136,15 @@ function verse(slug){
 function runSearch(term){
   const out=document.getElementById('results'); if(!out) return;
   out.innerHTML=''; term=(term||'').trim().toLowerCase(); if(!term) return;
-  const res=DB.verses.filter(v=>(v.referencia+' '+v.texto_pt+' '+v.contexto+' '+(v.palavras||[]).join(' ')).toLowerCase().includes(term)).slice(0,8);
+  const terms=term.split(/\s+/).filter(Boolean);
+  const res=DB.verses.filter(v=>{
+    const k=(v.referencia+' '+v.texto_pt+' '+v.contexto+' '+(v.palavras||[]).join(' ')).toLowerCase();
+    return terms.every(t=>k.includes(t));
+  }).sort((a,b)=>{
+    const ka=(a.referencia+' '+a.texto_pt+' '+a.contexto).toLowerCase();
+    const kb=(b.referencia+' '+b.texto_pt+' '+b.contexto).toLowerCase();
+    return (kb.includes(term)?1:0)-(ka.includes(term)?1:0);
+  }).slice(0,8);
   if(!res.length){out.innerHTML='<p class="empty">Nada encontrado. Tente “Salmo 23”, “logos” ou “aramaico”.</p>';return;}
   out.innerHTML=res.map(v=>`<a class="result" href="#/v/${v.slug}"><span class="kind">Versículo</span><h4>${esc(v.referencia)}</h4><p>${esc(v.texto_pt)}</p></a>`).join('');
 }

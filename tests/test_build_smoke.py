@@ -65,6 +65,25 @@ def test_gera_paginas_principais(site):
     assert (site / "assets" / "app.js").exists()
 
 
+def test_gera_navegacao_livro_capitulo(site):
+    # índice de livros, página do livro e leitura de capítulo
+    assert (site / "ler" / "index.html").exists()
+    assert (site / "ler" / "genesis" / "index.html").exists()
+    assert (site / "ler" / "genesis" / "1" / "index.html").exists()
+    assert (site / "ler" / "joao" / "1" / "index.html").exists()
+    # a página de capítulo mostra o versículo e linka para a página completa dele
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "No princípio criou Deus" in cap
+    assert "versiculos/genesis-1-1/" in cap
+
+
+def test_home_nao_embute_indice_gigante(site):
+    # o índice de busca saiu da página (não mais inline) e virou arquivo externo
+    html = (site / "index.html").read_text("utf-8")
+    assert "window.__INDEX__" not in html
+    assert (site / "data" / "search-index.json").exists()
+
+
 def test_pager_liga_versiculos_em_ordem(site):
     # genesis-1-1 vem antes de joao-1-1 na ordem canônica
     gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
@@ -78,14 +97,12 @@ def test_pager_liga_versiculos_em_ordem(site):
 
 
 def test_indice_de_busca_e_json_valido(site):
-    html = (site / "index.html").read_text("utf-8")
-    marca = "window.__INDEX__ = "
-    inicio = html.index(marca) + len(marca)
-    fim = html.index(";</script>", inicio)
-    index = json.loads(html[inicio:fim])
+    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
     titulos = {i["titulo"] for i in index}
     assert "Gênesis 1:1" in titulos
     assert "Sobre o logos" in titulos
+    # cada entrada tem a chave de busca usada pelo app.js
+    assert all("k" in i and "url" in i for i in index)
 
 
 def test_sitemap_lista_todas_as_urls(site):
