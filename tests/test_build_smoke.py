@@ -77,6 +77,21 @@ def test_gera_navegacao_livro_capitulo(site):
     assert "versiculos/genesis-1-1/" in cap
 
 
+def test_gera_ferramentas_de_estudo(site):
+    # script de estudo + página de anotações com botões de exportar
+    assert (site / "assets" / "study.js").exists()
+    anot = (site / "anotacoes" / "index.html").read_text("utf-8")
+    assert 'id="anotacoes"' in anot
+    for botao in ("anot-copy", "anot-txt", "anot-json", "anot-clear"):
+        assert f'id="{botao}"' in anot
+    # cada versículo expõe sua referência (gancho para grifar/anotar) e carrega o study.js
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert 'data-ref="Gênesis 1:1"' in cap
+    assert "assets/study.js" in cap
+    vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'data-ref="Gênesis 1:1"' in vp
+
+
 def test_home_nao_embute_indice_gigante(site):
     # o índice de busca saiu da página (não mais inline) e virou arquivo externo
     html = (site / "index.html").read_text("utf-8")

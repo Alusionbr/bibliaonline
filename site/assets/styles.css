@@ -315,3 +315,24 @@ section{padding:52px 0}
 .ch-body .translit{margin:0 0 4px;color:var(--muted)}
 .ch-body .pt{margin:0}
 .ch-body .pt-missing{color:var(--muted)}
+
+/* ferramentas de estudo: grifo de palavra/versículo, anotações */
+.w{cursor:pointer;border-radius:3px;padding:0 1px;transition:background .12s}
+.w:hover{background:rgba(193,154,77,.18)}
+.w-hl{background:rgba(232,196,108,.55);box-shadow:0 0 0 1px rgba(193,154,77,.35)}
+.v-hl{background:rgba(232,196,108,.16);border-radius:10px}
+.v-hl.ch-verse{padding-left:10px;margin-left:-10px}
+.study{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
+.study button{font-family:"Inter",system-ui,sans-serif;font-size:.8rem;cursor:pointer;
+  background:transparent;border:1px solid var(--line);color:var(--ink-soft);
+  border-radius:999px;padding:5px 12px}
+.study button:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
+.note-box{margin:8px 0}
+.note-box textarea{width:100%;min-height:70px;resize:vertical;font:inherit;font-size:.95rem;
+  padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--vellum-2);color:var(--ink)}
+.has-note .ch-num,.has-note > .verse-head h1::after{}
+.anot-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 22px}
+.anot-list .anot{padding:14px 0;border-bottom:1px solid var(--line)}
+.anot-list .anot h3{margin:0 0 6px}
+.anot-tag{color:var(--muted);font-size:.85rem;margin:2px 0}
+.anot-note{white-space:pre-wrap;margin:6px 0 0}
