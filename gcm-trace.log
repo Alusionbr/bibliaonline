@@ -1,0 +1,27 @@
+09:31:29.884573 ...\Application.cs:106  trace: [RunInternalAsync] Version: 2.6.1.0
+09:31:29.885571 ...\Application.cs:107  trace: [RunInternalAsync] Runtime: .NET Framework 4.8.9310.0
+09:31:29.885571 ...\Application.cs:108  trace: [RunInternalAsync] Platform: Windows (x86-64)
+09:31:29.885571 ...\Application.cs:109  trace: [RunInternalAsync] OSVersion: 10.0 (build 19045)
+09:31:29.885571 ...\Application.cs:110  trace: [RunInternalAsync] AppPath: C:\Program Files\Git\mingw64\bin\git-credential-manager.exe
+09:31:29.885571 ...\Application.cs:111  trace: [RunInternalAsync] InstallDir: C:\Program Files\Git\mingw64\bin\
+09:31:29.885571 ...\Application.cs:112  trace: [RunInternalAsync] Arguments: get
+09:31:29.922901 ...GitCommandBase.cs:32 trace: [ExecuteAsync] Start 'get' command...
+09:31:29.934123 ...GitCommandBase.cs:46 trace: [ExecuteAsync] Detecting host provider for input:
+09:31:29.936122 ...GitCommandBase.cs:47 trace: [ExecuteAsync] 	capability[]=authtype
+09:31:29.936122 ...GitCommandBase.cs:47 trace: [ExecuteAsync] 	capability[]=state
+09:31:29.936122 ...GitCommandBase.cs:47 trace: [ExecuteAsync] 	protocol=https
+09:31:29.936122 ...GitCommandBase.cs:47 trace: [ExecuteAsync] 	host=github.com
+09:31:29.936122 ...GitCommandBase.cs:47 trace: [ExecuteAsync] 	wwwauth=Basic realm="GitHub"
+09:31:29.940128 ...viderRegistry.cs:149 trace: [GetProviderAsync] Performing auto-detection of host provider.
+09:31:29.940128 ...viderRegistry.cs:162 trace: [GetProviderAsync] Auto-detect probe timeout is 2 ms.
+09:31:29.942123 ...viderRegistry.cs:170 trace: [GetProviderAsync] Checking against 4 host providers registered with priority 'Normal'.
+09:31:29.944111 ...GitCommandBase.cs:49 trace: [ExecuteAsync] Host provider 'GitHub' was selected.
+09:31:29.951255 ...bHostProvider.cs:142 trace: [GetCredentialAsync] Found 0 accounts in the store for service=https://github.com.
+09:31:29.952260 ...bHostProvider.cs:218 trace: [FilterAccounts] Account filtering is enabled.
+09:31:29.956243 ...bHostProvider.cs:226 trace: [FilterAccounts] Filtering based on WWW-Authenticate header information...
+09:31:29.956243 ...bHostProvider.cs:229 trace: [FilterAccounts] Matched 0 accounts with public domain:
+09:31:29.956243 ...bHostProvider.cs:181 trace: [GetCredentialAsync] No existing credentials found.
+09:31:29.956243 ...bHostProvider.cs:184 trace: [GetCredentialAsync] Creating new credential...
+09:31:29.960252 ...bHostProvider.cs:410 trace: [GetSupportedAuthenticationModesAsync] Supported authentication modes override present: Browser
+09:31:29.966256 ...pClientFactory.cs:60 trace: [CreateClient] Creating new HTTP client instance...
+09:31:29.994451 ...pClientFactory.cs:80 trace: [CreateClient] Git's SSL/TLS backend is: Schannel

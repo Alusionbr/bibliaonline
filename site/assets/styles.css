@@ -290,3 +290,12 @@ section{padding:52px 0}
   .reveal{opacity:1;transform:none}
 }
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+/* tradução pendente, links externos, rolagem infinita */
+.pt-missing{color:var(--muted);font-style:italic;font-size:.95rem}
+.ext-link{color:var(--gold-deep);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold-soft)}
+.ext-link:hover{border-bottom-color:var(--gold-deep)}
+.verse-sep{border:0;border-top:1px solid var(--line);margin:54px auto;max-width:var(--read)}
+.vs-loading{text-align:center;color:var(--muted);font-size:.9rem;min-height:1.2em;margin:18px 0}
+.vs-sentinel{height:1px}
+.verse-cont{display:block}

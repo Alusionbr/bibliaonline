@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
 DATA = SITE / "data"
 
-BASE_URL = "https://biblia-em-contexto.netlify.app"  # troque pelo domínio final
+BASE_URL = "https://alusionbr.github.io/bibliaonline"  # domínio do GitHub Pages
 SITE_NAME = "Bíblia em Contexto"
 
 def load(name):
@@ -33,6 +33,31 @@ def script_class(idioma, direction):
 
 def lang_label(idioma):
     return {"hebraico":"Hebraico","grego":"Grego","aramaico":"Aramaico"}.get(idioma, idioma.title())
+
+# nome de cada livro no Sefaria (inglês), para montar o link de comentário rabínico
+SEFARIA = {
+ "Gênesis":"Genesis","Êxodo":"Exodus","Levítico":"Leviticus","Números":"Numbers",
+ "Deuteronômio":"Deuteronomy","Josué":"Joshua","Juízes":"Judges","Rute":"Ruth",
+ "1 Samuel":"I Samuel","2 Samuel":"II Samuel","1 Reis":"I Kings","2 Reis":"II Kings",
+ "1 Crônicas":"I Chronicles","2 Crônicas":"II Chronicles","Esdras":"Ezra","Neemias":"Nehemiah",
+ "Ester":"Esther","Jó":"Job","Salmos":"Psalms","Provérbios":"Proverbs","Eclesiastes":"Ecclesiastes",
+ "Cânticos":"Song of Songs","Isaías":"Isaiah","Jeremias":"Jeremiah","Lamentações":"Lamentations",
+ "Ezequiel":"Ezekiel","Daniel":"Daniel","Oseias":"Hosea","Joel":"Joel","Amós":"Amos",
+ "Obadias":"Obadiah","Jonas":"Jonah","Miquéias":"Micah","Naum":"Nahum","Habacuque":"Habakkuk",
+ "Sofonias":"Zephaniah","Ageu":"Haggai","Zacarias":"Zechariah","Malaquias":"Malachi",
+}
+# fac-símile do manuscrito-fonte (Códice de Leningrado, base do texto hebraico)
+MANUSCRITO_FACSIMILE = "https://commons.wikimedia.org/wiki/Leningrad_Codex"
+
+def ref_chvs(referencia):
+    m = re.search(r"(\d+):(\d+)", referencia)
+    return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+
+def sefaria_url(livro, ch, vs):
+    book = SEFARIA.get(livro)
+    if not book:
+        return ""
+    return f"https://www.sefaria.org/{book.replace(' ', '_')}.{ch}.{vs}?lang=bi&with=all"
 
 # ordem canônica dos livros (folhear a Bíblia de Gênesis a Apocalipse)
 BOOK_ORDER = ["Gênesis","Êxodo","Levítico","Números","Deuteronômio","Josué","Juízes","Rute",
@@ -139,14 +164,20 @@ def specimen_block(v):
         frame = (f'<div class="frame"><img loading="lazy" alt="{cap}" src="{esc(img)}" '
                  f'onerror="this.closest(\'.specimen\').querySelector(\'.frame\').innerHTML=\'<div class=&quot;ph&quot;><b>✶</b>Imagem indisponível no momento. Veja no acervo da fonte.</div>\'"></div>')
     else:
-        frame = '<div class="frame"><div class="ph"><b>✶</b>Imagem de manuscrito pendente de licença para este versículo.</div></div>'
+        frame = ('<div class="frame"><div class="ph"><b>✶</b>'
+                 'Manuscritos são fotografados por página, não por versículo. '
+                 'Veja o fac-símile completo do códice-fonte.</div></div>')
     link = f' · <a href="{fonte_url}" target="_blank" rel="noopener">{fonte_nome} ↗</a>' if fonte_url else ""
+    cap_txt = cap or "Texto hebraico do Códice de Leningrado (Westminster Leningrad Codex)."
+    fac = (f'<div class="lic"><a class="ext-link" href="{MANUSCRITO_FACSIMILE}" target="_blank" '
+           f'rel="noopener">Ver o manuscrito (Códice de Leningrado) ↗</a></div>') if not img else ""
     return f"""
   <figure class="specimen">
     {frame}
     <figcaption class="cap">
-      <p>{cap}</p>
+      <p>{cap_txt}</p>
       <div class="lic"><span class="seal">{esc(seal)}</span> {lic}{link}</div>
+      {fac}
     </figcaption>
   </figure>"""
 
@@ -164,10 +195,12 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     }
     sc = script_class(v["idioma"], v.get("dir","ltr"))
     dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
+    ch, vs = ref_chvs(v["referencia"])
 
-    # leitura judaica ou origem
+    # blocos: origem (se houver), comentário rabínico (Sefaria) e leitura curada
     blocks = ""
-    blocks += f"""
+    if v.get("origem","").strip():
+        blocks += f"""
   <section class="block" id="origem">
     <h2><span class="dot"></span>Origem e transmissão</h2>
     <p>{esc(v.get('origem',''))}</p>
@@ -177,6 +210,14 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <section class="block jewish" id="leitura-judaica">
     <h2><span class="dot"></span>Leitura judaica e comentário rabínico</h2>
     <p>{esc(v['leitura_judaica'])}</p>
+  </section>"""
+    sef = sefaria_url(v["livro"], ch, vs)
+    if sef:
+        blocks += f"""
+  <section class="block jewish" id="rabinico">
+    <h2><span class="dot"></span>Comentário rabínico</h2>
+    <p>Leia este versículo ao lado dos comentaristas judaicos clássicos — Rashi, Talmud, Midrash, Ibn Ezra — no acervo aberto do Sefaria.</p>
+    <p><a class="ext-link" href="{sef}" target="_blank" rel="noopener">Abrir {esc(v['referencia'])} no Sefaria ↗</a></p>
   </section>"""
 
     # palavras
@@ -211,8 +252,16 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     pager = f"""
   <nav class="pager" aria-label="Folhear versículos">{prev_html}{next_html}</nav>"""
 
+    next_url = f"../{next_v['slug']}/" if next_v else ""
+    if v.get("texto_pt","").strip():
+        pt_html = f'<p class="pt">{esc(v["texto_pt"])}</p>'
+    else:
+        pt_html = ('<p class="pt pt-missing">Tradução em português deste trecho em revisão '
+                   '(diferença de numeração entre o hebraico e a edição Almeida 1911).</p>')
+
     body = f"""
-<main id="main" class="wrap verse-page">
+<main id="main" class="wrap verse-page" data-next="{next_url}">
+  <article class="verse-cont" data-slug="{esc(v['slug'])}" data-title="{esc(title)}">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}index.html#versiculos">Versículos</a> · {esc(v['referencia'])}</p>
   <header class="verse-head">
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
@@ -222,7 +271,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <div class="verse-hero reveal">
     <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
     <p class="translit">{esc(v['transliteracao'])}</p>
-    <p class="pt">{esc(v['texto_pt'])}</p>
+    {pt_html}
     <p class="src-line">{esc(v.get('contexto',''))}</p>
   </div>
 
@@ -232,6 +281,9 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   {rel}
   {src_note}
   {pager}
+  </article>
+  <div class="vs-sentinel" aria-hidden="true"></div>
+  <p class="vs-loading" aria-live="polite"></p>
   <p class="backline"><a href="{prefix}index.html#versiculos">← Todos os versículos</a></p>
 </main>"""
     out = SITE / "versiculos" / v["slug"] / "index.html"
@@ -444,6 +496,58 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.style.animationDelay='0s';en.target.classList.add('reveal');io.unobserve(en.target);}});});
   document.querySelectorAll('.card').forEach(function(c){io.observe(c);});
 }
+
+// rolagem infinita na página de versículo (mantém também os botões Anterior/Próximo)
+(function(){
+  var main=document.querySelector('main.verse-page[data-next]');
+  if(!main) return;
+  var sentinel=main.querySelector('.vs-sentinel');
+  var loadingEl=main.querySelector('.vs-loading');
+  if(!sentinel) return;
+  var nextURL=main.getAttribute('data-next');
+  var loading=false;
+
+  // atualiza título e URL conforme cada versículo entra em foco
+  var titleObs=new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(en.isIntersecting){
+        var slug=en.target.getAttribute('data-slug'), t=en.target.getAttribute('data-title');
+        if(t) document.title=t;
+        if(slug){ try{ history.replaceState(null,'','../'+slug+'/'); }catch(e){} }
+      }
+    });
+  },{rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('.verse-cont').forEach(function(a){titleObs.observe(a);});
+
+  function loadNext(){
+    if(loading||!nextURL) return;
+    loading=true;
+    if(loadingEl) loadingEl.textContent='Carregando próximo versículo…';
+    fetch(nextURL).then(function(r){return r.text();}).then(function(html){
+      var doc=new DOMParser().parseFromString(html,'text/html');
+      var art=doc.querySelector('.verse-cont');
+      var nm=doc.querySelector('main.verse-page[data-next]');
+      nextURL=nm?nm.getAttribute('data-next'):'';
+      if(art){
+        var sep=document.createElement('hr'); sep.className='verse-sep';
+        main.insertBefore(sep,sentinel);
+        var imp=document.importNode(art,true);
+        main.insertBefore(imp,sentinel);
+        titleObs.observe(imp);
+      }
+      loading=false;
+      if(loadingEl) loadingEl.textContent = nextURL ? '' : '— fim dos versículos —';
+    }).catch(function(){
+      loading=false;
+      if(loadingEl) loadingEl.textContent='Não foi possível carregar o próximo. Use os botões acima.';
+    });
+  }
+
+  var io2=new IntersectionObserver(function(es){
+    es.forEach(function(en){ if(en.isIntersecting) loadNext(); });
+  },{rootMargin:'700px 0px'});
+  io2.observe(sentinel);
+})();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
 
