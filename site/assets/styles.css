@@ -317,20 +317,29 @@ section{padding:52px 0}
 .ch-body .pt-missing{color:var(--muted)}
 
 /* ferramentas de estudo: grifo de palavra/versículo, anotações */
-.w{cursor:pointer;border-radius:3px;padding:0 1px;transition:background .12s}
-.w:hover{background:rgba(193,154,77,.18)}
-.w-hl{background:rgba(232,196,108,.55);box-shadow:0 0 0 1px rgba(193,154,77,.35)}
-.v-hl{background:rgba(232,196,108,.16);border-radius:10px}
-.v-hl.ch-verse{padding-left:10px;margin-left:-10px}
-.study{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
+/* marca-texto na palavra: faixa amarela estilo caneta marca-texto */
+.w{cursor:pointer;border-radius:2px;padding:0 1px;transition:background .1s}
+.w:hover{background:rgba(255,224,77,.4)}
+.w-hl,.w-hl:hover{background-image:linear-gradient(transparent 6%, #ffe14d 6%, #ffe14d 92%, transparent 92%);
+  color:#2a2206;border-radius:2px;box-shadow:none}
+/* versículo grifado: faixa amarela visível com marca lateral */
+.v-hl{background:rgba(255,225,77,.26);border-left:4px solid #e3b62e;border-radius:6px;
+  padding:10px 14px;margin:6px 0}
+.v-hl.ch-verse{padding-left:10px}
+.study{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 2px}
 .study button{font-family:"Inter",system-ui,sans-serif;font-size:.8rem;cursor:pointer;
   background:transparent;border:1px solid var(--line);color:var(--ink-soft);
-  border-radius:999px;padding:5px 12px}
+  border-radius:999px;padding:7px 14px;min-height:38px}
 .study button:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
+.study button.on{background:#ffe14d;border-color:#e3b62e;color:#2a2206}
+.study-hint{font-size:.78rem;color:var(--muted)}
+.study-ok{font-size:.78rem;color:var(--gold-deep)}
 .note-box{margin:8px 0}
-.note-box textarea{width:100%;min-height:70px;resize:vertical;font:inherit;font-size:.95rem;
+.note-box textarea{width:100%;min-height:80px;resize:vertical;font:inherit;font-size:1rem;
   padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--vellum-2);color:var(--ink)}
-.has-note .ch-num,.has-note > .verse-head h1::after{}
+.note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.has-note .ch-num{position:relative}
+.has-note .ch-num::after{content:"🗒";font-size:.7em;position:absolute;right:-2px;top:-8px}
 .anot-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 22px}
 .anot-list .anot{padding:14px 0;border-bottom:1px solid var(--line)}
 .anot-list .anot h3{margin:0 0 6px}

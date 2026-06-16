@@ -25,18 +25,32 @@
     wrapWords(cont.querySelector('.orig'),'orig');
     var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
     var bar=document.createElement('div'); bar.className='study';
-    bar.innerHTML='<button type="button" data-act="vhl">✶ Grifar versículo</button>'+
-      '<button type="button" data-act="note">🗒 Anotar</button>';
+    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">toque numa palavra para grifar</span>' : '';
+    bar.innerHTML='<button type="button" data-act="vhl">🖍 Grifar versículo</button>'+
+      '<button type="button" data-act="note">🗒 Anotar</button>'+
+      '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+hint;
     anchor.appendChild(bar);
     var nb=document.createElement('div'); nb.className='note-box'; nb.hidden=true;
-    nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>';
+    nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>'+
+      '<div class="note-actions"><button type="button" data-act="copy-note">⧉ Copiar nota</button></div>';
     anchor.appendChild(nb);
     cont.dataset.studyReady='1';
     apply(cont, ref);
   }
 
+  function flash(btn, txt){ var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1400); }
+  function copyText(str, btn){
+    (navigator.clipboard?navigator.clipboard.writeText(str):Promise.reject())
+      .then(function(){ if(btn) flash(btn,'Copiado!'); })
+      .catch(function(){ try{ var t=document.createElement('textarea'); t.value=str; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); if(btn) flash(btn,'Copiado!'); }catch(e){ if(btn) flash(btn,'Falhou'); } });
+  }
+  function verseText(cont, ref){
+    var pt=cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
+    return ref + (t? ' — ' + t : '');
+  }
+
   function apply(cont, ref){
-    if(load('vhl')[ref]) cont.classList.add('v-hl');
+    if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
     var notes=load('notes');
     if(notes[ref]){
       var ta=cont.querySelector('.note-box textarea');
@@ -64,21 +78,23 @@
     save('whl', all);
   }
 
-  function toggleVerse(cont, ref){
+  function toggleVerse(cont, ref, btn){
     var all=load('vhl');
-    if(all[ref]){ delete all[ref]; cont.classList.remove('v-hl'); }
-    else { all[ref]=1; cont.classList.add('v-hl'); }
+    if(all[ref]){ delete all[ref]; cont.classList.remove('v-hl'); if(btn) btn.classList.remove('on'); }
+    else { all[ref]=1; cont.classList.add('v-hl'); if(btn) btn.classList.add('on'); }
     save('vhl', all);
   }
 
   document.addEventListener('click', function(e){
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ toggleWord(w); return; }
-    var btn=e.target.closest && e.target.closest('.study button');
+    var btn=e.target.closest && e.target.closest('.study button, .note-actions button');
     if(btn){
-      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref');
-      if(btn.dataset.act==='vhl') toggleVerse(cont, ref);
-      else { var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
+      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
+      if(act==='vhl') toggleVerse(cont, ref, btn);
+      else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
+      else if(act==='copy') copyText(verseText(cont, ref), btn);
+      else if(act==='copy-note'){ var ta=cont.querySelector('.note-box textarea'); copyText(ref+'\n'+(ta?ta.value:''), btn); }
     }
   });
   document.addEventListener('input', function(e){
