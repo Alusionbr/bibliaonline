@@ -5,11 +5,23 @@ document.addEventListener('click',function(e){
 (function(){
   var q=document.getElementById('q'), out=document.getElementById('results');
   if(!q||!out||!window.__INDEX__) return;
+  // busca sem acento: "genesis" encontra "Gênesis", "joao" encontra "João".
+  function fold(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+  window.__INDEX__.forEach(function(i){i.kf=fold(i.k);});  // chave sem acento (1x)
   function render(term){
     out.innerHTML='';
-    term=(term||'').trim().toLowerCase();
+    term=fold((term||'').trim().toLowerCase());
     if(!term) return;
-    var res=window.__INDEX__.filter(function(i){return i.k.indexOf(term)>-1;}).slice(0,8);
+    // casa por tokens: cada palavra digitada precisa aparecer na chave.
+    // assim "salmo 23", "salmos 23" e "23:1" encontram o versículo direto
+    // (e não só os artigos relacionados).
+    var terms=term.split(/\s+/).filter(Boolean);
+    var res=window.__INDEX__.filter(function(i){
+      return terms.every(function(t){return i.kf.indexOf(t)>-1;});
+    });
+    // quem casa o termo inteiro e contíguo vem primeiro (ordenação estável)
+    res.sort(function(a,b){return (b.kf.indexOf(term)>-1)-(a.kf.indexOf(term)>-1);});
+    res=res.slice(0,8);
     if(!res.length){out.innerHTML='<p class="empty">Nada encontrado. Tente “Salmo 23”, “shalom”, “logos” ou “aramaico”.</p>';return;}
     res.forEach(function(i){
       var a=document.createElement('a');a.className='result';a.href=i.url;
