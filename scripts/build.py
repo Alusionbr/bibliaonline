@@ -9,7 +9,8 @@ Uso:
     python scripts/build.py
 Opcional: defina o domínio final em BASE_URL antes de publicar.
 """
-import json, html, re, shutil
+import json, html, re, shutil, unicodedata
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,6 +76,23 @@ def verse_sort_key(v):
     ch, vs = (int(m.group(1)), int(m.group(2))) if m else (0, 0)
     return (bi, ch, vs)
 
+def book_slug(livro):
+    base = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", base).strip("-")
+
+def group_by_book_chapter(verses):
+    """Agrupa os versículos (já em ordem canônica) em {livro: {capítulo: [versículos]}},
+    preservando a ordem dos livros. Base para navegação livro→capítulo→versículo."""
+    order = []
+    struct = defaultdict(lambda: defaultdict(list))
+    for v in verses:
+        livro = v["livro"]
+        if livro not in struct:
+            order.append(livro)
+        ch, _ = ref_chvs(v["referencia"])
+        struct[livro][ch].append(v)
+    return order, struct
+
 # ---------- shells ----------
 def head(title, description, canonical, prefix, jsonld=None):
     ld = f'\n<script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>' if jsonld else ""
@@ -110,7 +128,7 @@ def nav(prefix):
     </a>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
-      <a href="{prefix}index.html#versiculos">Versículos</a>
+      <a href="{prefix}ler/">Bíblia</a>
       <a href="{prefix}index.html#temas">Temas</a>
       <a href="{prefix}index.html#artigos">Artigos</a>
       <a href="{prefix}index.html#fontes">Fontes</a>
@@ -317,7 +335,112 @@ def build_article_page(a):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix, jsonld) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_home(topics, verses, articles, sources):
+# ---------- navegação livro → capítulo → versículo ----------
+def build_books_index(order, struct):
+    prefix = "../"
+    title = f"Livros da Bíblia | {SITE_NAME}"
+    desc = "Navegue pela Bíblia livro a livro: escolha um livro e leia capítulo por capítulo no idioma original, com tradução e transliteração."
+    canonical = f"{BASE_URL}/ler/"
+    cards = ""
+    for livro in order:
+        n_caps = len(struct[livro])
+        idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
+        cards += f"""
+    <a class="card book-card" href="{book_slug(livro)}/">
+      <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
+      <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
+    </a>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Livros</p>
+  <header class="verse-head"><h1>Livros da Bíblia</h1></header>
+  <p class="read" style="color:var(--muted)">Escolha um livro para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
+  <div class="cards verses">{cards}
+  </div>
+</main>"""
+    out = SITE / "ler" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_book_page(livro, chapters):
+    prefix = "../../"
+    title = f"{livro} — capítulos | {SITE_NAME}"
+    desc = f"Leia {livro} capítulo por capítulo: texto no idioma original, transliteração e tradução Almeida 1911."
+    canonical = f"{BASE_URL}/ler/{book_slug(livro)}/"
+    chips = "".join(
+        f'<a class="chip chapter-chip" href="{ch}/">{ch}</a>' for ch in sorted(chapters))
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Livros</a> · {esc(livro)}</p>
+  <header class="verse-head"><h1>{esc(livro)}</h1></header>
+  <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
+  <div class="chips chapter-grid">{chips}
+  </div>
+</main>"""
+    out = SITE / "ler" / book_slug(livro) / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_chapter_page(livro, ch, verses, n_chapters):
+    prefix = "../../../"
+    bslug = book_slug(livro)
+    title = f"{livro} {ch} — original, transliteração e tradução | {SITE_NAME}"
+    desc = f"{livro} {ch}: capítulo completo no idioma original, com transliteração e tradução Almeida 1911."
+    canonical = f"{BASE_URL}/ler/{bslug}/{ch}/"
+    idioma = verses[0].get("idioma","hebraico") if verses else "hebraico"
+    sc = script_class(idioma, verses[0].get("dir","ltr") if verses else "ltr")
+    rows = ""
+    for v in verses:
+        _, vs = ref_chvs(v["referencia"])
+        dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
+        pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
+        rows += f"""
+    <div class="ch-verse" id="v{vs}">
+      <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
+      <div class="ch-body">
+        <p class="orig {sc}"{dir_attr}>{esc(v.get('original',''))}</p>
+        <p class="translit">{esc(v.get('transliteracao',''))}</p>
+        <p class="pt">{pt}</p>
+      </div>
+    </div>"""
+    prev_html = (f'<a class="pg prev" href="../{ch-1}/"><span>← Capítulo</span><b>{livro} {ch-1}</b></a>'
+                 if ch > 1 else '<span class="pg empty"></span>')
+    next_html = (f'<a class="pg next" href="../{ch+1}/"><span>Capítulo →</span><b>{livro} {ch+1}</b></a>'
+                 if ch < n_chapters else '<span class="pg empty"></span>')
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · <a href="../">{esc(livro)}</a> · {ch}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
+    <h1>{esc(livro)} {ch}</h1>
+  </header>
+  <div class="chapter">{rows}
+  </div>
+  <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
+  <p class="backline"><a href="../">← Todos os capítulos de {esc(livro)}</a></p>
+</main>"""
+    out = SITE / "ler" / bslug / str(ch) / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_search_index(verses, articles, topics):
+    """Índice de busca em arquivo externo (carregado sob demanda pela home),
+    em vez de embutido no index.html — reduz a página de ~20 MB para poucos KB."""
+    index = []
+    for v in verses:
+        index.append({"t":"Versículo","titulo":v["referencia"],"desc":v.get("texto_pt",""),
+                      "url":f"versiculos/{v['slug']}/",
+                      "k":(v["referencia"]+" "+v.get("texto_pt","")+" "+v.get("contexto","")+" "+" ".join(v.get("palavras",[]))).lower()})
+    for a in articles:
+        index.append({"t":"Artigo","titulo":a["titulo"],"desc":a.get("resumo",""),
+                      "url":f"artigos/{a['slug']}/","k":(a["titulo"]+" "+a.get("resumo","")+" "+a.get("versiculo","")).lower()})
+    for t in topics:
+        index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
+                      "url":"#versiculos","k":(t["titulo"]+" "+t.get("descricao","")).lower()})
+    (DATA / "search-index.json").write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
+    return len(index)
+
+def build_home(topics, verses, articles, sources, order, struct):
     prefix = ""
     title = f"{SITE_NAME} — a Bíblia com os idiomas originais, manuscritos e fontes"
     desc = "Leia cada versículo no idioma original (hebraico, grego, aramaico), com tradução de domínio público, foto do manuscrito quando há, e comentário rabínico ou explicação de origem."
@@ -331,17 +454,15 @@ def build_home(topics, verses, articles, sources):
         f'<a class="chip" href="#versiculos"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
         for t in topics)
 
-    # versículos
-    vcards = ""
-    for v in verses:
-        sc = script_class(v["idioma"], v.get("dir","ltr"))
-        dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
-        vcards += f"""
-    <a class="card" href="versiculos/{v['slug']}/">
-      <div class="ref-row"><h3>{esc(v['referencia'])}</h3><span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span></div>
-      <p class="orig-mini {sc}"{dir_attr}>{esc(v['original'][:60])}</p>
-      <p class="pt-mini">{esc(v['texto_pt'][:110])}{'…' if len(v['texto_pt'])>110 else ''}</p>
-      <span class="more">Ver no original →</span>
+    # navegação por livro (substitui o despejo de 23k cartões na home)
+    bcards = ""
+    for livro in order:
+        n_caps = len(struct[livro])
+        idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
+        bcards += f"""
+    <a class="card book-card" href="ler/{book_slug(livro)}/">
+      <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
+      <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
     </a>"""
 
     # artigos
@@ -365,19 +486,6 @@ def build_home(topics, verses, articles, sources):
       <span class="status">{esc(s['status'])}</span><br>
       <a href="{esc(s['url'])}" target="_blank" rel="noopener">Abrir fonte oficial ↗</a>
     </div>"""
-
-    # índice de busca embutido (funciona offline, sem fetch)
-    index = []
-    for v in verses:
-        index.append({"t":"Versículo","titulo":v["referencia"],"desc":v["texto_pt"],
-                      "url":f"versiculos/{v['slug']}/","k":(v["referencia"]+" "+v["texto_pt"]+" "+v.get("contexto","")+" "+" ".join(v.get("palavras",[]))).lower()})
-    for a in articles:
-        index.append({"t":"Artigo","titulo":a["titulo"],"desc":a["resumo"],
-                      "url":f"artigos/{a['slug']}/","k":(a["titulo"]+" "+a["resumo"]+" "+a.get("versiculo","")).lower()})
-    for t in topics:
-        index.append({"t":"Tema","titulo":t["titulo"],"desc":t["descricao"],
-                      "url":"#versiculos","k":(t["titulo"]+" "+t["descricao"]).lower()})
-    index_js = json.dumps(index, ensure_ascii=False)
 
     body = f"""
 <header class="hero" id="topo">
@@ -414,11 +522,11 @@ def build_home(topics, verses, articles, sources):
 
   <section id="versiculos">
     <div class="sec-head">
-      <p class="eyebrow">O texto, camada por camada</p>
-      <h2>Versículos no original</h2>
-      <p>Cada cartão abre uma página com o original, a tradução livre, o manuscrito e o comentário.</p>
+      <p class="eyebrow">Leia a Bíblia inteira</p>
+      <h2>Livros</h2>
+      <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
     </div>
-    <div class="cards verses wrap">{vcards}
+    <div class="cards verses wrap">{bcards}
     </div>
   </section>
 
@@ -462,9 +570,7 @@ def build_home(topics, verses, articles, sources):
       <p>Os comentários rabínicos são <b>resumos originais</b>, escritos por nós e citando as fontes pelo nome (Rashi, Talmud, Midrash, Ibn Ezra, Targum). Não reproduzimos traduções modernas protegidas. Imagens de manuscrito só aparecem quando há um arquivo em domínio público, sempre com crédito.</p>
     </div>
   </section>
-</main>
-
-<script>window.__INDEX__ = {index_js};</script>"""
+</main>"""
 
     out = SITE / "index.html"
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
@@ -476,11 +582,21 @@ document.addEventListener('click',function(e){
 });
 (function(){
   var q=document.getElementById('q'), out=document.getElementById('results');
-  if(!q||!out||!window.__INDEX__) return;
+  if(!q||!out) return;
   // busca sem acento: "genesis" encontra "Gênesis", "joao" encontra "João".
   function fold(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
-  window.__INDEX__.forEach(function(i){i.kf=fold(i.k);});  // chave sem acento (1x)
-  function render(term){
+  // índice carregado sob demanda (arquivo externo, não embutido na página)
+  var idxPromise=null;
+  function getIndex(){
+    if(!idxPromise){
+      idxPromise=fetch('data/search-index.json').then(function(r){return r.json();}).then(function(data){
+        data.forEach(function(i){i.kf=fold(i.k);});  // chave sem acento (1x)
+        return data;
+      });
+    }
+    return idxPromise;
+  }
+  function render(IDX, term){
     out.innerHTML='';
     term=fold((term||'').trim().toLowerCase());
     if(!term) return;
@@ -488,7 +604,7 @@ document.addEventListener('click',function(e){
     // assim "salmo 23", "salmos 23" e "23:1" encontram o versículo direto
     // (e não só os artigos relacionados).
     var terms=term.split(/\s+/).filter(Boolean);
-    var res=window.__INDEX__.filter(function(i){
+    var res=IDX.filter(function(i){
       return terms.every(function(t){return i.kf.indexOf(t)>-1;});
     });
     // quem casa o termo inteiro e contíguo vem primeiro (ordenação estável)
@@ -501,7 +617,13 @@ document.addEventListener('click',function(e){
       out.appendChild(a);
     });
   }
-  q.addEventListener('input',function(e){render(e.target.value);});
+  q.addEventListener('input',function(e){
+    var val=e.target.value;
+    getIndex().then(function(IDX){
+      if(q.value!==val) return;  // ignora respostas obsoletas
+      render(IDX, val);
+    }).catch(function(){ out.innerHTML='<p class="empty">Não foi possível carregar a busca. Recarregue a página.</p>'; });
+  });
 })();
 // reveal
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -563,9 +685,11 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
 
-def build_meta(verses, articles):
+def build_meta(verses, articles, order, struct):
     # sitemap
-    urls = [BASE_URL + "/"]
+    urls = [BASE_URL + "/", f"{BASE_URL}/ler/"]
+    urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
+    urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
     urls += [f"{BASE_URL}/artigos/{a['slug']}/" for a in articles]
     items = "".join(f"<url><loc>{u}</loc><changefreq>monthly</changefreq></url>\n" for u in urls)
@@ -600,20 +724,33 @@ def main():
     articles_by_slug={a["slug"]:a for a in articles}
     # ordem bíblica garantida (folhear de Gênesis a Apocalipse)
     verses = sorted(verses, key=verse_sort_key)
+    order, struct = group_by_book_chapter(verses)
     # limpa saídas antigas
-    for d in ["versiculos","artigos"]:
+    for d in ["versiculos","artigos","ler"]:
         shutil.rmtree(SITE/d, ignore_errors=True)
-    build_home(topics, verses, articles, sources)
+    build_home(topics, verses, articles, sources, order, struct)
     build_app_js()
+    n_idx = build_search_index(verses, articles, topics)
     n = len(verses)
     for i, v in enumerate(verses):
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
         build_verse_page(v, articles_by_slug, prev_v, next_v)
     for a in articles: build_article_page(a)
-    build_meta(verses, articles)
+    # navegação livro → capítulo → versículo
+    build_books_index(order, struct)
+    n_chapters = 0
+    for livro in order:
+        chapters = struct[livro]
+        build_book_page(livro, chapters)
+        total_caps = max(chapters)
+        for ch in sorted(chapters):
+            build_chapter_page(livro, ch, chapters[ch], total_caps)
+            n_chapters += 1
+    build_meta(verses, articles, order, struct)
     build_404()
-    print(f"OK: home + {len(verses)} versículos + {len(articles)} artigos + sitemap + 404")
+    print(f"OK: home + {len(verses)} versículos + {len(order)} livros + {n_chapters} capítulos "
+          f"+ {len(articles)} artigos + índice de busca ({n_idx}) + sitemap + 404")
 
 if __name__=="__main__":
     main()

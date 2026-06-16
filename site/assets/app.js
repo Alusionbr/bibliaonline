@@ -4,11 +4,21 @@ document.addEventListener('click',function(e){
 });
 (function(){
   var q=document.getElementById('q'), out=document.getElementById('results');
-  if(!q||!out||!window.__INDEX__) return;
+  if(!q||!out) return;
   // busca sem acento: "genesis" encontra "Gênesis", "joao" encontra "João".
   function fold(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
-  window.__INDEX__.forEach(function(i){i.kf=fold(i.k);});  // chave sem acento (1x)
-  function render(term){
+  // índice carregado sob demanda (arquivo externo, não embutido na página)
+  var idxPromise=null;
+  function getIndex(){
+    if(!idxPromise){
+      idxPromise=fetch('data/search-index.json').then(function(r){return r.json();}).then(function(data){
+        data.forEach(function(i){i.kf=fold(i.k);});  // chave sem acento (1x)
+        return data;
+      });
+    }
+    return idxPromise;
+  }
+  function render(IDX, term){
     out.innerHTML='';
     term=fold((term||'').trim().toLowerCase());
     if(!term) return;
@@ -16,7 +26,7 @@ document.addEventListener('click',function(e){
     // assim "salmo 23", "salmos 23" e "23:1" encontram o versículo direto
     // (e não só os artigos relacionados).
     var terms=term.split(/\s+/).filter(Boolean);
-    var res=window.__INDEX__.filter(function(i){
+    var res=IDX.filter(function(i){
       return terms.every(function(t){return i.kf.indexOf(t)>-1;});
     });
     // quem casa o termo inteiro e contíguo vem primeiro (ordenação estável)
@@ -29,7 +39,13 @@ document.addEventListener('click',function(e){
       out.appendChild(a);
     });
   }
-  q.addEventListener('input',function(e){render(e.target.value);});
+  q.addEventListener('input',function(e){
+    var val=e.target.value;
+    getIndex().then(function(IDX){
+      if(q.value!==val) return;  // ignora respostas obsoletas
+      render(IDX, val);
+    }).catch(function(){ out.innerHTML='<p class="empty">Não foi possível carregar a busca. Recarregue a página.</p>'; });
+  });
 })();
 // reveal
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){

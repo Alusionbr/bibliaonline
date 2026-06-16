@@ -21,7 +21,7 @@ dataset minúsculo em diretório temporário.
 | `test_fill_pt.py` | `fill_pt.py` | Reconciliação de numeração hebraico↔Almeida: casamento direto, Salmos (offset de título), Joel (remapeamento 4→3 caps), garantia "diverge → não inventa". |
 | `test_expand_verses.py` | `expand_verses.py` | Faixas de aramaico (`is_aramaic`), `slugify` (acentos/colisões), `strip_cantillation`, integridade dos mapas OSIS/NT (66 livros). |
 | `test_build.py` | `build.py` | Ordem canônica (`verse_sort_key`), `ref_chvs`, `sefaria_url`, escape de HTML (`esc`), `script_class`/`lang_label`. |
-| `test_build_smoke.py` | `build.py` (integração) | Roda o build inteiro num dataset de fixture e verifica páginas geradas, links anterior/próximo, índice de busca e `sitemap.xml`. |
+| `test_build_smoke.py` | `build.py` (integração) | Roda o build inteiro num dataset de fixture e verifica páginas geradas, navegação livro→capítulo, leitura de capítulo, links anterior/próximo, índice de busca externo e `sitemap.xml`. |
 
 ## Refactor associado
 
@@ -36,10 +36,10 @@ lógica de numeração seja testável sem download da Almeida.
 ## Última execução registrada
 
 ```
-56 passed in 0.14s
+58 passed in 0.11s
 ```
 
-(coletados: build_smoke=4, build=12, expand_verses=24, fill_pt=8, gen_translit=8)
+(coletados: build_smoke=6, build=12, expand_verses=24, fill_pt=8, gen_translit=8)
 
 ## Próximos passos sugeridos (ainda não cobertos)
 
