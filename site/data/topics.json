@@ -1,0 +1,86 @@
+[
+  {
+    "slug": "ansiedade",
+    "titulo": "Ansiedade",
+    "descricao": "Versículos, contexto e leituras para momentos de inquietação.",
+    "icone": "◌",
+    "cor": "teal"
+  },
+  {
+    "slug": "medo",
+    "titulo": "Medo",
+    "descricao": "Textos bíblicos sobre coragem, presença divina e confiança.",
+    "icone": "⌁",
+    "cor": "blue"
+  },
+  {
+    "slug": "fe",
+    "titulo": "Fé",
+    "descricao": "O significado bíblico de confiar, permanecer e agir.",
+    "icone": "✦",
+    "cor": "gold"
+  },
+  {
+    "slug": "oracao",
+    "titulo": "Oração",
+    "descricao": "Como a oração aparece no Antigo e no Novo Testamento.",
+    "icone": "✧",
+    "cor": "violet"
+  },
+  {
+    "slug": "perdao",
+    "titulo": "Perdão",
+    "descricao": "Perdão, reconciliação e justiça no texto bíblico.",
+    "icone": "☉",
+    "cor": "rose"
+  },
+  {
+    "slug": "casamento",
+    "titulo": "Casamento",
+    "descricao": "Aliança, compromisso, família e sabedoria relacional.",
+    "icone": "∞",
+    "cor": "green"
+  },
+  {
+    "slug": "dinheiro",
+    "titulo": "Dinheiro",
+    "descricao": "Generosidade, ganância, dívidas e mordomia.",
+    "icone": "₪",
+    "cor": "amber"
+  },
+  {
+    "slug": "sofrimento",
+    "titulo": "Sofrimento",
+    "descricao": "Jó, Salmos, profetas e a esperança bíblica.",
+    "icone": "∴",
+    "cor": "slate"
+  },
+  {
+    "slug": "hebraico",
+    "titulo": "Hebraico bíblico",
+    "descricao": "Palavras como shalom, ruach, hesed e suas camadas de sentido.",
+    "icone": "א",
+    "cor": "indigo"
+  },
+  {
+    "slug": "grego",
+    "titulo": "Grego bíblico",
+    "descricao": "Termos do Novo Testamento como logos, agape, pistis e charis.",
+    "icone": "Ω",
+    "cor": "cyan"
+  },
+  {
+    "slug": "aramaico",
+    "titulo": "Aramaico na Bíblia",
+    "descricao": "Onde aparece e por que importa em Daniel, Esdras e ditos de Jesus.",
+    "icone": "ܐ",
+    "cor": "purple"
+  },
+  {
+    "slug": "manuscritos",
+    "titulo": "Manuscritos",
+    "descricao": "Códices, pergaminhos, papiros e transmissão do texto bíblico.",
+    "icone": "▧",
+    "cor": "brown"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "src-almeida-1911",
+    "nome": "Bíblia Sagrada — João Ferreira de Almeida, Revista e Corrigida (1911)",
+    "tipo": "Tradução bíblica em português",
+    "idioma": "Português",
+    "url": "https://pt.wikisource.org/wiki/Tradu%C3%A7%C3%A3o_de_Jo%C3%A3o_Ferreira_de_Almeida",
+    "instituicao": "Domínio público",
+    "licenca": "Domínio público no Brasil. A edição Revista e Corrigida de 1911 é a versão mais recente da Almeida em domínio público; revisões posteriores (ARA, ARC moderna, ACF, NVI etc.) têm direitos autorais e NÃO podem ser publicadas. Decisões judiciais no Brasil confirmam que a tradução de Almeida é livre, mas as revisões modernas não.",
+    "status": "APROVADA PARA PUBLICAÇÃO (somente edição de 1911 ou anterior)",
+    "uso": "Texto bíblico em português usado no site.",
+    "atribuicao": "Creditar: João Ferreira de Almeida, edição Revista e Corrigida de 1911 (domínio público)."
+  },
+  {
+    "id": "src-oshb",
+    "nome": "Open Scriptures Hebrew Bible / Westminster Leningrad Codex",
+    "tipo": "Texto hebraico e aramaico do Antigo Testamento, com morfologia",
+    "idioma": "Hebraico e aramaico bíblicos",
+    "url": "https://hb.openscriptures.org/",
+    "instituicao": "Open Scriptures Hebrew Bible Project",
+    "licenca": "O texto do Westminster Leningrad Codex (WLC) está em domínio público. Os dados de lema e morfologia estão sob Creative Commons Attribution 4.0 (CC BY 4.0), que permite uso até comercial, com atribuição.",
+    "status": "APROVADA PARA PUBLICAÇÃO COM ATRIBUIÇÃO",
+    "uso": "Texto original hebraico e aramaico (inclui as seções aramaicas de Daniel e Esdras).",
+    "atribuicao": "Creditar: \"Open Scriptures Hebrew Bible\" (github.com/openscriptures/morphhb). Texto WLC em domínio público."
+  },
+  {
+    "id": "src-nestle-1904",
+    "nome": "Novum Testamentum Graece — Eberhard Nestle (1904)",
+    "tipo": "Texto grego do Novo Testamento",
+    "idioma": "Grego koiné",
+    "url": "https://sites.google.com/site/nestle1904/",
+    "instituicao": "British and Foreign Bible Society (edição de 1904)",
+    "licenca": "Domínio público mundial. É a edição crítica de Nestle mais próxima do texto acadêmico atual (NA28) que está livre de direitos. Não confundir com a Nestle-Aland 27/28, que é protegida.",
+    "status": "APROVADA PARA PUBLICAÇÃO",
+    "uso": "Texto original grego do Novo Testamento.",
+    "atribuicao": "Creditar: Nestle 1904 (sites.google.com/site/nestle1904), transcrição de Diego Santos."
+  },
+  {
+    "id": "src-commons-manuscritos",
+    "nome": "Wikimedia Commons — imagens de manuscritos em domínio público",
+    "tipo": "Imagens de manuscritos",
+    "idioma": "—",
+    "url": "https://commons.wikimedia.org/wiki/Category:Biblical_manuscripts",
+    "instituicao": "Wikimedia Commons",
+    "licenca": "Varia por arquivo. Usamos apenas imagens marcadas como domínio público (ex.: Grande Rolo de Isaías, Códice de Leningrado, Códice Sinaítico em reproduções fotográficas de obras antigas). Cada imagem precisa de verificação individual antes de publicar.",
+    "status": "APROVADA CASO A CASO (somente arquivos em domínio público, com crédito)",
+    "uso": "Fotos de manuscritos nas páginas de versículo, quando há arquivo livre.",
+    "atribuicao": "Creditar o arquivo do Wikimedia Commons e a instituição detentora do manuscrito."
+  },
+  {
+    "id": "src-sefaria",
+    "nome": "Sefaria",
+    "tipo": "Biblioteca de textos judaicos e rabínicos",
+    "idioma": "Hebraico/aramaico e traduções",
+    "url": "https://www.sefaria.org/",
+    "instituicao": "Sefaria",
+    "licenca": "Varia por texto: domínio público, Creative Commons ou sem licença livre. Os comentários rabínicos deste site são RESUMOS originais escritos por nós, citando as fontes pelo nome (Rashi, Talmud, Midrash, Ibn Ezra); não reproduzimos traduções protegidas.",
+    "status": "USAR COMO REFERÊNCIA; verificar licença texto a texto antes de reproduzir qualquer tradução",
+    "uso": "Conferência de referências e links para o leitor aprofundar.",
+    "atribuicao": "Depende de cada texto específico."
+  },
+  {
+    "id": "src-codex-sinaiticus",
+    "nome": "Codex Sinaiticus Project",
+    "tipo": "Manuscrito grego do séc. IV (digitalização)",
+    "idioma": "Grego",
+    "url": "https://www.codexsinaiticus.org/",
+    "instituicao": "British Library e parceiros",
+    "licenca": "As imagens do site oficial têm termos próprios de uso; verificar antes de incorporar. Algumas reproduções estão em domínio público no Wikimedia Commons.",
+    "status": "VERIFICAR TERMOS POR IMAGEM",
+    "uso": "Consulta do Novo Testamento grego em manuscrito antigo.",
+    "atribuicao": "Conforme os termos do projeto Codex Sinaiticus."
+  }
+]

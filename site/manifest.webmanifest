@@ -1,0 +1,10 @@
+{
+  "name": "Bíblia em Contexto",
+  "short_name": "Bíblia em Contexto",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4eee2",
+  "theme_color": "#1a1610",
+  "description": "A Bíblia com os idiomas originais, manuscritos e fontes."
+}
