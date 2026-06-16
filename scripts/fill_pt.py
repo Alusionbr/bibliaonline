@@ -40,6 +40,38 @@ def ref_chvs(referencia):
     m = re.search(r"(\d+):(\d+)", referencia)
     return int(m.group(1)), int(m.group(2))
 
+def resolve_pt(livro, ch, vs, amap, A, H):
+    """Resolve o texto Almeida (PT) para um versículo, tratando as diferenças
+    de numeração hebraico↔português. Função pura (sem I/O) para ser testável.
+
+    livro: nome do livro em PT (como no verses.json)
+    ch, vs: capítulo e versículo (numeração hebraica)
+    amap: dict {(nome_almeida, cap, vers): texto}
+    A: nº de versículos do capítulo na Almeida (alen)
+    H: nº de versículos do capítulo no hebraico (hlen)
+    Retorna o texto PT ou "" quando a numeração diverge (não inventa)."""
+    nm = NAME_FIX.get(livro, livro)
+    if livro == "Joel":
+        # Hebraico: 4 caps | Almeida: 3 caps. Hb2=27v, Alm2=32v (=Hb2+Hb3), Hb4->Alm3
+        if ch == 1:
+            return amap.get((nm, 1, vs), "")
+        elif ch == 2:
+            return amap.get((nm, 2, vs), "")
+        elif ch == 3:
+            return amap.get((nm, 2, 27 + vs), "")
+        elif ch == 4:
+            return amap.get((nm, 3, vs), "")
+        return ""
+    elif livro == "Salmos":
+        k = H - A  # nº de linhas de título (0, 1 ou 2)
+        if k > 0:
+            return amap.get((nm, ch, vs - k), "") if vs > k else ""
+        return amap.get((nm, ch, vs), "")
+    else:
+        if A == H:
+            return amap.get((nm, ch, vs), "")
+        return ""  # numeração divergente: não inventa
+
 def main():
     write = "--write" in sys.argv
     amap, alen, achaps = load_almeida()
@@ -59,29 +91,7 @@ def main():
         ch, vs = ref_chvs(v["referencia"])
         A = alen.get((nm, ch), 0)
         H = hlen[(livro, ch)]
-        txt = ""
-
-        if livro == "Joel":
-            # Hebraico: 4 caps | Almeida: 3 caps. Hb2=27v, Alm2=32v (=Hb2+Hb3), Hb4->Alm3
-            if ch == 1:
-                txt = amap.get((nm, 1, vs), "")
-            elif ch == 2:
-                txt = amap.get((nm, 2, vs), "")
-            elif ch == 3:
-                txt = amap.get((nm, 2, 27 + vs), "")
-            elif ch == 4:
-                txt = amap.get((nm, 3, vs), "")
-        elif livro == "Salmos":
-            k = H - A  # nº de linhas de título (0, 1 ou 2)
-            if k > 0:
-                txt = amap.get((nm, ch, vs - k), "") if vs > k else ""
-            else:
-                txt = amap.get((nm, ch, vs), "")
-        else:
-            if A == H:
-                txt = amap.get((nm, ch, vs), "")
-            else:
-                txt = ""  # numeração divergente: não inventa
+        txt = resolve_pt(livro, ch, vs, amap, A, H)
 
         v["texto_pt"] = txt
         if txt:
