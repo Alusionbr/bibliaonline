@@ -5,3 +5,5 @@ __pycache__/
 *.pyc
 
 gcm-trace.log
+.pytest_cache/
+.coverage
