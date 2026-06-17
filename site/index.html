@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=766f8798">
+<link rel="stylesheet" href="assets/styles.css?v=486847d1">
 </head>
 <body>
 <script>(function(){try{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}catch(e){}})();</script>
@@ -35,6 +35,7 @@
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
       <a href="ler/">Bíblia</a>
+      <a href="linha-do-tempo/">Linha do tempo</a>
       <a href="index.html#temas">Temas</a>
       <a href="index.html#artigos">Artigos</a>
       <a href="anotacoes/">Anotações</a>
@@ -83,268 +84,276 @@
       <h2>Livros</h2>
       <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
     </div>
-    <div class="cards verses wrap">
-    <a class="card book-card" href="ler/genesis/">
+    
+  <div class="order-toggle" role="group" aria-label="Ordenar livros">
+    <span class="ot-lbl">Ordenar:</span>
+    <button type="button" class="ot on" data-sort="bib">Bíblica</button>
+    <button type="button" class="ot" data-sort="alpha">Alfabética</button>
+    <button type="button" class="ot" data-sort="chron">Cronológica</button>
+    <a class="ot-link" href="linha-do-tempo/">linha do tempo →</a>
+  </div>
+    <div class="cards verses wrap" data-booklist>
+    <a class="card book-card" href="ler/genesis/" data-pos="0" data-name="genesis" data-chron="0">
       <div class="ref-row"><h3>Gênesis</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">50 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/exodo/">
+    <a class="card book-card" href="ler/exodo/" data-pos="1" data-name="exodo" data-chron="2">
       <div class="ref-row"><h3>Êxodo</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">40 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/levitico/">
+    <a class="card book-card" href="ler/levitico/" data-pos="2" data-name="levitico" data-chron="3">
       <div class="ref-row"><h3>Levítico</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">27 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/numeros/">
+    <a class="card book-card" href="ler/numeros/" data-pos="3" data-name="numeros" data-chron="4">
       <div class="ref-row"><h3>Números</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">36 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/deuteronomio/">
+    <a class="card book-card" href="ler/deuteronomio/" data-pos="4" data-name="deuteronomio" data-chron="5">
       <div class="ref-row"><h3>Deuteronômio</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">34 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/josue/">
+    <a class="card book-card" href="ler/josue/" data-pos="5" data-name="josue" data-chron="6">
       <div class="ref-row"><h3>Josué</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">24 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/juizes/">
+    <a class="card book-card" href="ler/juizes/" data-pos="6" data-name="juizes" data-chron="7">
       <div class="ref-row"><h3>Juízes</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">21 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/rute/">
+    <a class="card book-card" href="ler/rute/" data-pos="7" data-name="rute" data-chron="8">
       <div class="ref-row"><h3>Rute</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">4 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-samuel/">
+    <a class="card book-card" href="ler/1-samuel/" data-pos="8" data-name="1 samuel" data-chron="9">
       <div class="ref-row"><h3>1 Samuel</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">31 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-samuel/">
+    <a class="card book-card" href="ler/2-samuel/" data-pos="9" data-name="2 samuel" data-chron="10">
       <div class="ref-row"><h3>2 Samuel</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">24 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-reis/">
+    <a class="card book-card" href="ler/1-reis/" data-pos="10" data-name="1 reis" data-chron="11">
       <div class="ref-row"><h3>1 Reis</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">22 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-reis/">
+    <a class="card book-card" href="ler/2-reis/" data-pos="11" data-name="2 reis" data-chron="17">
       <div class="ref-row"><h3>2 Reis</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">25 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-cronicas/">
+    <a class="card book-card" href="ler/1-cronicas/" data-pos="12" data-name="1 cronicas" data-chron="12">
       <div class="ref-row"><h3>1 Crônicas</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">29 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-cronicas/">
+    <a class="card book-card" href="ler/2-cronicas/" data-pos="13" data-name="2 cronicas" data-chron="18">
       <div class="ref-row"><h3>2 Crônicas</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">36 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/esdras/">
+    <a class="card book-card" href="ler/esdras/" data-pos="14" data-name="esdras" data-chron="33">
       <div class="ref-row"><h3>Esdras</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">10 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/neemias/">
+    <a class="card book-card" href="ler/neemias/" data-pos="15" data-name="neemias" data-chron="34">
       <div class="ref-row"><h3>Neemias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">13 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/ester/">
+    <a class="card book-card" href="ler/ester/" data-pos="16" data-name="ester" data-chron="35">
       <div class="ref-row"><h3>Ester</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">10 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/jo/">
+    <a class="card book-card" href="ler/jo/" data-pos="17" data-name="jo" data-chron="1">
       <div class="ref-row"><h3>Jó</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">42 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/salmos/">
+    <a class="card book-card" href="ler/salmos/" data-pos="18" data-name="salmos" data-chron="13">
       <div class="ref-row"><h3>Salmos</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">150 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/proverbios/">
+    <a class="card book-card" href="ler/proverbios/" data-pos="19" data-name="proverbios" data-chron="14">
       <div class="ref-row"><h3>Provérbios</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">31 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/eclesiastes/">
+    <a class="card book-card" href="ler/eclesiastes/" data-pos="20" data-name="eclesiastes" data-chron="15">
       <div class="ref-row"><h3>Eclesiastes</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">12 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/canticos/">
+    <a class="card book-card" href="ler/canticos/" data-pos="21" data-name="canticos" data-chron="16">
       <div class="ref-row"><h3>Cânticos</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">8 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/isaias/">
+    <a class="card book-card" href="ler/isaias/" data-pos="22" data-name="isaias" data-chron="19">
       <div class="ref-row"><h3>Isaías</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">66 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/jeremias/">
+    <a class="card book-card" href="ler/jeremias/" data-pos="23" data-name="jeremias" data-chron="20">
       <div class="ref-row"><h3>Jeremias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">52 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/lamentacoes/">
+    <a class="card book-card" href="ler/lamentacoes/" data-pos="24" data-name="lamentacoes" data-chron="21">
       <div class="ref-row"><h3>Lamentações</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">5 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/ezequiel/">
+    <a class="card book-card" href="ler/ezequiel/" data-pos="25" data-name="ezequiel" data-chron="31">
       <div class="ref-row"><h3>Ezequiel</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">48 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/daniel/">
+    <a class="card book-card" href="ler/daniel/" data-pos="26" data-name="daniel" data-chron="32">
       <div class="ref-row"><h3>Daniel</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">12 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/oseias/">
+    <a class="card book-card" href="ler/oseias/" data-pos="27" data-name="oseias" data-chron="22">
       <div class="ref-row"><h3>Oseias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">14 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/joel/">
+    <a class="card book-card" href="ler/joel/" data-pos="28" data-name="joel" data-chron="23">
       <div class="ref-row"><h3>Joel</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">4 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/amos/">
+    <a class="card book-card" href="ler/amos/" data-pos="29" data-name="amos" data-chron="24">
       <div class="ref-row"><h3>Amós</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">9 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/obadias/">
+    <a class="card book-card" href="ler/obadias/" data-pos="30" data-name="obadias" data-chron="25">
       <div class="ref-row"><h3>Obadias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">1 capítulo</p>
     </a>
-    <a class="card book-card" href="ler/jonas/">
+    <a class="card book-card" href="ler/jonas/" data-pos="31" data-name="jonas" data-chron="26">
       <div class="ref-row"><h3>Jonas</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">4 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/miqueias/">
+    <a class="card book-card" href="ler/miqueias/" data-pos="32" data-name="miqueias" data-chron="27">
       <div class="ref-row"><h3>Miquéias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">7 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/naum/">
+    <a class="card book-card" href="ler/naum/" data-pos="33" data-name="naum" data-chron="28">
       <div class="ref-row"><h3>Naum</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/habacuque/">
+    <a class="card book-card" href="ler/habacuque/" data-pos="34" data-name="habacuque" data-chron="29">
       <div class="ref-row"><h3>Habacuque</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/sofonias/">
+    <a class="card book-card" href="ler/sofonias/" data-pos="35" data-name="sofonias" data-chron="30">
       <div class="ref-row"><h3>Sofonias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/ageu/">
+    <a class="card book-card" href="ler/ageu/" data-pos="36" data-name="ageu" data-chron="36">
       <div class="ref-row"><h3>Ageu</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">2 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/zacarias/">
+    <a class="card book-card" href="ler/zacarias/" data-pos="37" data-name="zacarias" data-chron="37">
       <div class="ref-row"><h3>Zacarias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">14 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/malaquias/">
+    <a class="card book-card" href="ler/malaquias/" data-pos="38" data-name="malaquias" data-chron="38">
       <div class="ref-row"><h3>Malaquias</h3><span class="lang-tag lang-hebraico">Hebraico</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/mateus/">
+    <a class="card book-card" href="ler/mateus/" data-pos="39" data-name="mateus" data-chron="39">
       <div class="ref-row"><h3>Mateus</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">28 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/marcos/">
+    <a class="card book-card" href="ler/marcos/" data-pos="40" data-name="marcos" data-chron="40">
       <div class="ref-row"><h3>Marcos</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">16 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/lucas/">
+    <a class="card book-card" href="ler/lucas/" data-pos="41" data-name="lucas" data-chron="41">
       <div class="ref-row"><h3>Lucas</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">24 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/joao/">
+    <a class="card book-card" href="ler/joao/" data-pos="42" data-name="joao" data-chron="42">
       <div class="ref-row"><h3>João</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">21 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/atos/">
+    <a class="card book-card" href="ler/atos/" data-pos="43" data-name="atos" data-chron="43">
       <div class="ref-row"><h3>Atos</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">28 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/romanos/">
+    <a class="card book-card" href="ler/romanos/" data-pos="44" data-name="romanos" data-chron="44">
       <div class="ref-row"><h3>Romanos</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">16 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-corintios/">
+    <a class="card book-card" href="ler/1-corintios/" data-pos="45" data-name="1 corintios" data-chron="45">
       <div class="ref-row"><h3>1 Coríntios</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">16 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-corintios/">
+    <a class="card book-card" href="ler/2-corintios/" data-pos="46" data-name="2 corintios" data-chron="46">
       <div class="ref-row"><h3>2 Coríntios</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">13 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/galatas/">
+    <a class="card book-card" href="ler/galatas/" data-pos="47" data-name="galatas" data-chron="47">
       <div class="ref-row"><h3>Gálatas</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">6 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/efesios/">
+    <a class="card book-card" href="ler/efesios/" data-pos="48" data-name="efesios" data-chron="48">
       <div class="ref-row"><h3>Efésios</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">6 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/filipenses/">
+    <a class="card book-card" href="ler/filipenses/" data-pos="49" data-name="filipenses" data-chron="49">
       <div class="ref-row"><h3>Filipenses</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">4 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/colossenses/">
+    <a class="card book-card" href="ler/colossenses/" data-pos="50" data-name="colossenses" data-chron="50">
       <div class="ref-row"><h3>Colossenses</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">4 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-tessalonicenses/">
+    <a class="card book-card" href="ler/1-tessalonicenses/" data-pos="51" data-name="1 tessalonicenses" data-chron="51">
       <div class="ref-row"><h3>1 Tessalonicenses</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">5 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-tessalonicenses/">
+    <a class="card book-card" href="ler/2-tessalonicenses/" data-pos="52" data-name="2 tessalonicenses" data-chron="52">
       <div class="ref-row"><h3>2 Tessalonicenses</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-timoteo/">
+    <a class="card book-card" href="ler/1-timoteo/" data-pos="53" data-name="1 timoteo" data-chron="53">
       <div class="ref-row"><h3>1 Timóteo</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">6 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-timoteo/">
+    <a class="card book-card" href="ler/2-timoteo/" data-pos="54" data-name="2 timoteo" data-chron="54">
       <div class="ref-row"><h3>2 Timóteo</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">4 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/tito/">
+    <a class="card book-card" href="ler/tito/" data-pos="55" data-name="tito" data-chron="55">
       <div class="ref-row"><h3>Tito</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/filemom/">
+    <a class="card book-card" href="ler/filemom/" data-pos="56" data-name="filemom" data-chron="56">
       <div class="ref-row"><h3>Filemom</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">1 capítulo</p>
     </a>
-    <a class="card book-card" href="ler/hebreus/">
+    <a class="card book-card" href="ler/hebreus/" data-pos="57" data-name="hebreus" data-chron="57">
       <div class="ref-row"><h3>Hebreus</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">13 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/tiago/">
+    <a class="card book-card" href="ler/tiago/" data-pos="58" data-name="tiago" data-chron="58">
       <div class="ref-row"><h3>Tiago</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">5 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-pedro/">
+    <a class="card book-card" href="ler/1-pedro/" data-pos="59" data-name="1 pedro" data-chron="59">
       <div class="ref-row"><h3>1 Pedro</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">5 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-pedro/">
+    <a class="card book-card" href="ler/2-pedro/" data-pos="60" data-name="2 pedro" data-chron="60">
       <div class="ref-row"><h3>2 Pedro</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">3 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/1-joao/">
+    <a class="card book-card" href="ler/1-joao/" data-pos="61" data-name="1 joao" data-chron="61">
       <div class="ref-row"><h3>1 João</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">5 capítulos</p>
     </a>
-    <a class="card book-card" href="ler/2-joao/">
+    <a class="card book-card" href="ler/2-joao/" data-pos="62" data-name="2 joao" data-chron="62">
       <div class="ref-row"><h3>2 João</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">1 capítulo</p>
     </a>
-    <a class="card book-card" href="ler/3-joao/">
+    <a class="card book-card" href="ler/3-joao/" data-pos="63" data-name="3 joao" data-chron="63">
       <div class="ref-row"><h3>3 João</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">1 capítulo</p>
     </a>
-    <a class="card book-card" href="ler/judas/">
+    <a class="card book-card" href="ler/judas/" data-pos="64" data-name="judas" data-chron="64">
       <div class="ref-row"><h3>Judas</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">1 capítulo</p>
     </a>
-    <a class="card book-card" href="ler/apocalipse/">
+    <a class="card book-card" href="ler/apocalipse/" data-pos="65" data-name="apocalipse" data-chron="65">
       <div class="ref-row"><h3>Apocalipse</h3><span class="lang-tag lang-grego">Grego</span></div>
       <p class="pt-mini">22 capítulos</p>
     </a>
@@ -508,6 +517,6 @@
     </div>
   </div>
 </footer>
-<script src="assets/app.js?v=766f8798"></script>
-<script src="assets/study.js?v=766f8798" defer></script>
+<script src="assets/app.js?v=486847d1"></script>
+<script src="assets/study.js?v=486847d1" defer></script>
 </body></html>

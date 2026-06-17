@@ -88,6 +88,44 @@ def verse_sort_key(v):
     ch, vs = (int(m.group(1)), int(m.group(2))) if m else (0, 0)
     return (bi, ch, vs)
 
+# Linha do tempo (didática; datas APROXIMADAS — estimativas variam entre estudiosos).
+# Cada livro entra UMA vez, pelo período histórico associado. NÃO altera o texto bíblico.
+TIMELINE = [
+ {"nome":"Primórdios","periodo":"antes de ~2000 a.C.","descricao":"Da criação ao dilúvio e à dispersão dos povos.","livros":["Gênesis"]},
+ {"nome":"Patriarcas","periodo":"~2000–1700 a.C.","descricao":"Abraão, Isaque, Jacó e José — as promessas a Israel.","livros":["Jó"]},
+ {"nome":"Êxodo e a Lei","periodo":"~1500–1400 a.C.","descricao":"A saída do Egito, a aliança e a Lei no Sinai.","livros":["Êxodo","Levítico","Números","Deuteronômio"]},
+ {"nome":"Conquista e Juízes","periodo":"~1400–1050 a.C.","descricao":"A entrada em Canaã e o período dos juízes.","livros":["Josué","Juízes","Rute"]},
+ {"nome":"Monarquia Unida","periodo":"~1050–930 a.C.","descricao":"Saul, Davi e Salomão; salmos e sabedoria.","livros":["1 Samuel","2 Samuel","1 Reis","1 Crônicas","Salmos","Provérbios","Eclesiastes","Cânticos"]},
+ {"nome":"Reinos Divididos e Profetas","periodo":"~930–586 a.C.","descricao":"Israel e Judá se dividem; os profetas advertem.","livros":["2 Reis","2 Crônicas","Isaías","Jeremias","Lamentações","Oseias","Joel","Amós","Obadias","Jonas","Miquéias","Naum","Habacuque","Sofonias"]},
+ {"nome":"Exílio","periodo":"~586–538 a.C.","descricao":"Judá no cativeiro na Babilônia.","livros":["Ezequiel","Daniel"]},
+ {"nome":"Pós-exílio e Restauração","periodo":"~538–430 a.C.","descricao":"O retorno, a reconstrução de Jerusalém e do Templo.","livros":["Esdras","Neemias","Ester","Ageu","Zacarias","Malaquias"]},
+ {"nome":"Período intertestamentário","periodo":"~430–6 a.C.","descricao":"Cerca de 400 anos entre Malaquias e os Evangelhos (sem livros no cânon protestante).","livros":[]},
+ {"nome":"Vida de Jesus","periodo":"~6 a.C.–30 d.C.","descricao":"O nascimento, ministério, morte e ressurreição de Jesus.","livros":["Mateus","Marcos","Lucas","João"]},
+ {"nome":"Igreja primitiva","periodo":"~30–95 d.C.","descricao":"A expansão da Igreja e as cartas apostólicas.","livros":["Atos","Romanos","1 Coríntios","2 Coríntios","Gálatas","Efésios","Filipenses","Colossenses","1 Tessalonicenses","2 Tessalonicenses","1 Timóteo","2 Timóteo","Tito","Filemom","Hebreus","Tiago","1 Pedro","2 Pedro","1 João","2 João","3 João","Judas"]},
+ {"nome":"Visão final","periodo":"~95 d.C.","descricao":"A revelação do fim e da nova criação.","livros":["Apocalipse"]},
+]
+CHRON_INDEX = {}
+for _era in TIMELINE:
+    for _b in _era["livros"]:
+        CHRON_INDEX[_b] = len(CHRON_INDEX)
+
+def book_data_attrs(livro):
+    # atributos para reordenar os cartões no cliente (bíblica/alfabética/cronológica)
+    pos = BOOK_ORDER.index(livro) if livro in BOOK_ORDER else 999
+    nome = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
+    return f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
+
+def order_toggle(prefix):
+    # controle de ordenação no topo da grade de livros (cliente, persistido)
+    return f"""
+  <div class="order-toggle" role="group" aria-label="Ordenar livros">
+    <span class="ot-lbl">Ordenar:</span>
+    <button type="button" class="ot on" data-sort="bib">Bíblica</button>
+    <button type="button" class="ot" data-sort="alpha">Alfabética</button>
+    <button type="button" class="ot" data-sort="chron">Cronológica</button>
+    <a class="ot-link" href="{prefix}linha-do-tempo/">linha do tempo →</a>
+  </div>"""
+
 def book_slug(livro):
     base = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", "-", base).strip("-")
@@ -148,6 +186,7 @@ def nav(prefix):
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
       <a href="{prefix}ler/">Bíblia</a>
+      <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
       <a href="{prefix}index.html#temas">Temas</a>
       <a href="{prefix}index.html#artigos">Artigos</a>
       <a href="{prefix}anotacoes/">Anotações</a>
@@ -366,7 +405,7 @@ def build_books_index(order, struct):
         n_caps = len(struct[livro])
         idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
         cards += f"""
-    <a class="card book-card" href="{book_slug(livro)}/">
+    <a class="card book-card" href="{book_slug(livro)}/"{book_data_attrs(livro)}>
       <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
     </a>"""
@@ -375,10 +414,46 @@ def build_books_index(order, struct):
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Livros</p>
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
   <p class="read" style="color:var(--muted)">Escolha um livro para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
-  <div class="cards verses">{cards}
+  {order_toggle(prefix)}
+  <div class="cards verses" data-booklist>{cards}
   </div>
 </main>"""
     out = SITE / "ler" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_timeline_page(order, struct):
+    prefix = "../"
+    title = f"Linha do tempo da Bíblia | {SITE_NAME}"
+    desc = "A Bíblia em ordem histórica: os livros agrupados por períodos, de Gênesis ao Apocalipse (datas aproximadas)."
+    canonical = f"{BASE_URL}/linha-do-tempo/"
+    present = set(order)
+    eras_html = ""
+    for era in TIMELINE:
+        livros = [b for b in era["livros"] if b in present]
+        cards = ""
+        for b in livros:
+            idioma = struct[b][min(struct[b])][0].get("idioma","hebraico")
+            cards += f"""
+      <a class="card book-card" href="{prefix}ler/{book_slug(b)}/">
+        <div class="ref-row"><h3>{esc(b)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
+      </a>"""
+        grade = f'<div class="cards verses">{cards}\n    </div>' if livros else '<p class="era-gap-note">Cerca de 400 anos sem registro no cânon protestante.</p>'
+        eras_html += f"""
+  <section class="era">
+    <div class="era-head"><h2>{esc(era['nome'])}</h2><span class="era-period">{esc(era['periodo'])}</span></div>
+    <p class="era-desc">{esc(era['descricao'])}</p>
+    {grade}
+  </section>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Linha do tempo</p>
+  <header class="verse-head"><h1>Linha do tempo da Bíblia</h1></header>
+  <p class="read" style="color:var(--muted)">Os livros na ordem histórica dos acontecimentos, de Gênesis ao Apocalipse. <b>Datas aproximadas</b> — as estimativas variam entre estudiosos.</p>
+  {eras_html}
+  <p class="backline"><a href="{prefix}ler/">← Todos os livros</a></p>
+</main>"""
+    out = SITE / "linha-do-tempo" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
@@ -501,7 +576,7 @@ def build_home(topics, verses, articles, sources, order, struct):
         n_caps = len(struct[livro])
         idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
         bcards += f"""
-    <a class="card book-card" href="ler/{book_slug(livro)}/">
+    <a class="card book-card" href="ler/{book_slug(livro)}/"{book_data_attrs(livro)}>
       <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
     </a>"""
@@ -571,7 +646,8 @@ def build_home(topics, verses, articles, sources, order, struct):
       <h2>Livros</h2>
       <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
     </div>
-    <div class="cards verses wrap">{bcards}
+    {order_toggle("")}
+    <div class="cards verses wrap" data-booklist>{bcards}
     </div>
   </section>
 
@@ -770,6 +846,30 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       }).catch(function(){ rb.disabled=false; });
     });
   }
+})();
+
+// ordenar livros: bíblica / alfabética / cronológica (persistido em bec.bookorder)
+(function(){
+  var lists=document.querySelectorAll('[data-booklist]'); if(!lists.length) return;
+  function apply(mode){
+    lists.forEach(function(list){
+      var cards=[].slice.call(list.querySelectorAll('.book-card'));
+      cards.sort(function(a,b){
+        if(mode==='alpha') return (a.getAttribute('data-name')||'').localeCompare(b.getAttribute('data-name')||'');
+        if(mode==='chron') return (+a.getAttribute('data-chron'))-(+b.getAttribute('data-chron'));
+        return (+a.getAttribute('data-pos'))-(+b.getAttribute('data-pos'));
+      });
+      cards.forEach(function(c){ list.appendChild(c); });
+    });
+    document.querySelectorAll('.order-toggle .ot').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-sort')===mode); });
+  }
+  document.addEventListener('click', function(e){
+    var b=e.target.closest && e.target.closest('.order-toggle .ot'); if(!b) return;
+    var m=b.getAttribute('data-sort'); try{ localStorage.setItem('bec.bookorder', m); }catch(e){}
+    apply(m);
+  });
+  var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
+  if(saved!=='bib') apply(saved);
 })();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
@@ -1230,7 +1330,7 @@ def build_annotations_page():
 
 def build_meta(verses, articles, order, struct):
     # sitemap
-    urls = [BASE_URL + "/", f"{BASE_URL}/ler/"]
+    urls = [BASE_URL + "/", f"{BASE_URL}/ler/", f"{BASE_URL}/linha-do-tempo/"]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
@@ -1303,6 +1403,7 @@ def main():
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)
+    build_timeline_page(order, struct)
     n_chapters = 0
     for livro in order:
         chapters = struct[livro]
