@@ -25,14 +25,14 @@
     wrapWords(cont.querySelector('.orig'),'orig');
     var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
     var bar=document.createElement('div'); bar.className='study';
-    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">toque numa palavra para grifar</span>' : '';
+    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">selecione o texto para grifar ou copiar</span>' : '';
     bar.innerHTML='<button type="button" data-act="vhl">🖍 Grifar versículo</button>'+
       '<button type="button" data-act="note">🗒 Anotar</button>'+
       '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+hint;
     anchor.appendChild(bar);
     var nb=document.createElement('div'); nb.className='note-box'; nb.hidden=true;
     nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>'+
-      '<div class="note-actions"><button type="button" data-act="copy-note">⧉ Copiar nota</button></div>';
+      '<div class="note-actions"><button type="button" data-act="copy-note">⧉ Copiar versículo + nota</button></div>';
     anchor.appendChild(nb);
     cont.dataset.studyReady='1';
     apply(cont, ref);
@@ -46,7 +46,8 @@
   }
   function verseText(cont, ref){
     var pt=cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
-    return ref + (t? ' — ' + t : '');
+    var note=load('notes')[ref];
+    return ref + (t? '\n'+t : '') + (note? '\n\nAnotação: '+note : '');
   }
 
   function apply(cont, ref){
@@ -93,10 +94,77 @@
       var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
       if(act==='vhl') toggleVerse(cont, ref, btn);
       else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
-      else if(act==='copy') copyText(verseText(cont, ref), btn);
-      else if(act==='copy-note'){ var ta=cont.querySelector('.note-box textarea'); copyText(ref+'\n'+(ta?ta.value:''), btn); }
+      else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
     }
   });
+
+  // ---------- marca-texto por seleção: barra flutuante (Grifar / Copiar) ----------
+  var selBar=null, selT=null;
+  function getSelBar(){
+    if(selBar) return selBar;
+    selBar=document.createElement('div'); selBar.className='sel-bar'; selBar.hidden=true;
+    selBar.innerHTML='<button type="button" data-sel="hl">🖍 Grifar</button>'+
+      '<button type="button" data-sel="copy">⧉ Copiar seleção</button>';
+    document.body.appendChild(selBar);
+    selBar.addEventListener('mousedown', function(e){ e.preventDefault(); });  // preserva a seleção
+    selBar.addEventListener('click', function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      if(b.dataset.sel==='hl') highlightSelection(); else copySelection(b);
+    });
+    return selBar;
+  }
+  function hideSelBar(){ if(selBar) selBar.hidden=true; }
+  function selInfo(){
+    var sel=window.getSelection();
+    if(!sel || sel.isCollapsed || !sel.rangeCount) return null;
+    var r=sel.getRangeAt(0), node=r.commonAncestorContainer;
+    var el=node.nodeType===1?node:node.parentNode;
+    var cont=el && el.closest ? el.closest('[data-ref]') : null;
+    if(!cont) return null;
+    var text=sel.toString().trim(); if(!text) return null;
+    return {sel:sel, range:r, cont:cont, text:text};
+  }
+  function showSelBar(){
+    var info=selInfo(); if(!info){ hideSelBar(); return; }
+    var bar=getSelBar(); bar.hidden=false;
+    try{
+      var rect=info.range.getBoundingClientRect();
+      var top=window.scrollY + rect.top - bar.offsetHeight - 8;
+      if(top < window.scrollY+4) top = window.scrollY + rect.bottom + 8;
+      var left=window.scrollX + rect.left + rect.width/2 - bar.offsetWidth/2;
+      bar.style.top=Math.max(4,top)+'px';
+      bar.style.left=Math.max(4,left)+'px';
+    }catch(e){}
+  }
+  function highlightSelection(){
+    var info=selInfo(); if(!info) return;
+    var cont=info.cont, ref=cont.getAttribute('data-ref'), range=info.range;
+    var all=load('whl'), recd=all[ref]||{};
+    cont.querySelectorAll('.w').forEach(function(w){
+      var hit=false;
+      try{ hit = range.intersectsNode ? range.intersectsNode(w) : info.sel.containsNode(w, true); }catch(e){ hit=false; }
+      if(hit){
+        var f=w.dataset.f, i=+w.dataset.i, arr=recd[f]||[];
+        if(!arr.some(function(o){return o.i===i;})) arr.push({i:i,t:w.textContent});
+        recd[f]=arr; w.classList.add('w-hl');
+      }
+    });
+    if(Object.keys(recd).length) all[ref]=recd;
+    save('whl', all);
+    window.getSelection().removeAllRanges();
+    hideSelBar();
+  }
+  function copySelection(btn){ var info=selInfo(); if(info) copyText(info.text, btn); }
+  function scheduleSelBar(){ clearTimeout(selT); selT=setTimeout(showSelBar, 10); }
+  document.addEventListener('mouseup', scheduleSelBar);
+  document.addEventListener('touchend', scheduleSelBar);
+  document.addEventListener('selectionchange', function(){
+    var s=window.getSelection(); if(!s || s.isCollapsed) hideSelBar();
+  });
+  document.addEventListener('mousedown', function(e){
+    if(selBar && !selBar.hidden && !(e.target.closest && e.target.closest('.sel-bar'))) hideSelBar();
+  });
+  window.addEventListener('scroll', hideSelBar, {passive:true});
   document.addEventListener('input', function(e){
     if(e.target.matches && e.target.matches('.note-box textarea')){
       var cont=e.target.closest('[data-ref]'), ref=cont.getAttribute('data-ref');
