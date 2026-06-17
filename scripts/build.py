@@ -115,6 +115,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(description)}">
+<meta name="robots" content="index, follow, noai, noimageai">
 <link rel="canonical" href="{esc(canonical)}">
 <meta name="theme-color" content="#1a1610">
 <meta property="og:type" content="website">
@@ -381,7 +382,26 @@ def build_books_index(order, struct):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_book_page(livro, chapters):
+def book_jump(prefix, order, current):
+    # seletor "Ir para livro" (Antigo/Novo Testamento) para pular entre livros sem voltar ao menu
+    at, nt = [], []
+    for b in order:
+        idx = BOOK_ORDER.index(b) if b in BOOK_ORDER else 999
+        (at if idx < 39 else nt).append(b)
+    def opts(books):
+        return "".join(
+            f'<option value="{prefix}ler/{book_slug(b)}/"{" selected" if b==current else ""}>{esc(b)}</option>'
+            for b in books)
+    return f"""
+  <div class="book-jump-wrap">
+    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
+    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
+      <optgroup label="Antigo Testamento">{opts(at)}</optgroup>
+      <optgroup label="Novo Testamento">{opts(nt)}</optgroup>
+    </select>
+  </div>"""
+
+def build_book_page(livro, chapters, order):
     prefix = "../../"
     title = f"{livro} — capítulos | {SITE_NAME}"
     desc = f"Leia {livro} capítulo por capítulo: texto no idioma original, transliteração e tradução Almeida 1911."
@@ -392,6 +412,7 @@ def build_book_page(livro, chapters):
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Livros</a> · {esc(livro)}</p>
   <header class="verse-head"><h1>{esc(livro)}</h1></header>
+  {book_jump(prefix, order, livro)}
   <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
   <div class="chips chapter-grid">{chips}
   </div>
@@ -400,7 +421,7 @@ def build_book_page(livro, chapters):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_chapter_page(livro, ch, verses, n_chapters):
+def build_chapter_page(livro, ch, verses, n_chapters, order):
     prefix = "../../../"
     bslug = book_slug(livro)
     title = f"{livro} {ch} — original, transliteração e tradução | {SITE_NAME}"
@@ -433,6 +454,7 @@ def build_chapter_page(livro, ch, verses, n_chapters):
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
   </header>
+  {book_jump(prefix, order, livro)}
   <div class="chapter">{rows}
   </div>
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
@@ -719,6 +741,11 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
     else if(rt==='theme') setTheme(!d.classList.contains('dark'));
   });
+  // seletor "Ir para livro": navega ao escolher outro livro
+  document.addEventListener('change',function(e){
+    var s=e.target.closest && e.target.closest('.book-jump');
+    if(s && s.value) location.href=s.value;
+  });
 
   // continuar lendo: guarda a última leitura (capítulo/versículo) e mostra na home
   var h1=document.querySelector('.verse-head h1');
@@ -754,6 +781,17 @@ def build_study_js():
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
   function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){}}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  // referência "Livro c:v" → slug e URL absoluta do versículo (BEC_BASE injetado no build)
+  function refToSlug(ref){
+    var m=(ref||'').match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '';
+    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+    return b+'-'+m[2]+'-'+m[3];
+  }
+  function refToUrl(ref){ var s=refToSlug(ref); return s? BEC_BASE+'/versiculos/'+s+'/' : BEC_BASE; }
+  function downloadBlob(name, blob){
+    var u=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=u; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u);
+  }
 
   // envolve cada palavra de um parágrafo em <span class="w"> para grifo por palavra
   function wrapWords(el, field){
@@ -823,6 +861,89 @@ def build_study_js():
     document.body.appendChild(d);
   }
 
+  // ---------- compartilhar cartão-imagem do versículo (+ link) ----------
+  function wrapCanvas(ctx, text, maxW){
+    var words=(text||'').split(/\s+/), lines=[], cur='';
+    words.forEach(function(w){
+      var t=cur?cur+' '+w:w;
+      if(ctx.measureText(t).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t;
+    });
+    if(cur) lines.push(cur);
+    return lines;
+  }
+  function makeVerseCard(ref, pt){
+    return new Promise(function(resolve, reject){
+      try{
+        var W=1080, H=1080, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+        var ctx=cv.getContext && cv.getContext('2d'); if(!ctx){ reject(); return; }
+        ctx.fillStyle='#f4eee2'; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#e7d6ab'; ctx.fillRect(0,0,W,14); ctx.fillRect(0,H-14,W,14);
+        ctx.textBaseline='top';
+        ctx.fillStyle='#8a6726'; ctx.font='600 54px Georgia, serif'; ctx.fillText(ref, 90, 110);
+        ctx.fillStyle='#16120c';
+        var size=66, maxW=W-180, lines=wrapCanvas(ctx, pt, maxW);
+        ctx.font=size+'px Georgia, serif'; lines=wrapCanvas(ctx, pt, maxW);
+        while(lines.length*size*1.35 > H-440 && size>30){ size-=4; ctx.font=size+'px Georgia, serif'; lines=wrapCanvas(ctx, pt, maxW); }
+        var y=250, lh=size*1.35;
+        lines.forEach(function(ln){ ctx.fillText(ln, 90, y); y+=lh; });
+        ctx.fillStyle='#6f6453'; ctx.font='500 36px Georgia, serif'; ctx.fillText('Bíblia em Contexto', 90, H-150);
+        ctx.fillStyle='#8a6726'; ctx.font='30px Georgia, serif'; ctx.fillText(BEC_BASE.replace(/^https?:\/\//,''), 90, H-100);
+        if(cv.toBlob) cv.toBlob(function(b){ b?resolve(b):reject(); }, 'image/png'); else reject();
+      }catch(e){ reject(); }
+    });
+  }
+  function shareVerse(cont, ref, btn){
+    var pt=cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
+    var url=refToUrl(ref), text=ref+(t?'\n'+t:'')+'\n'+url;
+    makeVerseCard(ref, t).then(function(blob){
+      var file; try{ file=new File([blob],'versiculo.png',{type:'image/png'}); }catch(e){ file=null; }
+      if(file && navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file], text:ref+'\n'+url, title:'Bíblia em Contexto'}).catch(function(){});
+      } else if(navigator.share){
+        navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){});
+      } else { copyText(text, btn); downloadBlob('versiculo.png', blob); }
+    }).catch(function(){
+      if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); }
+      else copyText(text, btn);
+    });
+  }
+
+  // ---------- modal de confirmação (evita apagar por toque acidental) ----------
+  function confirmModal(msg, onYes){
+    var ov=document.createElement('div'); ov.className='bec-modal';
+    ov.innerHTML='<div class="bec-modal-box"><p>'+esc(msg)+'</p>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-no>Cancelar</button>'+
+      '<button type="button" class="btn danger" data-yes>Apagar tudo</button></div></div>';
+    ov.addEventListener('click', function(e){
+      if(e.target===ov || (e.target.closest && e.target.closest('[data-no]'))) ov.remove();
+      else if(e.target.closest && e.target.closest('[data-yes]')){ ov.remove(); onYes(); }
+    });
+    document.body.appendChild(ov);
+  }
+
+  // ---------- seta de ferramentas ocultas (exportar tudo, anotações, apagar) ----------
+  function exportAll(){ return JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2); }
+  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); }
+  function makeToolsMenu(){
+    if(document.querySelector('.tools-fab')) return;
+    var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
+    fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='↥';
+    var panel=document.createElement('div'); panel.className='tools-panel'; panel.hidden=true;
+    panel.innerHTML='<button type="button" data-t="save">💾 Salvar tudo (.json)</button>'+
+      '<button type="button" data-t="share">🔗 Compartilhar tudo</button>'+
+      '<a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒 Minhas anotações</a>'+
+      '<button type="button" data-t="clear">🗑 Apagar tudo</button>';
+    fab.onclick=function(){ var open=panel.hidden; panel.hidden=!open; fab.setAttribute('aria-expanded', open?'true':'false'); fab.textContent=open?'✕':'↥'; };
+    panel.addEventListener('click', function(e){
+      var b=e.target.closest && e.target.closest('[data-t]'); if(!b) return;
+      var t=b.getAttribute('data-t');
+      if(t==='save') download('anotacoes-bec.json', exportAll(), 'application/json');
+      else if(t==='share'){ var n=load('notes'),v=load('vhl'),w=load('whl'); shareText(exportText(allRefs(n,v,w),n,v,w), b); }
+      else if(t==='clear') confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', clearAll);
+    });
+    document.body.appendChild(fab); document.body.appendChild(panel);
+  }
+
   function apply(cont, ref){
     if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
     var notes=load('notes');
@@ -869,7 +990,7 @@ def build_study_js():
       if(act==='vhl') toggleVerse(cont, ref, btn);
       else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
       else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
-      else if(act==='share') shareText(verseText(cont, ref), btn);
+      else if(act==='share') shareVerse(cont, ref, btn);
     }
   });
 
@@ -982,6 +1103,7 @@ def build_study_js():
   function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
   setupAll();
   makePenTools();
+  makeToolsMenu();
   // versículos carregados por rolagem infinita também recebem as ferramentas
   if(window.MutationObserver){
     new MutationObserver(function(muts){
@@ -1059,7 +1181,7 @@ def build_study_js():
       .catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
     if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
-    if(x) x.onclick=function(){ if(confirm('Apagar TODAS as marcações e anotações deste navegador?')){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); } };
+    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); }); };
     var sh=document.getElementById('anot-share');
     if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
       if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }
@@ -1078,7 +1200,8 @@ def build_study_js():
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 """
-    (SITE / "assets" / "study.js").write_text(js, encoding="utf-8")
+    (SITE / "assets" / "study.js").write_text(
+        f"var BEC_BASE={json.dumps(BASE_URL)};\n" + js, encoding="utf-8")
 
 def build_annotations_page():
     prefix = "../"
@@ -1116,7 +1239,13 @@ def build_meta(verses, articles, order, struct):
     (SITE / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+items+'</urlset>\n',
         encoding="utf-8")
-    (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n", encoding="utf-8")
+    # robots: libera buscadores normais; pede que crawlers de IA/scrapers não copiem (advisory)
+    ai_bots = ["GPTBot","ChatGPT-User","OAI-SearchBot","ClaudeBot","anthropic-ai","Claude-Web",
+               "CCBot","Google-Extended","Applebot-Extended","PerplexityBot","Bytespider","Amazonbot",
+               "Diffbot","Omgilibot","ImagesiftBot","cohere-ai","FacebookBot","Meta-ExternalAgent"]
+    ai_block = "".join(f"\nUser-agent: {b}\nDisallow: /\n" for b in ai_bots)
+    (SITE / "robots.txt").write_text(
+        f"User-agent: *\nAllow: /\n{ai_block}\nSitemap: {BASE_URL}/sitemap.xml\n", encoding="utf-8")
     (SITE / "manifest.webmanifest").write_text(json.dumps({
         "name":SITE_NAME,"short_name":"Bíblia em Contexto","lang":"pt-BR",
         "start_url":"./","display":"standalone","background_color":"#f4eee2","theme_color":"#1a1610",
@@ -1177,10 +1306,10 @@ def main():
     n_chapters = 0
     for livro in order:
         chapters = struct[livro]
-        build_book_page(livro, chapters)
+        build_book_page(livro, chapters, order)
         total_caps = max(chapters)
         for ch in sorted(chapters):
-            build_chapter_page(livro, ch, chapters[ch], total_caps)
+            build_chapter_page(livro, ch, chapters[ch], total_caps, order)
             n_chapters += 1
     build_meta(verses, articles, order, struct)
     build_404()
