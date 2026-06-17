@@ -105,8 +105,12 @@ h1,h2,h3{font-family:"Fraunces","Spectral",serif;font-weight:600;line-height:1.0
 }
 .btn.primary{background:var(--gold);color:#20170a}
 .btn.primary:hover{background:var(--gold-soft);color:#20170a}
-.btn.ghost{border-color:rgba(255,255,255,.28);color:#f6efe0;background:rgba(255,255,255,.05)}
-.btn.ghost:hover{background:rgba(255,255,255,.12);color:#fff}
+.btn.ghost{border-color:var(--line);color:var(--ink);background:var(--paper)}
+.btn.ghost:hover{background:var(--vellum-2);color:var(--ink)}
+/* o hero tem fundo escuro fixo (independe do tema): ali o ghost mantém texto claro
+   para não sumir; nas demais áreas (busca, modais, anotações) segue o tema da página */
+.hero .btn.ghost{border-color:rgba(255,255,255,.28);color:#f6efe0;background:rgba(255,255,255,.05)}
+.hero .btn.ghost:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* verse stack — o elemento-assinatura */
 .specimen-card{
