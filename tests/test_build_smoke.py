@@ -92,6 +92,39 @@ def test_gera_ferramentas_de_estudo(site):
     assert 'data-ref="Gênesis 1:1"' in vp
 
 
+def test_caneta_marca_texto_e_doacao(site):
+    # marca-texto por caneta (arrastar) + cores + cartão de doação por engajamento
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    for gancho in ("pen-toggle", "hl-mode", "pen-colors", "pointerdown",
+                   "pointercancel", "elementFromPoint", "DONATE_EVERY", "markCount"):
+        assert gancho in study, gancho
+    # a barra de seleção não tem mais o botão "Grifar" (agora é a caneta)
+    assert 'data-sel="hl"' not in study
+    # botão de compartilhar no verso
+    assert 'data-act="share"' in study
+
+
+def test_anotacoes_importar_e_compartilhar(site):
+    anot = (site / "anotacoes" / "index.html").read_text("utf-8")
+    assert 'id="anot-import"' in anot and 'id="anot-import-file"' in anot
+    assert 'id="anot-share"' in anot
+
+
+def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for gancho in ("font-inc", "font-dec", "bec.theme", "bec.fontscale",
+                   "lastRead", "random-verse", "random.json"):
+        assert gancho in app, gancho
+    # controles no nav e botões na home
+    home = (site / "index.html").read_text("utf-8")
+    assert 'data-rt="theme"' in home and 'id="random-verse"' in home and 'id="continue-read"' in home
+    # script anti-flash de tema/fonte no <head>
+    assert "bec.theme" in home and "classList.add('dark')" in home
+    # pool aleatório gerado
+    pool = json.loads((site / "data" / "random.json").read_text("utf-8"))
+    assert len(pool) >= 1 and all(isinstance(s, str) for s in pool)
+
+
 def test_home_nao_embute_indice_gigante(site):
     # o índice de busca saiu da página (não mais inline) e virou arquivo externo
     html = (site / "index.html").read_text("utf-8")

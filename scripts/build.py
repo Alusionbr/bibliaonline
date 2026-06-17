@@ -128,6 +128,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body>
+<script>(function(){{try{{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>"""
 
 def nav(prefix):
@@ -138,6 +139,11 @@ def nav(prefix):
       <span class="brand-mark">ב</span>
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
+    <div class="reader-tools">
+      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
+      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
+    </div>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
       <a href="{prefix}ler/">Bíblia</a>
@@ -531,6 +537,10 @@ def build_home(topics, verses, articles, sources, order, struct):
       <input id="q" type="search" placeholder="Buscar: Salmo 23, shalom, aramaico, logos…" autocomplete="off" aria-label="Buscar">
     </div>
     <div id="results" class="search-results"></div>
+    <a id="continue-read" class="continue-read" href="#" hidden></a>
+    <div class="quick-actions">
+      <button type="button" id="random-verse" class="btn ghost">🕊️ Um versículo para você</button>
+    </div>
   </section>
 
   <section id="versiculos">
@@ -695,6 +705,45 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   },{rootMargin:'700px 0px'});
   io2.observe(sentinel);
 })();
+
+// ferramentas de leitura: tamanho da fonte, modo noturno, continuar lendo, versículo para meditar
+(function(){
+  var d=document.documentElement;
+  function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
+  function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
+  function setTheme(dark){ d.classList.toggle('dark',dark); try{localStorage.setItem('bec.theme',dark?'dark':'light');}catch(e){} }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest && e.target.closest('[data-rt]'); if(!b) return;
+    var rt=b.getAttribute('data-rt');
+    if(rt==='font-inc') applyFont(Math.min(3,curFont()+1));
+    else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
+    else if(rt==='theme') setTheme(!d.classList.contains('dark'));
+  });
+
+  // continuar lendo: guarda a última leitura (capítulo/versículo) e mostra na home
+  var h1=document.querySelector('.verse-head h1');
+  var reading=document.querySelector('.ch-verse[data-ref], .verse-cont[data-ref]');
+  if(reading && h1){
+    try{ localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()})); }catch(e){}
+  }
+  var cont=document.getElementById('continue-read');
+  if(cont){
+    try{ var lr=JSON.parse(localStorage.getItem('bec.lastRead')||'null');
+      if(lr&&lr.url){ cont.href=lr.url; cont.textContent='▶ Continuar de onde parei: '+lr.label; cont.hidden=false; } }catch(e){}
+  }
+
+  // versículo para meditar (aleatório — sem dado/sorteio)
+  var rb=document.getElementById('random-verse');
+  if(rb){
+    rb.addEventListener('click',function(){
+      rb.disabled=true;
+      fetch('data/random.json').then(function(r){return r.json();}).then(function(list){
+        if(list && list.length){ var s=list[Math.floor(Math.random()*list.length)]; location.href='versiculos/'+s+'/'; }
+        else rb.disabled=false;
+      }).catch(function(){ rb.disabled=false; });
+    });
+  }
+})();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
 
@@ -726,10 +775,11 @@ def build_study_js():
     wrapWords(cont.querySelector('.orig'),'orig');
     var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
     var bar=document.createElement('div'); bar.className='study';
-    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">selecione o texto para grifar ou copiar</span>' : '';
+    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">use a caneta 🖍 para grifar; selecione para copiar</span>' : '';
     bar.innerHTML='<button type="button" data-act="vhl">🖍 Grifar versículo</button>'+
       '<button type="button" data-act="note">🗒 Anotar</button>'+
-      '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+hint;
+      '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+
+      '<button type="button" data-act="share">↗ Compartilhar</button>'+hint;
     anchor.appendChild(bar);
     var nb=document.createElement('div'); nb.className='note-box'; nb.hidden=true;
     nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>'+
@@ -750,6 +800,28 @@ def build_study_js():
     var note=load('notes')[ref];
     return ref + (t? '\n'+t : '') + (note? '\n\nAnotação: '+note : '');
   }
+  function shareText(str, btn){
+    if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:str}).catch(function(){}); }
+    else copyText(str, btn);
+  }
+  // contador de palavras grifadas → cartão de doação a cada N (protótipo, sem backend)
+  var DONATE_EVERY=500, DONATE_URL='https://www.buymeacoffee.com/';
+  function bumpMark(){
+    var n=(parseInt(localStorage.getItem('bec.markCount'),10)||0)+1;
+    try{ localStorage.setItem('bec.markCount', n); }catch(e){}
+    var milestone=Math.floor(n/DONATE_EVERY);
+    var shown=parseInt(localStorage.getItem('bec.donateMilestone'),10)||0;
+    if(milestone>shown) showDonate(milestone);
+  }
+  function showDonate(milestone){
+    try{ localStorage.setItem('bec.donateMilestone', milestone); }catch(e){}
+    if(document.querySelector('.donate')) return;
+    var d=document.createElement('div'); d.className='donate';
+    d.innerHTML='<button type="button" class="x" aria-label="Fechar">×</button>'+
+      '<a href="'+DONATE_URL+'" target="_blank" rel="noopener">☕ Gostou? Apoie este projeto</a>';
+    d.querySelector('.x').onclick=function(){ d.remove(); };
+    document.body.appendChild(d);
+  }
 
   function apply(cont, ref){
     if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
@@ -763,7 +835,7 @@ def build_study_js():
     Object.keys(rec).forEach(function(f){
       rec[f].forEach(function(o){
         var w=cont.querySelector('.w[data-f="'+f+'"][data-i="'+o.i+'"]');
-        if(w) w.classList.add('w-hl');
+        if(w){ w.classList.add('w-hl'); w.setAttribute('data-c', o.c||'y'); }
       });
     });
   }
@@ -773,11 +845,12 @@ def build_study_js():
     var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
     var all=load('whl'), recd=all[ref]||{}, arr=recd[f]||[];
     var pos=-1; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ pos=n; break; } }
-    if(pos>-1){ arr.splice(pos,1); w.classList.remove('w-hl'); }
-    else { arr.push({i:i,t:w.textContent}); w.classList.add('w-hl'); }
+    if(pos>-1){ arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c'); }
+    else { arr.push({i:i,t:w.textContent,c:'y'}); w.classList.add('w-hl'); w.setAttribute('data-c','y'); }
     if(arr.length) recd[f]=arr; else delete recd[f];
     if(Object.keys(recd).length) all[ref]=recd; else delete all[ref];
     save('whl', all);
+    bumpMark();
   }
 
   function toggleVerse(cont, ref, btn){
@@ -789,28 +862,77 @@ def build_study_js():
 
   document.addEventListener('click', function(e){
     var w=e.target.closest && e.target.closest('.w');
-    if(w && w.closest('[data-ref]')){ toggleWord(w); return; }
+    if(w && w.closest('[data-ref]')){ if(penOn) return; toggleWord(w); return; }
     var btn=e.target.closest && e.target.closest('.study button, .note-actions button');
     if(btn){
       var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
       if(act==='vhl') toggleVerse(cont, ref, btn);
       else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
       else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
+      else if(act==='share') shareText(verseText(cont, ref), btn);
     }
   });
+
+  // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
+  var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
+  var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
+  function setPen(on){
+    penOn=on; document.body.classList.toggle('hl-mode', on);
+    var b=document.querySelector('.pen-toggle');
+    if(b){ b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false'); }
+    save('penmode', {on:on});
+  }
+  function setColor(c){
+    penColor=c;
+    var sw=document.querySelectorAll('.pen-colors button');
+    for(var i=0;i<sw.length;i++){ sw[i].classList.toggle('on', sw[i].getAttribute('data-c')===c); }
+    save('pencolor', {c:c});
+  }
+  function wordAtPoint(x,y){ var el=document.elementFromPoint(x,y); return el && el.closest ? el.closest('.w') : null; }
+  function paintWord(w){
+    if(!w) return; var cont=w.closest('[data-ref]'); if(!cont) return;
+    var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
+    var recd=pendingWhl[ref]||(pendingWhl[ref]={}); var arr=recd[f]||(recd[f]=[]);
+    var found=null; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; break; } }
+    if(found){ if(found.c!==penColor){ found.c=penColor; w.setAttribute('data-c', penColor); } }
+    else { arr.push({i:i,t:w.textContent,c:penColor}); w.classList.add('w-hl'); w.setAttribute('data-c', penColor); bumpMark(); }
+  }
+  function startPaint(e){
+    if(!penOn) return;
+    var w=(e.target.closest && e.target.closest('.w')); if(!w || !w.closest('[data-ref]')) return;
+    e.preventDefault(); painting=true; activePointerId=e.pointerId; pendingWhl=load('whl'); paintWord(w);
+  }
+  function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); paintWord(wordAtPoint(e.clientX, e.clientY)); }
+  function endPaint(){ if(!painting) return; painting=false; activePointerId=null; save('whl', pendingWhl); }
+  document.addEventListener('pointerdown', startPaint);
+  document.addEventListener('pointermove', movePaint);
+  document.addEventListener('pointerup', endPaint);
+  document.addEventListener('pointercancel', endPaint);
+  function makePenTools(){
+    if(!document.querySelector('.verse-cont[data-ref], .ch-verse[data-ref]')) return;
+    if(document.querySelector('.pen-toggle')) return;
+    var btn=document.createElement('button'); btn.type='button'; btn.className='pen-toggle';
+    btn.setAttribute('aria-pressed','false'); btn.title='Marca-texto (caneta)'; btn.textContent='🖍';
+    btn.onclick=function(){ setPen(!penOn); };
+    document.body.appendChild(btn);
+    var pal=document.createElement('div'); pal.className='pen-colors';
+    pal.innerHTML=COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'"></button>'; }).join('');
+    pal.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) setColor(b.getAttribute('data-c')); });
+    document.body.appendChild(pal);
+    setColor((load('pencolor').c)||'y');
+    if(load('penmode').on) setPen(true);
+  }
 
   // ---------- marca-texto por seleção: barra flutuante (Grifar / Copiar) ----------
   var selBar=null, selT=null;
   function getSelBar(){
     if(selBar) return selBar;
     selBar=document.createElement('div'); selBar.className='sel-bar'; selBar.hidden=true;
-    selBar.innerHTML='<button type="button" data-sel="hl">🖍 Grifar</button>'+
-      '<button type="button" data-sel="copy">⧉ Copiar seleção</button>';
+    selBar.innerHTML='<button type="button" data-sel="copy">⧉ Copiar seleção</button>';
     document.body.appendChild(selBar);
     selBar.addEventListener('mousedown', function(e){ e.preventDefault(); });  // preserva a seleção
     selBar.addEventListener('click', function(e){
-      var b=e.target.closest('button'); if(!b) return;
-      if(b.dataset.sel==='hl') highlightSelection(); else copySelection(b);
+      var b=e.target.closest('button'); if(b) copySelection(b);
     });
     return selBar;
   }
@@ -837,24 +959,6 @@ def build_study_js():
       bar.style.left=Math.max(4,left)+'px';
     }catch(e){}
   }
-  function highlightSelection(){
-    var info=selInfo(); if(!info) return;
-    var cont=info.cont, ref=cont.getAttribute('data-ref'), range=info.range;
-    var all=load('whl'), recd=all[ref]||{};
-    cont.querySelectorAll('.w').forEach(function(w){
-      var hit=false;
-      try{ hit = range.intersectsNode ? range.intersectsNode(w) : info.sel.containsNode(w, true); }catch(e){ hit=false; }
-      if(hit){
-        var f=w.dataset.f, i=+w.dataset.i, arr=recd[f]||[];
-        if(!arr.some(function(o){return o.i===i;})) arr.push({i:i,t:w.textContent});
-        recd[f]=arr; w.classList.add('w-hl');
-      }
-    });
-    if(Object.keys(recd).length) all[ref]=recd;
-    save('whl', all);
-    window.getSelection().removeAllRanges();
-    hideSelBar();
-  }
   function copySelection(btn){ var info=selInfo(); if(info) copyText(info.text, btn); }
   function scheduleSelBar(){ clearTimeout(selT); selT=setTimeout(showSelBar, 10); }
   document.addEventListener('mouseup', scheduleSelBar);
@@ -877,6 +981,7 @@ def build_study_js():
 
   function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
   setupAll();
+  makePenTools();
   // versículos carregados por rolagem infinita também recebem as ferramentas
   if(window.MutationObserver){
     new MutationObserver(function(muts){
@@ -915,6 +1020,19 @@ def build_study_js():
     var a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a);
     a.click(); a.remove(); URL.revokeObjectURL(u);
   }
+  function importData(obj){
+    var n=load('notes'), v=load('vhl'), w=load('whl');
+    if(obj.notes) Object.keys(obj.notes).forEach(function(r){ n[r]=obj.notes[r]; });
+    if(obj.vhl) Object.keys(obj.vhl).forEach(function(r){ v[r]=obj.vhl[r]; });
+    if(obj.whl) Object.keys(obj.whl).forEach(function(r){
+      var rec=obj.whl[r]; w[r]=w[r]||{};
+      Object.keys(rec).forEach(function(f){
+        var ex=w[r][f]||[], have={}; ex.forEach(function(o){ have[o.i]=1; });
+        rec[f].forEach(function(o){ if(!have[o.i]) ex.push(o); }); w[r][f]=ex;
+      });
+    });
+    save('notes',n); save('vhl',v); save('whl',w);
+  }
   function render(){
     var box=document.getElementById('anotacoes'); if(!box) return;
     var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
@@ -942,6 +1060,20 @@ def build_study_js():
     if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
     if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
     if(x) x.onclick=function(){ if(confirm('Apagar TODAS as marcações e anotações deste navegador?')){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); } };
+    var sh=document.getElementById('anot-share');
+    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
+      if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }
+      else (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ sh.textContent='Copiado!'; setTimeout(function(){sh.textContent='Compartilhar';},1500); }).catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
+    var imp=document.getElementById('anot-import'), impf=document.getElementById('anot-import-file');
+    if(imp && impf){
+      imp.onclick=function(){ impf.click(); };
+      impf.onchange=function(){
+        var f=impf.files[0]; if(!f) return;
+        var rd=new FileReader();
+        rd.onload=function(){ try{ importData(JSON.parse(rd.result)); render(); imp.textContent='Importado!'; }catch(e){ imp.textContent='Arquivo inválido'; } setTimeout(function(){imp.textContent='Importar .json';},1800); };
+        rd.readAsText(f); impf.value='';
+      };
+    }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
@@ -960,8 +1092,11 @@ def build_annotations_page():
   <p class="read" style="color:var(--muted)">Suas marcações e notas ficam salvas <b>neste navegador</b> (offline, sem servidor). Use os botões para copiar ou baixar tudo para uso externo.</p>
   <div class="anot-actions">
     <button type="button" id="anot-copy" class="btn primary">Copiar tudo</button>
+    <button type="button" id="anot-share" class="btn ghost">Compartilhar</button>
     <button type="button" id="anot-txt" class="btn ghost">Baixar .txt</button>
     <button type="button" id="anot-json" class="btn ghost">Baixar .json</button>
+    <button type="button" id="anot-import" class="btn ghost">Importar .json</button>
+    <input type="file" id="anot-import-file" accept="application/json,.json" hidden>
     <button type="button" id="anot-clear" class="btn ghost">Limpar</button>
   </div>
   <div id="anotacoes" class="anot-list"></div>
@@ -1003,6 +1138,18 @@ def build_404():
     out.write_text(head("Página não encontrada | "+SITE_NAME, "Página não encontrada.", BASE_URL+"/404.html", prefix)
                    + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
+def build_random_pool(verses):
+    # pool de slugs para "Versículo para meditar" (aleatório no cliente).
+    # amostra distribuída (determinística) de versículos COM tradução PT, evitando
+    # trechos áridos e mantendo o arquivo leve. Carregado sob demanda na home.
+    slugs = [v["slug"] for v in verses if v.get("texto_pt","").strip()]
+    alvo = 1500
+    if len(slugs) > alvo:
+        passo = len(slugs) // alvo
+        slugs = slugs[::passo][:alvo]
+    (DATA / "random.json").write_text(json.dumps(slugs, ensure_ascii=False), encoding="utf-8")
+    return len(slugs)
+
 def main():
     topics=load("topics.json"); verses=load("verses.json")
     articles=load("articles.json"); sources=load("sources.json")
@@ -1018,6 +1165,7 @@ def main():
     build_study_js()
     build_annotations_page()
     n_idx = build_search_index(verses, articles, topics)
+    build_random_pool(verses)
     n = len(verses)
     for i, v in enumerate(verses):
         prev_v = verses[i-1] if i > 0 else None

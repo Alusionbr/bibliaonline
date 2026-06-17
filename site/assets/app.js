@@ -104,3 +104,42 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   },{rootMargin:'700px 0px'});
   io2.observe(sentinel);
 })();
+
+// ferramentas de leitura: tamanho da fonte, modo noturno, continuar lendo, versículo para meditar
+(function(){
+  var d=document.documentElement;
+  function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
+  function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
+  function setTheme(dark){ d.classList.toggle('dark',dark); try{localStorage.setItem('bec.theme',dark?'dark':'light');}catch(e){} }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest && e.target.closest('[data-rt]'); if(!b) return;
+    var rt=b.getAttribute('data-rt');
+    if(rt==='font-inc') applyFont(Math.min(3,curFont()+1));
+    else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
+    else if(rt==='theme') setTheme(!d.classList.contains('dark'));
+  });
+
+  // continuar lendo: guarda a última leitura (capítulo/versículo) e mostra na home
+  var h1=document.querySelector('.verse-head h1');
+  var reading=document.querySelector('.ch-verse[data-ref], .verse-cont[data-ref]');
+  if(reading && h1){
+    try{ localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()})); }catch(e){}
+  }
+  var cont=document.getElementById('continue-read');
+  if(cont){
+    try{ var lr=JSON.parse(localStorage.getItem('bec.lastRead')||'null');
+      if(lr&&lr.url){ cont.href=lr.url; cont.textContent='▶ Continuar de onde parei: '+lr.label; cont.hidden=false; } }catch(e){}
+  }
+
+  // versículo para meditar (aleatório — sem dado/sorteio)
+  var rb=document.getElementById('random-verse');
+  if(rb){
+    rb.addEventListener('click',function(){
+      rb.disabled=true;
+      fetch('data/random.json').then(function(r){return r.json();}).then(function(list){
+        if(list && list.length){ var s=list[Math.floor(Math.random()*list.length)]; location.href='versiculos/'+s+'/'; }
+        else rb.disabled=false;
+      }).catch(function(){ rb.disabled=false; });
+    });
+  }
+})();
