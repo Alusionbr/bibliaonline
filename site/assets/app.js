@@ -148,3 +148,27 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     });
   }
 })();
+
+// ordenar livros: bíblica / alfabética / cronológica (persistido em bec.bookorder)
+(function(){
+  var lists=document.querySelectorAll('[data-booklist]'); if(!lists.length) return;
+  function apply(mode){
+    lists.forEach(function(list){
+      var cards=[].slice.call(list.querySelectorAll('.book-card'));
+      cards.sort(function(a,b){
+        if(mode==='alpha') return (a.getAttribute('data-name')||'').localeCompare(b.getAttribute('data-name')||'');
+        if(mode==='chron') return (+a.getAttribute('data-chron'))-(+b.getAttribute('data-chron'));
+        return (+a.getAttribute('data-pos'))-(+b.getAttribute('data-pos'));
+      });
+      cards.forEach(function(c){ list.appendChild(c); });
+    });
+    document.querySelectorAll('.order-toggle .ot').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-sort')===mode); });
+  }
+  document.addEventListener('click', function(e){
+    var b=e.target.closest && e.target.closest('.order-toggle .ot'); if(!b) return;
+    var m=b.getAttribute('data-sort'); try{ localStorage.setItem('bec.bookorder', m); }catch(e){}
+    apply(m);
+  });
+  var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
+  if(saved!=='bib') apply(saved);
+})();

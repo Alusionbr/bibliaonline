@@ -441,3 +441,23 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 .bec-modal-actions{display:flex;gap:10px;justify-content:flex-end}
 .btn.danger{background:#b3261e;color:#fff;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:600}
 .btn.danger:hover{background:#8f1e17}
+
+/* ===== Lote 4: ordenação dos livros + linha do tempo ===== */
+.order-toggle{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:6px 0 16px;
+  font-family:"Inter",system-ui,sans-serif}
+.order-toggle .ot-lbl{font-size:.9rem;color:var(--muted)}
+.order-toggle .ot{font-family:inherit;font-size:.88rem;min-height:38px;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer}
+.order-toggle .ot.on{background:var(--gold);border-color:var(--gold-deep);color:#2a2206;font-weight:600}
+.order-toggle .ot-link{font-size:.88rem;margin-left:auto;color:var(--gold-deep);text-decoration:none;white-space:nowrap}
+html.dark .order-toggle .ot.on{color:#1a1610}
+
+/* linha do tempo (eras) */
+.era{margin:0 0 30px;border-left:3px solid var(--gold-soft);padding-left:18px}
+.era-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px}
+.era-head h2{font-size:1.35rem}
+.era-period{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;color:var(--gold-deep);
+  background:var(--vellum-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.era-desc{color:var(--muted);margin:.4rem 0 .9rem}
+.era-gap-note{color:var(--muted);font-style:italic;margin:.2rem 0 .4rem}
+.era .book-card{padding:12px 14px}

@@ -209,3 +209,29 @@ def test_painel_ferramentas_minimiza():
     from pathlib import Path
     css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
     assert ".tools-panel[hidden]" in css
+
+
+def test_lote4_ordenacao_dos_livros(site):
+    # toggle de ordenação + atributos de ordenação nos cartões, no /ler/ e na home
+    for page in (site / "ler" / "index.html", site / "index.html"):
+        html = page.read_text("utf-8")
+        assert 'data-sort="alpha"' in html and 'data-sort="chron"' in html
+        assert "data-booklist" in html
+        assert "data-chron=" in html and "data-pos=" in html and "data-name=" in html
+    # wiring + persistência no app.js
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.bookorder" in app and "data-booklist" in app
+
+
+def test_lote4_linha_do_tempo(site):
+    tl = (site / "linha-do-tempo" / "index.html")
+    assert tl.exists()
+    html = tl.read_text("utf-8")
+    # eras (rendizadas mesmo quando vazias no dataset de teste) + aviso de datas
+    assert "Monarquia Unida" in html and "Igreja primitiva" in html
+    assert "Datas aproximadas" in html or "datas aproximadas" in html
+    # leva às páginas de livro presentes
+    assert "ler/genesis/" in html
+    # link na navegação e no sitemap
+    assert "Linha do tempo" in html
+    assert "/linha-do-tempo/" in (site / "sitemap.xml").read_text("utf-8")
