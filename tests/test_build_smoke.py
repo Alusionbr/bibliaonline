@@ -223,8 +223,8 @@ def test_lote4_ordenacao_dos_livros(site):
     assert "bec.bookorder" in app and "data-booklist" in app
 
 
-def test_lote5_epoca_e_contexto_cobrem_66_livros():
-    import scripts.build as b
+def test_lote5_epoca_e_contexto_cobrem_66_livros(build):
+    b = build
     faltam_era = [x for x in b.BOOK_ORDER if x not in b.BOOK_ERA]
     faltam_ctx = [x for x in b.BOOK_ORDER if x not in b.BOOK_CONTEXT]
     assert not faltam_era, faltam_era
