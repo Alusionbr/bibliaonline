@@ -352,3 +352,58 @@ section{padding:52px 0}
 .anot-list .anot h3{margin:0 0 6px}
 .anot-tag{color:var(--muted);font-size:.85rem;margin:2px 0}
 .anot-note{white-space:pre-wrap;margin:6px 0 0}
+
+/* ===== ferramentas de leitura/estudo v5: caneta, cores, tema, fonte, doação ===== */
+/* caneta marca-texto: arrastar pinta (modo liga/desliga) */
+.pen-toggle{position:fixed;right:16px;bottom:16px;z-index:60;width:54px;height:54px;border-radius:50%;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);font-size:1.4rem;cursor:pointer;
+  box-shadow:var(--shadow);display:grid;place-items:center}
+.pen-toggle.on,.pen-toggle[aria-pressed="true"]{background:#ffe14d;border-color:#e3b62e;color:#2a2206}
+.pen-colors{position:fixed;right:18px;bottom:80px;z-index:60;display:none;flex-direction:column;gap:10px}
+body.hl-mode .pen-colors{display:flex}
+.pen-colors button{width:36px;height:36px;border-radius:50%;border:2px solid #fff;cursor:pointer;
+  box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.pen-colors button.on{outline:3px solid var(--ink);outline-offset:2px}
+.pen-colors button[data-c="y"]{background:#ffe14d}
+.pen-colors button[data-c="g"]{background:#a8e06a}
+.pen-colors button[data-c="b"]{background:#8ecbff}
+.pen-colors button[data-c="p"]{background:#ffb3d1}
+/* no modo caneta, sobre o texto: não seleciona/rola, pinta */
+body.hl-mode .pt,body.hl-mode .orig{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  touch-action:none;cursor:crosshair}
+/* marca por cor (faixa estilo caneta) */
+.w-hl,.w-hl[data-c="y"]{background-image:linear-gradient(transparent 6%, #ffe14d 6%, #ffe14d 92%, transparent 92%);color:#2a2206}
+.w-hl[data-c="g"]{background-image:linear-gradient(transparent 6%, #a8e06a 6%, #a8e06a 92%, transparent 92%)}
+.w-hl[data-c="b"]{background-image:linear-gradient(transparent 6%, #8ecbff 6%, #8ecbff 92%, transparent 92%)}
+.w-hl[data-c="p"]{background-image:linear-gradient(transparent 6%, #ffb3d1 6%, #ffb3d1 92%, transparent 92%)}
+
+/* cartão de doação (protótipo) */
+.donate{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:8px;
+  background:var(--dark-2);color:var(--gold-soft);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);
+  max-width:78vw}
+.donate a{color:var(--gold-soft);font-family:"Inter",system-ui,sans-serif;font-size:.9rem;text-decoration:none}
+.donate .x{background:transparent;border:0;color:var(--gold-soft);font-size:1.2rem;cursor:pointer;line-height:1;padding:0 2px}
+
+/* controles de leitura no nav */
+.reader-tools{display:inline-flex;gap:4px;margin-left:auto;margin-right:8px}
+.reader-tools .rt{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;min-width:38px;min-height:38px;
+  border:1px solid var(--line);background:transparent;color:var(--ink-soft);border-radius:10px;cursor:pointer}
+.reader-tools .rt:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
+
+/* continuar lendo + ações rápidas na home */
+.continue-read{display:inline-block;margin:10px 0 0;font-family:"Inter",system-ui,sans-serif;font-size:.9rem;
+  background:var(--vellum-2);border:1px solid var(--line);border-radius:999px;padding:8px 14px;text-decoration:none;color:var(--ink-soft)}
+.quick-actions{margin-top:12px}
+
+/* tamanho da fonte (escala global de leitura) */
+html.fs-0 body{font-size:16px}
+html.fs-2 body{font-size:20.5px}
+html.fs-3 body{font-size:23px}
+
+/* modo noturno */
+html.dark{--ink:#ece3d2;--ink-soft:#d3c7b1;--muted:#9b8e76;--vellum:#14110b;--vellum-2:#1b1610;
+  --paper:#221c14;--line:rgba(231,214,171,.16);--gold-deep:#d9b878;--gold-soft:#e7d6ab}
+html.dark body{background:var(--vellum);color:var(--ink)}
+html.dark a:hover{color:var(--gold-soft)}
+html.dark .pen-toggle{background:var(--paper);color:var(--gold-soft)}
+html.dark .w-hl{color:#2a2206}
