@@ -223,6 +223,29 @@ def test_lote4_ordenacao_dos_livros(site):
     assert "bec.bookorder" in app and "data-booklist" in app
 
 
+def test_lote5_epoca_e_contexto_cobrem_66_livros():
+    import scripts.build as b
+    faltam_era = [x for x in b.BOOK_ORDER if x not in b.BOOK_ERA]
+    faltam_ctx = [x for x in b.BOOK_ORDER if x not in b.BOOK_CONTEXT]
+    assert not faltam_era, faltam_era
+    assert not faltam_ctx, faltam_ctx
+    assert len(b.BOOK_ORDER) == 66
+
+
+def test_lote5_selo_de_epoca_e_contexto(site):
+    # versículo: selo de época + bloco de contexto histórico (com personagens) + link p/ timeline
+    vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "Acontece em" in vp and "linha-do-tempo/" in vp
+    assert "Contexto histórico de Gênesis" in vp
+    assert "Personagens:" in vp and "Quem fala/escreve:" in vp
+    # capítulo: também tem o selo e o contexto
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "Acontece em" in cap and "Contexto histórico de Gênesis" in cap
+    # NT também
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "Contexto histórico de João" in joao
+
+
 def test_lote4_linha_do_tempo(site):
     tl = (site / "linha-do-tempo" / "index.html")
     assert tl.exists()

@@ -461,3 +461,18 @@ html.dark .order-toggle .ot.on{color:#1a1610}
 .era-desc{color:var(--muted);margin:.4rem 0 .9rem}
 .era-gap-note{color:var(--muted);font-style:italic;margin:.2rem 0 .4rem}
 .era .book-card{padding:12px 14px}
+
+/* ===== Lote 5: selo de época + contexto histórico por livro ===== */
+.era-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.82rem;color:var(--gold-deep);background:var(--vellum-2);border:1px solid var(--line);
+  border-radius:999px;padding:4px 11px;text-decoration:none}
+.era-badge:hover{border-color:var(--gold-deep);color:var(--ink)}
+.hist-context{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--vellum-2);
+  overflow:hidden}
+.hist-context>summary{cursor:pointer;padding:12px 16px;font-family:"Inter",system-ui,sans-serif;font-weight:600;
+  color:var(--ink-soft);list-style:none}
+.hist-context>summary::-webkit-details-marker{display:none}
+.hist-context[open]>summary{border-bottom:1px solid var(--line)}
+.hist-context .hc-body{padding:12px 16px;font-family:"Spectral",Georgia,serif}
+.hist-context .hc-body p{margin:.3rem 0}
+.hist-context .hc-note{margin-top:.7rem;font-size:.8rem;color:var(--muted);font-style:italic}

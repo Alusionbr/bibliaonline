@@ -105,9 +105,11 @@ TIMELINE = [
  {"nome":"Visão final","periodo":"~95 d.C.","descricao":"A revelação do fim e da nova criação.","livros":["Apocalipse"]},
 ]
 CHRON_INDEX = {}
+BOOK_ERA = {}
 for _era in TIMELINE:
     for _b in _era["livros"]:
         CHRON_INDEX[_b] = len(CHRON_INDEX)
+        BOOK_ERA[_b] = {"nome": _era["nome"], "periodo": _era["periodo"]}
 
 def book_data_attrs(livro):
     # atributos para reordenar os cartões no cliente (bíblica/alfabética/cronológica)
@@ -125,6 +127,102 @@ def order_toggle(prefix):
     <button type="button" class="ot" data-sort="chron">Cronológica</button>
     <a class="ot-link" href="{prefix}linha-do-tempo/">linha do tempo →</a>
   </div>"""
+
+# Contexto histórico curado POR LIVRO (didático, não-dogmático; autoria "tradicional" quando há debate).
+# NÃO altera o texto bíblico — é uma camada de explicação. Época vem de BOOK_ERA.
+BOOK_CONTEXT = {
+ "Gênesis":{"personagens":"Adão, Noé, Abraão, Isaque, Jacó e José","voz":"Tradicionalmente atribuído a Moisés","sobre":"As origens do mundo e dos patriarcas de Israel."},
+ "Êxodo":{"personagens":"Moisés, Arão, Faraó","voz":"Trad. atribuído a Moisés","sobre":"A libertação do Egito e a aliança no Sinai."},
+ "Levítico":{"personagens":"Moisés, Arão e os sacerdotes","voz":"Trad. atribuído a Moisés","sobre":"Leis de culto, sacrifícios e santidade."},
+ "Números":{"personagens":"Moisés, Arão, Josué, Calebe","voz":"Trad. atribuído a Moisés","sobre":"A peregrinação de Israel pelo deserto."},
+ "Deuteronômio":{"personagens":"Moisés","voz":"Trad. atribuído a Moisés","sobre":"Os últimos discursos de Moisés e a renovação da aliança."},
+ "Josué":{"personagens":"Josué, Raabe","voz":"Trad. atribuído a Josué","sobre":"A conquista e a divisão da Terra Prometida."},
+ "Juízes":{"personagens":"Débora, Gideão, Sansão","voz":"Trad. atribuído a Samuel","sobre":"Os líderes que Deus levantou antes dos reis."},
+ "Rute":{"personagens":"Rute, Noemi, Boaz","voz":"Autor desconhecido (trad. Samuel)","sobre":"Lealdade e redenção no tempo dos juízes."},
+ "1 Samuel":{"personagens":"Samuel, Saul, Davi","voz":"Trad. Samuel e profetas","sobre":"A transição dos juízes para a monarquia."},
+ "2 Samuel":{"personagens":"Davi","voz":"Trad. profetas","sobre":"O reinado de Davi sobre Israel."},
+ "1 Reis":{"personagens":"Salomão, Elias","voz":"Trad. profetas/Jeremias","sobre":"Salomão, o Templo e a divisão do reino."},
+ "2 Reis":{"personagens":"Eliseu, reis de Israel e Judá","voz":"Trad. profetas/Jeremias","sobre":"A queda de Israel e de Judá no exílio."},
+ "1 Crônicas":{"personagens":"Davi","voz":"Trad. atribuído a Esdras","sobre":"A história de Israel com foco em Davi e no culto."},
+ "2 Crônicas":{"personagens":"Salomão, reis de Judá","voz":"Trad. Esdras","sobre":"De Salomão ao exílio, com foco no Templo."},
+ "Esdras":{"personagens":"Esdras, Zorobabel","voz":"Trad. Esdras","sobre":"O retorno do exílio e a reconstrução do Templo."},
+ "Neemias":{"personagens":"Neemias","voz":"Trad. Neemias/Esdras","sobre":"A reconstrução dos muros de Jerusalém."},
+ "Ester":{"personagens":"Ester, Mardoqueu, Assuero","voz":"Autor desconhecido","sobre":"A salvação dos judeus na Pérsia."},
+ "Jó":{"personagens":"Jó e seus amigos","voz":"Autor desconhecido","sobre":"O sofrimento do justo e a soberania de Deus."},
+ "Salmos":{"personagens":"Davi, Asafe, filhos de Corá","voz":"Davi e outros salmistas","sobre":"Orações e cânticos a Deus."},
+ "Provérbios":{"personagens":"Salomão","voz":"Trad. Salomão e sábios","sobre":"Sabedoria prática para a vida."},
+ "Eclesiastes":{"personagens":"o Pregador (Qohélet)","voz":"Trad. Salomão","sobre":"A busca de sentido 'debaixo do sol'."},
+ "Cânticos":{"personagens":"o amado e a amada","voz":"Trad. Salomão","sobre":"Um poema de amor."},
+ "Isaías":{"personagens":"Isaías, reis de Judá","voz":"Profeta Isaías","sobre":"Juízo e esperança; promessas do Messias."},
+ "Jeremias":{"personagens":"Jeremias, Baruque","voz":"Profeta Jeremias","sobre":"Advertências antes da queda de Jerusalém."},
+ "Lamentações":{"personagens":"Jeremias","voz":"Trad. Jeremias","sobre":"Lamentos pela destruição de Jerusalém."},
+ "Ezequiel":{"personagens":"Ezequiel","voz":"Profeta Ezequiel","sobre":"Visões e profecias no exílio babilônico."},
+ "Daniel":{"personagens":"Daniel, Nabucodonosor","voz":"Trad. Daniel","sobre":"Fidelidade e visões no exílio."},
+ "Oseias":{"personagens":"Oseias, Gômer","voz":"Profeta Oseias","sobre":"O amor fiel de Deus apesar da infidelidade."},
+ "Joel":{"personagens":"Joel","voz":"Profeta Joel","sobre":"O 'Dia do Senhor' e a promessa do Espírito."},
+ "Amós":{"personagens":"Amós","voz":"Profeta Amós (pastor)","sobre":"Justiça social e juízo sobre as nações."},
+ "Obadias":{"personagens":"Obadias; Edom","voz":"Profeta Obadias","sobre":"Juízo sobre Edom."},
+ "Jonas":{"personagens":"Jonas","voz":"Trad. Jonas","sobre":"O profeta enviado a Nínive e a misericórdia de Deus."},
+ "Miquéias":{"personagens":"Miquéias","voz":"Profeta Miquéias","sobre":"Juízo e a promessa de Belém."},
+ "Naum":{"personagens":"Naum; Nínive","voz":"Profeta Naum","sobre":"A queda de Nínive."},
+ "Habacuque":{"personagens":"Habacuque","voz":"Profeta Habacuque","sobre":"Perguntas a Deus e a vida pela fé."},
+ "Sofonias":{"personagens":"Sofonias","voz":"Profeta Sofonias","sobre":"O Dia do Senhor e a restauração."},
+ "Ageu":{"personagens":"Ageu, Zorobabel","voz":"Profeta Ageu","sobre":"Incentivo a reconstruir o Templo."},
+ "Zacarias":{"personagens":"Zacarias, Josué (sumo sacerdote)","voz":"Profeta Zacarias","sobre":"Visões e esperança messiânica pós-exílio."},
+ "Malaquias":{"personagens":"Malaquias","voz":"Profeta Malaquias","sobre":"O último chamado do AT à fidelidade."},
+ "Mateus":{"personagens":"Jesus e os apóstolos","voz":"Trad. apóstolo Mateus","sobre":"Jesus como o Messias prometido aos judeus."},
+ "Marcos":{"personagens":"Jesus e os apóstolos","voz":"Trad. João Marcos (de Pedro)","sobre":"Jesus, o Servo que age."},
+ "Lucas":{"personagens":"Jesus, Maria, os apóstolos","voz":"Trad. Lucas, o médico","sobre":"Um relato cuidadoso da vida de Jesus."},
+ "João":{"personagens":"Jesus e os discípulos","voz":"Trad. apóstolo João","sobre":"Jesus, o Verbo, o Filho de Deus."},
+ "Atos":{"personagens":"Pedro, Paulo e os apóstolos","voz":"Trad. Lucas","sobre":"O nascimento e a expansão da Igreja."},
+ "Romanos":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"O evangelho da graça explicado."},
+ "1 Coríntios":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Correções e orientações à igreja de Corinto."},
+ "2 Coríntios":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Defesa do ministério e reconciliação."},
+ "Gálatas":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"A liberdade em Cristo, não na lei."},
+ "Efésios":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"A Igreja como corpo de Cristo."},
+ "Filipenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Alegria e gratidão mesmo na prisão."},
+ "Colossenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"A supremacia de Cristo."},
+ "1 Tessalonicenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Esperança e a volta de Cristo."},
+ "2 Tessalonicenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Esclarecimentos sobre o Dia do Senhor."},
+ "1 Timóteo":{"personagens":"Paulo, Timóteo","voz":"Apóstolo Paulo","sobre":"Orientações ao jovem líder e à igreja."},
+ "2 Timóteo":{"personagens":"Paulo, Timóteo","voz":"Apóstolo Paulo","sobre":"As últimas palavras de Paulo."},
+ "Tito":{"personagens":"Paulo, Tito","voz":"Apóstolo Paulo","sobre":"Organização da igreja em Creta."},
+ "Filemom":{"personagens":"Paulo, Filemom, Onésimo","voz":"Apóstolo Paulo","sobre":"Um apelo por perdão e reconciliação."},
+ "Hebreus":{"personagens":"—","voz":"Autor desconhecido","sobre":"Cristo, superior, como sumo sacerdote."},
+ "Tiago":{"personagens":"Tiago","voz":"Trad. Tiago, irmão de Jesus","sobre":"Uma fé que se mostra em obras."},
+ "1 Pedro":{"personagens":"Pedro","voz":"Apóstolo Pedro","sobre":"Esperança em meio ao sofrimento."},
+ "2 Pedro":{"personagens":"Pedro","voz":"Apóstolo Pedro","sobre":"Alerta contra falsos mestres."},
+ "1 João":{"personagens":"João","voz":"Trad. apóstolo João","sobre":"Amor, verdade e segurança da fé."},
+ "2 João":{"personagens":"João; a 'senhora eleita'","voz":"Trad. apóstolo João","sobre":"Andar na verdade e no amor."},
+ "3 João":{"personagens":"João, Gaio, Diótrefes","voz":"Trad. apóstolo João","sobre":"Hospitalidade e fidelidade."},
+ "Judas":{"personagens":"Judas","voz":"Trad. Judas, irmão de Tiago","sobre":"Alerta contra a falsa doutrina."},
+ "Apocalipse":{"personagens":"João; Jesus","voz":"Trad. apóstolo João","sobre":"Visões do fim e da nova criação."},
+}
+
+def era_badge(prefix, livro):
+    e = BOOK_ERA.get(livro)
+    if not e:
+        return ""
+    return (f'<a class="era-badge" href="{prefix}linha-do-tempo/" title="Ver linha do tempo">'
+            f'🕰️ Acontece em: {esc(e["nome"])} · {esc(e["periodo"])}</a>')
+
+def hist_context(prefix, livro):
+    c = BOOK_CONTEXT.get(livro)
+    if not c:
+        return ""
+    e = BOOK_ERA.get(livro)
+    epoca = f'{esc(e["nome"])} · {esc(e["periodo"])}' if e else "—"
+    return f"""
+  <details class="hist-context">
+    <summary>📜 Contexto histórico de {esc(livro)}</summary>
+    <div class="hc-body">
+      <p><b>Época:</b> {epoca} · <a href="{prefix}linha-do-tempo/">ver linha do tempo</a></p>
+      <p><b>Personagens:</b> {esc(c["personagens"])}</p>
+      <p><b>Quem fala/escreve:</b> {esc(c["voz"])}</p>
+      <p><b>Sobre:</b> {esc(c["sobre"])}</p>
+      <p class="hc-note">Contexto aproximado; época e autoria tradicional podem variar entre estudiosos.</p>
+    </div>
+  </details>"""
 
 def book_slug(livro):
     base = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
@@ -343,6 +441,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <header class="verse-head">
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
     <h1>{esc(v['referencia'])}</h1>
+    {era_badge(prefix, v['livro'])}
   </header>
 
   <div class="verse-hero reveal">
@@ -353,6 +452,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </div>
 
   {specimen_block(v)}
+  {hist_context(prefix, v['livro'])}
   {blocks}
   {kw_html}
   {rel}
@@ -528,8 +628,10 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   <header class="verse-head">
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
+    {era_badge(prefix, livro)}
   </header>
   {book_jump(prefix, order, livro)}
+  {hist_context(prefix, livro)}
   <div class="chapter">{rows}
   </div>
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
