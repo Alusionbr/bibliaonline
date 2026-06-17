@@ -338,6 +338,13 @@ section{padding:52px 0}
 .note-box textarea{width:100%;min-height:80px;resize:vertical;font:inherit;font-size:1rem;
   padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--vellum-2);color:var(--ink)}
 .note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+/* barra flutuante ao selecionar texto (marca-texto) */
+.sel-bar{position:absolute;z-index:50;display:flex;gap:4px;padding:5px;
+  background:#241e16;border-radius:999px;box-shadow:0 6px 22px rgba(0,0,0,.35)}
+.sel-bar button{font-family:"Inter",system-ui,sans-serif;font-size:.82rem;cursor:pointer;
+  background:transparent;border:0;color:#f0e4c4;border-radius:999px;padding:8px 14px;min-height:40px;white-space:nowrap}
+.sel-bar button:hover{background:rgba(255,255,255,.12)}
+.sel-bar button:active{background:#ffe14d;color:#2a2206}
 .has-note .ch-num{position:relative}
 .has-note .ch-num::after{content:"🗒";font-size:.7em;position:absolute;right:-2px;top:-8px}
 .anot-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 22px}
