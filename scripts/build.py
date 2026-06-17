@@ -9,7 +9,7 @@ Uso:
     python scripts/build.py
 Opcional: defina o domínio final em BASE_URL antes de publicar.
 """
-import json, html, re, shutil, unicodedata
+import json, html, re, shutil, unicodedata, hashlib
 from collections import defaultdict
 from pathlib import Path
 
@@ -19,6 +19,18 @@ DATA = SITE / "data"
 
 BASE_URL = "https://alusionbr.github.io/bibliaonline"  # domínio do GitHub Pages
 SITE_NAME = "Bíblia em Contexto"
+
+def asset_ver():
+    # versão dos assets (cache-busting): muda quando o build (que gera o JS) ou
+    # o CSS mudam, forçando o navegador a baixar styles.css/app.js/study.js novos.
+    h = hashlib.sha1()
+    h.update(Path(__file__).read_bytes())
+    css = SITE / "assets" / "styles.css"
+    if css.exists():
+        h.update(css.read_bytes())
+    return h.hexdigest()[:8]
+
+ASSET_VER = asset_ver()
 
 def load(name):
     return json.loads((DATA / name).read_text(encoding="utf-8"))
@@ -113,7 +125,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{prefix}assets/styles.css">{ld}
+<link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body>
 <a class="skip" href="#main">Pular para o conteúdo</a>"""
@@ -158,8 +170,8 @@ def footer(prefix):
     </div>
   </div>
 </footer>
-<script src="{prefix}assets/app.js"></script>
-<script src="{prefix}assets/study.js" defer></script>
+<script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
+<script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
 # ---------- componentes ----------
