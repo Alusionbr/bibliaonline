@@ -921,24 +921,24 @@ def build_study_js():
     document.body.appendChild(ov);
   }
 
-  // ---------- seta de ferramentas ocultas (exportar tudo, anotações, apagar) ----------
-  function exportAll(){ return JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2); }
+  // ---------- seta de ferramentas ocultas (salvar/compartilhar, anotações, apagar) ----------
   function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); }
+  function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return exportText(allRefs(n,v,w),n,v,w); }
   function makeToolsMenu(){
     if(document.querySelector('.tools-fab')) return;
     var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
     fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='↥';
     var panel=document.createElement('div'); panel.className='tools-panel'; panel.hidden=true;
-    panel.innerHTML='<button type="button" data-t="save">💾 Salvar tudo (.json)</button>'+
-      '<button type="button" data-t="share">🔗 Compartilhar tudo</button>'+
+    panel.innerHTML='<button type="button" data-t="share">📝 Salvar nas Notas / Compartilhar</button>'+
+      '<button type="button" data-t="txt">📄 Baixar .txt</button>'+
       '<a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒 Minhas anotações</a>'+
       '<button type="button" data-t="clear">🗑 Apagar tudo</button>';
     fab.onclick=function(){ var open=panel.hidden; panel.hidden=!open; fab.setAttribute('aria-expanded', open?'true':'false'); fab.textContent=open?'✕':'↥'; };
     panel.addEventListener('click', function(e){
       var b=e.target.closest && e.target.closest('[data-t]'); if(!b) return;
       var t=b.getAttribute('data-t');
-      if(t==='save') download('anotacoes-bec.json', exportAll(), 'application/json');
-      else if(t==='share'){ var n=load('notes'),v=load('vhl'),w=load('whl'); shareText(exportText(allRefs(n,v,w),n,v,w), b); }
+      if(t==='share') shareText(studyText(), b);                       // iOS: folha de compartilhamento → Notas
+      else if(t==='txt') download('meu-estudo.txt', studyText(), 'text/plain');
       else if(t==='clear') confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', clearAll);
     });
     document.body.appendChild(fab); document.body.appendChild(panel);
@@ -1192,7 +1192,7 @@ def build_study_js():
       impf.onchange=function(){
         var f=impf.files[0]; if(!f) return;
         var rd=new FileReader();
-        rd.onload=function(){ try{ importData(JSON.parse(rd.result)); render(); imp.textContent='Importado!'; }catch(e){ imp.textContent='Arquivo inválido'; } setTimeout(function(){imp.textContent='Importar .json';},1800); };
+        rd.onload=function(){ try{ importData(JSON.parse(rd.result)); render(); imp.textContent='Importado!'; }catch(e){ imp.textContent='Arquivo inválido'; } setTimeout(function(){imp.textContent='Importar backup';},1800); };
         rd.readAsText(f); impf.value='';
       };
     }
@@ -1217,8 +1217,8 @@ def build_annotations_page():
     <button type="button" id="anot-copy" class="btn primary">Copiar tudo</button>
     <button type="button" id="anot-share" class="btn ghost">Compartilhar</button>
     <button type="button" id="anot-txt" class="btn ghost">Baixar .txt</button>
-    <button type="button" id="anot-json" class="btn ghost">Baixar .json</button>
-    <button type="button" id="anot-import" class="btn ghost">Importar .json</button>
+    <button type="button" id="anot-json" class="btn ghost">Backup .json (outro aparelho)</button>
+    <button type="button" id="anot-import" class="btn ghost">Importar backup</button>
     <input type="file" id="anot-import-file" accept="application/json,.json" hidden>
     <button type="button" id="anot-clear" class="btn ghost">Limpar</button>
   </div>
