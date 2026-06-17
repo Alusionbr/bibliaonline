@@ -6,6 +6,7 @@ e verifica que as páginas, o sitemap e o índice de busca saem como esperado.
 Pega regressões de integração que os testes unitários não enxergam.
 """
 import json
+from pathlib import Path
 
 import pytest
 
@@ -258,3 +259,31 @@ def test_lote4_linha_do_tempo(site):
     # link na navegação e no sitemap
     assert "Linha do tempo" in html
     assert "/linha-do-tempo/" in (site / "sitemap.xml").read_text("utf-8")
+
+
+def test_lote6_indice_az(site):
+    # índice A–Z na home e no /ler/, com letra ativa, chip de numerados e letra sem livro desabilitada
+    for page in (site / "index.html", site / "ler" / "index.html"):
+        html = page.read_text("utf-8")
+        assert 'class="az-index"' in html
+        assert 'data-az="a"' in html and 'data-az="#"' in html
+        assert "az az-off" in html and "disabled" in html  # letras sem livro (b, k, q, …)
+    # comportamento no app.js: liga alfabética, rola e destaca
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert ".az-index .az[data-az]" in app and "scrollIntoView" in app and "flash" in app
+    # CSS do índice e do realce (styles.css é fonte, lido do repo)
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".az-index" in css and ".book-card.flash" in css
+
+
+def test_lote6_caixa_anotacoes_e_botao_versiculo(site):
+    # caixa que abre por cima reaproveitando render(); intercepta links de anotações
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "openNotesDrawer" in study and "anot-drawer" in study
+    assert 'a[href$="anotacoes/"]' in study
+    assert "refToUrl(ref)" in study  # links da lista usam URL absoluta (funciona na caixa)
+    # botão do versículo aleatório mais visível (mantém o id)
+    home = (site / "index.html").read_text("utf-8")
+    assert 'id="random-verse" class="btn invite"' in home
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".anot-drawer" in css and ".btn.invite" in css

@@ -338,11 +338,6 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   }
 
   // ---------- página de Anotações: listar, copiar, baixar, limpar ----------
-  function slugFromRef(ref){
-    var m=ref.match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '#';
-    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
-  }
   function allRefs(notes, vhl, whl){
     var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
     return Object.keys(s).sort();
@@ -384,7 +379,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
     if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e use “Grifar” ou “Anotar”.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
-      var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
+      var h='<div class="anot"><h3><a href="'+refToUrl(ref)+'">'+esc(ref)+'</a></h3>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -421,5 +416,34 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
       };
     }
   }
+  // ---------- caixa "Minhas anotações" que abre por cima (reaproveita render()) ----------
+  var notesDrawer=null;
+  function openNotesDrawer(){
+    if(!notesDrawer){
+      notesDrawer=document.createElement('div');
+      notesDrawer.className='anot-drawer';
+      notesDrawer.innerHTML='<div class="anot-drawer-box" role="dialog" aria-modal="true" aria-label="Minhas anotações">'+
+        '<div class="anot-drawer-head"><h2>Minhas anotações</h2>'+
+        '<button type="button" class="anot-drawer-x" aria-label="Fechar">✕</button></div>'+
+        '<div id="anotacoes" class="anot-list"></div>'+
+        '<p class="anot-drawer-foot"><a href="'+BEC_BASE+'/anotacoes/">Gerenciar / exportar →</a></p>'+
+        '</div>';
+      document.body.appendChild(notesDrawer);
+      function close(){ notesDrawer.classList.remove('open'); }
+      notesDrawer.addEventListener('click', function(e){ if(e.target===notesDrawer || e.target.closest('.anot-drawer-x')) close(); });
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape' && notesDrawer.classList.contains('open')) close(); });
+    }
+    render();
+    notesDrawer.classList.add('open');
+  }
+  // abrir a caixa ao tocar nos links de "Anotações" (menu, ferramentas) — exceto na própria página /anotacoes/
+  if(!document.getElementById('anotacoes')){
+    document.addEventListener('click', function(e){
+      var a=e.target.closest && e.target.closest('a[href$="anotacoes/"]'); if(!a) return;
+      if(a.closest('.anot-drawer')) return; // o link "Gerenciar →" navega normalmente
+      e.preventDefault(); openNotesDrawer();
+    });
+  }
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();

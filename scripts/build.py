@@ -128,6 +128,30 @@ def order_toggle(prefix):
     <a class="ot-link" href="{prefix}linha-do-tempo/">linha do tempo →</a>
   </div>"""
 
+def az_index():
+    # índice A–Z para pular a um livro: clicar liga a ordem alfabética e rola/destaca o livro (cliente).
+    # letras sem livro ficam desabilitadas; o chip "#" cobre os livros numerados (1/2/3…), que na
+    # ordem alfabética caem no topo.
+    iniciais, tem_num = set(), False
+    for livro in BOOK_ORDER:
+        nome = unicodedata.normalize("NFKD", livro).encode("ascii", "ignore").decode().lower().strip()
+        c = nome[:1]
+        if c.isdigit():
+            tem_num = True
+        elif c.isalpha():
+            iniciais.add(c)
+    chips = []
+    if tem_num:
+        chips.append('<button type="button" class="az" data-az="#">#</button>')
+    for o in range(ord("a"), ord("z") + 1):
+        ch = chr(o)
+        if ch in iniciais:
+            chips.append(f'<button type="button" class="az" data-az="{ch}">{ch.upper()}</button>')
+        else:
+            chips.append(f'<button type="button" class="az az-off" disabled aria-disabled="true">{ch.upper()}</button>')
+    return f"""
+  <div class="az-index" role="group" aria-label="Pular para livro por letra">{''.join(chips)}</div>"""
+
 # Contexto histórico curado POR LIVRO (didático, não-dogmático; autoria "tradicional" quando há debate).
 # NÃO altera o texto bíblico — é uma camada de explicação. Época vem de BOOK_ERA.
 BOOK_CONTEXT = {
@@ -515,6 +539,7 @@ def build_books_index(order, struct):
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
   <p class="read" style="color:var(--muted)">Escolha um livro para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
   {order_toggle(prefix)}
+  {az_index()}
   <div class="cards verses" data-booklist>{cards}
   </div>
 </main>"""
@@ -738,7 +763,7 @@ def build_home(topics, verses, articles, sources, order, struct):
     <div id="results" class="search-results"></div>
     <a id="continue-read" class="continue-read" href="#" hidden></a>
     <div class="quick-actions">
-      <button type="button" id="random-verse" class="btn ghost">🕊️ Um versículo para você</button>
+      <button type="button" id="random-verse" class="btn invite">🕊️ Um versículo para você</button>
     </div>
   </section>
 
@@ -749,6 +774,7 @@ def build_home(topics, verses, articles, sources, order, struct):
       <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
     </div>
     {order_toggle("")}
+    {az_index()}
     <div class="cards verses wrap" data-booklist>{bcards}
     </div>
   </section>
@@ -969,6 +995,24 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     var b=e.target.closest && e.target.closest('.order-toggle .ot'); if(!b) return;
     var m=b.getAttribute('data-sort'); try{ localStorage.setItem('bec.bookorder', m); }catch(e){}
     apply(m);
+  });
+  // índice A–Z: clicar numa letra liga a ordem alfabética e rola/destaca o 1º livro daquela letra
+  document.addEventListener('click', function(e){
+    var a=e.target.closest && e.target.closest('.az-index .az[data-az]'); if(!a || a.disabled) return;
+    var letra=a.getAttribute('data-az');
+    try{ localStorage.setItem('bec.bookorder','alpha'); }catch(e){}
+    apply('alpha');
+    var alvo=null, all=document.querySelectorAll('[data-booklist] .book-card');
+    for(var i=0;i<all.length;i++){
+      var nm=all[i].getAttribute('data-name')||'';
+      if(letra==='#'){ if(/^[0-9]/.test(nm)){ alvo=all[i]; break; } }
+      else if(nm.charAt(0)===letra){ alvo=all[i]; break; }
+    }
+    if(alvo){
+      alvo.scrollIntoView({behavior:'smooth',block:'center'});
+      alvo.classList.add('flash');
+      setTimeout(function(){ alvo.classList.remove('flash'); },1300);
+    }
   });
   var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
   if(saved!=='bib') apply(saved);
@@ -1316,11 +1360,6 @@ def build_study_js():
   }
 
   // ---------- página de Anotações: listar, copiar, baixar, limpar ----------
-  function slugFromRef(ref){
-    var m=ref.match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '#';
-    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
-  }
   function allRefs(notes, vhl, whl){
     var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
     return Object.keys(s).sort();
@@ -1362,7 +1401,7 @@ def build_study_js():
     var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
     if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e use “Grifar” ou “Anotar”.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
-      var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
+      var h='<div class="anot"><h3><a href="'+refToUrl(ref)+'">'+esc(ref)+'</a></h3>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -1399,6 +1438,35 @@ def build_study_js():
       };
     }
   }
+  // ---------- caixa "Minhas anotações" que abre por cima (reaproveita render()) ----------
+  var notesDrawer=null;
+  function openNotesDrawer(){
+    if(!notesDrawer){
+      notesDrawer=document.createElement('div');
+      notesDrawer.className='anot-drawer';
+      notesDrawer.innerHTML='<div class="anot-drawer-box" role="dialog" aria-modal="true" aria-label="Minhas anotações">'+
+        '<div class="anot-drawer-head"><h2>Minhas anotações</h2>'+
+        '<button type="button" class="anot-drawer-x" aria-label="Fechar">✕</button></div>'+
+        '<div id="anotacoes" class="anot-list"></div>'+
+        '<p class="anot-drawer-foot"><a href="'+BEC_BASE+'/anotacoes/">Gerenciar / exportar →</a></p>'+
+        '</div>';
+      document.body.appendChild(notesDrawer);
+      function close(){ notesDrawer.classList.remove('open'); }
+      notesDrawer.addEventListener('click', function(e){ if(e.target===notesDrawer || e.target.closest('.anot-drawer-x')) close(); });
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape' && notesDrawer.classList.contains('open')) close(); });
+    }
+    render();
+    notesDrawer.classList.add('open');
+  }
+  // abrir a caixa ao tocar nos links de "Anotações" (menu, ferramentas) — exceto na própria página /anotacoes/
+  if(!document.getElementById('anotacoes')){
+    document.addEventListener('click', function(e){
+      var a=e.target.closest && e.target.closest('a[href$="anotacoes/"]'); if(!a) return;
+      if(a.closest('.anot-drawer')) return; // o link "Gerenciar →" navega normalmente
+      e.preventDefault(); openNotesDrawer();
+    });
+  }
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 """
