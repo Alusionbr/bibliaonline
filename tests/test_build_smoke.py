@@ -190,3 +190,22 @@ def test_sitemap_lista_todas_as_urls(site):
     assert "/versiculos/genesis-1-1/" in sitemap
     assert "/versiculos/joao-1-1/" in sitemap
     assert "/artigos/meu-artigo/" in sitemap
+
+
+def test_ajustes_ios_notas(site):
+    # menu flutuante: salvar nas Notas (texto) + baixar .txt; .json saiu do menu
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "Salvar tudo (.json)" not in study
+    assert 'data-t="txt"' in study
+    assert "Salvar nas Notas" in study
+    # página Anotações: .json vira "backup", importar vira "Importar backup" (ids preservados)
+    anot = (site / "anotacoes" / "index.html").read_text("utf-8")
+    assert "Backup .json" in anot and "Importar backup" in anot
+    assert 'id="anot-json"' in anot and 'id="anot-import"' in anot
+
+
+def test_painel_ferramentas_minimiza():
+    # o atributo hidden precisa vencer o display:flex, senão o painel fica sempre aberto
+    from pathlib import Path
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".tools-panel[hidden]" in css
