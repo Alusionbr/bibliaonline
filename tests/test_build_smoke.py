@@ -50,6 +50,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
+    # referências cruzadas mínimas (Gênesis 1:1 → João 1:1) para exercitar o "Veja também"
+    (data_dir / "crossrefs.json").write_text(json.dumps({"genesis-1-1": ["joao-1-1"]}), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -287,3 +289,41 @@ def test_lote6_caixa_anotacoes_e_botao_versiculo(site):
     assert 'id="random-verse" class="btn invite"' in home
     css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
     assert ".anot-drawer" in css and ".btn.invite" in css
+
+
+def test_lote7_referencias_cruzadas(site):
+    # versículo COM xref: bloco "Veja também" + link para o relacionado (referência por extenso)
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "Veja também" in gen
+    assert 'class="xref-chip" href="../joao-1-1/"' in gen and "João 1:1" in gen
+    # versículo SEM xref: não renderiza o bloco
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "Veja também" not in joao
+    # atribuição (CC-BY) na home + CSS
+    home = (site / "index.html").read_text("utf-8")
+    assert "OpenBible.info" in home and "Treasury of Scripture Knowledge" in home
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".xref-chip" in css
+
+
+def test_lote7_parser_crossrefs(gen_crossrefs):
+    g = gen_crossrefs
+    # OSIS → slug (AT, NT, livro numerado, acento) e intervalo usa o versículo inicial
+    assert g.osis_to_slug("Gen.1.1") == "genesis-1-1"
+    assert g.osis_to_slug("John.3.16") == "joao-3-16"
+    assert g.osis_to_slug("1Cor.13.4") == "1-corintios-13-4"
+    assert g.osis_to_slug("Song.1.1") == "canticos-1-1"
+    assert g.osis_to_slug("Gen.1.1-Gen.1.5") == "genesis-1-1"
+    assert g.osis_to_slug("Zzz.1.1") == ""  # livro desconhecido
+    # parser: ordena por votos, capa em N, descarta auto-ref, voto ≤0 e slug inexistente
+    valid = {"genesis-1-1", "joao-1-1", "salmos-23-1", "romanos-5-8"}
+    tsv = (
+        "From Verse\tTo Verse\tVotes\n"
+        "Gen.1.1\tJohn.1.1\t10\n"        # ok
+        "Gen.1.1\tPs.23.1\t30\n"          # ok, mais votado → vem antes
+        "Gen.1.1\tRom.5.8\t-2\n"          # voto negativo → descartado
+        "Gen.1.1\tMatt.99.99\t5\n"        # slug inexistente → descartado
+        "Gen.1.1\tGen.1.1\t9\n"           # auto-referência → descartada
+    )
+    out = g.parse_refs(tsv, valid, top_n=6)
+    assert out["genesis-1-1"] == ["salmos-23-1", "joao-1-1"]

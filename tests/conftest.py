@@ -38,3 +38,8 @@ def expand_verses():
 @pytest.fixture(scope="session")
 def build():
     return _load("build")
+
+
+@pytest.fixture(scope="session")
+def gen_crossrefs():
+    return _load("gen_crossrefs")

@@ -381,7 +381,7 @@ def specimen_block(v):
   </figure>"""
 
 # ---------- páginas ----------
-def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
+def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, xrefs=None, verse_by_slug=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -440,6 +440,20 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     <div class="related-list">{items}</div>
   </section>"""
 
+    # referências cruzadas ("Veja também") — passagens relacionadas por significado
+    xref = ""
+    xr = (xrefs or {}).get(v["slug"], [])
+    if xr and verse_by_slug:
+        chips = "".join(
+            f'<a class="xref-chip" href="../{s}/">{esc(verse_by_slug[s]["referencia"])}</a>'
+            for s in xr if s in verse_by_slug)
+        if chips:
+            xref = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Veja também</h2>
+    <div class="xrefs">{chips}</div>
+  </section>"""
+
     src_note = f"""
   <p class="src-note">Original: {esc(v.get('original_fonte',''))} · Tradução: {esc(v.get('texto_pt_fonte',''))}</p>"""
 
@@ -479,6 +493,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   {hist_context(prefix, v['livro'])}
   {blocks}
   {kw_html}
+  {xref}
   {rel}
   {src_note}
   {pager}
@@ -817,6 +832,7 @@ def build_home(topics, verses, articles, sources, order, struct):
     <div class="read">
       <p>O texto bíblico em português é a <b>Almeida Revista e Corrigida de 1911</b>, a edição mais recente de Almeida em domínio público no Brasil. O hebraico e o aramaico vêm do <b>Westminster Leningrad Codex</b> (Open Scriptures Hebrew Bible); o grego, da edição <b>Nestle 1904</b> — todos de uso livre.</p>
       <p>Os comentários rabínicos são <b>resumos originais</b>, escritos por nós e citando as fontes pelo nome (Rashi, Talmud, Midrash, Ibn Ezra, Targum). Não reproduzimos traduções modernas protegidas. Imagens de manuscrito só aparecem quando há um arquivo em domínio público, sempre com crédito.</p>
+      <p>As <b>referências cruzadas</b> ("Veja também") derivam do <b>Treasury of Scripture Knowledge</b> (domínio público), na compilação aberta do <a class="ext-link" href="https://www.openbible.info/labs/cross-references/" target="_blank" rel="noopener">OpenBible.info</a> (Creative Commons Attribution).</p>
     </div>
   </section>
 </main>"""
@@ -1553,8 +1569,11 @@ def main():
     topics=load("topics.json"); verses=load("verses.json")
     articles=load("articles.json"); sources=load("sources.json")
     articles_by_slug={a["slug"]:a for a in articles}
+    # referências cruzadas ("Veja também"), geradas por scripts/gen_crossrefs.py (opcional)
+    xrefs = load("crossrefs.json") if (DATA/"crossrefs.json").exists() else {}
     # ordem bíblica garantida (folhear de Gênesis a Apocalipse)
     verses = sorted(verses, key=verse_sort_key)
+    verse_by_slug = {v["slug"]: v for v in verses}
     order, struct = group_by_book_chapter(verses)
     # limpa saídas antigas
     for d in ["versiculos","artigos","ler","anotacoes"]:
@@ -1569,7 +1588,7 @@ def main():
     for i, v in enumerate(verses):
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
-        build_verse_page(v, articles_by_slug, prev_v, next_v)
+        build_verse_page(v, articles_by_slug, prev_v, next_v, xrefs, verse_by_slug)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)
