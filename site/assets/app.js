@@ -118,6 +118,11 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
     else if(rt==='theme') setTheme(!d.classList.contains('dark'));
   });
+  // seletor "Ir para livro": navega ao escolher outro livro
+  document.addEventListener('change',function(e){
+    var s=e.target.closest && e.target.closest('.book-jump');
+    if(s && s.value) location.href=s.value;
+  });
 
   // continuar lendo: guarda a última leitura (capítulo/versículo) e mostra na home
   var h1=document.querySelector('.verse-head h1');

@@ -378,7 +378,7 @@ body.hl-mode .pt,body.hl-mode .orig{-webkit-user-select:none;user-select:none;-w
 .w-hl[data-c="p"]{background-image:linear-gradient(transparent 6%, #ffb3d1 6%, #ffb3d1 92%, transparent 92%)}
 
 /* cartão de doação (protótipo) */
-.donate{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:8px;
+.donate{position:fixed;left:16px;bottom:84px;z-index:60;display:flex;align-items:center;gap:8px;
   background:var(--dark-2);color:var(--gold-soft);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);
   max-width:78vw}
 .donate a{color:var(--gold-soft);font-family:"Inter",system-ui,sans-serif;font-size:.9rem;text-decoration:none}
@@ -407,3 +407,36 @@ html.dark body{background:var(--vellum);color:var(--ink)}
 html.dark a:hover{color:var(--gold-soft)}
 html.dark .pen-toggle{background:var(--paper);color:var(--gold-soft)}
 html.dark .w-hl{color:#2a2206}
+/* fix: a barra de navegação tem fundo claro fixo — escurecer no modo noturno
+   para os botões A−/A+ (texto) não sumirem em claro-sobre-claro */
+html.dark .nav{background:rgba(20,17,11,.92)}
+html.dark .searchbox{background:var(--paper);border-color:var(--line)}
+html.dark .menu-btn{background:var(--paper);color:var(--ink)}
+
+/* ===== Lote 2: seletor de livro, ferramentas ocultas, modal de confirmação ===== */
+/* seletor "Ir para livro" */
+.book-jump-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 14px;
+  font-family:"Inter",system-ui,sans-serif}
+.book-jump-lbl{font-size:.92rem;color:var(--muted)}
+.book-jump{font-family:inherit;font-size:.95rem;padding:9px 12px;border-radius:10px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);min-height:40px;cursor:pointer;max-width:100%}
+
+/* seta de ferramentas ocultas (canto inferior esquerdo) */
+.tools-fab{position:fixed;left:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);font-size:1.25rem;cursor:pointer;
+  box-shadow:var(--shadow);display:grid;place-items:center}
+.tools-panel{position:fixed;left:16px;bottom:74px;z-index:60;display:flex;flex-direction:column;gap:6px;
+  background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow);
+  max-width:78vw}
+.tools-panel button,.tools-panel a{font-family:"Inter",system-ui,sans-serif;font-size:.9rem;text-align:left;
+  background:transparent;border:0;color:var(--ink);padding:9px 12px;border-radius:9px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.tools-panel button:hover,.tools-panel a:hover{background:var(--vellum-2)}
+
+/* modal de confirmação */
+.bec-modal{position:fixed;inset:0;z-index:80;background:rgba(20,16,8,.55);display:grid;place-items:center;padding:20px}
+.bec-modal-box{background:var(--paper);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;
+  box-shadow:var(--shadow);font-family:"Inter",system-ui,sans-serif}
+.bec-modal-box p{margin:0 0 16px}
+.bec-modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn.danger{background:#b3261e;color:#fff;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:600}
+.btn.danger:hover{background:#8f1e17}

@@ -1,9 +1,21 @@
+var BEC_BASE="https://alusionbr.github.io/bibliaonline";
 // Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
 // Tudo salvo no localStorage deste navegador. Nada vai para servidor.
 (function(){
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
   function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){}}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  // referência "Livro c:v" → slug e URL absoluta do versículo (BEC_BASE injetado no build)
+  function refToSlug(ref){
+    var m=(ref||'').match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '';
+    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+    return b+'-'+m[2]+'-'+m[3];
+  }
+  function refToUrl(ref){ var s=refToSlug(ref); return s? BEC_BASE+'/versiculos/'+s+'/' : BEC_BASE; }
+  function downloadBlob(name, blob){
+    var u=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=u; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u);
+  }
 
   // envolve cada palavra de um parágrafo em <span class="w"> para grifo por palavra
   function wrapWords(el, field){
@@ -73,6 +85,89 @@
     document.body.appendChild(d);
   }
 
+  // ---------- compartilhar cartão-imagem do versículo (+ link) ----------
+  function wrapCanvas(ctx, text, maxW){
+    var words=(text||'').split(/\s+/), lines=[], cur='';
+    words.forEach(function(w){
+      var t=cur?cur+' '+w:w;
+      if(ctx.measureText(t).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t;
+    });
+    if(cur) lines.push(cur);
+    return lines;
+  }
+  function makeVerseCard(ref, pt){
+    return new Promise(function(resolve, reject){
+      try{
+        var W=1080, H=1080, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+        var ctx=cv.getContext && cv.getContext('2d'); if(!ctx){ reject(); return; }
+        ctx.fillStyle='#f4eee2'; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle='#e7d6ab'; ctx.fillRect(0,0,W,14); ctx.fillRect(0,H-14,W,14);
+        ctx.textBaseline='top';
+        ctx.fillStyle='#8a6726'; ctx.font='600 54px Georgia, serif'; ctx.fillText(ref, 90, 110);
+        ctx.fillStyle='#16120c';
+        var size=66, maxW=W-180, lines=wrapCanvas(ctx, pt, maxW);
+        ctx.font=size+'px Georgia, serif'; lines=wrapCanvas(ctx, pt, maxW);
+        while(lines.length*size*1.35 > H-440 && size>30){ size-=4; ctx.font=size+'px Georgia, serif'; lines=wrapCanvas(ctx, pt, maxW); }
+        var y=250, lh=size*1.35;
+        lines.forEach(function(ln){ ctx.fillText(ln, 90, y); y+=lh; });
+        ctx.fillStyle='#6f6453'; ctx.font='500 36px Georgia, serif'; ctx.fillText('Bíblia em Contexto', 90, H-150);
+        ctx.fillStyle='#8a6726'; ctx.font='30px Georgia, serif'; ctx.fillText(BEC_BASE.replace(/^https?:\/\//,''), 90, H-100);
+        if(cv.toBlob) cv.toBlob(function(b){ b?resolve(b):reject(); }, 'image/png'); else reject();
+      }catch(e){ reject(); }
+    });
+  }
+  function shareVerse(cont, ref, btn){
+    var pt=cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
+    var url=refToUrl(ref), text=ref+(t?'\n'+t:'')+'\n'+url;
+    makeVerseCard(ref, t).then(function(blob){
+      var file; try{ file=new File([blob],'versiculo.png',{type:'image/png'}); }catch(e){ file=null; }
+      if(file && navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file], text:ref+'\n'+url, title:'Bíblia em Contexto'}).catch(function(){});
+      } else if(navigator.share){
+        navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){});
+      } else { copyText(text, btn); downloadBlob('versiculo.png', blob); }
+    }).catch(function(){
+      if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); }
+      else copyText(text, btn);
+    });
+  }
+
+  // ---------- modal de confirmação (evita apagar por toque acidental) ----------
+  function confirmModal(msg, onYes){
+    var ov=document.createElement('div'); ov.className='bec-modal';
+    ov.innerHTML='<div class="bec-modal-box"><p>'+esc(msg)+'</p>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-no>Cancelar</button>'+
+      '<button type="button" class="btn danger" data-yes>Apagar tudo</button></div></div>';
+    ov.addEventListener('click', function(e){
+      if(e.target===ov || (e.target.closest && e.target.closest('[data-no]'))) ov.remove();
+      else if(e.target.closest && e.target.closest('[data-yes]')){ ov.remove(); onYes(); }
+    });
+    document.body.appendChild(ov);
+  }
+
+  // ---------- seta de ferramentas ocultas (exportar tudo, anotações, apagar) ----------
+  function exportAll(){ return JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2); }
+  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); }
+  function makeToolsMenu(){
+    if(document.querySelector('.tools-fab')) return;
+    var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
+    fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='↥';
+    var panel=document.createElement('div'); panel.className='tools-panel'; panel.hidden=true;
+    panel.innerHTML='<button type="button" data-t="save">💾 Salvar tudo (.json)</button>'+
+      '<button type="button" data-t="share">🔗 Compartilhar tudo</button>'+
+      '<a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒 Minhas anotações</a>'+
+      '<button type="button" data-t="clear">🗑 Apagar tudo</button>';
+    fab.onclick=function(){ var open=panel.hidden; panel.hidden=!open; fab.setAttribute('aria-expanded', open?'true':'false'); fab.textContent=open?'✕':'↥'; };
+    panel.addEventListener('click', function(e){
+      var b=e.target.closest && e.target.closest('[data-t]'); if(!b) return;
+      var t=b.getAttribute('data-t');
+      if(t==='save') download('anotacoes-bec.json', exportAll(), 'application/json');
+      else if(t==='share'){ var n=load('notes'),v=load('vhl'),w=load('whl'); shareText(exportText(allRefs(n,v,w),n,v,w), b); }
+      else if(t==='clear') confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', clearAll);
+    });
+    document.body.appendChild(fab); document.body.appendChild(panel);
+  }
+
   function apply(cont, ref){
     if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
     var notes=load('notes');
@@ -119,7 +214,7 @@
       if(act==='vhl') toggleVerse(cont, ref, btn);
       else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
       else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
-      else if(act==='share') shareText(verseText(cont, ref), btn);
+      else if(act==='share') shareVerse(cont, ref, btn);
     }
   });
 
@@ -232,6 +327,7 @@
   function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
   setupAll();
   makePenTools();
+  makeToolsMenu();
   // versículos carregados por rolagem infinita também recebem as ferramentas
   if(window.MutationObserver){
     new MutationObserver(function(muts){
@@ -309,7 +405,7 @@
       .catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
     if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
-    if(x) x.onclick=function(){ if(confirm('Apagar TODAS as marcações e anotações deste navegador?')){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); } };
+    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); }); };
     var sh=document.getElementById('anot-share');
     if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
       if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }

@@ -125,6 +125,38 @@ def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
     assert len(pool) >= 1 and all(isinstance(s, str) for s in pool)
 
 
+def test_lote2_cartao_ferramentas_modal(site):
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    # base do site injetada + cartão-imagem + compartilhar versículo + ferramentas + modal
+    assert study.startswith("var BEC_BASE=")
+    for gancho in ("makeVerseCard", "canShare", "toBlob", "shareVerse",
+                   "tools-fab", "tools-panel", "bec-modal", "confirmModal"):
+        assert gancho in study, gancho
+
+
+def test_lote2_seletor_ir_para_livro(site):
+    cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
+    assert 'class="book-jump"' in cap
+    assert "Antigo Testamento" in cap and "Novo Testamento" in cap
+    # o seletor leva a outros livros (valor com caminho de leitura)
+    assert "ler/genesis/" in cap
+    # também presente na página do livro
+    book = (site / "ler" / "joao" / "index.html").read_text("utf-8")
+    assert 'class="book-jump"' in book
+    # wiring no app.js
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "book-jump" in app
+
+
+def test_lote2_bloqueio_de_ias(site):
+    robots = (site / "robots.txt").read_text("utf-8")
+    assert "GPTBot" in robots and "Disallow: /" in robots
+    assert "ClaudeBot" in robots and "CCBot" in robots
+    # meta noai em todas as páginas (via head)
+    home = (site / "index.html").read_text("utf-8")
+    assert "noai" in home and "noimageai" in home
+
+
 def test_home_nao_embute_indice_gigante(site):
     # o índice de busca saiu da página (não mais inline) e virou arquivo externo
     html = (site / "index.html").read_text("utf-8")
