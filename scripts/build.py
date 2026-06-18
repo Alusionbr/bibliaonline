@@ -925,13 +925,8 @@ def build_study_js():
     wrapWords(cont.querySelector('.pt'),'pt');
     wrapWords(cont.querySelector('.orig'),'orig');
     var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
-    var bar=document.createElement('div'); bar.className='study';
-    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">use a caneta 🖍 para grifar; selecione para copiar</span>' : '';
-    bar.innerHTML='<button type="button" data-act="vhl">🖍 Grifar versículo</button>'+
-      '<button type="button" data-act="note">🗒 Anotar</button>'+
-      '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+
-      '<button type="button" data-act="share">↗ Compartilhar</button>'+hint;
-    anchor.appendChild(bar);
+    cont.classList.add('study-target');
+    cont.setAttribute('tabindex','0');
     var nb=document.createElement('div'); nb.className='note-box'; nb.hidden=true;
     nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>'+
       '<div class="note-actions"><button type="button" data-act="copy-note">⧉ Copiar versículo + nota</button></div>';
@@ -940,7 +935,12 @@ def build_study_js():
     apply(cont, ref);
   }
 
-  function flash(btn, txt){ var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1400); }
+  function flash(btn, txt){
+    var o=btn.textContent;
+    if(btn.closest && btn.closest('.study-context')) btn.textContent = txt==='Falhou' ? '!' : '✓';
+    else btn.textContent=txt;
+    setTimeout(function(){btn.textContent=o;},1400);
+  }
   function copyText(str, btn){
     (navigator.clipboard?navigator.clipboard.writeText(str):Promise.reject())
       .then(function(){ if(btn) flash(btn,'Copiado!'); })
@@ -1057,12 +1057,52 @@ def build_study_js():
     document.body.appendChild(fab); document.body.appendChild(panel);
   }
 
+  var activeStudy=null;
+  function getStudyBar(){
+    var bar=document.querySelector('.study-context');
+    if(bar) return bar;
+    bar=document.createElement('div'); bar.className='study-context'; bar.hidden=true;
+    bar.setAttribute('aria-label','Ferramentas do versículo selecionado');
+    bar.innerHTML='<button type="button" data-act="vhl" aria-label="Grifar versículo" title="Grifar versículo">🖍</button>'+
+      '<button type="button" data-act="note" aria-label="Anotar" title="Anotar">🗒</button>'+
+      '<button type="button" data-act="copy" aria-label="Copiar versículo" title="Copiar versículo">⧉</button>'+
+      '<button type="button" data-act="share" aria-label="Compartilhar" title="Compartilhar">↗</button>';
+    document.body.appendChild(bar);
+    return bar;
+  }
+  function refreshStudyBar(){
+    var bar=getStudyBar();
+    if(!activeStudy){ bar.hidden=true; return; }
+    var ref=activeStudy.getAttribute('data-ref'), vhl=load('vhl');
+    bar.hidden=false;
+    bar.setAttribute('data-ref', ref||'');
+    var h=bar.querySelector('[data-act="vhl"]');
+    if(h) h.classList.toggle('on', !!vhl[ref]);
+    var n=bar.querySelector('[data-act="note"]');
+    if(n) n.classList.toggle('on', !!(activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden));
+  }
+  function activateStudy(cont){
+    if(!cont || !cont.getAttribute('data-ref')) return;
+    if(activeStudy && activeStudy!==cont) activeStudy.classList.remove('study-active');
+    activeStudy=cont;
+    activeStudy.classList.add('study-active');
+    refreshStudyBar();
+  }
+  function closeStudyBar(){
+    if(activeStudy) activeStudy.classList.remove('study-active');
+    activeStudy=null;
+    refreshStudyBar();
+  }
+  function noteOpen(){
+    return !!(activeStudy && activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden);
+  }
+
   function apply(cont, ref){
-    if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
+    if(load('vhl')[ref]) cont.classList.add('v-hl');
     var notes=load('notes');
     if(notes[ref]){
       var ta=cont.querySelector('.note-box textarea');
-      if(ta){ ta.value=notes[ref]; ta.closest('.note-box').hidden=false; }
+      if(ta) ta.value=notes[ref];
       cont.classList.add('has-note');
     }
     var rec=load('whl')[ref]||{};
@@ -1092,19 +1132,34 @@ def build_study_js():
     if(all[ref]){ delete all[ref]; cont.classList.remove('v-hl'); if(btn) btn.classList.remove('on'); }
     else { all[ref]=1; cont.classList.add('v-hl'); if(btn) btn.classList.add('on'); }
     save('vhl', all);
+    refreshStudyBar();
   }
 
   document.addEventListener('click', function(e){
-    var w=e.target.closest && e.target.closest('.w');
-    if(w && w.closest('[data-ref]')){ if(penOn) return; toggleWord(w); return; }
-    var btn=e.target.closest && e.target.closest('.study button, .note-actions button');
-    if(btn){
-      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
-      if(act==='vhl') toggleVerse(cont, ref, btn);
-      else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
-      else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
-      else if(act==='share') shareVerse(cont, ref, btn);
+    var action=e.target.closest && e.target.closest('.study-context button, .note-actions button');
+    if(action){
+      var cont=action.closest('[data-ref]')||activeStudy; if(!cont) return;
+      var ref=cont.getAttribute('data-ref'), act=action.dataset.act;
+      activateStudy(cont);
+      if(act==='vhl') toggleVerse(cont, ref, action);
+      else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; refreshStudyBar(); if(!nb.hidden) nb.querySelector('textarea').focus(); }
+      else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), action);
+      else if(act==='share') shareVerse(cont, ref, action);
+      return;
     }
+    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,a,button,select,input,textarea')) return;
+    var w=e.target.closest && e.target.closest('.w');
+    if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
+    var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
+    if(cont) activateStudy(cont);
+    else if(!noteOpen()) closeStudyBar();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key!=='Enter' && e.key!==' ') return;
+    var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
+    if(!cont || e.target.closest('button,a,select,input,textarea')) return;
+    e.preventDefault();
+    activateStudy(cont);
   });
 
   // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
