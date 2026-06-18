@@ -1079,7 +1079,17 @@ def build_study_js():
     var h=bar.querySelector('[data-act="vhl"]');
     if(h) h.classList.toggle('on', !!vhl[ref]);
     var n=bar.querySelector('[data-act="note"]');
-    if(n) n.classList.toggle('on', !!(activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden));
+    if(n){
+      var noteIsOpen=!!(activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden);
+      n.classList.toggle('on', noteIsOpen);
+      n.setAttribute('aria-expanded', noteIsOpen?'true':'false');
+    }
+  }
+  function findStudyByRef(ref){
+    if(!ref) return null;
+    var items=document.querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]');
+    for(var i=0;i<items.length;i++){ if(items[i].getAttribute('data-ref')===ref) return items[i]; }
+    return null;
   }
   function activateStudy(cont){
     if(!cont || !cont.getAttribute('data-ref')) return;
@@ -1095,6 +1105,22 @@ def build_study_js():
   }
   function noteOpen(){
     return !!(activeStudy && activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden);
+  }
+  function setNoteOpen(cont, open){
+    if(!cont) return;
+    activateStudy(cont);
+    var nb=cont.querySelector('.note-box');
+    if(!nb) return;
+    nb.hidden=!open;
+    cont.classList.toggle('note-open', !!open);
+    refreshStudyBar();
+    if(open){
+      var ta=nb.querySelector('textarea');
+      setTimeout(function(){
+        try{ nb.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){ nb.scrollIntoView(); }
+        if(ta) ta.focus();
+      }, 0);
+    }
   }
 
   function apply(cont, ref){
@@ -1138,11 +1164,12 @@ def build_study_js():
   document.addEventListener('click', function(e){
     var action=e.target.closest && e.target.closest('.study-context button, .note-actions button');
     if(action){
-      var cont=action.closest('[data-ref]')||activeStudy; if(!cont) return;
+      var bar=action.closest && action.closest('.study-context');
+      var cont=action.closest('[data-ref]')||activeStudy||findStudyByRef(bar && bar.getAttribute('data-ref')); if(!cont) return;
       var ref=cont.getAttribute('data-ref'), act=action.dataset.act;
       activateStudy(cont);
       if(act==='vhl') toggleVerse(cont, ref, action);
-      else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; refreshStudyBar(); if(!nb.hidden) nb.querySelector('textarea').focus(); }
+      else if(act==='note'){ var nb=cont.querySelector('.note-box'); setNoteOpen(cont, !(nb && !nb.hidden)); }
       else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), action);
       else if(act==='share') shareVerse(cont, ref, action);
       return;
@@ -1164,7 +1191,7 @@ def build_study_js():
 
   // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
   var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
-  var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
+  var COLORS=['x','y','g','b','p'], CNAMES={x:'Desmarcar',y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
   function setPen(on){
     penOn=on; document.body.classList.toggle('hl-mode', on);
     var b=document.querySelector('.pen-toggle');
@@ -1182,7 +1209,13 @@ def build_study_js():
     if(!w) return; var cont=w.closest('[data-ref]'); if(!cont) return;
     var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
     var recd=pendingWhl[ref]||(pendingWhl[ref]={}); var arr=recd[f]||(recd[f]=[]);
-    var found=null; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; break; } }
+    var found=null, pos=-1; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; pos=n; break; } }
+    if(penColor==='x'){
+      if(found){ arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c'); }
+      if(!arr.length) delete recd[f];
+      if(!Object.keys(recd).length) delete pendingWhl[ref];
+      return;
+    }
     if(found){ if(found.c!==penColor){ found.c=penColor; w.setAttribute('data-c', penColor); } }
     else { arr.push({i:i,t:w.textContent,c:penColor}); w.classList.add('w-hl'); w.setAttribute('data-c', penColor); bumpMark(); }
   }
@@ -1205,7 +1238,9 @@ def build_study_js():
     btn.onclick=function(){ setPen(!penOn); };
     document.body.appendChild(btn);
     var pal=document.createElement('div'); pal.className='pen-colors';
-    pal.innerHTML=COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'"></button>'; }).join('');
+    pal.innerHTML=COLORS.map(function(c){
+      return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'" title="'+CNAMES[c]+'">'+(c==='x'?'x':'')+'</button>';
+    }).join('');
     pal.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) setColor(b.getAttribute('data-c')); });
     document.body.appendChild(pal);
     setColor((load('pencolor').c)||'y');
