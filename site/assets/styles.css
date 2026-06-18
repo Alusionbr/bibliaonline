@@ -350,13 +350,20 @@ section{padding:52px 0}
 .v-hl{background:rgba(255,225,77,.26);border-left:4px solid #e3b62e;border-radius:6px;
   padding:10px 14px;margin:6px 0}
 .v-hl.ch-verse{padding-left:10px}
-.study{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 2px}
-.study button{font-family:"Inter",system-ui,sans-serif;font-size:.8rem;cursor:pointer;
-  background:transparent;border:1px solid var(--line);color:var(--ink-soft);
-  border-radius:999px;padding:7px 14px;min-height:38px}
-.study button:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
-.study button.on{background:#ffe14d;border-color:#e3b62e;color:#2a2206}
-.study-hint{font-size:.78rem;color:var(--muted)}
+.study-target{cursor:pointer}
+.study-target:focus-visible{outline:2px solid var(--gold-deep);outline-offset:3px;border-radius:8px}
+.ch-verse.study-active{background:rgba(177,135,60,.08);border-radius:8px}
+.verse-cont.study-active .verse-hero{border-color:var(--gold-deep)}
+.study-context{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:65;
+  transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:5px;
+  background:rgba(252,248,240,.96);border:1px solid var(--line);border-radius:999px;padding:6px;
+  box-shadow:var(--shadow);max-width:calc(100vw - 150px)}
+.study-context[hidden]{display:none}
+.study-context button{font-family:"Inter",system-ui,sans-serif;font-size:1rem;cursor:pointer;
+  width:38px;height:38px;display:grid;place-items:center;background:transparent;border:0;
+  color:var(--ink-soft);border-radius:999px;padding:0}
+.study-context button:hover,.study-context button:focus-visible{background:var(--vellum-2);color:var(--gold-deep);outline:0}
+.study-context button.on{background:#ffe14d;color:#2a2206}
 .study-ok{font-size:.78rem;color:var(--gold-deep)}
 .note-box{margin:8px 0}
 .note-box textarea{width:100%;min-height:80px;resize:vertical;font:inherit;font-size:1rem;
@@ -431,6 +438,9 @@ html.dark body{background:var(--vellum);color:var(--ink)}
 html.dark a:hover{color:var(--gold-soft)}
 html.dark .pen-toggle{background:var(--paper);color:var(--gold-soft)}
 html.dark .w-hl{color:#2a2206}
+html.dark .study-context{background:rgba(34,28,20,.96)}
+html.dark .study-context button:hover,html.dark .study-context button:focus-visible{background:var(--vellum-2);color:var(--gold-soft)}
+html.dark .ch-verse.study-active{background:rgba(231,214,171,.08)}
 html.dark .translit-toggle summary{background:rgba(255,255,255,.06);color:var(--gold-deep)}
 html.dark .translit-toggle summary:hover,html.dark .translit-toggle summary:focus-visible{background:var(--gold-soft);color:#2a2206}
 /* fix: a barra de navegação tem fundo claro fixo — escurecer no modo noturno
@@ -487,3 +497,8 @@ html.dark .order-toggle .ot.on{color:#1a1610}
 .era-desc{color:var(--muted);margin:.4rem 0 .9rem}
 .era-gap-note{color:var(--muted);font-style:italic;margin:.2rem 0 .4rem}
 .era .book-card{padding:12px 14px}
+
+@media (max-width:420px){
+  .study-context{gap:4px;padding:5px;max-width:calc(100vw - 136px)}
+  .study-context button{width:36px;height:36px;font-size:.95rem}
+}
