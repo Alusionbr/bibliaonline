@@ -45,6 +45,21 @@ def test_esc_none_vira_string_vazia(build):
     assert build.esc("") == ""
 
 
+# ---- translit_disclosure ----
+
+def test_translit_disclosure_recolhe_e_escapa_transliteracao(build):
+    html = build.translit_disclosure('<bereshiyt>')
+    assert '<details class="translit-toggle">' in html
+    assert '<summary>' in html
+    assert '<p class="translit">&lt;bereshiyt&gt;</p>' in html
+    assert '&gt;' in html
+
+
+def test_translit_disclosure_vazio_nao_renderiza_controle(build):
+    assert build.translit_disclosure("") == ""
+    assert build.translit_disclosure("   ") == ""
+
+
 # ---- script_class / lang_label ----
 
 def test_script_class(build):
