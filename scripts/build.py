@@ -221,12 +221,25 @@ def footer(prefix):
 </body></html>"""
 
 # ---------- componentes ----------
+def translit_disclosure(text, indent=4):
+    text = esc(text)
+    if not text.strip():
+        return ""
+    pad = " " * indent
+    inner = " " * (indent + 2)
+    return (
+        f'{pad}<details class="translit-toggle">\n'
+        f'{inner}<summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar transliteração</span></summary>\n'
+        f'{inner}<p class="translit">{text}</p>\n'
+        f'{pad}</details>'
+    )
+
 def verse_stack(v, big=False):
     sc = script_class(v["idioma"], v.get("dir","ltr"))
     dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
     return f"""
     <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
-    <p class="translit">{esc(v['transliteracao'])}</p>
+{translit_disclosure(v.get('transliteracao',''), 4)}
     <p class="pt">{esc(v['texto_pt'])}</p>"""
 
 def specimen_block(v):
@@ -347,7 +360,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
 
   <div class="verse-hero reveal">
     <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
-    <p class="translit">{esc(v['transliteracao'])}</p>
+{translit_disclosure(v.get('transliteracao',''), 4)}
     {pt_html}
     <p class="src-line">{esc(v.get('contexto',''))}</p>
   </div>
@@ -514,7 +527,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body">
         <p class="orig {sc}"{dir_attr}>{esc(v.get('original',''))}</p>
-        <p class="translit">{esc(v.get('transliteracao',''))}</p>
+{translit_disclosure(v.get('transliteracao',''), 8)}
         <p class="pt">{pt}</p>
       </div>
     </div>"""

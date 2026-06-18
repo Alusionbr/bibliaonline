@@ -54,6 +54,7 @@ h1,h2,h3{font-family:"Fraunces","Spectral",serif;font-weight:600;line-height:1.0
 
 .skip{position:absolute;left:-999px;top:0;background:#fff;padding:10px 14px;z-index:99;border-radius:0 0 10px 0}
 .skip:focus{left:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 .wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
 .read{max-width:var(--read);margin-inline:auto}
@@ -316,6 +317,29 @@ section{padding:52px 0}
 .ch-body .pt{margin:0}
 .ch-body .pt-missing{color:var(--muted)}
 
+.translit-toggle{margin:0 0 .85rem}
+.ch-body .translit-toggle{margin:0 0 4px}
+.translit-toggle summary{
+  display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.42);
+  color:var(--gold-deep);cursor:pointer;list-style:none;transition:border-color .15s,background .15s,color .15s
+}
+.translit-toggle summary::-webkit-details-marker{display:none}
+.translit-toggle summary::marker{content:""}
+.translit-toggle summary:hover,.translit-toggle summary:focus-visible{
+  border-color:var(--gold-deep);background:var(--gold-soft);color:#2a2206;outline:0
+}
+.translit-arrow{
+  display:block;font-family:"Inter",system-ui,sans-serif;font-size:.95rem;font-weight:700;
+  line-height:1;transition:transform .15s ease
+}
+.translit-toggle[open] .translit-arrow{transform:rotate(90deg)}
+.translit-toggle .translit{
+  font-family:"Inter",system-ui,sans-serif;font-size:.92rem;letter-spacing:.03em;
+  color:var(--muted);margin:.45rem 0 0
+}
+.ch-body .translit-toggle .translit{font-size:.9rem;margin:.35rem 0 0}
+
 /* ferramentas de estudo: grifo de palavra/versículo, anotações */
 /* marca-texto na palavra: faixa amarela estilo caneta marca-texto */
 .w{cursor:pointer;border-radius:2px;padding:0 1px;transition:background .1s}
@@ -407,6 +431,8 @@ html.dark body{background:var(--vellum);color:var(--ink)}
 html.dark a:hover{color:var(--gold-soft)}
 html.dark .pen-toggle{background:var(--paper);color:var(--gold-soft)}
 html.dark .w-hl{color:#2a2206}
+html.dark .translit-toggle summary{background:rgba(255,255,255,.06);color:var(--gold-deep)}
+html.dark .translit-toggle summary:hover,html.dark .translit-toggle summary:focus-visible{background:var(--gold-soft);color:#2a2206}
 /* fix: a barra de navegação tem fundo claro fixo — escurecer no modo noturno
    para os botões A−/A+ (texto) não sumirem em claro-sobre-claro */
 html.dark .nav{background:rgba(20,17,11,.92)}
