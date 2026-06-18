@@ -301,7 +301,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   });
 
   // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
-  var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
+  var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null, lastPenTap=null;
   var COLORS=['x','y','g','b','p'], CNAMES={x:'Desmarcar',y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
   function setPen(on){
     penOn=on; document.body.classList.toggle('hl-mode', on);
@@ -316,15 +316,32 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     save('pencolor', {c:c});
   }
   function wordAtPoint(x,y){ var el=document.elementFromPoint(x,y); return el && el.closest ? el.closest('.w') : null; }
+  function wordKey(w){
+    var cont=w && w.closest('[data-ref]'); if(!cont) return '';
+    return cont.getAttribute('data-ref')+'|'+w.dataset.f+'|'+w.dataset.i;
+  }
+  function removeWordMark(w, all){
+    var cont=w && w.closest('[data-ref]'); if(!cont || !all) return false;
+    var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
+    var recd=all[ref], arr=recd && recd[f], pos=-1;
+    if(arr){ for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ pos=n; break; } } }
+    if(pos<0) return false;
+    arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c');
+    if(!arr.length) delete recd[f];
+    if(!Object.keys(recd).length) delete all[ref];
+    return true;
+  }
+  function isRepeatTap(w){
+    var now=Date.now(), key=wordKey(w);
+    return !!(lastPenTap && lastPenTap.key===key && now-lastPenTap.t<520);
+  }
   function paintWord(w){
     if(!w) return; var cont=w.closest('[data-ref]'); if(!cont) return;
     var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
     var recd=pendingWhl[ref]||(pendingWhl[ref]={}); var arr=recd[f]||(recd[f]=[]);
     var found=null, pos=-1; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; pos=n; break; } }
     if(penColor==='x'){
-      if(found){ arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c'); }
-      if(!arr.length) delete recd[f];
-      if(!Object.keys(recd).length) delete pendingWhl[ref];
+      if(found) removeWordMark(w, pendingWhl);
       return;
     }
     if(found){ if(found.c!==penColor){ found.c=penColor; w.setAttribute('data-c', penColor); } }
@@ -333,9 +350,14 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   function startPaint(e){
     if(!penOn) return;
     var w=(e.target.closest && e.target.closest('.w')); if(!w || !w.closest('[data-ref]')) return;
-    e.preventDefault(); painting=true; activePointerId=e.pointerId; pendingWhl=load('whl'); paintWord(w);
+    e.preventDefault(); pendingWhl=load('whl');
+    if(isRepeatTap(w) && removeWordMark(w, pendingWhl)){
+      save('whl', pendingWhl); lastPenTap=null; painting=false; activePointerId=null; return;
+    }
+    painting=true; activePointerId=e.pointerId; paintWord(w);
+    lastPenTap={key:wordKey(w), t:Date.now()};
   }
-  function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); paintWord(wordAtPoint(e.clientX, e.clientY)); }
+  function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); var w=wordAtPoint(e.clientX, e.clientY); if(w && wordKey(w)!==(lastPenTap && lastPenTap.key)) lastPenTap=null; paintWord(w); }
   function endPaint(){ if(!painting) return; painting=false; activePointerId=null; save('whl', pendingWhl); }
   document.addEventListener('pointerdown', startPaint);
   document.addEventListener('pointermove', movePaint);
