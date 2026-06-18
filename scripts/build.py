@@ -105,9 +105,11 @@ TIMELINE = [
  {"nome":"Visão final","periodo":"~95 d.C.","descricao":"A revelação do fim e da nova criação.","livros":["Apocalipse"]},
 ]
 CHRON_INDEX = {}
+BOOK_ERA = {}
 for _era in TIMELINE:
     for _b in _era["livros"]:
         CHRON_INDEX[_b] = len(CHRON_INDEX)
+        BOOK_ERA[_b] = {"nome": _era["nome"], "periodo": _era["periodo"]}
 
 def book_data_attrs(livro):
     # atributos para reordenar os cartões no cliente (bíblica/alfabética/cronológica)
@@ -125,6 +127,126 @@ def order_toggle(prefix):
     <button type="button" class="ot" data-sort="chron">Cronológica</button>
     <a class="ot-link" href="{prefix}linha-do-tempo/">linha do tempo →</a>
   </div>"""
+
+def az_index():
+    # índice A–Z para pular a um livro: clicar liga a ordem alfabética e rola/destaca o livro (cliente).
+    # letras sem livro ficam desabilitadas; o chip "#" cobre os livros numerados (1/2/3…), que na
+    # ordem alfabética caem no topo.
+    iniciais, tem_num = set(), False
+    for livro in BOOK_ORDER:
+        nome = unicodedata.normalize("NFKD", livro).encode("ascii", "ignore").decode().lower().strip()
+        c = nome[:1]
+        if c.isdigit():
+            tem_num = True
+        elif c.isalpha():
+            iniciais.add(c)
+    chips = []
+    if tem_num:
+        chips.append('<button type="button" class="az" data-az="#">#</button>')
+    for o in range(ord("a"), ord("z") + 1):
+        ch = chr(o)
+        if ch in iniciais:
+            chips.append(f'<button type="button" class="az" data-az="{ch}">{ch.upper()}</button>')
+        else:
+            chips.append(f'<button type="button" class="az az-off" disabled aria-disabled="true">{ch.upper()}</button>')
+    return f"""
+  <div class="az-index" role="group" aria-label="Pular para livro por letra">{''.join(chips)}</div>"""
+
+# Contexto histórico curado POR LIVRO (didático, não-dogmático; autoria "tradicional" quando há debate).
+# NÃO altera o texto bíblico — é uma camada de explicação. Época vem de BOOK_ERA.
+BOOK_CONTEXT = {
+ "Gênesis":{"personagens":"Adão, Noé, Abraão, Isaque, Jacó e José","voz":"Tradicionalmente atribuído a Moisés","sobre":"As origens do mundo e dos patriarcas de Israel."},
+ "Êxodo":{"personagens":"Moisés, Arão, Faraó","voz":"Trad. atribuído a Moisés","sobre":"A libertação do Egito e a aliança no Sinai."},
+ "Levítico":{"personagens":"Moisés, Arão e os sacerdotes","voz":"Trad. atribuído a Moisés","sobre":"Leis de culto, sacrifícios e santidade."},
+ "Números":{"personagens":"Moisés, Arão, Josué, Calebe","voz":"Trad. atribuído a Moisés","sobre":"A peregrinação de Israel pelo deserto."},
+ "Deuteronômio":{"personagens":"Moisés","voz":"Trad. atribuído a Moisés","sobre":"Os últimos discursos de Moisés e a renovação da aliança."},
+ "Josué":{"personagens":"Josué, Raabe","voz":"Trad. atribuído a Josué","sobre":"A conquista e a divisão da Terra Prometida."},
+ "Juízes":{"personagens":"Débora, Gideão, Sansão","voz":"Trad. atribuído a Samuel","sobre":"Os líderes que Deus levantou antes dos reis."},
+ "Rute":{"personagens":"Rute, Noemi, Boaz","voz":"Autor desconhecido (trad. Samuel)","sobre":"Lealdade e redenção no tempo dos juízes."},
+ "1 Samuel":{"personagens":"Samuel, Saul, Davi","voz":"Trad. Samuel e profetas","sobre":"A transição dos juízes para a monarquia."},
+ "2 Samuel":{"personagens":"Davi","voz":"Trad. profetas","sobre":"O reinado de Davi sobre Israel."},
+ "1 Reis":{"personagens":"Salomão, Elias","voz":"Trad. profetas/Jeremias","sobre":"Salomão, o Templo e a divisão do reino."},
+ "2 Reis":{"personagens":"Eliseu, reis de Israel e Judá","voz":"Trad. profetas/Jeremias","sobre":"A queda de Israel e de Judá no exílio."},
+ "1 Crônicas":{"personagens":"Davi","voz":"Trad. atribuído a Esdras","sobre":"A história de Israel com foco em Davi e no culto."},
+ "2 Crônicas":{"personagens":"Salomão, reis de Judá","voz":"Trad. Esdras","sobre":"De Salomão ao exílio, com foco no Templo."},
+ "Esdras":{"personagens":"Esdras, Zorobabel","voz":"Trad. Esdras","sobre":"O retorno do exílio e a reconstrução do Templo."},
+ "Neemias":{"personagens":"Neemias","voz":"Trad. Neemias/Esdras","sobre":"A reconstrução dos muros de Jerusalém."},
+ "Ester":{"personagens":"Ester, Mardoqueu, Assuero","voz":"Autor desconhecido","sobre":"A salvação dos judeus na Pérsia."},
+ "Jó":{"personagens":"Jó e seus amigos","voz":"Autor desconhecido","sobre":"O sofrimento do justo e a soberania de Deus."},
+ "Salmos":{"personagens":"Davi, Asafe, filhos de Corá","voz":"Davi e outros salmistas","sobre":"Orações e cânticos a Deus."},
+ "Provérbios":{"personagens":"Salomão","voz":"Trad. Salomão e sábios","sobre":"Sabedoria prática para a vida."},
+ "Eclesiastes":{"personagens":"o Pregador (Qohélet)","voz":"Trad. Salomão","sobre":"A busca de sentido 'debaixo do sol'."},
+ "Cânticos":{"personagens":"o amado e a amada","voz":"Trad. Salomão","sobre":"Um poema de amor."},
+ "Isaías":{"personagens":"Isaías, reis de Judá","voz":"Profeta Isaías","sobre":"Juízo e esperança; promessas do Messias."},
+ "Jeremias":{"personagens":"Jeremias, Baruque","voz":"Profeta Jeremias","sobre":"Advertências antes da queda de Jerusalém."},
+ "Lamentações":{"personagens":"Jeremias","voz":"Trad. Jeremias","sobre":"Lamentos pela destruição de Jerusalém."},
+ "Ezequiel":{"personagens":"Ezequiel","voz":"Profeta Ezequiel","sobre":"Visões e profecias no exílio babilônico."},
+ "Daniel":{"personagens":"Daniel, Nabucodonosor","voz":"Trad. Daniel","sobre":"Fidelidade e visões no exílio."},
+ "Oseias":{"personagens":"Oseias, Gômer","voz":"Profeta Oseias","sobre":"O amor fiel de Deus apesar da infidelidade."},
+ "Joel":{"personagens":"Joel","voz":"Profeta Joel","sobre":"O 'Dia do Senhor' e a promessa do Espírito."},
+ "Amós":{"personagens":"Amós","voz":"Profeta Amós (pastor)","sobre":"Justiça social e juízo sobre as nações."},
+ "Obadias":{"personagens":"Obadias; Edom","voz":"Profeta Obadias","sobre":"Juízo sobre Edom."},
+ "Jonas":{"personagens":"Jonas","voz":"Trad. Jonas","sobre":"O profeta enviado a Nínive e a misericórdia de Deus."},
+ "Miquéias":{"personagens":"Miquéias","voz":"Profeta Miquéias","sobre":"Juízo e a promessa de Belém."},
+ "Naum":{"personagens":"Naum; Nínive","voz":"Profeta Naum","sobre":"A queda de Nínive."},
+ "Habacuque":{"personagens":"Habacuque","voz":"Profeta Habacuque","sobre":"Perguntas a Deus e a vida pela fé."},
+ "Sofonias":{"personagens":"Sofonias","voz":"Profeta Sofonias","sobre":"O Dia do Senhor e a restauração."},
+ "Ageu":{"personagens":"Ageu, Zorobabel","voz":"Profeta Ageu","sobre":"Incentivo a reconstruir o Templo."},
+ "Zacarias":{"personagens":"Zacarias, Josué (sumo sacerdote)","voz":"Profeta Zacarias","sobre":"Visões e esperança messiânica pós-exílio."},
+ "Malaquias":{"personagens":"Malaquias","voz":"Profeta Malaquias","sobre":"O último chamado do AT à fidelidade."},
+ "Mateus":{"personagens":"Jesus e os apóstolos","voz":"Trad. apóstolo Mateus","sobre":"Jesus como o Messias prometido aos judeus."},
+ "Marcos":{"personagens":"Jesus e os apóstolos","voz":"Trad. João Marcos (de Pedro)","sobre":"Jesus, o Servo que age."},
+ "Lucas":{"personagens":"Jesus, Maria, os apóstolos","voz":"Trad. Lucas, o médico","sobre":"Um relato cuidadoso da vida de Jesus."},
+ "João":{"personagens":"Jesus e os discípulos","voz":"Trad. apóstolo João","sobre":"Jesus, o Verbo, o Filho de Deus."},
+ "Atos":{"personagens":"Pedro, Paulo e os apóstolos","voz":"Trad. Lucas","sobre":"O nascimento e a expansão da Igreja."},
+ "Romanos":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"O evangelho da graça explicado."},
+ "1 Coríntios":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Correções e orientações à igreja de Corinto."},
+ "2 Coríntios":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Defesa do ministério e reconciliação."},
+ "Gálatas":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"A liberdade em Cristo, não na lei."},
+ "Efésios":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"A Igreja como corpo de Cristo."},
+ "Filipenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Alegria e gratidão mesmo na prisão."},
+ "Colossenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"A supremacia de Cristo."},
+ "1 Tessalonicenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Esperança e a volta de Cristo."},
+ "2 Tessalonicenses":{"personagens":"Paulo","voz":"Apóstolo Paulo","sobre":"Esclarecimentos sobre o Dia do Senhor."},
+ "1 Timóteo":{"personagens":"Paulo, Timóteo","voz":"Apóstolo Paulo","sobre":"Orientações ao jovem líder e à igreja."},
+ "2 Timóteo":{"personagens":"Paulo, Timóteo","voz":"Apóstolo Paulo","sobre":"As últimas palavras de Paulo."},
+ "Tito":{"personagens":"Paulo, Tito","voz":"Apóstolo Paulo","sobre":"Organização da igreja em Creta."},
+ "Filemom":{"personagens":"Paulo, Filemom, Onésimo","voz":"Apóstolo Paulo","sobre":"Um apelo por perdão e reconciliação."},
+ "Hebreus":{"personagens":"—","voz":"Autor desconhecido","sobre":"Cristo, superior, como sumo sacerdote."},
+ "Tiago":{"personagens":"Tiago","voz":"Trad. Tiago, irmão de Jesus","sobre":"Uma fé que se mostra em obras."},
+ "1 Pedro":{"personagens":"Pedro","voz":"Apóstolo Pedro","sobre":"Esperança em meio ao sofrimento."},
+ "2 Pedro":{"personagens":"Pedro","voz":"Apóstolo Pedro","sobre":"Alerta contra falsos mestres."},
+ "1 João":{"personagens":"João","voz":"Trad. apóstolo João","sobre":"Amor, verdade e segurança da fé."},
+ "2 João":{"personagens":"João; a 'senhora eleita'","voz":"Trad. apóstolo João","sobre":"Andar na verdade e no amor."},
+ "3 João":{"personagens":"João, Gaio, Diótrefes","voz":"Trad. apóstolo João","sobre":"Hospitalidade e fidelidade."},
+ "Judas":{"personagens":"Judas","voz":"Trad. Judas, irmão de Tiago","sobre":"Alerta contra a falsa doutrina."},
+ "Apocalipse":{"personagens":"João; Jesus","voz":"Trad. apóstolo João","sobre":"Visões do fim e da nova criação."},
+}
+
+def era_badge(prefix, livro):
+    e = BOOK_ERA.get(livro)
+    if not e:
+        return ""
+    return (f'<a class="era-badge" href="{prefix}linha-do-tempo/" title="Ver linha do tempo">'
+            f'🕰️ Acontece em: {esc(e["nome"])} · {esc(e["periodo"])}</a>')
+
+def hist_context(prefix, livro):
+    c = BOOK_CONTEXT.get(livro)
+    if not c:
+        return ""
+    e = BOOK_ERA.get(livro)
+    epoca = f'{esc(e["nome"])} · {esc(e["periodo"])}' if e else "—"
+    return f"""
+  <details class="hist-context">
+    <summary>📜 Contexto histórico de {esc(livro)}</summary>
+    <div class="hc-body">
+      <p><b>Época:</b> {epoca} · <a href="{prefix}linha-do-tempo/">ver linha do tempo</a></p>
+      <p><b>Personagens:</b> {esc(c["personagens"])}</p>
+      <p><b>Quem fala/escreve:</b> {esc(c["voz"])}</p>
+      <p><b>Sobre:</b> {esc(c["sobre"])}</p>
+      <p class="hc-note">Contexto aproximado; época e autoria tradicional podem variar entre estudiosos.</p>
+    </div>
+  </details>"""
 
 def book_slug(livro):
     base = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
@@ -259,7 +381,7 @@ def specimen_block(v):
   </figure>"""
 
 # ---------- páginas ----------
-def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
+def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, xrefs=None, verse_by_slug=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -318,6 +440,20 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     <div class="related-list">{items}</div>
   </section>"""
 
+    # referências cruzadas ("Veja também") — passagens relacionadas por significado
+    xref = ""
+    xr = (xrefs or {}).get(v["slug"], [])
+    if xr and verse_by_slug:
+        chips = "".join(
+            f'<a class="xref-chip" href="../{s}/">{esc(verse_by_slug[s]["referencia"])}</a>'
+            for s in xr if s in verse_by_slug)
+        if chips:
+            xref = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Veja também</h2>
+    <div class="xrefs">{chips}</div>
+  </section>"""
+
     src_note = f"""
   <p class="src-note">Original: {esc(v.get('original_fonte',''))} · Tradução: {esc(v.get('texto_pt_fonte',''))}</p>"""
 
@@ -343,6 +479,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <header class="verse-head">
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
     <h1>{esc(v['referencia'])}</h1>
+    {era_badge(prefix, v['livro'])}
   </header>
 
   <div class="verse-hero reveal">
@@ -353,8 +490,10 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </div>
 
   {specimen_block(v)}
+  {hist_context(prefix, v['livro'])}
   {blocks}
   {kw_html}
+  {xref}
   {rel}
   {src_note}
   {pager}
@@ -415,6 +554,7 @@ def build_books_index(order, struct):
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
   <p class="read" style="color:var(--muted)">Escolha um livro para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
   {order_toggle(prefix)}
+  {az_index()}
   <div class="cards verses" data-booklist>{cards}
   </div>
 </main>"""
@@ -528,8 +668,10 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   <header class="verse-head">
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
+    {era_badge(prefix, livro)}
   </header>
   {book_jump(prefix, order, livro)}
+  {hist_context(prefix, livro)}
   <div class="chapter">{rows}
   </div>
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
@@ -636,7 +778,7 @@ def build_home(topics, verses, articles, sources, order, struct):
     <div id="results" class="search-results"></div>
     <a id="continue-read" class="continue-read" href="#" hidden></a>
     <div class="quick-actions">
-      <button type="button" id="random-verse" class="btn ghost">🕊️ Um versículo para você</button>
+      <button type="button" id="random-verse" class="btn invite">🕊️ Um versículo para você</button>
     </div>
   </section>
 
@@ -647,6 +789,7 @@ def build_home(topics, verses, articles, sources, order, struct):
       <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
     </div>
     {order_toggle("")}
+    {az_index()}
     <div class="cards verses wrap" data-booklist>{bcards}
     </div>
   </section>
@@ -689,6 +832,7 @@ def build_home(topics, verses, articles, sources, order, struct):
     <div class="read">
       <p>O texto bíblico em português é a <b>Almeida Revista e Corrigida de 1911</b>, a edição mais recente de Almeida em domínio público no Brasil. O hebraico e o aramaico vêm do <b>Westminster Leningrad Codex</b> (Open Scriptures Hebrew Bible); o grego, da edição <b>Nestle 1904</b> — todos de uso livre.</p>
       <p>Os comentários rabínicos são <b>resumos originais</b>, escritos por nós e citando as fontes pelo nome (Rashi, Talmud, Midrash, Ibn Ezra, Targum). Não reproduzimos traduções modernas protegidas. Imagens de manuscrito só aparecem quando há um arquivo em domínio público, sempre com crédito.</p>
+      <p>As <b>referências cruzadas</b> ("Veja também") derivam do <b>Treasury of Scripture Knowledge</b> (domínio público), na compilação aberta do <a class="ext-link" href="https://www.openbible.info/labs/cross-references/" target="_blank" rel="noopener">OpenBible.info</a> (Creative Commons Attribution).</p>
     </div>
   </section>
 </main>"""
@@ -867,6 +1011,24 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     var b=e.target.closest && e.target.closest('.order-toggle .ot'); if(!b) return;
     var m=b.getAttribute('data-sort'); try{ localStorage.setItem('bec.bookorder', m); }catch(e){}
     apply(m);
+  });
+  // índice A–Z: clicar numa letra liga a ordem alfabética e rola/destaca o 1º livro daquela letra
+  document.addEventListener('click', function(e){
+    var a=e.target.closest && e.target.closest('.az-index .az[data-az]'); if(!a || a.disabled) return;
+    var letra=a.getAttribute('data-az');
+    try{ localStorage.setItem('bec.bookorder','alpha'); }catch(e){}
+    apply('alpha');
+    var alvo=null, all=document.querySelectorAll('[data-booklist] .book-card');
+    for(var i=0;i<all.length;i++){
+      var nm=all[i].getAttribute('data-name')||'';
+      if(letra==='#'){ if(/^[0-9]/.test(nm)){ alvo=all[i]; break; } }
+      else if(nm.charAt(0)===letra){ alvo=all[i]; break; }
+    }
+    if(alvo){
+      alvo.scrollIntoView({behavior:'smooth',block:'center'});
+      alvo.classList.add('flash');
+      setTimeout(function(){ alvo.classList.remove('flash'); },1300);
+    }
   });
   var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
   if(saved!=='bib') apply(saved);
@@ -1214,11 +1376,6 @@ def build_study_js():
   }
 
   // ---------- página de Anotações: listar, copiar, baixar, limpar ----------
-  function slugFromRef(ref){
-    var m=ref.match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '#';
-    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
-  }
   function allRefs(notes, vhl, whl){
     var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
     return Object.keys(s).sort();
@@ -1260,7 +1417,7 @@ def build_study_js():
     var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
     if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e use “Grifar” ou “Anotar”.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
-      var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
+      var h='<div class="anot"><h3><a href="'+refToUrl(ref)+'">'+esc(ref)+'</a></h3>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -1297,6 +1454,35 @@ def build_study_js():
       };
     }
   }
+  // ---------- caixa "Minhas anotações" que abre por cima (reaproveita render()) ----------
+  var notesDrawer=null;
+  function openNotesDrawer(){
+    if(!notesDrawer){
+      notesDrawer=document.createElement('div');
+      notesDrawer.className='anot-drawer';
+      notesDrawer.innerHTML='<div class="anot-drawer-box" role="dialog" aria-modal="true" aria-label="Minhas anotações">'+
+        '<div class="anot-drawer-head"><h2>Minhas anotações</h2>'+
+        '<button type="button" class="anot-drawer-x" aria-label="Fechar">✕</button></div>'+
+        '<div id="anotacoes" class="anot-list"></div>'+
+        '<p class="anot-drawer-foot"><a href="'+BEC_BASE+'/anotacoes/">Gerenciar / exportar →</a></p>'+
+        '</div>';
+      document.body.appendChild(notesDrawer);
+      function close(){ notesDrawer.classList.remove('open'); }
+      notesDrawer.addEventListener('click', function(e){ if(e.target===notesDrawer || e.target.closest('.anot-drawer-x')) close(); });
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape' && notesDrawer.classList.contains('open')) close(); });
+    }
+    render();
+    notesDrawer.classList.add('open');
+  }
+  // abrir a caixa ao tocar nos links de "Anotações" (menu, ferramentas) — exceto na própria página /anotacoes/
+  if(!document.getElementById('anotacoes')){
+    document.addEventListener('click', function(e){
+      var a=e.target.closest && e.target.closest('a[href$="anotacoes/"]'); if(!a) return;
+      if(a.closest('.anot-drawer')) return; // o link "Gerenciar →" navega normalmente
+      e.preventDefault(); openNotesDrawer();
+    });
+  }
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
 """
@@ -1383,8 +1569,11 @@ def main():
     topics=load("topics.json"); verses=load("verses.json")
     articles=load("articles.json"); sources=load("sources.json")
     articles_by_slug={a["slug"]:a for a in articles}
+    # referências cruzadas ("Veja também"), geradas por scripts/gen_crossrefs.py (opcional)
+    xrefs = load("crossrefs.json") if (DATA/"crossrefs.json").exists() else {}
     # ordem bíblica garantida (folhear de Gênesis a Apocalipse)
     verses = sorted(verses, key=verse_sort_key)
+    verse_by_slug = {v["slug"]: v for v in verses}
     order, struct = group_by_book_chapter(verses)
     # limpa saídas antigas
     for d in ["versiculos","artigos","ler","anotacoes"]:
@@ -1399,7 +1588,7 @@ def main():
     for i, v in enumerate(verses):
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
-        build_verse_page(v, articles_by_slug, prev_v, next_v)
+        build_verse_page(v, articles_by_slug, prev_v, next_v, xrefs, verse_by_slug)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)

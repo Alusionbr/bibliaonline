@@ -169,6 +169,24 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     var m=b.getAttribute('data-sort'); try{ localStorage.setItem('bec.bookorder', m); }catch(e){}
     apply(m);
   });
+  // índice A–Z: clicar numa letra liga a ordem alfabética e rola/destaca o 1º livro daquela letra
+  document.addEventListener('click', function(e){
+    var a=e.target.closest && e.target.closest('.az-index .az[data-az]'); if(!a || a.disabled) return;
+    var letra=a.getAttribute('data-az');
+    try{ localStorage.setItem('bec.bookorder','alpha'); }catch(e){}
+    apply('alpha');
+    var alvo=null, all=document.querySelectorAll('[data-booklist] .book-card');
+    for(var i=0;i<all.length;i++){
+      var nm=all[i].getAttribute('data-name')||'';
+      if(letra==='#'){ if(/^[0-9]/.test(nm)){ alvo=all[i]; break; } }
+      else if(nm.charAt(0)===letra){ alvo=all[i]; break; }
+    }
+    if(alvo){
+      alvo.scrollIntoView({behavior:'smooth',block:'center'});
+      alvo.classList.add('flash');
+      setTimeout(function(){ alvo.classList.remove('flash'); },1300);
+    }
+  });
   var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
   if(saved!=='bib') apply(saved);
 })();

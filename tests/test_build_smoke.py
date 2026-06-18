@@ -6,6 +6,7 @@ e verifica que as páginas, o sitemap e o índice de busca saem como esperado.
 Pega regressões de integração que os testes unitários não enxergam.
 """
 import json
+from pathlib import Path
 
 import pytest
 
@@ -49,6 +50,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
+    # referências cruzadas mínimas (Gênesis 1:1 → João 1:1) para exercitar o "Veja também"
+    (data_dir / "crossrefs.json").write_text(json.dumps({"genesis-1-1": ["joao-1-1"]}), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -223,6 +226,29 @@ def test_lote4_ordenacao_dos_livros(site):
     assert "bec.bookorder" in app and "data-booklist" in app
 
 
+def test_lote5_epoca_e_contexto_cobrem_66_livros(build):
+    b = build
+    faltam_era = [x for x in b.BOOK_ORDER if x not in b.BOOK_ERA]
+    faltam_ctx = [x for x in b.BOOK_ORDER if x not in b.BOOK_CONTEXT]
+    assert not faltam_era, faltam_era
+    assert not faltam_ctx, faltam_ctx
+    assert len(b.BOOK_ORDER) == 66
+
+
+def test_lote5_selo_de_epoca_e_contexto(site):
+    # versículo: selo de época + bloco de contexto histórico (com personagens) + link p/ timeline
+    vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "Acontece em" in vp and "linha-do-tempo/" in vp
+    assert "Contexto histórico de Gênesis" in vp
+    assert "Personagens:" in vp and "Quem fala/escreve:" in vp
+    # capítulo: também tem o selo e o contexto
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "Acontece em" in cap and "Contexto histórico de Gênesis" in cap
+    # NT também
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "Contexto histórico de João" in joao
+
+
 def test_lote4_linha_do_tempo(site):
     tl = (site / "linha-do-tempo" / "index.html")
     assert tl.exists()
@@ -235,3 +261,69 @@ def test_lote4_linha_do_tempo(site):
     # link na navegação e no sitemap
     assert "Linha do tempo" in html
     assert "/linha-do-tempo/" in (site / "sitemap.xml").read_text("utf-8")
+
+
+def test_lote6_indice_az(site):
+    # índice A–Z na home e no /ler/, com letra ativa, chip de numerados e letra sem livro desabilitada
+    for page in (site / "index.html", site / "ler" / "index.html"):
+        html = page.read_text("utf-8")
+        assert 'class="az-index"' in html
+        assert 'data-az="a"' in html and 'data-az="#"' in html
+        assert "az az-off" in html and "disabled" in html  # letras sem livro (b, k, q, …)
+    # comportamento no app.js: liga alfabética, rola e destaca
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert ".az-index .az[data-az]" in app and "scrollIntoView" in app and "flash" in app
+    # CSS do índice e do realce (styles.css é fonte, lido do repo)
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".az-index" in css and ".book-card.flash" in css
+
+
+def test_lote6_caixa_anotacoes_e_botao_versiculo(site):
+    # caixa que abre por cima reaproveitando render(); intercepta links de anotações
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "openNotesDrawer" in study and "anot-drawer" in study
+    assert 'a[href$="anotacoes/"]' in study
+    assert "refToUrl(ref)" in study  # links da lista usam URL absoluta (funciona na caixa)
+    # botão do versículo aleatório mais visível (mantém o id)
+    home = (site / "index.html").read_text("utf-8")
+    assert 'id="random-verse" class="btn invite"' in home
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".anot-drawer" in css and ".btn.invite" in css
+
+
+def test_lote7_referencias_cruzadas(site):
+    # versículo COM xref: bloco "Veja também" + link para o relacionado (referência por extenso)
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "Veja também" in gen
+    assert 'class="xref-chip" href="../joao-1-1/"' in gen and "João 1:1" in gen
+    # versículo SEM xref: não renderiza o bloco
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "Veja também" not in joao
+    # atribuição (CC-BY) na home + CSS
+    home = (site / "index.html").read_text("utf-8")
+    assert "OpenBible.info" in home and "Treasury of Scripture Knowledge" in home
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".xref-chip" in css
+
+
+def test_lote7_parser_crossrefs(gen_crossrefs):
+    g = gen_crossrefs
+    # OSIS → slug (AT, NT, livro numerado, acento) e intervalo usa o versículo inicial
+    assert g.osis_to_slug("Gen.1.1") == "genesis-1-1"
+    assert g.osis_to_slug("John.3.16") == "joao-3-16"
+    assert g.osis_to_slug("1Cor.13.4") == "1-corintios-13-4"
+    assert g.osis_to_slug("Song.1.1") == "canticos-1-1"
+    assert g.osis_to_slug("Gen.1.1-Gen.1.5") == "genesis-1-1"
+    assert g.osis_to_slug("Zzz.1.1") == ""  # livro desconhecido
+    # parser: ordena por votos, capa em N, descarta auto-ref, voto ≤0 e slug inexistente
+    valid = {"genesis-1-1", "joao-1-1", "salmos-23-1", "romanos-5-8"}
+    tsv = (
+        "From Verse\tTo Verse\tVotes\n"
+        "Gen.1.1\tJohn.1.1\t10\n"        # ok
+        "Gen.1.1\tPs.23.1\t30\n"          # ok, mais votado → vem antes
+        "Gen.1.1\tRom.5.8\t-2\n"          # voto negativo → descartado
+        "Gen.1.1\tMatt.99.99\t5\n"        # slug inexistente → descartado
+        "Gen.1.1\tGen.1.1\t9\n"           # auto-referência → descartada
+    )
+    out = g.parse_refs(tsv, valid, top_n=6)
+    assert out["genesis-1-1"] == ["salmos-23-1", "joao-1-1"]

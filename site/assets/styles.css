@@ -105,8 +105,12 @@ h1,h2,h3{font-family:"Fraunces","Spectral",serif;font-weight:600;line-height:1.0
 }
 .btn.primary{background:var(--gold);color:#20170a}
 .btn.primary:hover{background:var(--gold-soft);color:#20170a}
-.btn.ghost{border-color:rgba(255,255,255,.28);color:#f6efe0;background:rgba(255,255,255,.05)}
-.btn.ghost:hover{background:rgba(255,255,255,.12);color:#fff}
+.btn.ghost{border-color:var(--line);color:var(--ink);background:var(--paper)}
+.btn.ghost:hover{background:var(--vellum-2);color:var(--ink)}
+/* o hero tem fundo escuro fixo (independe do tema): ali o ghost mantém texto claro
+   para não sumir; nas demais áreas (busca, modais, anotações) segue o tema da página */
+.hero .btn.ghost{border-color:rgba(255,255,255,.28);color:#f6efe0;background:rgba(255,255,255,.05)}
+.hero .btn.ghost:hover{background:rgba(255,255,255,.12);color:#fff}
 
 /* verse stack — o elemento-assinatura */
 .specimen-card{
@@ -461,3 +465,53 @@ html.dark .order-toggle .ot.on{color:#1a1610}
 .era-desc{color:var(--muted);margin:.4rem 0 .9rem}
 .era-gap-note{color:var(--muted);font-style:italic;margin:.2rem 0 .4rem}
 .era .book-card{padding:12px 14px}
+
+/* ===== Lote 5: selo de época + contexto histórico por livro ===== */
+.era-badge{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.82rem;color:var(--gold-deep);background:var(--vellum-2);border:1px solid var(--line);
+  border-radius:999px;padding:4px 11px;text-decoration:none}
+.era-badge:hover{border-color:var(--gold-deep);color:var(--ink)}
+.hist-context{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--vellum-2);
+  overflow:hidden}
+.hist-context>summary{cursor:pointer;padding:12px 16px;font-family:"Inter",system-ui,sans-serif;font-weight:600;
+  color:var(--ink-soft);list-style:none}
+.hist-context>summary::-webkit-details-marker{display:none}
+.hist-context[open]>summary{border-bottom:1px solid var(--line)}
+.hist-context .hc-body{padding:12px 16px;font-family:"Spectral",Georgia,serif}
+.hist-context .hc-body p{margin:.3rem 0}
+.hist-context .hc-note{margin-top:.7rem;font-size:.8rem;color:var(--muted);font-style:italic}
+
+/* ===== Lote 6: índice A–Z + caixa de anotações + botão do versículo ===== */
+/* índice de letras para pular a um livro (rola e destaca) */
+.az-index{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 16px;font-family:"Inter",system-ui,sans-serif}
+.az-index .az{min-width:34px;min-height:34px;padding:4px 6px;border-radius:9px;font-size:.82rem;font-weight:600;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);cursor:pointer;line-height:1}
+.az-index .az:hover{border-color:var(--gold-deep);color:var(--ink)}
+.az-index .az.az-off{opacity:.32;cursor:default;background:transparent}
+.book-card.flash{animation:bec-flash 1.3s ease-out}
+@keyframes bec-flash{0%{box-shadow:0 0 0 3px var(--gold)}60%{box-shadow:0 0 0 3px var(--gold)}100%{box-shadow:0 0 0 0 transparent}}
+
+/* caixa "Minhas anotações" que abre por cima (reaproveita a lista de /anotacoes/) */
+.anot-drawer{position:fixed;inset:0;z-index:90;background:rgba(20,16,8,.55);display:none;place-items:center;padding:20px}
+.anot-drawer.open{display:grid}
+.anot-drawer-box{background:var(--paper);color:var(--ink);border-radius:16px;padding:20px 22px;width:min(560px,100%);
+  max-height:80vh;overflow:auto;box-shadow:var(--shadow);font-family:"Inter",system-ui,sans-serif}
+.anot-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.anot-drawer-head h2{font-size:1.25rem;margin:0}
+.anot-drawer-x{border:1px solid var(--line);background:transparent;color:var(--ink-soft);border-radius:10px;
+  width:38px;height:38px;cursor:pointer;font-size:1rem}
+.anot-drawer-x:hover{border-color:var(--gold-deep);color:var(--ink)}
+.anot-drawer-foot{margin:14px 0 0;text-align:right}
+.anot-drawer-foot a{color:var(--gold-deep);text-decoration:none;font-weight:600}
+
+/* botão "Um versículo para você" — convite dourado, legível nos dois temas */
+.quick-actions{margin-top:12px;display:flex;justify-content:center}
+.btn.invite{background:var(--gold-soft);border-color:var(--gold-deep);color:#2a2206}
+.btn.invite:hover{background:var(--gold);color:#2a2206}
+
+/* ===== Lote 7: referências cruzadas ("Veja também") ===== */
+.xrefs{display:flex;flex-wrap:wrap;gap:8px}
+.xref-chip{display:inline-flex;align-items:center;font-family:"Inter",system-ui,sans-serif;font-size:.9rem;
+  background:var(--vellum-2);border:1px solid var(--line);border-radius:999px;padding:7px 14px;
+  text-decoration:none;color:var(--ink)}
+.xref-chip:hover{border-color:var(--gold);color:var(--ink)}
