@@ -32,6 +32,28 @@ Validacao:
 - Documento criado sem alterar o pipeline de build.
 - Nao exige rebuild do `site/`, pois e apenas documentacao.
 
+## 2026-06-21 - Texto grego recolhido por seta
+
+Pedido do usuario: escritas em grego devem seguir a mesma regra visual do
+hebraico com a seta `>`.
+
+Mudanca:
+
+- Criado `original_html()` no gerador para recolher o texto original grego em
+  `details.original-toggle`.
+- Hebraico e aramaico continuam com o original visivel; suas transliteracoes
+  seguem em `details.translit-toggle`.
+- Atualizado `study.js` gerado para ignorar cliques dentro de
+  `.original-toggle`, evitando conflito com a barra de estudo.
+- Atualizado CSS para `original-toggle` compartilhar o estilo de seta.
+- Regenerado `site/`.
+
+Validacao:
+
+- `python scripts/build.py`
+- `python -m pytest` (`73 passed`)
+- `git diff --check` nos arquivos alterados e paginas de exemplo.
+
 ## Estado atual - 2026-06-17
 
 - Repositorio: `Alusionbr/bibliaonline`

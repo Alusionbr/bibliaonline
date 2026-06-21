@@ -75,6 +75,10 @@ def test_gera_navegacao_livro_capitulo(site):
     cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
     assert "No princípio criou Deus" in cap
     assert "versiculos/genesis-1-1/" in cap
+    grego = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
+    assert 'class="original-toggle"' in grego
+    assert "Mostrar texto grego" in grego
+    assert 'class="translit-toggle"' not in grego
 
 
 def test_gera_ferramentas_de_estudo(site):
