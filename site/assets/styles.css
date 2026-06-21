@@ -317,28 +317,31 @@ section{padding:52px 0}
 .ch-body .pt{margin:0}
 .ch-body .pt-missing{color:var(--muted)}
 
-.translit-toggle{margin:0 0 .85rem}
-.ch-body .translit-toggle{margin:0 0 4px}
-.translit-toggle summary{
+.translit-toggle,.original-toggle{margin:0 0 .85rem}
+.ch-body .translit-toggle,.ch-body .original-toggle{margin:0 0 4px}
+.translit-toggle summary,.original-toggle summary{
   display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
   border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.42);
   color:var(--gold-deep);cursor:pointer;list-style:none;transition:border-color .15s,background .15s,color .15s
 }
-.translit-toggle summary::-webkit-details-marker{display:none}
-.translit-toggle summary::marker{content:""}
-.translit-toggle summary:hover,.translit-toggle summary:focus-visible{
+.translit-toggle summary::-webkit-details-marker,.original-toggle summary::-webkit-details-marker{display:none}
+.translit-toggle summary::marker,.original-toggle summary::marker{content:""}
+.translit-toggle summary:hover,.translit-toggle summary:focus-visible,
+.original-toggle summary:hover,.original-toggle summary:focus-visible{
   border-color:var(--gold-deep);background:var(--gold-soft);color:#2a2206;outline:0
 }
 .translit-arrow{
   display:block;font-family:"Inter",system-ui,sans-serif;font-size:.95rem;font-weight:700;
   line-height:1;transition:transform .15s ease
 }
-.translit-toggle[open] .translit-arrow{transform:rotate(90deg)}
+.translit-toggle[open] .translit-arrow,.original-toggle[open] .translit-arrow{transform:rotate(90deg)}
 .translit-toggle .translit{
   font-family:"Inter",system-ui,sans-serif;font-size:.92rem;letter-spacing:.03em;
   color:var(--muted);margin:.45rem 0 0
 }
 .ch-body .translit-toggle .translit{font-size:.9rem;margin:.35rem 0 0}
+.original-toggle .orig{margin:.45rem 0 0}
+.ch-body .original-toggle .orig{margin:.35rem 0 0}
 
 /* ferramentas de estudo: grifo de palavra/versículo, anotações */
 /* marca-texto na palavra: faixa amarela estilo caneta marca-texto */
@@ -447,8 +450,9 @@ html.dark .study-context{background:rgba(34,28,20,.96)}
 html.dark .study-context button:hover,html.dark .study-context button:focus-visible{background:var(--vellum-2);color:var(--gold-soft)}
 html.dark .ch-verse.study-active{background:rgba(231,214,171,.08)}
 html.dark .note-box{background:rgba(34,28,20,.86)}
-html.dark .translit-toggle summary{background:rgba(255,255,255,.06);color:var(--gold-deep)}
-html.dark .translit-toggle summary:hover,html.dark .translit-toggle summary:focus-visible{background:var(--gold-soft);color:#2a2206}
+html.dark .translit-toggle summary,html.dark .original-toggle summary{background:rgba(255,255,255,.06);color:var(--gold-deep)}
+html.dark .translit-toggle summary:hover,html.dark .translit-toggle summary:focus-visible,
+html.dark .original-toggle summary:hover,html.dark .original-toggle summary:focus-visible{background:var(--gold-soft);color:#2a2206}
 /* fix: a barra de navegação tem fundo claro fixo — escurecer no modo noturno
    para os botões A−/A+ (texto) não sumirem em claro-sobre-claro */
 html.dark .nav{background:rgba(20,17,11,.92)}

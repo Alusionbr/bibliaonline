@@ -60,6 +60,30 @@ def test_translit_disclosure_vazio_nao_renderiza_controle(build):
     assert build.translit_disclosure("   ") == ""
 
 
+# ---- original_html ----
+
+def test_original_html_grego_recolhe_com_seta(build):
+    html = build.original_html({
+        "idioma": "grego",
+        "dir": "ltr",
+        "original": "<logos>",
+    })
+    assert '<details class="original-toggle">' in html
+    assert "Mostrar texto grego" in html
+    assert '<p class="orig scr-greek" dir="ltr">&lt;logos&gt;</p>' in html
+    assert "&gt;" in html
+
+
+def test_original_html_hebraico_permanece_visivel(build):
+    html = build.original_html({
+        "idioma": "hebraico",
+        "dir": "rtl",
+        "original": "בְּרֵאשִׁית",
+    })
+    assert '<details class="original-toggle">' not in html
+    assert '<p class="orig scr-hebrew" dir="rtl">' in html
+
+
 # ---- script_class / lang_label ----
 
 def test_script_class(build):

@@ -234,11 +234,24 @@ def translit_disclosure(text, indent=4):
         f'{pad}</details>'
     )
 
-def verse_stack(v, big=False):
+def original_html(v, indent=4):
     sc = script_class(v["idioma"], v.get("dir","ltr"))
     dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
+    original = esc(v.get("original",""))
+    if v.get("idioma") != "grego":
+        return f'{" " * indent}<p class="orig {sc}"{dir_attr}>{original}</p>'
+    pad = " " * indent
+    inner = " " * (indent + 2)
+    return (
+        f'{pad}<details class="original-toggle">\n'
+        f'{inner}<summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>\n'
+        f'{inner}<p class="orig {sc}"{dir_attr}>{original}</p>\n'
+        f'{pad}</details>'
+    )
+
+def verse_stack(v, big=False):
     return f"""
-    <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
+{original_html(v, 4)}
 {translit_disclosure(v.get('transliteracao',''), 4)}
     <p class="pt">{esc(v['texto_pt'])}</p>"""
 
@@ -283,8 +296,6 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
         "inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","name":SITE_NAME,"url":BASE_URL},
         "about":v["referencia"],"keywords":", ".join(v.get("palavras",[]))
     }
-    sc = script_class(v["idioma"], v.get("dir","ltr"))
-    dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
     ch, vs = ref_chvs(v["referencia"])
 
     # blocos: origem (se houver), comentário rabínico (Sefaria) e leitura curada
@@ -359,7 +370,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </header>
 
   <div class="verse-hero reveal">
-    <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
+{original_html(v, 4)}
 {translit_disclosure(v.get('transliteracao',''), 4)}
     {pt_html}
     <p class="src-line">{esc(v.get('contexto',''))}</p>
@@ -516,17 +527,15 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     desc = f"{livro} {ch}: capítulo completo no idioma original, com transliteração e tradução Almeida 1911."
     canonical = f"{BASE_URL}/ler/{bslug}/{ch}/"
     idioma = verses[0].get("idioma","hebraico") if verses else "hebraico"
-    sc = script_class(idioma, verses[0].get("dir","ltr") if verses else "ltr")
     rows = ""
     for v in verses:
         _, vs = ref_chvs(v["referencia"])
-        dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
         pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
         rows += f"""
     <div class="ch-verse" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body">
-        <p class="orig {sc}"{dir_attr}>{esc(v.get('original',''))}</p>
+{original_html(v, 8)}
 {translit_disclosure(v.get('transliteracao',''), 8)}
         <p class="pt">{pt}</p>
       </div>
@@ -1176,7 +1185,7 @@ def build_study_js():
       else if(act==='share') shareVerse(cont, ref, action);
       return;
     }
-    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,a,button,select,input,textarea')) return;
+    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,a,button,select,input,textarea')) return;
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
     var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
