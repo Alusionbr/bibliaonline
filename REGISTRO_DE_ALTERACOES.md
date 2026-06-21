@@ -15,6 +15,23 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-21 - Guia operacional para Claude/Codex
+
+Pedido do usuario: entender se o projeto esta organizado para outros
+desenvolvedores e criar um arquivo `CLAUDE.md` para uso com Claude e Codex.
+
+Mudanca:
+
+- Criado `CLAUDE.md` na raiz do repositorio.
+- Documentada a estrutura do projeto, fluxo de build, testes, deploy,
+  regras para nao editar arquivos gerados diretamente e checklist de validacao
+  manual do site publicado.
+
+Validacao:
+
+- Documento criado sem alterar o pipeline de build.
+- Nao exige rebuild do `site/`, pois e apenas documentacao.
+
 ## Estado atual - 2026-06-17
 
 - Repositorio: `Alusionbr/bibliaonline`
