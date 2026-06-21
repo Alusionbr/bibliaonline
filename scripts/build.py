@@ -1165,7 +1165,9 @@ def build_study_js():
     var action=e.target.closest && e.target.closest('.study-context button, .note-actions button');
     if(action){
       var bar=action.closest && action.closest('.study-context');
-      var cont=action.closest('[data-ref]')||activeStudy||findStudyByRef(bar && bar.getAttribute('data-ref')); if(!cont) return;
+      var cont=bar ? findStudyByRef(bar.getAttribute('data-ref')) : action.closest('[data-ref]');
+      if(!cont && activeStudy && !(activeStudy.classList && activeStudy.classList.contains('study-context'))) cont=activeStudy;
+      if(!cont) return;
       var ref=cont.getAttribute('data-ref'), act=action.dataset.act;
       activateStudy(cont);
       if(act==='vhl') toggleVerse(cont, ref, action);
