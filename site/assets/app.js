@@ -231,10 +231,9 @@ document.addEventListener('error', function(e){
   var idx=0, speaking=false, paused=false;
   function clearHi(){ nodes.forEach(function(n){ n.classList.remove('tts-current'); }); }
   function addPausesForProsody(text){
-    // Adiciona pausas naturais interpretadas pela Web Speech API via espaços em branco
     return text
-      .replace(/([.!?;])\s+/g, '$1  ')  // Duplo espaço (pausa maior ~500ms) após ponto/! /? /;
-      .replace(/([,:])\s+/g, '$1 ');     // Espaço (pausa menor ~200ms) após vírgula/dois-pontos
+      .replace(/([.!?;])\s+/g, '$1  ')
+      .replace(/([,:])\s+/g, '$1 ');
   }
   function setBtn(state){
     // state: 'play' | 'pause' | 'idle'

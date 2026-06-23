@@ -1539,6 +1539,11 @@ document.addEventListener('error', function(e){
       stopBtn=bar.querySelector('[data-audio-stop]');
   var idx=0, speaking=false, paused=false;
   function clearHi(){ nodes.forEach(function(n){ n.classList.remove('tts-current'); }); }
+  function addPausesForProsody(text){
+    return text
+      .replace(/([.!?;])\s+/g, '$1  ')
+      .replace(/([,:])\s+/g, '$1 ');
+  }
   function setBtn(state){
     // state: 'play' | 'pause' | 'idle'
     if(state==='idle'){ playBtn.textContent='🔊 Ouvir'; playBtn.setAttribute('aria-label','Ouvir'); if(stopBtn) stopBtn.hidden=true; }
@@ -1551,8 +1556,10 @@ document.addEventListener('error', function(e){
     var el=nodes[i];
     clearHi(); el.classList.add('tts-current');
     try{ el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
-    var u=new SpeechSynthesisUtterance((el.textContent||'').trim());
-    u.lang='pt-BR'; u.rate=0.95;
+    var text=(el.textContent||'').trim();
+    text=addPausesForProsody(text);
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='pt-BR'; u.rate=0.95; u.pitch=1.1; u.volume=0.9;
     u.onend=function(){ if(speaking && !paused) speakFrom(i+1); };
     u.onerror=function(){ stop(); };
     speechSynthesis.speak(u);
