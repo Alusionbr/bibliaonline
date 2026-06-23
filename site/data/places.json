@@ -1,0 +1,273 @@
+[
+  {
+    "slug": "ur",
+    "nome": "Ur dos Caldeus",
+    "tipo": "Cidade",
+    "regiao": "Mesopotâmia e origens",
+    "descricao": "Cidade da Mesopotâmia de onde saiu Abraão rumo à terra prometida.",
+    "lat": 30.96,
+    "lon": 46.1,
+    "refs": [
+      "Gênesis 11:31"
+    ]
+  },
+  {
+    "slug": "babilonia",
+    "nome": "Babilônia",
+    "tipo": "Cidade",
+    "regiao": "Mesopotâmia e origens",
+    "descricao": "Capital do império que levou Judá ao exílio; símbolo de cativeiro na Bíblia.",
+    "lat": 32.54,
+    "lon": 44.42,
+    "refs": [
+      "Salmos 137:1",
+      "Daniel 1:1"
+    ]
+  },
+  {
+    "slug": "ararate",
+    "nome": "Montes Ararate",
+    "tipo": "Monte",
+    "regiao": "Mesopotâmia e origens",
+    "descricao": "Região montanhosa onde a arca repousou após o dilúvio.",
+    "lat": 39.7,
+    "lon": 44.3,
+    "refs": [
+      "Gênesis 8:4"
+    ]
+  },
+  {
+    "slug": "monte-sinai",
+    "nome": "Monte Sinai",
+    "tipo": "Monte",
+    "regiao": "Egito e o Êxodo",
+    "descricao": "Onde Israel recebeu a Lei e a aliança depois da saída do Egito.",
+    "lat": 28.54,
+    "lon": 33.97,
+    "refs": [
+      "Êxodo 19:20"
+    ]
+  },
+  {
+    "slug": "mar-vermelho",
+    "nome": "Mar Vermelho",
+    "tipo": "Mar",
+    "regiao": "Egito e o Êxodo",
+    "descricao": "Onde o mar se abriu na fuga do Egito, marcando a libertação de Israel.",
+    "lat": 27.5,
+    "lon": 34.0,
+    "refs": [
+      "Êxodo 14:21"
+    ]
+  },
+  {
+    "slug": "jerusalem",
+    "nome": "Jerusalém",
+    "tipo": "Cidade",
+    "regiao": "Terra de Israel",
+    "descricao": "Cidade de Davi e do Templo; centro da história de Israel e da Páscoa de Jesus.",
+    "lat": 31.78,
+    "lon": 35.23,
+    "refs": [
+      "Salmos 122:2",
+      "2 Samuel 5:7"
+    ]
+  },
+  {
+    "slug": "belem",
+    "nome": "Belém",
+    "tipo": "Cidade",
+    "regiao": "Terra de Israel",
+    "descricao": "Cidade natal de Davi e local do nascimento de Jesus.",
+    "lat": 31.7,
+    "lon": 35.2,
+    "refs": [
+      "Mateus 2:1",
+      "Mateus 2:6"
+    ]
+  },
+  {
+    "slug": "hebrom",
+    "nome": "Hebrom",
+    "tipo": "Cidade",
+    "regiao": "Terra de Israel",
+    "descricao": "Onde Abraão se estabeleceu e foi sepultado; primeira capital de Davi.",
+    "lat": 31.53,
+    "lon": 35.1,
+    "refs": [
+      "Gênesis 23:19"
+    ]
+  },
+  {
+    "slug": "jerico",
+    "nome": "Jericó",
+    "tipo": "Cidade",
+    "regiao": "Terra de Israel",
+    "descricao": "Primeira cidade conquistada na entrada em Canaã, com suas muralhas.",
+    "lat": 31.87,
+    "lon": 35.44,
+    "refs": [
+      "Josué 6:20"
+    ]
+  },
+  {
+    "slug": "monte-carmelo",
+    "nome": "Monte Carmelo",
+    "tipo": "Monte",
+    "regiao": "Terra de Israel",
+    "descricao": "Onde Elias desafiou os profetas de Baal.",
+    "lat": 32.73,
+    "lon": 35.04,
+    "refs": [
+      "1 Reis 18:20"
+    ]
+  },
+  {
+    "slug": "rio-jordao",
+    "nome": "Rio Jordão",
+    "tipo": "Rio",
+    "regiao": "Terra de Israel",
+    "descricao": "Rio atravessado na entrada em Canaã e onde Jesus foi batizado.",
+    "lat": 32.31,
+    "lon": 35.57,
+    "refs": [
+      "Josué 3:17",
+      "Mateus 3:13"
+    ]
+  },
+  {
+    "slug": "mar-da-galileia",
+    "nome": "Mar da Galileia",
+    "tipo": "Mar",
+    "regiao": "Terra de Israel",
+    "descricao": "Lago onde Jesus chamou discípulos e ensinou multidões.",
+    "lat": 32.83,
+    "lon": 35.59,
+    "refs": [
+      "Mateus 4:18"
+    ]
+  },
+  {
+    "slug": "nazare",
+    "nome": "Nazaré",
+    "tipo": "Cidade",
+    "regiao": "Terra de Israel",
+    "descricao": "Cidade onde Jesus cresceu.",
+    "lat": 32.7,
+    "lon": 35.3,
+    "refs": [
+      "Lucas 1:26"
+    ]
+  },
+  {
+    "slug": "cafarnaum",
+    "nome": "Cafarnaum",
+    "tipo": "Cidade",
+    "regiao": "Terra de Israel",
+    "descricao": "Base do ministério de Jesus na Galileia.",
+    "lat": 32.88,
+    "lon": 35.57,
+    "refs": [
+      "Mateus 4:13"
+    ]
+  },
+  {
+    "slug": "samaria",
+    "nome": "Samaria",
+    "tipo": "Região",
+    "regiao": "Terra de Israel",
+    "descricao": "Capital do reino do norte e região do encontro de Jesus com a samaritana.",
+    "lat": 32.28,
+    "lon": 35.19,
+    "refs": [
+      "1 Reis 16:24",
+      "João 4:5"
+    ]
+  },
+  {
+    "slug": "monte-das-oliveiras",
+    "nome": "Monte das Oliveiras",
+    "tipo": "Monte",
+    "regiao": "Terra de Israel",
+    "descricao": "Colina a leste de Jerusalém, lugar de oração e da ascensão.",
+    "lat": 31.78,
+    "lon": 35.24,
+    "refs": [
+      "Lucas 22:39",
+      "Zacarias 14:4"
+    ]
+  },
+  {
+    "slug": "damasco",
+    "nome": "Damasco",
+    "tipo": "Cidade",
+    "regiao": "Mundo do Novo Testamento",
+    "descricao": "Cidade da conversão de Paulo no caminho.",
+    "lat": 33.51,
+    "lon": 36.29,
+    "refs": [
+      "Atos 9:3"
+    ]
+  },
+  {
+    "slug": "antioquia",
+    "nome": "Antioquia",
+    "tipo": "Cidade",
+    "regiao": "Mundo do Novo Testamento",
+    "descricao": "Onde os seguidores de Jesus foram chamados cristãos pela primeira vez.",
+    "lat": 36.2,
+    "lon": 36.16,
+    "refs": [
+      "Atos 11:26"
+    ]
+  },
+  {
+    "slug": "efeso",
+    "nome": "Éfeso",
+    "tipo": "Cidade",
+    "regiao": "Mundo do Novo Testamento",
+    "descricao": "Grande cidade da Ásia Menor e destino de uma carta de Paulo.",
+    "lat": 37.94,
+    "lon": 27.34,
+    "refs": [
+      "Atos 19:1"
+    ]
+  },
+  {
+    "slug": "corinto",
+    "nome": "Corinto",
+    "tipo": "Cidade",
+    "regiao": "Mundo do Novo Testamento",
+    "descricao": "Cidade portuária da Grécia, destino de duas cartas de Paulo.",
+    "lat": 37.91,
+    "lon": 22.88,
+    "refs": [
+      "Atos 18:1"
+    ]
+  },
+  {
+    "slug": "roma",
+    "nome": "Roma",
+    "tipo": "Cidade",
+    "regiao": "Mundo do Novo Testamento",
+    "descricao": "Capital do império e destino final de Paulo.",
+    "lat": 41.89,
+    "lon": 12.49,
+    "refs": [
+      "Atos 28:16",
+      "Romanos 1:7"
+    ]
+  },
+  {
+    "slug": "patmos",
+    "nome": "Patmos",
+    "tipo": "Ilha",
+    "regiao": "Mundo do Novo Testamento",
+    "descricao": "Ilha onde João recebeu a visão do Apocalipse.",
+    "lat": 37.31,
+    "lon": 26.55,
+    "refs": [
+      "Apocalipse 1:9"
+    ]
+  }
+]

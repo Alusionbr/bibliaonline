@@ -582,3 +582,37 @@ html.dark .pt.tts-current{background:rgba(231,214,171,.16);box-shadow:0 0 0 4px 
 .gloss-orig.gloss-big{font-size:2.4rem;line-height:1.2;margin:0 0 .2rem}
 .gloss-hero .translit{font-style:italic;color:var(--gold-deep);margin:.1rem 0 .6rem}
 html.dark .gloss-chip{background:var(--paper)}
+
+/* mapas: chips de lugar no versículo + atlas */
+.place-chips{display:flex;flex-wrap:wrap;gap:10px}
+.place-chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;text-decoration:none;background:var(--paper);
+  color:var(--ink);min-height:42px}
+.place-chip:hover{border-color:var(--gold);color:var(--ink)}
+.place-chip .place-pin{color:var(--gold-deep)}
+.place-group{max-width:var(--read);margin:26px auto 8px;font-size:1.25rem}
+.place-card{display:flex;flex-direction:column;gap:6px}
+.place-card h3{margin:0;font-size:1.12rem}
+.place-card .pt-mini{color:var(--muted);margin:0}
+.place-type{font-family:"Inter",system-ui,sans-serif;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--gold-deep)}
+html.dark .place-chip{background:var(--paper)}
+
+/* planos de leitura: progresso + dias */
+.plan{max-width:var(--read);margin:16px auto 0}
+.plan-progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.plan-bar-track{flex:1;min-width:140px;height:10px;background:var(--vellum-2);border:1px solid var(--line);
+  border-radius:999px;overflow:hidden}
+.plan-bar{height:100%;width:0;background:var(--gold);transition:width .25s ease}
+.plan-count{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;color:var(--gold-deep);min-width:48px}
+.plan-reset{min-height:38px;padding:6px 14px}
+.plan-days{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.plan-day{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px;background:var(--paper)}
+.plan-day.done{border-color:var(--gold-soft);background:var(--vellum-2)}
+.plan-check{display:flex;align-items:center;gap:9px;font-weight:600;cursor:pointer;min-width:90px}
+.plan-check input{width:20px;height:20px;accent-color:var(--gold-deep)}
+.plan-chapters{color:var(--gold-deep)}
+.plan-day.done .plan-check span{text-decoration:line-through;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){ .plan-bar{transition:none} }
+html.dark .plan-day{background:var(--paper)}

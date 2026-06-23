@@ -43,6 +43,13 @@ HTML/CSS/JS estatico dentro de `site/`.
   - `commentary.json`: mapa "Livro c:v" -> lista de
     `{perspectiva, texto}` (bloco "Comentario" no versiculo). Os textos sao
     resumos ORIGINAIS; nao copie comentarios protegidos.
+  - `places.json`: lugares biblicos (slug, nome, tipo, regiao, descricao, lat,
+    lon, refs) que geram o atlas `/mapas/` e o bloco "Lugares" no versiculo. O
+    mapa e um LINK para o OpenStreetMap (sem embed/tiles), preservando CSP e
+    offline.
+  - `reading-plans.json`: planos de leitura (slug, titulo, descricao, dias),
+    onde cada dia e uma lista de capitulos "Livro C". Gera `/planos/`; o
+    progresso fica no localStorage (`bec.plan.<slug>`).
   - Ao adicionar referencias, valide que elas existem (mesma regra de slug do
     build) antes de commitar. Veja o padrao de validacao usado nas Fases 2/3.
 
@@ -193,7 +200,8 @@ data-driven, para serem faceis de entender e continuar:
 
 Exemplos ja implementados: `topic-refs.json` (temas), `cross-references.json`
 (referencias cruzadas), `glossary.json` (dicionario), `commentary.json`
-(comentario teologico).
+(comentario teologico), `places.json` (mapas/atlas), `reading-plans.json`
+(planos de leitura).
 
 ## Funcionalidades sensiveis
 
@@ -240,6 +248,19 @@ de audio de terceiros.
 
 `site/sw.js` (service worker) guarda o app-shell e as paginas visitadas para
 leitura sem conexao. Paginas ainda nao abertas caem em `site/offline/`.
+
+### Mapas (atlas)
+
+`/mapas/` lista lugares por regiao; cada lugar tem pagina propria com os
+versiculos onde aparece e um LINK para o OpenStreetMap (sem embed nem tiles,
+para nao quebrar a CSP nem o modo offline). O bloco "Lugares" no versiculo liga
+de volta ao atlas.
+
+### Planos de leitura
+
+`/planos/` traz planos com checkbox por dia. O progresso fica no localStorage
+(`bec.plan.<slug>`), sem servidor. O wiring esta em `app.js` (procura
+`[data-plan]`).
 
 ### Seguranca (CSP)
 

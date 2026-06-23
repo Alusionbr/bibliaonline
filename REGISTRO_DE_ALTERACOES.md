@@ -15,6 +15,45 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-23 - Fase 4: mapas (atlas) e planos de leitura
+
+Pedido do usuario: concluir o que falta seguindo a mesma logica, mantendo a
+arquitetura facil de revisar, e atualizar o site no GitHub ao final.
+
+Mudancas:
+
+- Novos dados curados e VALIDADOS contra o dataset:
+  - `site/data/places.json`: 22 lugares biblicos (slug, nome, tipo, regiao,
+    descricao, lat/lon, refs) agrupados em 4 regioes.
+  - `site/data/reading-plans.json`: 3 planos (Joao 21 dias, Proverbios 31 dias,
+    Historia da salvacao 10 dias). Cada dia e uma lista de capitulos "Livro C".
+- `scripts/build.py`:
+  - Mapas: atlas `/mapas/` (por regiao) e pagina por lugar `/mapas/<slug>/` com
+    versiculos e LINK para o OpenStreetMap (sem embed/tiles -> CSP e offline
+    preservados). Bloco "Lugares" na pagina do versiculo (chips -> atlas).
+  - Planos: indice `/planos/` e pagina por plano `/planos/<slug>/` com checkbox
+    por dia, barra de progresso e links para os capitulos em `/ler/`.
+  - Nav reorganizada: Biblia, Planos, Temas, Dicionario, Mapas, Linha do tempo,
+    Anotacoes (Artigos seguem na home e no rodape).
+  - Busca e sitemap incluem lugares (tipo Lugar) e planos (tipo Plano).
+- `site/assets/app.js`: modulo de progresso dos planos (localStorage
+  `bec.plan.<slug>`), via `[data-plan]`/`[data-day]` (sem script inline; CSP ok).
+- `site/assets/styles.css`: estilos de `.place-*` e `.plan-*`.
+- `tests/test_build_smoke.py`: fixture grava `places.json` e
+  `reading-plans.json`; 2 testes novos cobrem atlas/lugar/bloco no versiculo e
+  indice/pagina de plano com progresso.
+
+Validacao:
+
+- `python scripts/build.py` (... + 22 lugares + 3 planos + ...).
+- `python -m pytest` (todos passando, incluindo os testes novos).
+- `node --check` em `app.js` e `sw.js`. CSP confirmada em sincronia.
+- Conferido em versiculo real (Mateus 2:1 -> Belem) o bloco "Lugares" e no
+  plano de Joao os 21 dias com links de capitulo. Regenerado `site/`.
+
+Conclui a serie de 4 fases pedida (seguranca/offline/audio/busca; temas e
+referencias cruzadas; dicionario e comentario; mapas e planos).
+
 ## 2026-06-23 - Fase 3: dicionario integrado e comentario teologico
 
 Pedido do usuario: criar dicionario integrado e comentarios teologicos, com

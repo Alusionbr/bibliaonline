@@ -2,6 +2,19 @@
 
 Documento com sugestões de funcionalidades para melhorar a experiência de estudo no site **Biblia em Contexto**.
 
+## Implementado (junho/2026) — 4 fases
+
+> Entregue em PRs empilhadas, mantendo a arquitetura data-driven (JSON curado + funções de build + testes + docs). Detalhes em `REGISTRO_DE_ALTERACOES.md`.
+
+- ✅ **Fase 1** — Segurança (CSP/CodeQL/Dependabot/workflows), modo offline (service worker), áudio (TTS pt-BR) e busca avançada.
+- ✅ **Fase 2** — Índice de tópicos (`/temas/`) e referências cruzadas.
+- ✅ **Fase 3** — Dicionário integrado (`/dicionario/`) e comentário teológico.
+- ✅ **Fase 4** — Mapas/atlas (`/mapas/`) e planos de leitura (`/planos/`).
+
+Já existiam antes: modo escuro, ajuste de fonte, "continuar lendo", histórico, anotações/grifos/marca-texto, compartilhamento, versículo aleatório e linha do tempo.
+
+Ainda aberto (ideias abaixo): versão em áudio sincronizada palavra a palavra, comparação entre traduções, estatísticas pessoais e busca booleana avançada.
+
 ## Status Atual
 
 O site já oferece:
