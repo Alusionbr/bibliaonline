@@ -47,6 +47,12 @@ HTML/CSS/JS estatico dentro de `site/`.
   - Comporta ferramentas de estudo: anotacoes, grifos, marca-texto,
     exportacao, compartilhamento e controles relacionados.
 
+- `site/sw.js`
+  - Service worker (modo offline). Gerado por `scripts/build.py`.
+  - Nao editar manualmente.
+  - Pre-cacheia o app-shell e guarda paginas visitadas. O nome do cache leva
+    `ASSET_VER`, entao cada deploy invalida o cache antigo.
+
 - `tests/`
   - Suite `pytest` para partes criticas do pipeline de geracao.
 
@@ -114,6 +120,7 @@ git status --short --branch
 
 - Nao editar `site/assets/app.js` diretamente.
 - Nao editar `site/assets/study.js` diretamente.
+- Nao editar `site/sw.js` diretamente.
 - Nao editar paginas em `site/ler/` ou `site/versiculos/` diretamente.
 - Se um HTML gerado precisa mudar, altere `scripts/build.py` e rode o build.
 - Preserve alteracoes existentes no worktree. Nao use `git reset --hard` sem
@@ -182,6 +189,27 @@ A canetinha ativa o modo de marcar palavras. Com ela ligada:
 
 Anotacoes, grifos, preferencias e historico ficam em `localStorage` do
 navegador. Nao ha backend para esses dados.
+
+### Audio (leitura em voz alta)
+
+Paginas de capitulo e versiculo tem uma barra `data-audio` que usa a Web
+Speech API (`speechSynthesis`, `pt-BR`) para ler o texto em portugues. O
+controle so aparece se o navegador suportar a API. Nao distribuimos arquivos
+de audio de terceiros.
+
+### Modo offline
+
+`site/sw.js` (service worker) guarda o app-shell e as paginas visitadas para
+leitura sem conexao. Paginas ainda nao abertas caem em `site/offline/`.
+
+### Seguranca (CSP)
+
+Todas as paginas tem `Content-Security-Policy` estrita via `<meta>`. Nao ha
+`unsafe-inline` em scripts: o unico script inline (bootstrap de tema, em
+`THEME_BOOTSTRAP`) e liberado por um hash sha256 calculado no build. Se mudar
+esse script, o hash se atualiza sozinho — mas nao adicione novos scripts
+inline nem atributos de evento inline (`onclick`, `onerror`), pois a CSP os
+bloqueia. Use `addEventListener` em `app.js`/`study.js`.
 
 ## Validacao manual recomendada
 

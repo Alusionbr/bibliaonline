@@ -5,6 +5,9 @@ document.addEventListener('click',function(e){
 (function(){
   var q=document.getElementById('q'), out=document.getElementById('results');
   if(!q||!out) return;
+  var filterBar=document.querySelector('.search-filters');
+  var curFilter='all';
+  function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   // busca sem acento: "genesis" encontra "Gênesis", "joao" encontra "João".
   function fold(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
   // índice carregado sob demanda (arquivo externo, não embutido na página)
@@ -25,17 +28,29 @@ document.addEventListener('click',function(e){
     // casa por tokens: cada palavra digitada precisa aparecer na chave.
     // assim "salmo 23", "salmos 23" e "23:1" encontram o versículo direto
     // (e não só os artigos relacionados).
-    var terms=term.split(/\s+/).filter(Boolean);
+    // frases entre "aspas" casam contíguas; tokens soltos em qualquer posição
+    var phrases=[], rest=term;
+    rest=rest.replace(/"([^"]+)"/g, function(_, p){ phrases.push(p.trim()); return ' '; });
+    phrases=phrases.filter(Boolean);
+    var terms=rest.split(/\s+/).filter(Boolean);
+    if(!phrases.length && !terms.length) return;
     var res=IDX.filter(function(i){
-      return terms.every(function(t){return i.kf.indexOf(t)>-1;});
+      if(curFilter!=='all' && i.t!==curFilter) return false;
+      var okP=phrases.every(function(p){return i.kf.indexOf(p)>-1;});
+      var okT=terms.every(function(t){return i.kf.indexOf(t)>-1;});
+      return okP && okT;
     });
     // quem casa o termo inteiro e contíguo vem primeiro (ordenação estável)
     res.sort(function(a,b){return (b.kf.indexOf(term)>-1)-(a.kf.indexOf(term)>-1);});
-    res=res.slice(0,8);
+    var total=res.length;
+    res=res.slice(0,12);
     if(!res.length){out.innerHTML='<p class="empty">Nada encontrado. Tente “Salmo 23”, “shalom”, “logos” ou “aramaico”.</p>';return;}
+    var hd=document.createElement('p'); hd.className='search-count';
+    hd.textContent=total+(total===1?' resultado':' resultados')+(total>12?' (mostrando 12)':'');
+    out.appendChild(hd);
     res.forEach(function(i){
       var a=document.createElement('a');a.className='result';a.href=i.url;
-      a.innerHTML='<span class="kind">'+i.t+'</span><h4>'+i.titulo+'</h4><p>'+i.desc+'</p>';
+      a.innerHTML='<span class="kind">'+escHtml(i.t)+'</span><h4>'+escHtml(i.titulo)+'</h4><p>'+escHtml(i.desc)+'</p>';
       out.appendChild(a);
     });
   }
@@ -46,6 +61,15 @@ document.addEventListener('click',function(e){
       render(IDX, val);
     }).catch(function(){ out.innerHTML='<p class="empty">Não foi possível carregar a busca. Recarregue a página.</p>'; });
   });
+  if(filterBar){
+    filterBar.addEventListener('click', function(e){
+      var b=e.target.closest && e.target.closest('.sf'); if(!b) return;
+      curFilter=b.getAttribute('data-filter')||'all';
+      filterBar.querySelectorAll('.sf').forEach(function(x){ x.classList.toggle('on', x===b); });
+      var val=q.value;
+      if(val.trim()) getIndex().then(function(IDX){ render(IDX, val); }).catch(function(){});
+    });
+  }
 })();
 // reveal
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -171,4 +195,67 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
   var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
   if(saved!=='bib') apply(saved);
+})();
+
+// imagens de manuscrito que falham → placeholder (sem onerror inline, por causa da CSP)
+document.addEventListener('error', function(e){
+  var img=e.target;
+  if(!img || img.tagName!=='IMG' || img.getAttribute('data-fallback')!=='manuscript') return;
+  var frame=img.closest && img.closest('.frame');
+  if(frame) frame.innerHTML='<div class="ph"><b>✶</b>Imagem indisponível no momento. Veja no acervo da fonte.</div>';
+}, true);
+
+// modo offline: registra o service worker (escopo = raiz do site, derivado do src deste script)
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  var s=document.currentScript;
+  if(!s){ var ss=document.querySelectorAll('script[src]'); for(var i=0;i<ss.length;i++){ if(/assets\/app\.js/.test(ss[i].src)){ s=ss[i]; break; } } }
+  if(!s) return;
+  var base=s.src.replace(/assets\/app\.js.*$/, '');
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register(base+'sw.js', {scope: base}).catch(function(){});
+  });
+})();
+
+// áudio: ler o texto em português em voz alta (Web Speech API, pt-BR; sem servidor)
+(function(){
+  var bar=document.querySelector('[data-audio]');
+  if(!bar || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance==='undefined') return;
+  // alvos: parágrafos PT do capítulo ou do versículo (na ordem de leitura)
+  var nodes=[].slice.call(document.querySelectorAll('.chapter .ch-verse .pt, .verse-cont .verse-hero .pt'))
+                .filter(function(p){ var t=(p.textContent||'').trim(); return t && t!=='—'; });
+  if(!nodes.length) return;
+  bar.hidden=false;
+  var playBtn=bar.querySelector('[data-audio-play]'),
+      stopBtn=bar.querySelector('[data-audio-stop]');
+  var idx=0, speaking=false, paused=false;
+  function clearHi(){ nodes.forEach(function(n){ n.classList.remove('tts-current'); }); }
+  function setBtn(state){
+    // state: 'play' | 'pause' | 'idle'
+    if(state==='idle'){ playBtn.textContent='🔊 Ouvir'; playBtn.setAttribute('aria-label','Ouvir'); if(stopBtn) stopBtn.hidden=true; }
+    else if(state==='pause'){ playBtn.textContent='⏸ Pausar'; playBtn.setAttribute('aria-label','Pausar'); if(stopBtn) stopBtn.hidden=false; }
+    else { playBtn.textContent='▶ Continuar'; playBtn.setAttribute('aria-label','Continuar'); if(stopBtn) stopBtn.hidden=false; }
+  }
+  function speakFrom(i){
+    if(i>=nodes.length){ stop(); return; }
+    idx=i;
+    var el=nodes[i];
+    clearHi(); el.classList.add('tts-current');
+    try{ el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
+    var u=new SpeechSynthesisUtterance((el.textContent||'').trim());
+    u.lang='pt-BR'; u.rate=0.95;
+    u.onend=function(){ if(speaking && !paused) speakFrom(i+1); };
+    u.onerror=function(){ stop(); };
+    speechSynthesis.speak(u);
+  }
+  function stop(){ speaking=false; paused=false; try{ speechSynthesis.cancel(); }catch(e){} clearHi(); setBtn('idle'); }
+  function start(){ speaking=true; paused=false; setBtn('pause'); speakFrom(idx<nodes.length?idx:0); }
+  playBtn.addEventListener('click', function(){
+    if(!speaking){ start(); }
+    else if(!paused){ paused=true; try{ speechSynthesis.pause(); }catch(e){} setBtn('play'); }
+    else { paused=false; try{ speechSynthesis.resume(); }catch(e){} setBtn('pause'); }
+  });
+  if(stopBtn) stopBtn.addEventListener('click', stop);
+  // segurança: cancela a fala ao sair da página
+  window.addEventListener('beforeunload', function(){ try{ speechSynthesis.cancel(); }catch(e){} });
 })();

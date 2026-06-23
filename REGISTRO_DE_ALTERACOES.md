@@ -15,6 +15,45 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-23 - Fase 1: seguranca, offline, audio e busca avancada
+
+Pedido do usuario: melhorar o site para estudo biblico (varios recursos) e
+reforcar a seguranca antes de testes de vulnerabilidade. Entrega acordada em
+fases pequenas; esta e a Fase 1 (apenas codigo, sem novos dados de conteudo).
+
+Mudancas:
+
+- Seguranca (GitHub e site):
+  - `SECURITY.md` com politica de divulgacao (Private Vulnerability Reporting).
+  - `.github/dependabot.yml` (atualiza GitHub Actions e pip semanalmente).
+  - `.github/workflows/codeql.yml` (analise estatica Python + JavaScript).
+  - `tests.yml` e `deploy.yml` endurecidos: `permissions: contents: read` e
+    `persist-credentials: false` no checkout.
+  - `Content-Security-Policy` estrita via `<meta>` em todas as paginas: sem
+    `unsafe-inline` em scripts; o unico script inline (bootstrap de tema) e
+    liberado por hash sha256 calculado no build, mantido em sincronia.
+  - `Referrer-Policy` via `<meta>`.
+  - Removido o `onerror` inline das imagens de manuscrito (incompativel com a
+    CSP); a falha passou a ser tratada por `app.js` via `data-fallback`.
+- Modo offline: novo `site/sw.js` (service worker) gerado pelo build,
+  registrado por `app.js`. Pre-cacheia o app-shell e guarda as paginas
+  visitadas; navegacao cai para cache e, por fim, para `site/offline/`.
+  O nome do cache leva `ASSET_VER`, invalidando a cada deploy.
+- Audio: leitura em voz alta (Web Speech API, `pt-BR`) nas paginas de
+  capitulo e versiculo, com botao Ouvir/Pausar/Parar e destaque do trecho
+  lido. Sem distribuir audio de terceiros (segue a direcao ja registrada).
+- Busca avancada na home: filtros por tipo (Tudo/Versiculos/Artigos/Temas),
+  suporte a frase exata entre aspas, contador de resultados e escape do HTML
+  dos resultados.
+
+Validacao:
+
+- `python scripts/build.py` (OK: 31173 versiculos + ...).
+- `python -m pytest` (todos passando).
+- `node --check` em `app.js`, `study.js` e `sw.js` (sintaxe valida).
+- Conferido que o hash sha256 da CSP casa com o script inline emitido.
+- Regenerado `site/` (inclui novo `?v=` em todos os HTML por cache-busting).
+
 ## 2026-06-21 - Guia operacional para Claude/Codex
 
 Pedido do usuario: entender se o projeto esta organizado para outros

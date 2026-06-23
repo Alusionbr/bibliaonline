@@ -9,7 +9,7 @@ Uso:
     python scripts/build.py
 Opcional: defina o domínio final em BASE_URL antes de publicar.
 """
-import json, html, re, shutil, unicodedata, hashlib
+import json, html, re, shutil, unicodedata, hashlib, base64
 from collections import defaultdict
 from pathlib import Path
 
@@ -143,6 +143,37 @@ def group_by_book_chapter(verses):
         struct[livro][ch].append(v)
     return order, struct
 
+# ---------- segurança (CSP + cabeçalhos via <meta>) ----------
+# Único script inline da página: aplica tema/fonte antes da pintura para evitar
+# "flash" de tema claro. Fica numa constante para o hash da CSP ficar em sincronia.
+THEME_BOOTSTRAP = (
+    "(function(){try{var d=document.documentElement;"
+    "if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');"
+    "var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);"
+    "}catch(e){}})();"
+)
+
+def _sha256_b64(s):
+    return base64.b64encode(hashlib.sha256(s.encode("utf-8")).digest()).decode()
+
+# CSP estrita: sem 'unsafe-inline' em scripts (o único inline é liberado por hash).
+# Estilos inline (atributos style="...") usam 'unsafe-inline' — baixo risco.
+# Imagens de manuscrito vêm de domínios públicos externos (https). Fetch/SW: mesma origem.
+CSP = "; ".join([
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    f"script-src 'self' 'sha256-{_sha256_b64(THEME_BOOTSTRAP)}'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: https:",
+    "connect-src 'self'",
+    "manifest-src 'self'",
+    "worker-src 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests",
+])
+
 # ---------- shells ----------
 def head(title, description, canonical, prefix, jsonld=None):
     ld = f'\n<script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>' if jsonld else ""
@@ -151,6 +182,8 @@ def head(title, description, canonical, prefix, jsonld=None):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="{CSP}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(description)}">
 <meta name="robots" content="index, follow, noai, noimageai">
@@ -167,7 +200,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body>
-<script>(function(){{try{{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}}catch(e){{}}}})();</script>
+<script>{THEME_BOOTSTRAP}</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>"""
 
 def nav(prefix):
@@ -249,6 +282,16 @@ def original_html(v, indent=4):
         f'{pad}</details>'
     )
 
+def audio_bar():
+    # controle de leitura em voz alta (TTS). Começa oculto; app.js revela se o
+    # navegador tiver Web Speech API. Lê os parágrafos em português na ordem.
+    return ("""
+  <div class="audio-bar" data-audio hidden>
+    <button type="button" class="abtn" data-audio-play aria-label="Ouvir">🔊 Ouvir</button>
+    <button type="button" class="abtn abtn-stop" data-audio-stop aria-label="Parar" hidden>⏹</button>
+    <span class="audio-hint">leitura em voz alta</span>
+  </div>""")
+
 def verse_stack(v, big=False):
     return f"""
 {original_html(v, 4)}
@@ -264,8 +307,9 @@ def specimen_block(v):
     fonte_url = esc(m.get("fonte_url",""))
     seal = "Domínio público" if "domínio público" in (m.get("licenca","").lower()) else "Verificar licença"
     if img:
+        # sem onerror inline (CSP estrita): a falha é tratada por app.js via data-fallback
         frame = (f'<div class="frame"><img loading="lazy" alt="{cap}" src="{esc(img)}" '
-                 f'onerror="this.closest(\'.specimen\').querySelector(\'.frame\').innerHTML=\'<div class=&quot;ph&quot;><b>✶</b>Imagem indisponível no momento. Veja no acervo da fonte.</div>\'"></div>')
+                 f'data-fallback="manuscript"></div>')
     else:
         frame = ('<div class="frame"><div class="ph"><b>✶</b>'
                  'Manuscritos são fotografados por página, não por versículo. '
@@ -368,6 +412,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
     <h1>{esc(v['referencia'])}</h1>
   </header>
+  {audio_bar()}
 
   <div class="verse-hero reveal">
 {original_html(v, 4)}
@@ -551,6 +596,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
   </header>
+  {audio_bar()}
   {book_jump(prefix, order, livro)}
   <div class="chapter">{rows}
   </div>
@@ -653,7 +699,13 @@ def build_home(topics, verses, articles, sources, order, struct):
   <section class="search-section">
     <div class="searchbox">
       <span class="ico">⌕</span>
-      <input id="q" type="search" placeholder="Buscar: Salmo 23, shalom, aramaico, logos…" autocomplete="off" aria-label="Buscar">
+      <input id="q" type="search" placeholder="Buscar: Salmo 23, shalom, &quot;no princípio&quot;, logos…" autocomplete="off" aria-label="Buscar">
+    </div>
+    <div class="search-filters" role="group" aria-label="Filtrar resultados da busca">
+      <button type="button" class="sf on" data-filter="all">Tudo</button>
+      <button type="button" class="sf" data-filter="Versículo">Versículos</button>
+      <button type="button" class="sf" data-filter="Artigo">Artigos</button>
+      <button type="button" class="sf" data-filter="Tema">Temas</button>
     </div>
     <div id="results" class="search-results"></div>
     <a id="continue-read" class="continue-read" href="#" hidden></a>
@@ -718,6 +770,115 @@ def build_home(topics, verses, articles, sources, order, struct):
     out = SITE / "index.html"
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
+def build_offline_page():
+    prefix = "../"
+    title = f"Sem conexão | {SITE_NAME}"
+    body = """
+<main id="main" class="wrap verse-page" style="text-align:center">
+  <header class="verse-head" style="margin-top:30px">
+    <span class="lang-tag lang-hebraico">offline</span>
+    <h1>Você está sem conexão</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">Esta página ainda não foi salva para leitura offline. As páginas que você
+  já abriu continuam disponíveis sem internet. Reconecte para carregar novos trechos.</p>
+  <p class="backline" style="text-align:center"><a href="../index.html">← Início (salvo offline)</a></p>
+</main>"""
+    out = SITE / "offline" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, "Sem conexão.", BASE_URL+"/offline/", prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_sw_js():
+    # Service worker (modo offline). Pré-cacheia o app-shell e guarda as páginas
+    # visitadas. O nome do cache leva ASSET_VER: cada deploy invalida o cache antigo.
+    js = r"""/* Service worker do Bíblia em Contexto — gerado por build.py. Não editar à mão. */
+var VERSION = '__VER__';
+var SHELL_CACHE = 'bec-shell-' + VERSION;
+var PAGE_CACHE  = 'bec-pages-'  + VERSION;
+// app-shell mínimo (relativo ao escopo do SW = raiz do site)
+var SHELL = [
+  './',
+  './index.html',
+  './offline/',
+  './manifest.webmanifest',
+  './assets/styles.css?v=' + VERSION,
+  './assets/app.js?v=' + VERSION,
+  './assets/study.js?v=' + VERSION
+];
+
+self.addEventListener('install', function(e){
+  e.waitUntil(
+    caches.open(SHELL_CACHE).then(function(c){
+      // addAll falha tudo se um item falhar; tolera ausências com Promise.allSettled-like
+      return Promise.all(SHELL.map(function(u){
+        return c.add(u).catch(function(){});
+      }));
+    }).then(function(){ return self.skipWaiting(); })
+  );
+});
+
+self.addEventListener('activate', function(e){
+  e.waitUntil(
+    caches.keys().then(function(keys){
+      return Promise.all(keys.map(function(k){
+        if(k !== SHELL_CACHE && k !== PAGE_CACHE) return caches.delete(k);
+      }));
+    }).then(function(){ return self.clients.claim(); })
+  );
+});
+
+self.addEventListener('fetch', function(e){
+  var req = e.request;
+  if(req.method !== 'GET') return;
+  var url = new URL(req.url);
+  // só tratamos requisições da mesma origem; terceiros (fontes/imagens) passam direto
+  if(url.origin !== self.location.origin) return;
+
+  // navegações (HTML): rede primeiro, cai para cache e, por fim, página offline
+  if(req.mode === 'navigate'){
+    e.respondWith(
+      fetch(req).then(function(res){
+        var copy = res.clone();
+        caches.open(PAGE_CACHE).then(function(c){ c.put(req, copy); });
+        return res;
+      }).catch(function(){
+        return caches.match(req).then(function(hit){
+          return hit || caches.match('./offline/') || caches.match('./index.html');
+        });
+      })
+    );
+    return;
+  }
+
+  // assets versionados (?v=) são imutáveis: cache primeiro
+  if(url.search.indexOf('v=') > -1){
+    e.respondWith(
+      caches.match(req).then(function(hit){
+        return hit || fetch(req).then(function(res){
+          var copy = res.clone();
+          caches.open(SHELL_CACHE).then(function(c){ c.put(req, copy); });
+          return res;
+        });
+      })
+    );
+    return;
+  }
+
+  // demais (json de dados, imagens locais): stale-while-revalidate
+  e.respondWith(
+    caches.match(req).then(function(hit){
+      var net = fetch(req).then(function(res){
+        var copy = res.clone();
+        caches.open(PAGE_CACHE).then(function(c){ c.put(req, copy); });
+        return res;
+      }).catch(function(){ return hit; });
+      return hit || net;
+    })
+  );
+});
+"""
+    js = js.replace("__VER__", ASSET_VER)
+    (SITE / "sw.js").write_text(js, encoding="utf-8")
+
 def build_app_js():
     js = r"""// home: menu + busca local (índice embutido em window.__INDEX__)
 document.addEventListener('click',function(e){
@@ -726,6 +887,9 @@ document.addEventListener('click',function(e){
 (function(){
   var q=document.getElementById('q'), out=document.getElementById('results');
   if(!q||!out) return;
+  var filterBar=document.querySelector('.search-filters');
+  var curFilter='all';
+  function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   // busca sem acento: "genesis" encontra "Gênesis", "joao" encontra "João".
   function fold(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
   // índice carregado sob demanda (arquivo externo, não embutido na página)
@@ -746,17 +910,29 @@ document.addEventListener('click',function(e){
     // casa por tokens: cada palavra digitada precisa aparecer na chave.
     // assim "salmo 23", "salmos 23" e "23:1" encontram o versículo direto
     // (e não só os artigos relacionados).
-    var terms=term.split(/\s+/).filter(Boolean);
+    // frases entre "aspas" casam contíguas; tokens soltos em qualquer posição
+    var phrases=[], rest=term;
+    rest=rest.replace(/"([^"]+)"/g, function(_, p){ phrases.push(p.trim()); return ' '; });
+    phrases=phrases.filter(Boolean);
+    var terms=rest.split(/\s+/).filter(Boolean);
+    if(!phrases.length && !terms.length) return;
     var res=IDX.filter(function(i){
-      return terms.every(function(t){return i.kf.indexOf(t)>-1;});
+      if(curFilter!=='all' && i.t!==curFilter) return false;
+      var okP=phrases.every(function(p){return i.kf.indexOf(p)>-1;});
+      var okT=terms.every(function(t){return i.kf.indexOf(t)>-1;});
+      return okP && okT;
     });
     // quem casa o termo inteiro e contíguo vem primeiro (ordenação estável)
     res.sort(function(a,b){return (b.kf.indexOf(term)>-1)-(a.kf.indexOf(term)>-1);});
-    res=res.slice(0,8);
+    var total=res.length;
+    res=res.slice(0,12);
     if(!res.length){out.innerHTML='<p class="empty">Nada encontrado. Tente “Salmo 23”, “shalom”, “logos” ou “aramaico”.</p>';return;}
+    var hd=document.createElement('p'); hd.className='search-count';
+    hd.textContent=total+(total===1?' resultado':' resultados')+(total>12?' (mostrando 12)':'');
+    out.appendChild(hd);
     res.forEach(function(i){
       var a=document.createElement('a');a.className='result';a.href=i.url;
-      a.innerHTML='<span class="kind">'+i.t+'</span><h4>'+i.titulo+'</h4><p>'+i.desc+'</p>';
+      a.innerHTML='<span class="kind">'+escHtml(i.t)+'</span><h4>'+escHtml(i.titulo)+'</h4><p>'+escHtml(i.desc)+'</p>';
       out.appendChild(a);
     });
   }
@@ -767,6 +943,15 @@ document.addEventListener('click',function(e){
       render(IDX, val);
     }).catch(function(){ out.innerHTML='<p class="empty">Não foi possível carregar a busca. Recarregue a página.</p>'; });
   });
+  if(filterBar){
+    filterBar.addEventListener('click', function(e){
+      var b=e.target.closest && e.target.closest('.sf'); if(!b) return;
+      curFilter=b.getAttribute('data-filter')||'all';
+      filterBar.querySelectorAll('.sf').forEach(function(x){ x.classList.toggle('on', x===b); });
+      var val=q.value;
+      if(val.trim()) getIndex().then(function(IDX){ render(IDX, val); }).catch(function(){});
+    });
+  }
 })();
 // reveal
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -892,6 +1077,69 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
   var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
   if(saved!=='bib') apply(saved);
+})();
+
+// imagens de manuscrito que falham → placeholder (sem onerror inline, por causa da CSP)
+document.addEventListener('error', function(e){
+  var img=e.target;
+  if(!img || img.tagName!=='IMG' || img.getAttribute('data-fallback')!=='manuscript') return;
+  var frame=img.closest && img.closest('.frame');
+  if(frame) frame.innerHTML='<div class="ph"><b>✶</b>Imagem indisponível no momento. Veja no acervo da fonte.</div>';
+}, true);
+
+// modo offline: registra o service worker (escopo = raiz do site, derivado do src deste script)
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  var s=document.currentScript;
+  if(!s){ var ss=document.querySelectorAll('script[src]'); for(var i=0;i<ss.length;i++){ if(/assets\/app\.js/.test(ss[i].src)){ s=ss[i]; break; } } }
+  if(!s) return;
+  var base=s.src.replace(/assets\/app\.js.*$/, '');
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register(base+'sw.js', {scope: base}).catch(function(){});
+  });
+})();
+
+// áudio: ler o texto em português em voz alta (Web Speech API, pt-BR; sem servidor)
+(function(){
+  var bar=document.querySelector('[data-audio]');
+  if(!bar || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance==='undefined') return;
+  // alvos: parágrafos PT do capítulo ou do versículo (na ordem de leitura)
+  var nodes=[].slice.call(document.querySelectorAll('.chapter .ch-verse .pt, .verse-cont .verse-hero .pt'))
+                .filter(function(p){ var t=(p.textContent||'').trim(); return t && t!=='—'; });
+  if(!nodes.length) return;
+  bar.hidden=false;
+  var playBtn=bar.querySelector('[data-audio-play]'),
+      stopBtn=bar.querySelector('[data-audio-stop]');
+  var idx=0, speaking=false, paused=false;
+  function clearHi(){ nodes.forEach(function(n){ n.classList.remove('tts-current'); }); }
+  function setBtn(state){
+    // state: 'play' | 'pause' | 'idle'
+    if(state==='idle'){ playBtn.textContent='🔊 Ouvir'; playBtn.setAttribute('aria-label','Ouvir'); if(stopBtn) stopBtn.hidden=true; }
+    else if(state==='pause'){ playBtn.textContent='⏸ Pausar'; playBtn.setAttribute('aria-label','Pausar'); if(stopBtn) stopBtn.hidden=false; }
+    else { playBtn.textContent='▶ Continuar'; playBtn.setAttribute('aria-label','Continuar'); if(stopBtn) stopBtn.hidden=false; }
+  }
+  function speakFrom(i){
+    if(i>=nodes.length){ stop(); return; }
+    idx=i;
+    var el=nodes[i];
+    clearHi(); el.classList.add('tts-current');
+    try{ el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
+    var u=new SpeechSynthesisUtterance((el.textContent||'').trim());
+    u.lang='pt-BR'; u.rate=0.95;
+    u.onend=function(){ if(speaking && !paused) speakFrom(i+1); };
+    u.onerror=function(){ stop(); };
+    speechSynthesis.speak(u);
+  }
+  function stop(){ speaking=false; paused=false; try{ speechSynthesis.cancel(); }catch(e){} clearHi(); setBtn('idle'); }
+  function start(){ speaking=true; paused=false; setBtn('pause'); speakFrom(idx<nodes.length?idx:0); }
+  playBtn.addEventListener('click', function(){
+    if(!speaking){ start(); }
+    else if(!paused){ paused=true; try{ speechSynthesis.pause(); }catch(e){} setBtn('play'); }
+    else { paused=false; try{ speechSynthesis.resume(); }catch(e){} setBtn('pause'); }
+  });
+  if(stopBtn) stopBtn.addEventListener('click', stop);
+  // segurança: cancela a fala ao sair da página
+  window.addEventListener('beforeunload', function(){ try{ speechSynthesis.cancel(); }catch(e){} });
 })();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
@@ -1523,11 +1771,13 @@ def main():
     verses = sorted(verses, key=verse_sort_key)
     order, struct = group_by_book_chapter(verses)
     # limpa saídas antigas
-    for d in ["versiculos","artigos","ler","anotacoes"]:
+    for d in ["versiculos","artigos","ler","anotacoes","offline"]:
         shutil.rmtree(SITE/d, ignore_errors=True)
     build_home(topics, verses, articles, sources, order, struct)
     build_app_js()
     build_study_js()
+    build_sw_js()
+    build_offline_page()
     build_annotations_page()
     n_idx = build_search_index(verses, articles, topics)
     build_random_pool(verses)
