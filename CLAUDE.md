@@ -37,8 +37,14 @@ HTML/CSS/JS estatico dentro de `site/`.
     texto PT.
   - `cross-references.json`: mapa "Livro c:v" -> passagens relacionadas
     (bloco "Referencias cruzadas" na pagina do versiculo).
+  - `glossary.json`: lista de termos do original (slug, termo, original,
+    translit, idioma, dir, definicao, refs) que gera o dicionario em
+    `/dicionario/` e o bloco "Palavras do original" no versiculo.
+  - `commentary.json`: mapa "Livro c:v" -> lista de
+    `{perspectiva, texto}` (bloco "Comentario" no versiculo). Os textos sao
+    resumos ORIGINAIS; nao copie comentarios protegidos.
   - Ao adicionar referencias, valide que elas existem (mesma regra de slug do
-    build) antes de commitar.
+    build) antes de commitar. Veja o padrao de validacao usado nas Fases 2/3.
 
 - `site/assets/styles.css`
   - CSS mantido diretamente.
@@ -162,6 +168,32 @@ O build segue este fluxo geral:
 6. Escreve `site/assets/study.js`.
 7. Calcula cache-busting dos assets com base em `scripts/build.py` e
    `site/assets/styles.css`.
+
+## Padrao para adicionar conteudo curado (Fases 2/3)
+
+Varias IAs trabalham neste repo. Recursos novos seguem SEMPRE o mesmo padrao
+data-driven, para serem faceis de entender e continuar:
+
+1. Crie/edite um arquivo de dados em `site/data/*.json` (curado).
+2. VALIDE que toda referencia citada existe no dataset e tem texto PT antes de
+   commitar (a regra de slug e `book_slug(livro) + "-c-v"`; veja
+   `ref_to_slug()` em `scripts/build.py`). Trocar uma referencia sem PT por uma
+   equivalente que tenha PT e aceitavel (diferencas de numeracao
+   hebraico<->Almeida deixam alguns versiculos sem PT).
+3. Carregue o arquivo no `main()` com `load_opt(nome, default)` (carga
+   opcional: nao quebra os testes/fixtures que nao tem o arquivo).
+4. Gere as paginas com uma funcao `build_*` dedicada e/ou um bloco
+   `*_block(...)` na pagina do versiculo.
+5. Ligue na navegacao, no indice de busca (`build_search_index`) e no sitemap
+   (`build_meta`) quando fizer sentido.
+6. Acrescente um teste no smoke test (`tests/test_build_smoke.py`): a fixture
+   grava um exemplo do novo JSON e um teste verifica a saida.
+7. Rode `python scripts/build.py` e `python -m pytest`. Regenere `site/`.
+8. Registre no `REGISTRO_DE_ALTERACOES.md`.
+
+Exemplos ja implementados: `topic-refs.json` (temas), `cross-references.json`
+(referencias cruzadas), `glossary.json` (dicionario), `commentary.json`
+(comentario teologico).
 
 ## Funcionalidades sensiveis
 

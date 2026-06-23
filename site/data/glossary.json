@@ -1,0 +1,202 @@
+[
+  {
+    "slug": "shalom",
+    "termo": "Shalom",
+    "original": "שָׁלוֹם",
+    "translit": "shalom",
+    "idioma": "hebraico",
+    "dir": "rtl",
+    "definicao": "Mais que ausência de guerra: integridade, plenitude e bem-estar completo — relações, corpo e espírito em ordem diante de Deus.",
+    "refs": [
+      "Números 6:26",
+      "Salmos 29:11",
+      "Isaías 26:3",
+      "Jeremias 29:11"
+    ]
+  },
+  {
+    "slug": "ruach",
+    "termo": "Ruach",
+    "original": "רוּחַ",
+    "translit": "ruach",
+    "idioma": "hebraico",
+    "dir": "rtl",
+    "definicao": "Vento, fôlego ou espírito. A mesma palavra liga o sopro que dá vida e o Espírito de Deus que age na criação e nos profetas.",
+    "refs": [
+      "Gênesis 1:2",
+      "Ezequiel 37:14",
+      "Salmos 104:30",
+      "Isaías 11:2"
+    ]
+  },
+  {
+    "slug": "hesed",
+    "termo": "Hesed",
+    "original": "חֶסֶד",
+    "translit": "hesed",
+    "idioma": "hebraico",
+    "dir": "rtl",
+    "definicao": "Amor leal e firme dentro de uma aliança. Une bondade, fidelidade e compromisso que não desiste do outro.",
+    "refs": [
+      "Salmos 23:6",
+      "Salmos 136:1",
+      "Lamentações 3:22",
+      "Oseias 6:6"
+    ]
+  },
+  {
+    "slug": "elohim",
+    "termo": "Elohim",
+    "original": "אֱלֹהִים",
+    "translit": "elohiym",
+    "idioma": "hebraico",
+    "dir": "rtl",
+    "definicao": "Deus, o Criador. Forma plural usada para a majestade do Deus único de Israel.",
+    "refs": [
+      "Gênesis 1:1",
+      "Salmos 100:3",
+      "Deuteronômio 6:4"
+    ]
+  },
+  {
+    "slug": "torah",
+    "termo": "Torá",
+    "original": "תּוֹרָה",
+    "translit": "torah",
+    "idioma": "hebraico",
+    "dir": "rtl",
+    "definicao": "Instrução ou ensino, não apenas 'lei'. Aponta para a orientação de Deus que dá direção à vida.",
+    "refs": [
+      "Salmos 1:2",
+      "Salmos 119:97",
+      "Josué 1:8"
+    ]
+  },
+  {
+    "slug": "nephesh",
+    "termo": "Nephesh",
+    "original": "נֶפֶשׁ",
+    "translit": "nephesh",
+    "idioma": "hebraico",
+    "dir": "rtl",
+    "definicao": "Ser vivente, fôlego, alma. Designa a pessoa inteira e viva, não uma parte separada do corpo.",
+    "refs": [
+      "Gênesis 2:7",
+      "Salmos 103:1",
+      "Deuteronômio 6:5"
+    ]
+  },
+  {
+    "slug": "logos",
+    "termo": "Lógos",
+    "original": "λόγος",
+    "translit": "logos",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Palavra, razão, discurso. Em João, título de Cristo: a Palavra eterna pela qual tudo foi feito.",
+    "refs": [
+      "João 1:1",
+      "João 1:14",
+      "Hebreus 4:12",
+      "Apocalipse 19:13"
+    ]
+  },
+  {
+    "slug": "agape",
+    "termo": "Ágape",
+    "original": "ἀγάπη",
+    "translit": "agape",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Amor que se entrega pelo bem do outro, independente de mérito. O termo que descreve o amor de Deus.",
+    "refs": [
+      "1 Coríntios 13:4",
+      "1 João 4:8",
+      "Romanos 5:8"
+    ]
+  },
+  {
+    "slug": "pistis",
+    "termo": "Pístis",
+    "original": "πίστις",
+    "translit": "pistis",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Fé, confiança, fidelidade. Não é só crer que algo é verdade, mas apoiar-se em quem é confiável.",
+    "refs": [
+      "Hebreus 11:1",
+      "Romanos 10:17",
+      "Gálatas 5:22"
+    ]
+  },
+  {
+    "slug": "charis",
+    "termo": "Cháris",
+    "original": "χάρις",
+    "translit": "charis",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Graça: favor imerecido. O dom de Deus que não se conquista por obras.",
+    "refs": [
+      "Efésios 2:8",
+      "João 1:14",
+      "2 Coríntios 12:9"
+    ]
+  },
+  {
+    "slug": "pneuma",
+    "termo": "Pneûma",
+    "original": "πνεῦμα",
+    "translit": "pneuma",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Espírito, vento, fôlego — equivalente grego de ruach. Designa o Espírito Santo e a vida que vem de Deus.",
+    "refs": [
+      "João 3:6",
+      "Atos 2:4",
+      "Romanos 8:16"
+    ]
+  },
+  {
+    "slug": "eirene",
+    "termo": "Eiréne",
+    "original": "εἰρήνη",
+    "translit": "eirene",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Paz. No Novo Testamento carrega o peso do shalom hebraico: reconciliação e bem-estar integral.",
+    "refs": [
+      "João 14:27",
+      "Filipenses 4:7",
+      "Romanos 5:1"
+    ]
+  },
+  {
+    "slug": "metanoia",
+    "termo": "Metánoia",
+    "original": "μετάνοια",
+    "translit": "metanoia",
+    "idioma": "grego",
+    "dir": "ltr",
+    "definicao": "Mudança de mente e direção — 'arrependimento' como virar-se para Deus, não apenas sentir remorso.",
+    "refs": [
+      "Mateus 3:2",
+      "Marcos 1:15",
+      "Atos 2:38"
+    ]
+  },
+  {
+    "slug": "abba",
+    "termo": "Abba",
+    "original": "אַבָּא",
+    "translit": "abba",
+    "idioma": "aramaico",
+    "dir": "rtl",
+    "definicao": "Pai, em aramaico — termo íntimo e familiar. Jesus o usa ao orar, e Paulo o aplica à adoção dos crentes.",
+    "refs": [
+      "Marcos 14:36",
+      "Romanos 8:15",
+      "Gálatas 4:6"
+    ]
+  }
+]

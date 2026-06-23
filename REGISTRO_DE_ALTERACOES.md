@@ -15,6 +15,45 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-23 - Fase 3: dicionario integrado e comentario teologico
+
+Pedido do usuario: criar dicionario integrado e comentarios teologicos, com
+conteudo curado. Reforco: o sistema e construido por varias IAs, entao deve
+ser facil de outras (e de mim) entenderem o que foi feito.
+
+Mudancas:
+
+- Novos dados curados e VALIDADOS contra o dataset:
+  - `site/data/glossary.json`: 14 termos do original (hebraico/grego/aramaico)
+    com original, transliteracao, definicao e versiculos de exemplo.
+  - `site/data/commentary.json`: 15 versiculos -> resumos ORIGINAIS, concisos,
+    em uma ou mais perspectivas (Contexto/Aplicacao/Conexao).
+- `scripts/build.py`:
+  - Dicionario: indice `/dicionario/` (agrupado por idioma) e pagina por termo
+    `/dicionario/<slug>/` com original em destaque, definicao e "Onde aparece".
+  - Bloco "Palavras do original" na pagina do versiculo: chips que ligam ao
+    termo do dicionario quando o versiculo e exemplo daquele termo.
+  - Bloco "Comentario" na pagina do versiculo (marcado como resumo original,
+    sem reproduzir comentarios protegidos).
+  - Nav ganha "Dicionario"; busca e sitemap incluem os termos.
+  - `load_opt()` reutilizado; indice referencia->termos montado no `main()`.
+- `site/assets/styles.css`: estilos de `.comm-*`, `.gloss-chip`, `.gloss-card`,
+  `.gloss-hero` e do destaque do original.
+- `tests/test_build_smoke.py`: fixture grava `glossary.json` e
+  `commentary.json`; 2 testes novos cobrem dicionario (indice/termo/bloco no
+  versiculo/busca) e comentario teologico.
+- `CLAUDE.md`: documentado o padrao data-driven das Fases 2/3 para qualquer IA
+  dar continuidade (criar JSON -> validar -> load_opt -> build_* -> nav/busca/
+  sitemap -> teste -> registro).
+
+Validacao:
+
+- `python scripts/build.py` (... + 14 termos + ...).
+- `python -m pytest` (todos passando, incluindo os testes novos).
+- `node --check` em `app.js` (sintaxe valida).
+- Conferido no versiculo real (Joao 1:1) o bloco de comentario e o "Palavras do
+  original" ligando ao termo `logos`. Regenerado `site/`.
+
 ## 2026-06-23 - Fase 2: indice de topicos e referencias cruzadas
 
 Pedido do usuario: criar indice de topicos e referencias cruzadas, com

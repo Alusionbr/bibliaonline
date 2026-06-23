@@ -46,6 +46,13 @@ def site(tmp_path, build, monkeypatch):
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
     topic_refs = {"criacao": ["Gênesis 1:1"]}
     cross_refs = {"Gênesis 1:1": ["João 1:1"]}
+    glossary = [
+        {"slug": "logos", "termo": "Lógos", "original": "λόγος", "translit": "logos",
+         "idioma": "grego", "dir": "ltr", "definicao": "Palavra, verbo.", "refs": ["João 1:1"]},
+        {"slug": "elohim", "termo": "Elohim", "original": "אֱלֹהִים", "translit": "elohiym",
+         "idioma": "hebraico", "dir": "rtl", "definicao": "Deus.", "refs": ["Gênesis 1:1"]},
+    ]
+    commentary = {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Tudo começa em Deus."}]}
 
     (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
@@ -53,6 +60,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
     (data_dir / "topic-refs.json").write_text(json.dumps(topic_refs, ensure_ascii=False), "utf-8")
     (data_dir / "cross-references.json").write_text(json.dumps(cross_refs, ensure_ascii=False), "utf-8")
+    (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
+    (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -277,3 +286,37 @@ def test_fase2_referencias_cruzadas(site):
     # versículo sem cross-ref curada não cria o bloco
     joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert 'id="referencias"' not in joao
+
+
+def test_fase3_dicionario(site):
+    # índice do dicionário + página do termo com versículo de exemplo
+    idx = (site / "dicionario" / "index.html")
+    assert idx.exists()
+    idx_html = idx.read_text("utf-8")
+    assert "Dicionário" in idx_html
+    assert 'href="logos/"' in idx_html and 'href="elohim/"' in idx_html
+    term = (site / "dicionario" / "logos" / "index.html")
+    assert term.exists()
+    term_html = term.read_text("utf-8")
+    assert "λόγος" in term_html
+    assert "versiculos/joao-1-1/" in term_html  # leva ao versículo de exemplo
+    # a página do versículo João 1:1 mostra "Palavras do original" ligando ao termo
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "Palavras do original" in joao
+    assert "dicionario/logos/" in joao
+    # nav e sitemap
+    assert 'href="dicionario/"' in (site / "index.html").read_text("utf-8")
+    assert "/dicionario/" in (site / "sitemap.xml").read_text("utf-8")
+    # termo no índice de busca
+    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
+    assert any(i["t"] == "Termo" and i["titulo"] == "Lógos" for i in index)
+
+
+def test_fase3_comentario_teologico(site):
+    # versículo com comentário curado mostra o bloco; sem comentário, não mostra
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'id="comentario"' in gen
+    assert "Tudo começa em Deus." in gen
+    assert "resumo original" in gen.lower()  # nota de autoria/licença
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'id="comentario"' not in joao

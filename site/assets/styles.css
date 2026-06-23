@@ -555,3 +555,30 @@ html.dark .pt.tts-current{background:rgba(231,214,171,.16);box-shadow:0 0 0 4px 
 .block-note{color:var(--muted);font-size:.92rem;margin:.2rem 0 .6rem}
 /* lista de cross-references reaproveita o cartão .result */
 .xref-list{margin-top:6px}
+
+/* comentário teológico (resumo original) */
+.comm-list{display:grid;gap:12px;max-width:var(--read);margin:6px auto 0}
+.comm-item{border-left:3px solid var(--gold-soft);padding:2px 0 2px 14px}
+.comm-tag{display:inline-block;font-family:"Inter",system-ui,sans-serif;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--gold-deep);margin-bottom:2px}
+.comm-item p{margin:0;color:var(--ink-soft)}
+
+/* dicionário: palavras do original no versículo (chips) */
+.gloss-chips{display:flex;flex-wrap:wrap;gap:10px}
+.gloss-chip{display:inline-flex;flex-direction:column;align-items:center;gap:2px;
+  border:1px solid var(--line);border-radius:12px;padding:8px 14px;text-decoration:none;
+  background:var(--paper);color:var(--ink);min-height:44px;justify-content:center}
+.gloss-chip:hover{border-color:var(--gold);color:var(--ink)}
+.gloss-chip .gloss-orig{margin:0;font-size:1.15rem;line-height:1.1}
+.gloss-chip .gloss-term{font-family:"Inter",system-ui,sans-serif;font-size:.78rem;color:var(--gold-deep)}
+
+/* dicionário: índice e página do termo */
+.gloss-group{max-width:var(--read);margin:26px auto 8px;font-size:1.25rem}
+.gloss-card{display:flex;flex-direction:column;gap:6px}
+.gloss-card h3{margin:0;font-size:1.15rem}
+.gloss-card .gloss-orig{margin:2px 0;font-size:1.5rem;line-height:1.15;color:var(--ink)}
+.gloss-card .pt-mini{color:var(--muted);margin:0}
+.gloss-hero{text-align:center}
+.gloss-orig.gloss-big{font-size:2.4rem;line-height:1.2;margin:0 0 .2rem}
+.gloss-hero .translit{font-style:italic;color:var(--gold-deep);margin:.1rem 0 .6rem}
+html.dark .gloss-chip{background:var(--paper)}

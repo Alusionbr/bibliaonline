@@ -237,6 +237,7 @@ def nav(prefix):
       <a href="{prefix}ler/">Bíblia</a>
       <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
       <a href="{prefix}temas/">Temas</a>
+      <a href="{prefix}dicionario/">Dicionário</a>
       <a href="{prefix}index.html#artigos">Artigos</a>
       <a href="{prefix}anotacoes/">Anotações</a>
     </div>
@@ -309,6 +310,38 @@ def verse_result_card(ref, verses_by_ref, prefix):
             f'<span class="kind">Versículo</span><h4>{esc(ref)}</h4>'
             f'<p>{pt}</p></a>')
 
+def commentary_block(v, commentary):
+    # comentário teológico (resumo ORIGINAL, curado) na página do versículo
+    items = commentary.get(v["referencia"]) if commentary else None
+    if not items:
+        return ""
+    rows = ""
+    for c in items:
+        rows += (f'<div class="comm-item"><span class="comm-tag">{esc(c.get("perspectiva",""))}</span>'
+                 f'<p>{esc(c.get("texto",""))}</p></div>')
+    return f"""
+  <section class="block" id="comentario">
+    <h2><span class="dot"></span>Comentário</h2>
+    <p class="block-note">Resumo original da Bíblia em Contexto — não reproduz comentários protegidos.</p>
+    <div class="comm-list">{rows}</div>
+  </section>"""
+
+def glossary_terms_block(v, glossary_by_ref, prefix):
+    # palavras-chave do original presentes neste versículo, ligando ao dicionário
+    terms = glossary_by_ref.get(v["referencia"]) if glossary_by_ref else None
+    if not terms:
+        return ""
+    chips = "".join(
+        f'<a class="gloss-chip" href="{prefix}dicionario/{esc(t["slug"])}/">'
+        f'<span class="gloss-orig {script_class(t["idioma"], t.get("dir","ltr"))}">{esc(t["original"])}</span>'
+        f'<span class="gloss-term">{esc(t["termo"])}</span></a>'
+        for t in terms)
+    return f"""
+  <section class="block" id="palavras-originais">
+    <h2><span class="dot"></span>Palavras do original</h2>
+    <div class="gloss-chips">{chips}</div>
+  </section>"""
+
 def cross_ref_block(v, cross_refs, verses_by_ref):
     # bloco "Referências cruzadas" na página do versículo (links irmãos: ../slug/)
     refs = cross_refs.get(v["referencia"]) if cross_refs else None
@@ -380,7 +413,8 @@ def specimen_block(v):
   </figure>"""
 
 # ---------- páginas ----------
-def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=None, verses_by_ref=None):
+def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=None,
+                     verses_by_ref=None, commentary=None, glossary_by_ref=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -473,7 +507,9 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
   </div>
 
   {specimen_block(v)}
+  {commentary_block(v, commentary)}
   {blocks}
+  {glossary_terms_block(v, glossary_by_ref, prefix)}
   {cross_ref_block(v, cross_refs, verses_by_ref or {})}
   {kw_html}
   {rel}
@@ -653,6 +689,91 @@ def build_topic_page(topic, refs, verses_by_ref, articles):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix, jsonld) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
+# ---------- dicionário (glossário integrado) ----------
+def _gloss_orig_html(t, cls_extra=""):
+    sc = script_class(t["idioma"], t.get("dir","ltr"))
+    d = "rtl" if t.get("dir")=="rtl" else "ltr"
+    return f'<p class="gloss-orig {sc}{cls_extra}" dir="{d}">{esc(t["original"])}</p>'
+
+def build_dictionary_index(glossary):
+    prefix = "../"
+    title = f"Dicionário bíblico — hebraico, grego e aramaico | {SITE_NAME}"
+    desc = "Palavras-chave da Bíblia no idioma original (shalom, hesed, logos, ágape, abba e mais) com significado e versículos de exemplo."
+    canonical = f"{BASE_URL}/dicionario/"
+    sections = ""
+    for idi, label in [("hebraico","Hebraico"),("aramaico","Aramaico"),("grego","Grego")]:
+        terms = [t for t in glossary if t.get("idioma")==idi]
+        if not terms:
+            continue
+        cards = ""
+        for t in terms:
+            cards += f"""
+    <a class="card gloss-card" href="{esc(t['slug'])}/">
+      <div class="ref-row"><h3>{esc(t['termo'])}</h3><span class="lang-tag lang-{esc(t['idioma'])}">{lang_label(t['idioma'])}</span></div>
+      {_gloss_orig_html(t)}
+      <p class="pt-mini">{esc(t['definicao'])}</p>
+    </a>"""
+        sections += f"""
+  <h2 class="gloss-group">{esc(label)}</h2>
+  <div class="cards verses">{cards}
+  </div>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Dicionário</p>
+  <header class="verse-head"><h1>Dicionário bíblico</h1></header>
+  <p class="read" style="color:var(--muted)">Palavras-chave no idioma original, com o sentido por trás da tradução e versículos onde aparecem. Conjunto inicial, em expansão.</p>
+  {sections}
+</main>"""
+    out = SITE / "dicionario" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_dictionary_term_page(t, verses_by_ref, articles):
+    prefix = "../../"
+    slug = t["slug"]
+    title = f"{t['termo']} ({t['translit']}) — significado no original | {SITE_NAME}"
+    desc = t["definicao"]
+    canonical = f"{BASE_URL}/dicionario/{slug}/"
+    jsonld = {"@context":"https://schema.org","@type":"DefinedTerm","name":t["termo"],
+              "description":t["definicao"],"inLanguage":"pt-BR",
+              "isPartOf":{"@type":"WebSite","name":SITE_NAME,"url":BASE_URL}}
+    cards = "".join(verse_result_card(r, verses_by_ref, prefix) for r in t.get("refs",[]))
+    # artigos relacionados ao termo (correspondência simples por nome do termo)
+    key = fold(t["termo"])
+    rels = [a for a in articles if key and key in fold(a.get("titulo","")+" "+a.get("resumo","")+" "+a.get("slug",""))]
+    rel_html = ""
+    if rels:
+        items = "".join(
+            f'<a class="result" href="{prefix}artigos/{a["slug"]}/"><span class="kind">Artigo</span><h4>{esc(a["titulo"])}</h4><p>{esc(a.get("resumo",""))}</p></a>'
+            for a in rels)
+        rel_html = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Para aprofundar</h2>
+    <div class="related-list">{items}</div>
+  </section>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Dicionário</a> · {esc(t['termo'])}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-{esc(t['idioma'])}">{lang_label(t['idioma'])}</span>
+    <h1>{esc(t['termo'])}</h1>
+  </header>
+  <div class="verse-hero gloss-hero">
+    {_gloss_orig_html(t, " gloss-big")}
+    <p class="translit">{esc(t['translit'])}</p>
+    <p class="pt">{esc(t['definicao'])}</p>
+  </div>
+  <section class="block">
+    <h2><span class="dot"></span>Onde aparece</h2>
+    <div class="related-list">{cards}</div>
+  </section>
+  {rel_html}
+  <p class="backline"><a href="../">← Todo o dicionário</a></p>
+</main>"""
+    out = SITE / "dicionario" / slug / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix, jsonld) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
 def book_jump(prefix, order, current):
     # seletor "Ir para livro" (Antigo/Novo Testamento) para pular entre livros sem voltar ao menu
     at, nt = [], []
@@ -734,7 +855,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_search_index(verses, articles, topics):
+def build_search_index(verses, articles, topics, glossary=None):
     """Índice de busca em arquivo externo (carregado sob demanda pela home),
     em vez de embutido no index.html — reduz a página de ~20 MB para poucos KB."""
     index = []
@@ -748,6 +869,10 @@ def build_search_index(verses, articles, topics):
     for t in topics:
         index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
                       "url":f"temas/{t['slug']}/","k":(t["titulo"]+" "+t.get("descricao","")).lower()})
+    for g in (glossary or []):
+        index.append({"t":"Termo","titulo":g["termo"],"desc":g.get("definicao",""),
+                      "url":f"dicionario/{g['slug']}/",
+                      "k":(g["termo"]+" "+g.get("translit","")+" "+g.get("original","")+" "+g.get("definicao","")).lower()})
     (DATA / "search-index.json").write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
     return len(index)
 
@@ -1841,11 +1966,14 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_meta(verses, articles, order, struct, topics=None):
+def build_meta(verses, articles, order, struct, topics=None, glossary=None):
     # sitemap
     urls = [BASE_URL + "/", f"{BASE_URL}/ler/", f"{BASE_URL}/linha-do-tempo/", f"{BASE_URL}/temas/"]
     if topics:
         urls += [f"{BASE_URL}/temas/{t['slug']}/" for t in topics]
+    if glossary:
+        urls += [f"{BASE_URL}/dicionario/"]
+        urls += [f"{BASE_URL}/dicionario/{g['slug']}/" for g in glossary]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
@@ -1898,17 +2026,23 @@ def main():
     topics=load("topics.json"); verses=load("verses.json")
     articles=load("articles.json"); sources=load("sources.json")
     topic_refs=load_opt("topic-refs.json", {}); cross_refs=load_opt("cross-references.json", {})
+    glossary=load_opt("glossary.json", []); commentary=load_opt("commentary.json", {})
     # garante slug em cada tema (deriva do título quando ausente)
     for t in topics:
         if not t.get("slug"):
             t["slug"] = book_slug(t.get("titulo",""))
     articles_by_slug={a["slug"]:a for a in articles}
+    # índice referência -> termos do glossário que a citam (para o bloco no versículo)
+    glossary_by_ref = defaultdict(list)
+    for t in glossary:
+        for r in t.get("refs", []):
+            glossary_by_ref[r].append(t)
     # ordem bíblica garantida (folhear de Gênesis a Apocalipse)
     verses = sorted(verses, key=verse_sort_key)
     order, struct = group_by_book_chapter(verses)
     verses_by_ref = {v["referencia"]: v for v in verses}
     # limpa saídas antigas
-    for d in ["versiculos","artigos","ler","anotacoes","offline","temas"]:
+    for d in ["versiculos","artigos","ler","anotacoes","offline","temas","dicionario"]:
         shutil.rmtree(SITE/d, ignore_errors=True)
     build_home(topics, verses, articles, sources, order, struct, topic_refs)
     build_app_js()
@@ -1916,13 +2050,14 @@ def main():
     build_sw_js()
     build_offline_page()
     build_annotations_page()
-    n_idx = build_search_index(verses, articles, topics)
+    n_idx = build_search_index(verses, articles, topics, glossary)
     build_random_pool(verses)
     n = len(verses)
     for i, v in enumerate(verses):
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
-        build_verse_page(v, articles_by_slug, prev_v, next_v, cross_refs, verses_by_ref)
+        build_verse_page(v, articles_by_slug, prev_v, next_v, cross_refs, verses_by_ref,
+                         commentary, glossary_by_ref)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)
@@ -1931,6 +2066,10 @@ def main():
     build_topics_index(topics, topic_refs)
     for t in topics:
         build_topic_page(t, topic_refs.get(t["slug"], []), verses_by_ref, articles)
+    # dicionário (glossário integrado)
+    build_dictionary_index(glossary)
+    for t in glossary:
+        build_dictionary_term_page(t, verses_by_ref, articles)
     n_chapters = 0
     for livro in order:
         chapters = struct[livro]
@@ -1939,10 +2078,11 @@ def main():
         for ch in sorted(chapters):
             build_chapter_page(livro, ch, chapters[ch], total_caps, order)
             n_chapters += 1
-    build_meta(verses, articles, order, struct, topics)
+    build_meta(verses, articles, order, struct, topics, glossary)
     build_404()
     print(f"OK: home + {len(verses)} versículos + {len(order)} livros + {n_chapters} capítulos "
-          f"+ {len(articles)} artigos + {len(topics)} temas + índice de busca ({n_idx}) + sitemap + 404")
+          f"+ {len(articles)} artigos + {len(topics)} temas + {len(glossary)} termos "
+          f"+ índice de busca ({n_idx}) + sitemap + 404")
 
 if __name__=="__main__":
     main()
