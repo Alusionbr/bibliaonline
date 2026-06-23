@@ -53,6 +53,15 @@ def site(tmp_path, build, monkeypatch):
          "idioma": "hebraico", "dir": "rtl", "definicao": "Deus.", "refs": ["Gênesis 1:1"]},
     ]
     commentary = {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Tudo começa em Deus."}]}
+    places = [{
+        "slug": "jerusalem", "nome": "Jerusalém", "tipo": "Cidade",
+        "regiao": "Terra de Israel", "descricao": "Cidade do Templo.",
+        "lat": 31.78, "lon": 35.23, "refs": ["Gênesis 1:1"],
+    }]
+    plans = [{
+        "slug": "joao-1-dia", "titulo": "João em 1 dia", "descricao": "Leitura curta.",
+        "dias": [["João 1"]],
+    }]
 
     (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
@@ -62,6 +71,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "cross-references.json").write_text(json.dumps(cross_refs, ensure_ascii=False), "utf-8")
     (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
     (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
+    (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
+    (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -320,3 +331,44 @@ def test_fase3_comentario_teologico(site):
     assert "resumo original" in gen.lower()  # nota de autoria/licença
     joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert 'id="comentario"' not in joao
+
+
+def test_fase4_mapas(site):
+    # atlas + página do lugar com versículo e link de mapa
+    idx = (site / "mapas" / "index.html")
+    assert idx.exists()
+    idx_html = idx.read_text("utf-8")
+    assert "Atlas" in idx_html and 'href="jerusalem/"' in idx_html
+    place = (site / "mapas" / "jerusalem" / "index.html")
+    assert place.exists()
+    place_html = place.read_text("utf-8")
+    assert "versiculos/genesis-1-1/" in place_html       # versículo de exemplo
+    assert "openstreetmap.org" in place_html             # link externo (não embed)
+    # o versículo Gênesis 1:1 mostra o bloco "Lugares" ligando ao atlas
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'id="lugares"' in gen and "mapas/jerusalem/" in gen
+    # nav + sitemap + busca
+    assert 'href="mapas/"' in (site / "index.html").read_text("utf-8")
+    assert "/mapas/jerusalem/" in (site / "sitemap.xml").read_text("utf-8")
+    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
+    assert any(i["t"] == "Lugar" and i["titulo"] == "Jerusalém" for i in index)
+
+
+def test_fase4_planos_de_leitura(site):
+    # índice de planos + página do plano com checkbox de dia e barra de progresso
+    idx = (site / "planos" / "index.html")
+    assert idx.exists()
+    assert 'href="joao-1-dia/"' in idx.read_text("utf-8")
+    plan = (site / "planos" / "joao-1-dia" / "index.html")
+    assert plan.exists()
+    plan_html = plan.read_text("utf-8")
+    assert 'data-plan="joao-1-dia"' in plan_html
+    assert 'data-day="0"' in plan_html
+    assert "ler/joao/1/" in plan_html                    # liga ao capítulo
+    assert "data-plan-bar" in plan_html                  # barra de progresso
+    # wiring + persistência no app.js
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.plan." in app and "data-plan" in app
+    # nav + sitemap
+    assert 'href="planos/"' in (site / "index.html").read_text("utf-8")
+    assert "/planos/joao-1-dia/" in (site / "sitemap.xml").read_text("utf-8")

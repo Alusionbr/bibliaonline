@@ -259,3 +259,34 @@ document.addEventListener('error', function(e){
   // segurança: cancela a fala ao sair da página
   window.addEventListener('beforeunload', function(){ try{ speechSynthesis.cancel(); }catch(e){} });
 })();
+
+// planos de leitura: progresso por dia salvo no localStorage (bec.plan.<slug>)
+(function(){
+  var root=document.querySelector('[data-plan]'); if(!root) return;
+  var slug=root.getAttribute('data-plan'), key='bec.plan.'+slug;
+  var boxes=[].slice.call(root.querySelectorAll('input[data-day]'));
+  var bar=root.querySelector('[data-plan-bar]'),
+      count=root.querySelector('[data-plan-count]'),
+      reset=root.querySelector('[data-plan-reset]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(key, JSON.stringify(o)); }catch(e){} }
+  function refresh(){
+    var st=load(), done=0;
+    boxes.forEach(function(b){
+      var d=b.getAttribute('data-day'), on=!!st[d];
+      b.checked=on; if(on) done++;
+      var li=b.closest('.plan-day'); if(li) li.classList.toggle('done', on);
+    });
+    var pct=boxes.length?Math.round(done/boxes.length*100):0;
+    if(bar) bar.style.width=pct+'%';
+    if(count) count.textContent=done+'/'+boxes.length;
+  }
+  root.addEventListener('change', function(e){
+    var b=e.target.closest && e.target.closest('input[data-day]'); if(!b) return;
+    var st=load(), d=b.getAttribute('data-day');
+    if(b.checked) st[d]=1; else delete st[d];
+    save(st); refresh();
+  });
+  if(reset) reset.addEventListener('click', function(){ save({}); refresh(); });
+  refresh();
+})();

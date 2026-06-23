@@ -235,10 +235,11 @@ def nav(prefix):
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
       <a href="{prefix}ler/">Bíblia</a>
-      <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
+      <a href="{prefix}planos/">Planos</a>
       <a href="{prefix}temas/">Temas</a>
       <a href="{prefix}dicionario/">Dicionário</a>
-      <a href="{prefix}index.html#artigos">Artigos</a>
+      <a href="{prefix}mapas/">Mapas</a>
+      <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
       <a href="{prefix}anotacoes/">Anotações</a>
     </div>
   </div>
@@ -309,6 +310,34 @@ def verse_result_card(ref, verses_by_ref, prefix):
     return (f'<a class="result" href="{prefix}versiculos/{slug}/">'
             f'<span class="kind">Versículo</span><h4>{esc(ref)}</h4>'
             f'<p>{pt}</p></a>')
+
+def osm_url(lat, lon):
+    # link (nao embed) para o OpenStreetMap — funciona offline como texto e nao
+    # carrega scripts/tiles externos, mantendo a CSP estrita e o modo offline
+    return f"https://www.openstreetmap.org/?mlat={lat}&mlon={lon}#map=8/{lat}/{lon}"
+
+def chapter_link(prefix, ch_str):
+    # "Livro C" -> link para a pagina de leitura do capitulo (/ler/<livro>/<c>/)
+    m = re.match(r"^(.*?)\s+(\d+)$", ch_str or "")
+    if not m:
+        return esc(ch_str)
+    livro, ch = m.group(1), m.group(2)
+    return f'<a href="{prefix}ler/{book_slug(livro)}/{ch}/">{esc(ch_str)}</a>'
+
+def places_block(v, places_by_ref, prefix):
+    # lugares biblicos mencionados neste versiculo, ligando ao atlas (/mapas/)
+    places = places_by_ref.get(v["referencia"]) if places_by_ref else None
+    if not places:
+        return ""
+    chips = "".join(
+        f'<a class="place-chip" href="{prefix}mapas/{esc(p["slug"])}/">'
+        f'<span class="place-pin" aria-hidden="true">◉</span>{esc(p["nome"])}</a>'
+        for p in places)
+    return f"""
+  <section class="block" id="lugares">
+    <h2><span class="dot"></span>Lugares</h2>
+    <div class="place-chips">{chips}</div>
+  </section>"""
 
 def commentary_block(v, commentary):
     # comentário teológico (resumo ORIGINAL, curado) na página do versículo
@@ -414,7 +443,8 @@ def specimen_block(v):
 
 # ---------- páginas ----------
 def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=None,
-                     verses_by_ref=None, commentary=None, glossary_by_ref=None):
+                     verses_by_ref=None, commentary=None, glossary_by_ref=None,
+                     places_by_ref=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -510,6 +540,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
   {commentary_block(v, commentary)}
   {blocks}
   {glossary_terms_block(v, glossary_by_ref, prefix)}
+  {places_block(v, places_by_ref, prefix)}
   {cross_ref_block(v, cross_refs, verses_by_ref or {})}
   {kw_html}
   {rel}
@@ -774,6 +805,140 @@ def build_dictionary_term_page(t, verses_by_ref, articles):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix, jsonld) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
+# ---------- mapas (atlas de lugares bíblicos, estático/offline) ----------
+# Ordem das regiões na página (norte→sul / leste→oeste, didática).
+PLACE_REGIONS = ["Mesopotâmia e origens", "Egito e o Êxodo", "Terra de Israel",
+                 "Mundo do Novo Testamento"]
+
+def build_atlas_index(places):
+    prefix = "../"
+    title = f"Atlas bíblico — lugares da Bíblia | {SITE_NAME}"
+    desc = "Lugares da Bíblia agrupados por região: Mesopotâmia, Egito, Terra de Israel e o mundo do Novo Testamento — com versículos e localização."
+    canonical = f"{BASE_URL}/mapas/"
+    by_region = defaultdict(list)
+    for p in places:
+        by_region[p.get("regiao","Outros")].append(p)
+    regions = PLACE_REGIONS + [r for r in by_region if r not in PLACE_REGIONS]
+    sections = ""
+    for r in regions:
+        items = by_region.get(r, [])
+        if not items:
+            continue
+        cards = ""
+        for p in items:
+            cards += f"""
+    <a class="card place-card" href="{esc(p['slug'])}/">
+      <div class="ref-row"><h3>{esc(p['nome'])}</h3><span class="place-type">{esc(p.get('tipo',''))}</span></div>
+      <p class="pt-mini">{esc(p.get('descricao',''))}</p>
+    </a>"""
+        sections += f"""
+  <h2 class="place-group">{esc(r)}</h2>
+  <div class="cards verses">{cards}
+  </div>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Mapas</p>
+  <header class="verse-head"><h1>Atlas bíblico</h1></header>
+  <p class="read" style="color:var(--muted)">Os lugares onde a história aconteceu, por região. Cada lugar abre com os versículos em que aparece e um link para o mapa. Conjunto inicial, em expansão.</p>
+  {sections}
+</main>"""
+    out = SITE / "mapas" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_place_page(p, verses_by_ref):
+    prefix = "../../"
+    slug = p["slug"]
+    title = f"{p['nome']} na Bíblia — versículos e localização | {SITE_NAME}"
+    desc = p.get("descricao","")
+    canonical = f"{BASE_URL}/mapas/{slug}/"
+    jsonld = {"@context":"https://schema.org","@type":"Place","name":p["nome"],
+              "description":p.get("descricao",""),
+              "geo":{"@type":"GeoCoordinates","latitude":p.get("lat"),"longitude":p.get("lon")}}
+    cards = "".join(verse_result_card(r, verses_by_ref, prefix) for r in p.get("refs",[]))
+    osm = osm_url(p.get("lat"), p.get("lon")) if p.get("lat") is not None else ""
+    map_html = (f'<p class="read"><a class="ext-link" href="{osm}" target="_blank" rel="noopener">Ver no mapa (OpenStreetMap) ↗</a></p>'
+                if osm else "")
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Mapas</a> · {esc(p['nome'])}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-hebraico">{esc(p.get('tipo','Lugar'))}</span>
+    <h1>{esc(p['nome'])}</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">{esc(p.get('descricao',''))}</p>
+  {map_html}
+  <section class="block">
+    <h2><span class="dot"></span>Onde aparece</h2>
+    <div class="related-list">{cards}</div>
+  </section>
+  <p class="backline"><a href="../">← Todo o atlas</a></p>
+</main>"""
+    out = SITE / "mapas" / slug / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix, jsonld) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+# ---------- planos de leitura (progresso no localStorage) ----------
+def build_plans_index(plans):
+    prefix = "../"
+    title = f"Planos de leitura da Bíblia | {SITE_NAME}"
+    desc = "Planos de leitura para criar um hábito: o Evangelho de João em 21 dias, Provérbios em 31 dias e a história da salvação em 10 dias."
+    canonical = f"{BASE_URL}/planos/"
+    cards = ""
+    for pl in plans:
+        n = len(pl.get("dias", []))
+        cards += f"""
+    <a class="card plan-card" href="{esc(pl['slug'])}/">
+      <div class="ref-row"><h3>{esc(pl['titulo'])}</h3><span class="place-type">{n} dias</span></div>
+      <p class="pt-mini">{esc(pl.get('descricao',''))}</p>
+    </a>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Planos</p>
+  <header class="verse-head"><h1>Planos de leitura</h1></header>
+  <p class="read" style="color:var(--muted)">Escolha um plano e marque cada dia conforme avança. Seu progresso fica salvo <b>neste navegador</b> (offline, sem servidor).</p>
+  <div class="cards verses">{cards}
+  </div>
+</main>"""
+    out = SITE / "planos" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
+def build_plan_page(pl):
+    prefix = "../../"
+    slug = pl["slug"]
+    title = f"{pl['titulo']} | {SITE_NAME}"
+    desc = pl.get("descricao","")
+    canonical = f"{BASE_URL}/planos/{slug}/"
+    dias = pl.get("dias", [])
+    rows = ""
+    for i, day in enumerate(dias):
+        chs = " · ".join(chapter_link(prefix, c) for c in day)
+        rows += f"""
+      <li class="plan-day">
+        <label class="plan-check"><input type="checkbox" data-day="{i}"> <span>Dia {i+1}</span></label>
+        <div class="plan-chapters">{chs}</div>
+      </li>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Planos</a> · {esc(pl['titulo'])}</p>
+  <header class="verse-head"><h1>{esc(pl['titulo'])}</h1></header>
+  <p class="read" style="color:var(--muted)">{esc(pl.get('descricao',''))}</p>
+  <div class="plan" data-plan="{esc(slug)}">
+    <div class="plan-progress">
+      <div class="plan-bar-track"><div class="plan-bar" data-plan-bar></div></div>
+      <span class="plan-count" data-plan-count>0/{len(dias)}</span>
+      <button type="button" class="btn ghost plan-reset" data-plan-reset>Recomeçar</button>
+    </div>
+    <ol class="plan-days">{rows}
+    </ol>
+  </div>
+  <p class="backline"><a href="../">← Todos os planos</a></p>
+</main>"""
+    out = SITE / "planos" / slug / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
+
 def book_jump(prefix, order, current):
     # seletor "Ir para livro" (Antigo/Novo Testamento) para pular entre livros sem voltar ao menu
     at, nt = [], []
@@ -855,7 +1020,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_search_index(verses, articles, topics, glossary=None):
+def build_search_index(verses, articles, topics, glossary=None, places=None, plans=None):
     """Índice de busca em arquivo externo (carregado sob demanda pela home),
     em vez de embutido no index.html — reduz a página de ~20 MB para poucos KB."""
     index = []
@@ -873,6 +1038,14 @@ def build_search_index(verses, articles, topics, glossary=None):
         index.append({"t":"Termo","titulo":g["termo"],"desc":g.get("definicao",""),
                       "url":f"dicionario/{g['slug']}/",
                       "k":(g["termo"]+" "+g.get("translit","")+" "+g.get("original","")+" "+g.get("definicao","")).lower()})
+    for p in (places or []):
+        index.append({"t":"Lugar","titulo":p["nome"],"desc":p.get("descricao",""),
+                      "url":f"mapas/{p['slug']}/",
+                      "k":(p["nome"]+" "+p.get("tipo","")+" "+p.get("regiao","")+" "+p.get("descricao","")).lower()})
+    for pl in (plans or []):
+        index.append({"t":"Plano","titulo":pl["titulo"],"desc":pl.get("descricao",""),
+                      "url":f"planos/{pl['slug']}/",
+                      "k":(pl["titulo"]+" "+pl.get("descricao","")).lower()})
     (DATA / "search-index.json").write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
     return len(index)
 
@@ -1394,6 +1567,37 @@ document.addEventListener('error', function(e){
   if(stopBtn) stopBtn.addEventListener('click', stop);
   // segurança: cancela a fala ao sair da página
   window.addEventListener('beforeunload', function(){ try{ speechSynthesis.cancel(); }catch(e){} });
+})();
+
+// planos de leitura: progresso por dia salvo no localStorage (bec.plan.<slug>)
+(function(){
+  var root=document.querySelector('[data-plan]'); if(!root) return;
+  var slug=root.getAttribute('data-plan'), key='bec.plan.'+slug;
+  var boxes=[].slice.call(root.querySelectorAll('input[data-day]'));
+  var bar=root.querySelector('[data-plan-bar]'),
+      count=root.querySelector('[data-plan-count]'),
+      reset=root.querySelector('[data-plan-reset]');
+  function load(){ try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(key, JSON.stringify(o)); }catch(e){} }
+  function refresh(){
+    var st=load(), done=0;
+    boxes.forEach(function(b){
+      var d=b.getAttribute('data-day'), on=!!st[d];
+      b.checked=on; if(on) done++;
+      var li=b.closest('.plan-day'); if(li) li.classList.toggle('done', on);
+    });
+    var pct=boxes.length?Math.round(done/boxes.length*100):0;
+    if(bar) bar.style.width=pct+'%';
+    if(count) count.textContent=done+'/'+boxes.length;
+  }
+  root.addEventListener('change', function(e){
+    var b=e.target.closest && e.target.closest('input[data-day]'); if(!b) return;
+    var st=load(), d=b.getAttribute('data-day');
+    if(b.checked) st[d]=1; else delete st[d];
+    save(st); refresh();
+  });
+  if(reset) reset.addEventListener('click', function(){ save({}); refresh(); });
+  refresh();
 })();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
@@ -1966,7 +2170,7 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_meta(verses, articles, order, struct, topics=None, glossary=None):
+def build_meta(verses, articles, order, struct, topics=None, glossary=None, places=None, plans=None):
     # sitemap
     urls = [BASE_URL + "/", f"{BASE_URL}/ler/", f"{BASE_URL}/linha-do-tempo/", f"{BASE_URL}/temas/"]
     if topics:
@@ -1974,6 +2178,12 @@ def build_meta(verses, articles, order, struct, topics=None, glossary=None):
     if glossary:
         urls += [f"{BASE_URL}/dicionario/"]
         urls += [f"{BASE_URL}/dicionario/{g['slug']}/" for g in glossary]
+    if places:
+        urls += [f"{BASE_URL}/mapas/"]
+        urls += [f"{BASE_URL}/mapas/{p['slug']}/" for p in places]
+    if plans:
+        urls += [f"{BASE_URL}/planos/"]
+        urls += [f"{BASE_URL}/planos/{pl['slug']}/" for pl in plans]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
@@ -2027,22 +2237,27 @@ def main():
     articles=load("articles.json"); sources=load("sources.json")
     topic_refs=load_opt("topic-refs.json", {}); cross_refs=load_opt("cross-references.json", {})
     glossary=load_opt("glossary.json", []); commentary=load_opt("commentary.json", {})
+    places=load_opt("places.json", []); plans=load_opt("reading-plans.json", [])
     # garante slug em cada tema (deriva do título quando ausente)
     for t in topics:
         if not t.get("slug"):
             t["slug"] = book_slug(t.get("titulo",""))
     articles_by_slug={a["slug"]:a for a in articles}
-    # índice referência -> termos do glossário que a citam (para o bloco no versículo)
+    # índices referência -> termos/lugares que a citam (para os blocos no versículo)
     glossary_by_ref = defaultdict(list)
     for t in glossary:
         for r in t.get("refs", []):
             glossary_by_ref[r].append(t)
+    places_by_ref = defaultdict(list)
+    for p in places:
+        for r in p.get("refs", []):
+            places_by_ref[r].append(p)
     # ordem bíblica garantida (folhear de Gênesis a Apocalipse)
     verses = sorted(verses, key=verse_sort_key)
     order, struct = group_by_book_chapter(verses)
     verses_by_ref = {v["referencia"]: v for v in verses}
     # limpa saídas antigas
-    for d in ["versiculos","artigos","ler","anotacoes","offline","temas","dicionario"]:
+    for d in ["versiculos","artigos","ler","anotacoes","offline","temas","dicionario","mapas","planos"]:
         shutil.rmtree(SITE/d, ignore_errors=True)
     build_home(topics, verses, articles, sources, order, struct, topic_refs)
     build_app_js()
@@ -2050,14 +2265,14 @@ def main():
     build_sw_js()
     build_offline_page()
     build_annotations_page()
-    n_idx = build_search_index(verses, articles, topics, glossary)
+    n_idx = build_search_index(verses, articles, topics, glossary, places, plans)
     build_random_pool(verses)
     n = len(verses)
     for i, v in enumerate(verses):
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
         build_verse_page(v, articles_by_slug, prev_v, next_v, cross_refs, verses_by_ref,
-                         commentary, glossary_by_ref)
+                         commentary, glossary_by_ref, places_by_ref)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)
@@ -2070,6 +2285,14 @@ def main():
     build_dictionary_index(glossary)
     for t in glossary:
         build_dictionary_term_page(t, verses_by_ref, articles)
+    # mapas (atlas de lugares)
+    build_atlas_index(places)
+    for p in places:
+        build_place_page(p, verses_by_ref)
+    # planos de leitura
+    build_plans_index(plans)
+    for pl in plans:
+        build_plan_page(pl)
     n_chapters = 0
     for livro in order:
         chapters = struct[livro]
@@ -2078,10 +2301,11 @@ def main():
         for ch in sorted(chapters):
             build_chapter_page(livro, ch, chapters[ch], total_caps, order)
             n_chapters += 1
-    build_meta(verses, articles, order, struct, topics, glossary)
+    build_meta(verses, articles, order, struct, topics, glossary, places, plans)
     build_404()
     print(f"OK: home + {len(verses)} versículos + {len(order)} livros + {n_chapters} capítulos "
           f"+ {len(articles)} artigos + {len(topics)} temas + {len(glossary)} termos "
+          f"+ {len(places)} lugares + {len(plans)} planos "
           f"+ índice de busca ({n_idx}) + sitemap + 404")
 
 if __name__=="__main__":
