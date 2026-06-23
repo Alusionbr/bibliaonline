@@ -512,3 +512,34 @@ html.dark .order-toggle .ot.on{color:#1a1610}
   .study-context{gap:4px;padding:5px;max-width:calc(100vw - 136px)}
   .study-context button{width:36px;height:36px;font-size:.95rem}
 }
+
+/* busca avançada: filtros por tipo + contador */
+.search-filters{display:flex;flex-wrap:wrap;gap:8px;max-width:var(--read);margin:12px auto 0;justify-content:center}
+.search-filters .sf{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;min-height:38px;
+  padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:transparent;
+  color:var(--ink-soft);cursor:pointer}
+.search-filters .sf:hover{border-color:var(--gold)}
+.search-filters .sf.on{background:var(--gold);border-color:var(--gold-deep);color:#2a2206;font-weight:600}
+.search-count{max-width:var(--read);margin:14px auto 0;font-family:"Inter",system-ui,sans-serif;
+  font-size:.8rem;color:var(--muted);text-align:center}
+html.dark .search-filters .sf.on{color:#1a1610}
+
+/* áudio: barra de leitura em voz alta (TTS) */
+.audio-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.audio-bar .abtn{font-family:"Inter",system-ui,sans-serif;font-size:.92rem;min-height:42px;
+  padding:9px 16px;border-radius:999px;border:1px solid var(--gold-deep);background:var(--gold-soft);
+  color:#2a2206;cursor:pointer;font-weight:600}
+.audio-bar .abtn:hover{background:var(--gold);color:#20170a}
+.audio-bar .abtn-stop{min-width:42px;padding:9px 12px;background:transparent;color:var(--gold-deep)}
+.audio-hint{font-family:"Inter",system-ui,sans-serif;font-size:.78rem;color:var(--muted)}
+.pt.tts-current{background:var(--gold-soft);border-radius:8px;
+  box-shadow:0 0 0 4px var(--gold-soft);transition:background .2s}
+html.dark .audio-bar .abtn{background:var(--paper);color:var(--gold-soft);border-color:var(--gold-deep)}
+html.dark .audio-bar .abtn:hover{background:var(--gold);color:#20170a}
+html.dark .audio-bar .abtn-stop{background:transparent;color:var(--gold-soft)}
+html.dark .pt.tts-current{background:rgba(231,214,171,.16);box-shadow:0 0 0 4px rgba(231,214,171,.16)}
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce){
+  .pt.tts-current{transition:none}
+}

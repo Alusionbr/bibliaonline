@@ -6,12 +6,18 @@ on:
   pull_request:
   workflow_call:        # permite que o deploy reutilize este job
 
+# Permissão mínima: o job só precisa ler o código.
+permissions:
+  contents: read
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Python
         uses: actions/setup-python@v5
