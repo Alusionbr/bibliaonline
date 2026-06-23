@@ -42,13 +42,17 @@ def site(tmp_path, build, monkeypatch):
         "slug": "meu-artigo", "titulo": "Sobre o logos", "resumo": "um resumo",
         "conteudo": [{"h": "Seção", "p": "parágrafo"}],
     }]
-    topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
+    topics = [{"slug": "criacao", "titulo": "Criação", "icone": "✶", "descricao": "o início"}]
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
+    topic_refs = {"criacao": ["Gênesis 1:1"]}
+    cross_refs = {"Gênesis 1:1": ["João 1:1"]}
 
     (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
+    (data_dir / "topic-refs.json").write_text(json.dumps(topic_refs, ensure_ascii=False), "utf-8")
+    (data_dir / "cross-references.json").write_text(json.dumps(cross_refs, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -239,3 +243,37 @@ def test_lote4_linha_do_tempo(site):
     # link na navegação e no sitemap
     assert "Linha do tempo" in html
     assert "/linha-do-tempo/" in (site / "sitemap.xml").read_text("utf-8")
+
+
+def test_fase2_indice_de_temas(site):
+    # índice de temas + página do tema com versículo curado
+    idx = (site / "temas" / "index.html")
+    assert idx.exists()
+    idx_html = idx.read_text("utf-8")
+    assert "Temas de estudo" in idx_html
+    assert 'href="criacao/"' in idx_html
+    page = (site / "temas" / "criacao" / "index.html")
+    assert page.exists()
+    page_html = page.read_text("utf-8")
+    # o tema lista o versículo curado e aponta para a página completa dele
+    assert "Gênesis 1:1" in page_html
+    assert "versiculos/genesis-1-1/" in page_html
+    # a home e a nav apontam para os temas reais (não mais #temas)
+    home = (site / "index.html").read_text("utf-8")
+    assert 'href="temas/criacao/"' in home
+    assert 'href="temas/"' in home
+    # sitemap inclui as páginas de tema
+    sitemap = (site / "sitemap.xml").read_text("utf-8")
+    assert "/temas/" in sitemap and "/temas/criacao/" in sitemap
+
+
+def test_fase2_referencias_cruzadas(site):
+    # a página do versículo mostra o bloco de referências cruzadas curadas
+    vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "Referências cruzadas" in vp
+    assert 'id="referencias"' in vp
+    # link irmão para o versículo relacionado (João 1:1)
+    assert "../joao-1-1/" in vp
+    # versículo sem cross-ref curada não cria o bloco
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'id="referencias"' not in joao

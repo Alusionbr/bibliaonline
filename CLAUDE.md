@@ -32,6 +32,13 @@ HTML/CSS/JS estatico dentro de `site/`.
 - `site/data/`
   - Dados de entrada do gerador, incluindo versiculos, artigos, fontes,
     topicos e indices auxiliares.
+  - `topic-refs.json`: mapa tema -> lista de referencias curadas (gera as
+    paginas `/temas/<slug>/`). Toda referencia deve existir no dataset e ter
+    texto PT.
+  - `cross-references.json`: mapa "Livro c:v" -> passagens relacionadas
+    (bloco "Referencias cruzadas" na pagina do versiculo).
+  - Ao adicionar referencias, valide que elas existem (mesma regra de slug do
+    build) antes de commitar.
 
 - `site/assets/styles.css`
   - CSS mantido diretamente.

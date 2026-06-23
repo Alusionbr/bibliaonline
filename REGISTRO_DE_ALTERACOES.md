@@ -15,6 +15,45 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-23 - Fase 2: indice de topicos e referencias cruzadas
+
+Pedido do usuario: criar indice de topicos e referencias cruzadas, com
+conteudo inicial curado (decisao registrada na Fase 1).
+
+Contexto descoberto: `palavras`, `tema` e `artigos` estao vazios em todos os
+31k versiculos, entao nao havia associacao versiculo<->tema. Para um site de
+estudo, casar por palavra-chave no texto seria ruidoso; optou-se por
+referencias CURADAS e VALIDADAS contra o dataset.
+
+Mudancas:
+
+- Novos dados curados (validados: toda referencia existe e tem texto PT):
+  - `site/data/topic-refs.json`: 12 temas -> listas de versiculos.
+  - `site/data/cross-references.json`: 39 versiculos -> passagens relacionadas.
+- `scripts/build.py`:
+  - `ref_to_slug()` e `fold()`; carga opcional `load_opt()`; slug do tema
+    derivado do titulo quando ausente.
+  - Indice de temas `/temas/` e pagina por tema `/temas/<slug>/` com cartoes
+    de versiculo (referencia + texto) e "Para aprofundar" (artigos por
+    correspondencia simples de termo).
+  - Bloco "Referencias cruzadas" nas paginas de versiculo (links irmaos).
+  - Home: chips de tema agora apontam para as paginas reais + link
+    "Ver todos os temas"; nav e rodape apontam para `/temas/`.
+  - Indice de busca: temas apontam para `/temas/<slug>/`; sitemap inclui temas.
+- `site/assets/styles.css`: estilos de `.topic-card`, `.topic-count`,
+  `.block-note` e ajuste de `.gl` no titulo.
+- `tests/test_build_smoke.py`: fixture passa a gravar `topic-refs.json` e
+  `cross-references.json` (com slug no tema) e dois testes novos cobrindo o
+  indice/pagina de temas e o bloco de referencias cruzadas.
+
+Validacao:
+
+- `python scripts/build.py` (... + 12 temas + ...).
+- `python -m pytest` (todos passando, incluindo os 2 testes novos).
+- Conferido que cada tema lista a quantidade certa de versiculos e que os
+  links de cross-reference apontam para paginas existentes.
+- Regenerado `site/`.
+
 ## 2026-06-23 - Fase 1: seguranca, offline, audio e busca avancada
 
 Pedido do usuario: melhorar o site para estudo biblico (varios recursos) e
