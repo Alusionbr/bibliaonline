@@ -543,3 +543,15 @@ html.dark .pt.tts-current{background:rgba(231,214,171,.16);box-shadow:0 0 0 4px 
 @media (prefers-reduced-motion: reduce){
   .pt.tts-current{transition:none}
 }
+
+/* temas (índice de tópicos) */
+.topic-card{display:flex;flex-direction:column;gap:6px}
+.topic-card h3{display:flex;align-items:center;gap:8px;font-size:1.12rem;margin:0}
+.topic-card h3 .gl{font-family:"Frank Ruhl Libre",serif;color:var(--gold-deep)}
+.topic-card .pt-mini{color:var(--muted);margin:0}
+.topic-count{font-family:"Inter",system-ui,sans-serif;font-size:.74rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--gold-deep);margin-top:2px}
+.verse-head h1 .gl{font-family:"Frank Ruhl Libre",serif;color:var(--gold-deep);margin-right:4px}
+.block-note{color:var(--muted);font-size:.92rem;margin:.2rem 0 .6rem}
+/* lista de cross-references reaproveita o cartão .result */
+.xref-list{margin-top:6px}
