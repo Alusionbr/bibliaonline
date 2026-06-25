@@ -62,6 +62,30 @@ def resolve_pt(livro, ch, vs, amap, A, H):
         elif ch == 4:
             return amap.get((nm, 3, vs), "")
         return ""
+    elif livro == "Êxodo":
+        # Numeração massorética (hebraica) ≠ Almeida em dois trechos:
+        # "Praga das rãs": Heb 7 tem 29v, Alm 7 tem 25v.
+        #   Heb 7:1-25  = Alm 7:1-25 ; Heb 7:26-29 = Alm 8:1-4
+        #   Heb 8 (28v) = Alm 8:5-32 (deslocamento +4)
+        if ch == 7:
+            if vs <= 25:
+                return amap.get((nm, 7, vs), "")
+            return amap.get((nm, 8, vs - 25), "")  # 26->8:1 ... 29->8:4
+        elif ch == 8:
+            return amap.get((nm, 8, vs + 4), "")    # 1->8:5 ... 28->8:32
+        # "Leis civis": Heb 21 tem 37v, Alm 21 tem 36v.
+        #   Heb 21:1-36 = Alm 21:1-36 ; Heb 21:37 = Alm 22:1
+        #   Heb 22 (30v) = Alm 22:2-31 (deslocamento +1)
+        elif ch == 21:
+            if vs <= 36:
+                return amap.get((nm, 21, vs), "")
+            return amap.get((nm, 22, 1), "")        # 21:37 -> 22:1
+        elif ch == 22:
+            return amap.get((nm, 22, vs + 1), "")   # 1->22:2 ... 30->22:31
+        # demais capítulos do Êxodo: casamento direto quando bate
+        if A == H:
+            return amap.get((nm, ch, vs), "")
+        return ""
     elif livro == "Salmos":
         k = H - A  # nº de linhas de título (0, 1 ou 2)
         if k > 0:

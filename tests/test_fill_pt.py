@@ -63,6 +63,35 @@ def test_joel_remapeamento_de_capitulos(fill_pt):
     assert fill_pt.resolve_pt("Joel", 4, 1, amap, A=0, H=0) == "cap3 da Almeida (= Hb 4:1)"
 
 
+def test_exodo_pragas_e_leis_civis(fill_pt):
+    # Numeração massorética ≠ Almeida em dois trechos do Êxodo.
+    # "Praga das rãs": Heb 7 (29v) → Alm 7:1-25 + Alm 8:1-4; Heb 8 (28v) → Alm 8:5-32.
+    amap = {
+        ("Êxodo", 7, 25): "Alm 7:25",
+        ("Êxodo", 8, 1): "Alm 8:1 (= Hb 7:26, praga das rãs)",
+        ("Êxodo", 8, 4): "Alm 8:4 (= Hb 7:29)",
+        ("Êxodo", 8, 5): "Alm 8:5 (= Hb 8:1)",
+        ("Êxodo", 8, 32): "Alm 8:32 (= Hb 8:28)",
+        ("Êxodo", 21, 36): "Alm 21:36",
+        ("Êxodo", 22, 1): "Alm 22:1 (= Hb 21:37)",
+        ("Êxodo", 22, 2): "Alm 22:2 (= Hb 22:1)",
+        ("Êxodo", 22, 31): "Alm 22:31 (= Hb 22:30)",
+    }
+    # cap 7: até 25 direto; 26-29 → Alm 8:1-4
+    assert fill_pt.resolve_pt("Êxodo", 7, 25, amap, A=25, H=29) == "Alm 7:25"
+    assert fill_pt.resolve_pt("Êxodo", 7, 26, amap, A=25, H=29) == "Alm 8:1 (= Hb 7:26, praga das rãs)"
+    assert fill_pt.resolve_pt("Êxodo", 7, 29, amap, A=25, H=29) == "Alm 8:4 (= Hb 7:29)"
+    # cap 8: deslocamento +4
+    assert fill_pt.resolve_pt("Êxodo", 8, 1, amap, A=32, H=28) == "Alm 8:5 (= Hb 8:1)"
+    assert fill_pt.resolve_pt("Êxodo", 8, 28, amap, A=32, H=28) == "Alm 8:32 (= Hb 8:28)"
+    # cap 21: até 36 direto; 37 → Alm 22:1
+    assert fill_pt.resolve_pt("Êxodo", 21, 36, amap, A=36, H=37) == "Alm 21:36"
+    assert fill_pt.resolve_pt("Êxodo", 21, 37, amap, A=36, H=37) == "Alm 22:1 (= Hb 21:37)"
+    # cap 22: deslocamento +1
+    assert fill_pt.resolve_pt("Êxodo", 22, 1, amap, A=31, H=30) == "Alm 22:2 (= Hb 22:1)"
+    assert fill_pt.resolve_pt("Êxodo", 22, 30, amap, A=31, H=30) == "Alm 22:31 (= Hb 22:30)"
+
+
 def test_name_fix_aplicado(fill_pt):
     # Lamentações e Oseias têm nomes diferentes na fonte Almeida
     amap = {("Lamentações de Jeremias", 1, 1): "Como está sentada solitária..."}
