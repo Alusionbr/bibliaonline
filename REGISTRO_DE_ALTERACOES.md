@@ -15,6 +15,35 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-25 - Letras vermelhas, TTS mais natural e cobertura PT do Êxodo
+
+Pedidos do usuario: (1) vozes do audio mais naturais e com entonacao;
+(2) investigar versiculos que nao apareciam no site; (3) implementar letras
+vermelhas (palavras de Jesus) comecando por Jesus. Atualizar o site ao final.
+
+Mudancas:
+
+- Letras vermelhas: `site/data/red-letters.json` (2033 versiculos curados onde
+  Jesus fala — Evangelhos + Atos + Apocalipse). `scripts/build.py` aplica a
+  classe `pt pt-jesus` na pagina de versiculo e de capitulo;
+  `site/assets/styles.css` colore #c62828 (claro) / #ef9a9a (escuro).
+- TTS: em `scripts/build.py` (fonte do `app.js`), `speakFrom()` agora usa
+  `pitch=1.1`, `volume=0.9` e `addPausesForProsody()` para pausas em pontuacao.
+- Cobertura PT do Êxodo: `scripts/fill_pt.py` ganhou mapeamento explicito para
+  os capitulos 7, 8, 21 e 22, onde a numeracao massoretica diverge da Almeida
+  1911. Preenche 124 versiculos antes vazios (praga das ras e leis civis) com
+  patch cirurgico — sem reprocessar/sobrescrever texto existente de outros
+  livros (o `--write` completo regrediria NT que ja tinha PT curado).
+
+Validacao:
+
+- `python scripts/build.py` (31173 versiculos) e `python -m pytest` (verde),
+  incluindo novos testes `test_letras_vermelhas_jesus` e
+  `test_exodo_pragas_e_leis_civis`.
+- Conferido HTML gerado: `site/ler/exodo/7/` com 29 paragrafos `.pt`,
+  `site/versiculos/exodo-7-26/` com o texto da praga das ras; Mateus 5 em
+  vermelho; Genesis 1 sem vermelho.
+
 ## 2026-06-23 - Fase 4: mapas (atlas) e planos de leitura
 
 Pedido do usuario: concluir o que falta seguindo a mesma logica, mantendo a
