@@ -73,6 +73,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
     (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
+    red_letters = {"João 1:1": True}
+    (data_dir / "red-letters.json").write_text(json.dumps(red_letters, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -372,3 +374,14 @@ def test_fase4_planos_de_leitura(site):
     # nav + sitemap
     assert 'href="planos/"' in (site / "index.html").read_text("utf-8")
     assert "/planos/joao-1-dia/" in (site / "sitemap.xml").read_text("utf-8")
+
+
+def test_letras_vermelhas_jesus(site):
+    # versículo marcado em red-letters.json recebe class="pt pt-jesus"
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'class="pt pt-jesus"' in joao
+    cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
+    assert 'class="pt pt-jesus"' in cap
+    # versículo não marcado não recebe a classe
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "pt-jesus" not in gen

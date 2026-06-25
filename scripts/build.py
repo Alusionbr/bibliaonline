@@ -444,7 +444,7 @@ def specimen_block(v):
 # ---------- páginas ----------
 def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=None,
                      verses_by_ref=None, commentary=None, glossary_by_ref=None,
-                     places_by_ref=None):
+                     places_by_ref=None, red_letters=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -514,7 +514,9 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
 
     next_url = f"../{next_v['slug']}/" if next_v else ""
     if v.get("texto_pt","").strip():
-        pt_html = f'<p class="pt">{esc(v["texto_pt"])}</p>'
+        is_jesus = red_letters and v["referencia"] in red_letters
+        pt_class = "pt pt-jesus" if is_jesus else "pt"
+        pt_html = f'<p class="{pt_class}">{esc(v["texto_pt"])}</p>'
     else:
         pt_html = ('<p class="pt pt-missing">Tradução em português deste trecho em revisão '
                    '(diferença de numeração entre o hebraico e a edição Almeida 1911).</p>')
@@ -978,7 +980,7 @@ def build_book_page(livro, chapters, order):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
-def build_chapter_page(livro, ch, verses, n_chapters, order):
+def build_chapter_page(livro, ch, verses, n_chapters, order, red_letters=None):
     prefix = "../../../"
     bslug = book_slug(livro)
     title = f"{livro} {ch} — original, transliteração e tradução | {SITE_NAME}"
@@ -988,14 +990,17 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     rows = ""
     for v in verses:
         _, vs = ref_chvs(v["referencia"])
-        pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
+        is_jesus = red_letters and v["referencia"] in red_letters
+        pt_class = "pt pt-jesus" if is_jesus else "pt"
+        pt_text = esc(v.get("texto_pt",""))
+        pt = f'<p class="{pt_class}">{pt_text}</p>' if pt_text else '<p class="pt pt-missing">—</p>'
         rows += f"""
     <div class="ch-verse" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body">
 {original_html(v, 8)}
 {translit_disclosure(v.get('transliteracao',''), 8)}
-        <p class="pt">{pt}</p>
+        {pt}
       </div>
     </div>"""
     prev_html = (f'<a class="pg prev" href="../{ch-1}/"><span>← Capítulo</span><b>{livro} {ch-1}</b></a>'
@@ -2245,6 +2250,7 @@ def main():
     topic_refs=load_opt("topic-refs.json", {}); cross_refs=load_opt("cross-references.json", {})
     glossary=load_opt("glossary.json", []); commentary=load_opt("commentary.json", {})
     places=load_opt("places.json", []); plans=load_opt("reading-plans.json", [])
+    red_letters=load_opt("red-letters.json", {})
     # garante slug em cada tema (deriva do título quando ausente)
     for t in topics:
         if not t.get("slug"):
@@ -2279,7 +2285,7 @@ def main():
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
         build_verse_page(v, articles_by_slug, prev_v, next_v, cross_refs, verses_by_ref,
-                         commentary, glossary_by_ref, places_by_ref)
+                         commentary, glossary_by_ref, places_by_ref, red_letters)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)
@@ -2306,7 +2312,7 @@ def main():
         build_book_page(livro, chapters, order)
         total_caps = max(chapters)
         for ch in sorted(chapters):
-            build_chapter_page(livro, ch, chapters[ch], total_caps, order)
+            build_chapter_page(livro, ch, chapters[ch], total_caps, order, red_letters)
             n_chapters += 1
     build_meta(verses, articles, order, struct, topics, glossary, places, plans)
     build_404()

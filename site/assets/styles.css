@@ -294,6 +294,8 @@ section{padding:52px 0}
 
 /* tradução pendente, links externos, rolagem infinita */
 .pt-missing{color:var(--muted);font-style:italic;font-size:.95rem}
+.pt-jesus{color:#c62828}
+html.dark .pt-jesus{color:#ef9a9a}
 .ext-link{color:var(--gold-deep);font-weight:600;text-decoration:none;border-bottom:1px solid var(--gold-soft)}
 .ext-link:hover{border-bottom-color:var(--gold-deep)}
 .verse-sep{border:0;border-top:1px solid var(--line);margin:54px auto;max-width:var(--read)}
