@@ -355,6 +355,18 @@ def commentary_block(v, commentary):
     <div class="comm-list">{rows}</div>
   </section>"""
 
+def study_disclosure(section_id, title, body_html):
+    # bloco de estudo RECOLHIDO por padrão (disclosure nativo <details>): aparece
+    # compacto, só abre para quem tem interesse — não atrapalha quem não quer.
+    # Sem JS inline (CSP): <details> é nativo.
+    return f"""
+  <section class="block jewish" id="{section_id}">
+    <details class="study-toggle">
+      <summary><span class="dot"></span><span class="study-title">{esc(title)}</span><span class="translit-arrow study-arrow" aria-hidden="true">&gt;</span></summary>
+{body_html}
+    </details>
+  </section>"""
+
 def jewish_reading_block(v, jewish_readings):
     # leitura judaica como CONTEXTO (linguístico/histórico) — resumo ORIGINAL, curado.
     # Apresentada com respeito, ao lado da leitura cristã; não a substitui nem contradiz.
@@ -365,12 +377,9 @@ def jewish_reading_block(v, jewish_readings):
     for c in items:
         rows += (f'<div class="comm-item"><span class="comm-tag">{esc(c.get("angulo",""))}</span>'
                  f'<p>{esc(c.get("texto",""))}</p></div>')
-    return f"""
-  <section class="block jewish" id="leitura-judaica">
-    <h2><span class="dot"></span>Leitura judaica (contexto)</h2>
-    <p class="block-note">Resumo original da Bíblia em Contexto, oferecido como contexto histórico e linguístico da tradição judaica. Apresentado com respeito — não substitui nem contradiz a leitura cristã.</p>
-    <div class="comm-list">{rows}</div>
-  </section>"""
+    body = (f'      <p class="block-note">Resumo original da Bíblia em Contexto, oferecido como contexto histórico e linguístico da tradição judaica. Apresentado com respeito — não substitui nem contradiz a leitura cristã.</p>\n'
+            f'      <div class="comm-list">{rows}</div>')
+    return study_disclosure("leitura-judaica", "Leitura judaica (contexto)", body)
 
 def glossary_terms_block(v, glossary_by_ref, prefix):
     # palavras-chave do original presentes neste versículo, ligando ao dicionário
@@ -485,12 +494,9 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
   </section>"""
     sef = sefaria_url(v["livro"], ch, vs)
     if sef:
-        blocks += f"""
-  <section class="block jewish" id="rabinico">
-    <h2><span class="dot"></span>Comentário rabínico</h2>
-    <p>Leia este versículo ao lado dos comentaristas judaicos clássicos — Rashi, Talmud, Midrash, Ibn Ezra — no acervo aberto do Sefaria.</p>
-    <p><a class="ext-link" href="{sef}" target="_blank" rel="noopener">Abrir {esc(v['referencia'])} no Sefaria ↗</a></p>
-  </section>"""
+        sef_body = (f'      <p>Leia este versículo ao lado dos comentaristas judaicos clássicos — Rashi, Talmud, Midrash, Ibn Ezra — no acervo aberto do Sefaria.</p>\n'
+                    f'      <p><a class="ext-link" href="{sef}" target="_blank" rel="noopener">Abrir {esc(v["referencia"])} no Sefaria ↗</a></p>')
+        blocks += study_disclosure("rabinico", "Comentário rabínico", sef_body)
 
     # palavras
     kw = "".join(f'<span class="tag">{esc(p)}</span>' for p in v.get("palavras",[]))
@@ -1916,7 +1922,7 @@ def build_study_js():
       else if(act==='share') shareVerse(cont, ref, action);
       return;
     }
-    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,a,button,select,input,textarea')) return;
+    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-toggle summary,a,button,select,input,textarea')) return;
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
     var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');

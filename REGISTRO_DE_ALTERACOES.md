@@ -15,6 +15,40 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-26 - Titulos dos Salmos em PT e comentario judaico recolhivel
+
+Pedidos do usuario: (1) corrigir Salmos cujo 1o versiculo nao aparecia em
+portugues; (2) fazer o comentario judaico/rabinico "surgir durante os estudos
+sem atrapalhar quem nao tem interesse".
+
+Mudancas:
+
+- **Bug dos Salmos (inscricoes)**: o texto massoretico conta o titulo do Salmo
+  como versiculo 1 (ex.: `Salmos 3:1` = "מִזְמוֹר לְדָוִד..."), mas a Almeida
+  PD imprime o titulo como cabecalho sem numero — 66 versiculos em 62 Salmos
+  ficavam sem `texto_pt`. Novo `site/data/psalm-titles.json` (inscricoes em PT,
+  renderizadas fielmente do hebraico massoretico que ja temos) e
+  `scripts/fill_psalm_titles.py` (patch CIRURGICO que so preenche essas linhas
+  quando vazias). NAO usei `fill_pt.py --write` completo porque ele regrediria
+  177 versiculos do NT ja curados. `resolve_pt` agora aceita as inscricoes
+  (cobertura de teste em `test_fill_pt.py`).
+- **Comentario judaico recolhivel**: novo helper `study_disclosure()` envolve os
+  blocos "Leitura judaica (contexto)" e "Comentario rabinico" num `<details
+  class="study-toggle">` recolhido por padrao (disclosure nativo, sem JS inline
+  — CSP ok), igual ao padrao da transliteracao. Quem tem interesse abre a seta;
+  quem nao tem ignora. A nota de respeito continua visivel ao abrir. CSS
+  `.study-toggle` em `styles.css`; o handler de toque (`app.js`) passa a ignorar
+  `.study-toggle summary` para nao abrir a barra de estudo. Teste
+  `test_leitura_judaica_contexto` atualizado para exigir o `<details>` recolhido.
+
+Validacao:
+
+- `python scripts/fill_psalm_titles.py --write` (66 preenchidos, 0 sobrescritos),
+  `python scripts/build.py` e `python -m pytest` (verde). `node --check app.js`.
+- Conferido `site/versiculos/salmos-3-1/` e `salmos-19-1/` com titulo em PT (e em
+  `site/ler/salmos/3/`); `site/versiculos/deuteronomio-6-4/` com os dois blocos
+  judaicos recolhidos por padrao; NT intacto (Mateus 1:1).
+
 ## 2026-06-26 - Leitura judaica de contexto (sem divergir do leitor cristao)
 
 Pedido do usuario: incluir comentarios judaicos/rabinicos que ajudem no estudo

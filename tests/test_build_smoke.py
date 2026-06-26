@@ -345,6 +345,10 @@ def test_leitura_judaica_contexto(site):
     assert "Leitura judaica (contexto)" in gen
     assert "O verbo bara tem Deus como sujeito." in gen
     assert "não substitui nem contradiz a leitura cristã" in gen  # enquadramento respeitoso
+    # recolhido por padrão: dentro de um <details> (sem atributo open)
+    sec = gen.split('id="leitura-judaica"', 1)[1][:600]
+    assert '<details class="study-toggle">' in sec
+    assert "<details class=\"study-toggle\" open" not in sec
     joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert 'id="leitura-judaica"' not in joao
 

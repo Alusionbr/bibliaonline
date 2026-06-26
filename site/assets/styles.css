@@ -337,6 +337,19 @@ html.dark .pt-jesus{color:#ef9a9a}
   line-height:1;transition:transform .15s ease
 }
 .translit-toggle[open] .translit-arrow,.original-toggle[open] .translit-arrow{transform:rotate(90deg)}
+/* bloco de estudo recolhível (leitura judaica / comentário rabínico) */
+.study-toggle{margin:0}
+.study-toggle summary{
+  display:flex;align-items:center;gap:9px;cursor:pointer;list-style:none;
+  font-size:1.32rem;color:var(--ink)
+}
+.study-toggle summary::-webkit-details-marker{display:none}
+.study-toggle summary::marker{content:""}
+.study-toggle summary:focus-visible{outline:2px solid var(--gold-deep);outline-offset:3px;border-radius:6px}
+.study-toggle .study-title{font-weight:600}
+.study-toggle .study-arrow{margin-left:auto;color:var(--gold-deep);font-size:.95rem}
+.study-toggle[open] .study-arrow{transform:rotate(90deg)}
+.study-toggle .block-note{margin-top:.55rem}
 .translit-toggle .translit{
   font-family:"Inter",system-ui,sans-serif;font-size:.92rem;letter-spacing:.03em;
   color:var(--muted);margin:.45rem 0 0
