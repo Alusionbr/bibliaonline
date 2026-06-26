@@ -54,6 +54,7 @@ def site(tmp_path, build, monkeypatch):
     ]
     commentary = {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Tudo começa em Deus."}]}
     jewish_readings = {"Gênesis 1:1": [{"angulo": "Sentido do hebraico", "texto": "O verbo bara tem Deus como sujeito."}]}
+    hebrew_tokens = {"Gênesis 1:1": [["b/7225", "HR/Ncfsa"]]}  # 1 palavra alinhada
     places = [{
         "slug": "jerusalem", "nome": "Jerusalém", "tipo": "Cidade",
         "regiao": "Terra de Israel", "descricao": "Cidade do Templo.",
@@ -73,6 +74,7 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
     (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
     (data_dir / "jewish-readings.json").write_text(json.dumps(jewish_readings, ensure_ascii=False), "utf-8")
+    (data_dir / "hebrew-tokens.json").write_text(json.dumps(hebrew_tokens, ensure_ascii=False), "utf-8")
     (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
     red_letters = {"João 1:1": True}
@@ -351,6 +353,24 @@ def test_leitura_judaica_contexto(site):
     assert "<details class=\"study-toggle\" open" not in sec
     joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert 'id="leitura-judaica"' not in joao
+
+
+def test_hebraico_palavra_interativa(site):
+    # palavra hebraica vira <span class="w hw"> com lemma+morph; o <p class="orig">
+    # é marcado data-wrapped para o study.js não re-embrulhar (preservando os spans)
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'class="w hw"' in gen
+    assert 'data-l="b/7225"' in gen and 'data-m="HR/Ncfsa"' in gen
+    assert 'data-wrapped="1"' in gen
+    # grego não é tokenizado (João 1:1 não tem .hw)
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'class="w hw"' not in joao
+    # o app.js traz o decodificador de morfologia e o popover
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "decodeMorph" in app and "hebrew-lexicon.json" in app
+    # o léxico precisa estar no precache do service worker (offline)
+    sw = (site / "sw.js").read_text("utf-8")
+    assert "hebrew-lexicon.json" in sw
 
 
 def test_fase4_mapas(site):

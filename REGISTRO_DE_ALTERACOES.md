@@ -15,6 +15,49 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-26 - Hebraico palavra-a-palavra (significado + gramatica ao tocar/hover)
+
+Pedido do usuario: passar o mouse/tocar em cada palavra hebraica e ver o
+significado com explicacao gramatical resumida (cobertura total, palavra por
+palavra).
+
+Mudancas:
+
+- **Dados (OSHB)**: `scripts/build_hebrew_tokens.py` baixa o OpenScriptures
+  Hebrew Bible (WLC + lema Strong + morfologia OSHM, CC BY 4.0) e gera
+  `site/data/hebrew-tokens.json` (mapa "Livro c:v" -> [[lemma, morph], ...]).
+  Alinhamento POSICIONAL com o nosso `original`: 23.213 versiculos do AT,
+  **100% alinhados, 0 divergentes** (o nosso texto ja vinha do WLC). ~6,2 MB.
+- **Render** (`scripts/build.py`): `original_html`/`hebrew_inner` quebram o
+  hebraico/aramaico em `<span class="w hw" data-f data-i data-l data-m>` e marcam
+  o `<p class="orig">` com `data-wrapped="1"` para o `study.js` nao re-embrulhar
+  (preserva os spans). `w` mantem o marca-texto; `hw` liga o popover. Vale para
+  pagina de versiculo e de capitulo.
+- **Gramatica** (`app.js`): `decodeMorph()` decodifica o codigo OSHM para
+  portugues (substantivo/verbo/adjetivo/pronome/particula/sufixo + genero,
+  numero, estado, binyan, tempo, pessoa...). Deterministico, cobre 100% das
+  palavras.
+- **Significado** (`site/data/hebrew-lexicon.json`): 167 lemas mais frequentes
+  com glosa PT ORIGINAL (~58,7% das ocorrencias do AT). Carregado uma vez,
+  pre-cacheado no `sw.js` (offline). Palavra sem glosa mostra translit +
+  gramatica + "significado em curadoria".
+- **Popover** (`app.js`): toque (mobile) alterna; hover (desktop) comanda; clique
+  no desktop so fecha ao clicar fora. Com a canetinha ligada (`body.hl-mode`) o
+  toque MARCA e o popover nao abre. Sem inline (CSP ok). CSS `.hw`/`.hw-pop` em
+  `styles.css`.
+- Atribuicao: `sources.json` ganha Strong 1894 (dominio publico, so referencia;
+  glosas PT sao nossas) e detalha o uso do OSHB.
+
+Validacao:
+
+- `python scripts/build_hebrew_tokens.py --write` (23.213 alinhados),
+  `python scripts/build.py`, `python -m pytest` (84 passando, novo
+  `test_hebraico_palavra_interativa`). `node --check app.js`/`sw.js`.
+- Teste de navegador real (Playwright/Chromium): hover em אֱלֹהִים mostra
+  "Deus..." + "substantivo · masculino · plural · absoluto"; toque (Pixel 5) em
+  בְּרֵאשִׁית mostra "preposicao + substantivo · feminino · singular · absoluto";
+  com a caneta ligada o toque marca e nao abre popover.
+
 ## 2026-06-26 - Titulos dos Salmos em PT e comentario judaico recolhivel
 
 Pedidos do usuario: (1) corrigir Salmos cujo 1o versiculo nao aparecia em

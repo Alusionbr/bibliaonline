@@ -631,3 +631,19 @@ html.dark .place-chip{background:var(--paper)}
 .plan-day.done .plan-check span{text-decoration:line-through;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){ .plan-bar{transition:none} }
 html.dark .plan-day{background:var(--paper)}
+/* hebraico interativo: palavra com significado/gramática ao tocar/passar o mouse */
+.hw{cursor:help;border-bottom:1px dotted var(--he);padding-bottom:1px}
+.hw:hover,.hw:focus{background:var(--gold-soft);border-radius:3px}
+.hw-pop{position:absolute;z-index:60;max-width:min(320px,86vw);background:var(--paper);
+  border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);
+  padding:12px 14px;font-family:"Inter",system-ui,sans-serif;color:var(--ink);
+  animation:hwfade .12s ease}
+@keyframes hwfade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.hw-pop-word{font-family:"Frank Ruhl Libre",serif;font-size:1.5rem;color:var(--gold-deep);line-height:1.2}
+.hw-pop-tr{font-size:.82rem;color:var(--muted);font-style:italic;margin-top:1px}
+.hw-pop-gloss{font-size:.96rem;margin-top:.4rem;color:var(--ink)}
+.hw-pop-soft{color:var(--muted);font-style:italic}
+.hw-pop-morph{font-size:.82rem;margin-top:.45rem;color:var(--gold-deep);
+  border-top:1px solid var(--line);padding-top:.4rem}
+.hw-pop-foot{font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em}
+@media (prefers-reduced-motion: reduce){ .hw-pop{animation:none} }

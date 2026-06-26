@@ -285,18 +285,43 @@ def translit_disclosure(text, indent=4):
         f'{pad}</details>'
     )
 
+# tokens hebraicos (lemma+morph por palavra) carregados uma vez em main();
+# alimentam a interação palavra-a-palavra (significado + gramática) no hebraico.
+HEBREW_TOKENS = {}
+
+def hebrew_inner(v):
+    # monta o texto hebraico/aramaico com cada palavra interativa quando há tokens
+    # alinhados. Cada palavra vira <span class="w hw" ...>: "w"+data-f/data-i para
+    # o grifo/marca-texto (study.js), "hw"+data-l/data-m para o popover (significado
+    # + gramática). Retorna (html, tokenizado?). Sem tokens: texto simples (fallback).
+    original = v.get("original", "")
+    if v.get("idioma") not in ("hebraico", "aramaico"):
+        return esc(original), False
+    toks = HEBREW_TOKENS.get(v.get("referencia", ""))
+    words = original.split()
+    if not toks or len(toks) != len(words):
+        return esc(original), False
+    spans = []
+    for i, (w, lm) in enumerate(zip(words, toks)):
+        lemma, morph = (lm + ["", ""])[:2]
+        spans.append(f'<span class="w hw" data-f="orig" data-i="{i}" '
+                     f'data-l="{esc(lemma)}" data-m="{esc(morph)}">{esc(w)}</span>')
+    return " ".join(spans), True
+
 def original_html(v, indent=4):
     sc = script_class(v["idioma"], v.get("dir","ltr"))
     dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
-    original = esc(v.get("original",""))
+    inner_txt, tokenized = hebrew_inner(v) if v.get("idioma") != "grego" else (esc(v.get("original","")), False)
+    # já pré-tokenizado no servidor -> study.js não deve re-embrulhar (data-wrapped)
+    wrapped = ' data-wrapped="1"' if tokenized else ''
     if v.get("idioma") != "grego":
-        return f'{" " * indent}<p class="orig {sc}"{dir_attr}>{original}</p>'
+        return f'{" " * indent}<p class="orig {sc}"{dir_attr}{wrapped}>{inner_txt}</p>'
     pad = " " * indent
     inner = " " * (indent + 2)
     return (
         f'{pad}<details class="original-toggle">\n'
         f'{inner}<summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>\n'
-        f'{inner}<p class="orig {sc}"{dir_attr}>{original}</p>\n'
+        f'{inner}<p class="orig {sc}"{dir_attr}{wrapped}>{inner_txt}</p>\n'
         f'{pad}</details>'
     )
 
@@ -1253,7 +1278,8 @@ var SHELL = [
   './manifest.webmanifest',
   './assets/styles.css?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
-  './assets/study.js?v=' + VERSION
+  './assets/study.js?v=' + VERSION,
+  './data/hebrew-lexicon.json'
 ];
 
 self.addEventListener('install', function(e){
@@ -1629,6 +1655,161 @@ document.addEventListener('error', function(e){
   });
   if(reset) reset.addEventListener('click', function(){ save({}); refresh(); });
   refresh();
+})();
+
+// ---------- Hebraico palavra-a-palavra: significado + gramática (toque/hover) ----------
+(function(){
+  var hw=document.querySelector('.hw'); if(!hw) return;  // só em páginas com hebraico
+  // base do site (resolve data/ a partir do <script src=".../assets/app.js">)
+  function siteBase(){
+    var s=document.querySelector('script[src*="assets/app.js"]');
+    var src=s?s.getAttribute('src'):'';
+    return src.replace(/assets\/app\.js.*$/,'');
+  }
+  var BASE=siteBase();
+  // léxico (significados PT) carregado uma vez, sob demanda, e cacheado
+  var lexPromise=null;
+  function getLex(){
+    if(!lexPromise){
+      lexPromise=fetch(BASE+'data/hebrew-lexicon.json').then(function(r){return r.json();}).catch(function(){return {};});
+    }
+    return lexPromise;
+  }
+  // ---- decodificador de morfologia OSHM -> português (cobre toda palavra) ----
+  var POS={A:'adjetivo',C:'conjunção',D:'advérbio',N:'substantivo',P:'pronome',
+    R:'preposição',S:'sufixo',T:'partícula',V:'verbo'};
+  var GEN={m:'masculino',f:'feminino',c:'comum',b:'masc./fem.'};
+  var NUM={s:'singular',p:'plural',d:'dual'};
+  var STATE={a:'absoluto',c:'construto',d:'determinado'};
+  var NTYPE={c:'comum',g:'gentílico',p:'próprio'};
+  var PTYPE={d:'demonstrativo',f:'indefinido',i:'interrogativo',p:'pessoal',r:'relativo'};
+  var TTYPE={a:'de afirmação',d:'artigo definido',e:'de exortação',i:'interrogativa',
+    j:'interjeição',m:'demonstrativa',n:'de negação',o:'marcador de objeto direto',r:'relativa'};
+  var STEM={q:'Qal',N:'Nifal',p:'Piel',P:'Pual',h:'Hifil',H:'Hofal',t:'Hitpael',
+    Q:'Qal passivo',o:'Polel',O:'Polal',r:'Hitpolel',m:'Poel',M:'Poal',l:'Pilpel',
+    L:'Polpal',f:'Hitpalpel',D:'Nitpael',c:'Tifil',v:'Hishtafel'};
+  var ASPECT={p:'perfeito',q:'perfeito sequencial',i:'imperfeito',w:'imperfeito sequencial (wayyiqtol)',
+    h:'coortativo',j:'jussivo',v:'imperativo',r:'particípio ativo',s:'particípio passivo',
+    a:'infinitivo absoluto',c:'infinitivo construto'};
+  var PERSON={'1':'1ª pessoa','2':'2ª pessoa','3':'3ª pessoa'};
+  function decodeOne(seg){
+    if(!seg) return '';
+    var pos=seg.charAt(0), rest=seg.slice(1), parts=[POS[pos]||pos];
+    if(pos==='N'){
+      if(NTYPE[rest.charAt(0)]){ if(rest.charAt(0)!=='c') parts.push(NTYPE[rest.charAt(0)]); rest=rest.slice(1); }
+      if(GEN[rest.charAt(0)]) parts.push(GEN[rest.charAt(0)]);
+      if(NUM[rest.charAt(1)]) parts.push(NUM[rest.charAt(1)]);
+      if(STATE[rest.charAt(2)]) parts.push(STATE[rest.charAt(2)]);
+    } else if(pos==='V'){
+      parts.push(STEM[rest.charAt(0)]||rest.charAt(0));
+      parts.push(ASPECT[rest.charAt(1)]||rest.charAt(1));
+      var r2=rest.slice(2);
+      // particípio/infinitivo: gênero/número/estado; finitos: pessoa/gênero/número
+      if('rsac'.indexOf(rest.charAt(1))>-1){
+        if(GEN[r2.charAt(0)]) parts.push(GEN[r2.charAt(0)]);
+        if(NUM[r2.charAt(1)]) parts.push(NUM[r2.charAt(1)]);
+        if(STATE[r2.charAt(2)]) parts.push(STATE[r2.charAt(2)]);
+      } else {
+        if(PERSON[r2.charAt(0)]) parts.push(PERSON[r2.charAt(0)]);
+        if(GEN[r2.charAt(1)]) parts.push(GEN[r2.charAt(1)]);
+        if(NUM[r2.charAt(2)]) parts.push(NUM[r2.charAt(2)]);
+      }
+    } else if(pos==='A'){
+      var t=rest.charAt(0), off=0;
+      if(t==='c'){parts.push('numeral cardinal');off=1;} else if(t==='o'){parts.push('numeral ordinal');off=1;}
+      else if(t==='g'){parts.push('gentílico');off=1;}
+      var ra=rest.slice(off);
+      if(GEN[ra.charAt(0)]) parts.push(GEN[ra.charAt(0)]);
+      if(NUM[ra.charAt(1)]) parts.push(NUM[ra.charAt(1)]);
+      if(STATE[ra.charAt(2)]) parts.push(STATE[ra.charAt(2)]);
+    } else if(pos==='P'){
+      if(PTYPE[rest.charAt(0)]){ parts.push(PTYPE[rest.charAt(0)]); rest=rest.slice(1); }
+      if(PERSON[rest.charAt(0)]) parts.push(PERSON[rest.charAt(0)]);
+      if(GEN[rest.charAt(1)]) parts.push(GEN[rest.charAt(1)]);
+      if(NUM[rest.charAt(2)]) parts.push(NUM[rest.charAt(2)]);
+    } else if(pos==='S'){
+      if(rest.charAt(0)==='p'){ rest=rest.slice(1); parts=['sufixo pronominal'];
+        if(PERSON[rest.charAt(0)]) parts.push(PERSON[rest.charAt(0)]);
+        if(GEN[rest.charAt(1)]) parts.push(GEN[rest.charAt(1)]);
+        if(NUM[rest.charAt(2)]) parts.push(NUM[rest.charAt(2)]);
+      } else if(rest.charAt(0)==='d'){ parts=['hê direcional (“para”)']; }
+    } else if(pos==='T'){
+      if(TTYPE[rest.charAt(0)]) parts.push(TTYPE[rest.charAt(0)]);
+    }
+    return parts.filter(Boolean).join(' · ');
+  }
+  function decodeMorph(code){
+    if(!code) return '';
+    code=code.replace(/^[HA]/,'');  // tira o prefixo de idioma
+    return code.split('/').map(decodeOne).filter(Boolean).join('  +  ');
+  }
+  function headLemma(l){
+    var segs=(l||'').split('/');
+    for(var k=segs.length-1;k>=0;k--){ var m=segs[k].match(/(\d+)/); if(m) return m[1]; }
+    return null;
+  }
+  // ---- popover ----
+  var pop=null, openFor=null;
+  function buildPop(el, lex){
+    var word=el.textContent, lemma=el.getAttribute('data-l'), morph=el.getAttribute('data-m');
+    var head=headLemma(lemma), entry=head?lex[head]:null;
+    var html='<div class="hw-pop-word" dir="rtl" lang="he">'+word+'</div>';
+    if(entry&&entry.tr) html+='<div class="hw-pop-tr">'+entry.tr+'</div>';
+    if(entry&&entry.pt) html+='<div class="hw-pop-gloss">'+entry.pt+'</div>';
+    else html+='<div class="hw-pop-gloss hw-pop-soft">significado em curadoria</div>';
+    var g=decodeMorph(morph);
+    if(g) html+='<div class="hw-pop-morph">'+g+'</div>';
+    if(head) html+='<div class="hw-pop-foot">Strong H'+head+'</div>';
+    return html;
+  }
+  function showPop(el){
+    getLex().then(function(lex){
+      if(openFor!==el) return;  // já fechou/mudou
+      closePop2();
+      pop=document.createElement('div'); pop.className='hw-pop'; pop.setAttribute('role','tooltip');
+      pop.innerHTML=buildPop(el, lex);
+      document.body.appendChild(pop);
+      position(el);
+    });
+  }
+  function closePop2(){ if(pop){ pop.remove(); pop=null; } }
+  function position(el){
+    if(!pop) return;
+    var r=el.getBoundingClientRect(), pr=pop.getBoundingClientRect();
+    var top=r.bottom+window.scrollY+6, left=r.left+window.scrollX+(r.width/2)-(pr.width/2);
+    left=Math.max(8, Math.min(left, window.scrollX+document.documentElement.clientWidth-pr.width-8));
+    if(r.bottom+pr.height+12>document.documentElement.clientHeight) top=r.top+window.scrollY-pr.height-6;
+    pop.style.top=top+'px'; pop.style.left=left+'px';
+  }
+  var hoverCapable=!!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+  // toque/click: no touch alterna o popover; no desktop o hover já cuida disso
+  // (clicar com mouse fecharia o que o hover abriu) — só fechamos ao clicar fora.
+  document.addEventListener('click', function(e){
+    var el=e.target.closest && e.target.closest('.hw');
+    if(!el){ if(openFor){ openFor=null; closePop2(); } return; }
+    if(hoverCapable) return;                                  // desktop: hover comanda
+    if(document.body.classList.contains('hl-mode')) return;   // caneta: deixa marcar
+    if(openFor===el){ openFor=null; closePop2(); return; }
+    openFor=el; showPop(el);
+  });
+  // hover (apenas onde há mouse de verdade)
+  if(hoverCapable){
+    var hoverEl=null;
+    document.addEventListener('mouseover', function(e){
+      var el=e.target.closest && e.target.closest('.hw'); if(!el||el===hoverEl) return;
+      if(document.body.classList.contains('hl-mode')) return;
+      hoverEl=el; if(openFor && openFor!==el){ openFor=null; closePop2(); }
+      if(!openFor){ openFor=el; showPop(el); }
+    });
+    document.addEventListener('mouseout', function(e){
+      var el=e.target.closest && e.target.closest('.hw'); if(!el) return;
+      var to=e.relatedTarget;
+      if(to && to.closest && (to.closest('.hw')===el || to.closest('.hw-pop'))) return;
+      hoverEl=null; if(openFor===el){ openFor=null; closePop2(); }
+    });
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ openFor=null; closePop2(); } });
+  window.addEventListener('resize', function(){ if(openFor) position(openFor); });
 })();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
@@ -2271,6 +2452,9 @@ def main():
     places=load_opt("places.json", []); plans=load_opt("reading-plans.json", [])
     red_letters=load_opt("red-letters.json", {})
     jewish_readings=load_opt("jewish-readings.json", {})
+    # tokens hebraicos (lemma+morph por palavra) p/ interação palavra-a-palavra
+    global HEBREW_TOKENS
+    HEBREW_TOKENS = load_opt("hebrew-tokens.json", {})
     # garante slug em cada tema (deriva do título quando ausente)
     for t in topics:
         if not t.get("slug"):
