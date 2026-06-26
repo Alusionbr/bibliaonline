@@ -381,15 +381,27 @@ def commentary_block(v, commentary):
   </section>"""
 
 def study_disclosure(section_id, title, body_html):
-    # bloco de estudo RECOLHIDO por padrão (disclosure nativo <details>): aparece
-    # compacto, só abre para quem tem interesse — não atrapalha quem não quer.
-    # Sem JS inline (CSP): <details> é nativo.
+    # bloco de estudo como CAIXA FLUTUANTE (dialog nativo) sobre o versículo: um
+    # botão discreto abre um popover modal com o conteúdo; fecha por ✕, Esc ou
+    # clique fora. Não atrapalha quem não quer. Sem JS inline (CSP): app.js liga
+    # [data-dialog-open] a showModal(); o ✕ usa <form method="dialog"> (nativo).
+    dlg_id = f"dlg-{section_id}"
     return f"""
   <section class="block jewish" id="{section_id}">
-    <details class="study-toggle">
-      <summary><span class="dot"></span><span class="study-title">{esc(title)}</span><span class="translit-arrow study-arrow" aria-hidden="true">&gt;</span></summary>
+    <button type="button" class="study-open" data-dialog-open="{dlg_id}" aria-haspopup="dialog">
+      <span class="dot"></span><span class="study-title">{esc(title)}</span><span class="study-arrow" aria-hidden="true">↗</span>
+    </button>
+    <dialog class="study-dialog" id="{dlg_id}" aria-label="{esc(title)}">
+      <div class="study-dialog-inner">
+        <header class="study-dialog-head">
+          <span class="study-title">{esc(title)}</span>
+          <form method="dialog"><button type="submit" class="study-dialog-close" aria-label="Fechar">✕</button></form>
+        </header>
+        <div class="study-dialog-body">
 {body_html}
-    </details>
+        </div>
+      </div>
+    </dialog>
   </section>"""
 
 def jewish_reading_block(v, jewish_readings):
@@ -1811,6 +1823,24 @@ document.addEventListener('error', function(e){
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ openFor=null; closePop2(); } });
   window.addEventListener('resize', function(){ if(openFor) position(openFor); });
 })();
+
+// ---------- Caixas de diálogo de estudo (leitura judaica / comentário rabínico) ----------
+// Botão [data-dialog-open="id"] abre o <dialog> como popover modal sobre o versículo.
+// Fecha por ✕ (<form method="dialog">, nativo), Esc (nativo) ou clique no backdrop.
+(function(){
+  document.addEventListener('click', function(e){
+    var t=e.target.closest && e.target.closest('[data-dialog-open]');
+    if(t){
+      var dlg=document.getElementById(t.getAttribute('data-dialog-open'));
+      if(dlg && dlg.showModal){ e.preventDefault(); dlg.showModal(); }
+      return;
+    }
+    // clique direto no <dialog> (área do backdrop, fora do conteúdo) fecha
+    if(e.target && e.target.tagName==='DIALOG' && e.target.classList.contains('study-dialog')){
+      e.target.close();
+    }
+  });
+})();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
 
@@ -2103,7 +2133,7 @@ def build_study_js():
       else if(act==='share') shareVerse(cont, ref, action);
       return;
     }
-    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-toggle summary,a,button,select,input,textarea')) return;
+    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-open,.study-dialog,a,button,select,input,textarea')) return;
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
     var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');

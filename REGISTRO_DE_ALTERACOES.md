@@ -58,6 +58,27 @@ Validacao:
   בְּרֵאשִׁית mostra "preposicao + substantivo · feminino · singular · absoluto";
   com a caneta ligada o toque marca e nao abre popover.
 
+## 2026-06-26 - Comentario judaico/rabinico vira caixa flutuante (dialog)
+
+Pedido do usuario: que o comentario judaico (e o rabinico) "surja como caixa de
+dialogo encima das passagens", igual ao popover do hebraico — em vez do bloco
+recolhivel por seta entregue antes.
+
+- `study_disclosure()` em `scripts/build.py` deixa de emitir
+  `<details class="study-toggle">` e passa a emitir um botao
+  `class="study-open" data-dialog-open="dlg-<id>"` + um `<dialog
+  class="study-dialog">` (popover modal nativo). O botao abre via `showModal()`
+  (wiring novo em `app.js`, sem JS inline — CSP ok); fecha pelo `✕`
+  (`<form method="dialog">`, nativo), `Esc` (nativo) ou clique no backdrop.
+- `styles.css`: trocadas as regras `.study-toggle` por `.study-open` (gatilho) e
+  `.study-dialog`/`::backdrop` (caixa flutuante sobre o versiculo).
+- Handler de toque (`app.js`) passa a ignorar `.study-open,.study-dialog` para
+  nao abrir a barra de estudo ao usar o dialog.
+- Teste `test_leitura_judaica_contexto` atualizado: exige o botao
+  `study-open`, o `<dialog class="study-dialog">` e o `<form method="dialog">`.
+- Vale para os dois blocos: "Leitura judaica (contexto)" e "Comentario
+  rabinico" (Sefaria), ambos via `study_disclosure()`.
+
 ## 2026-06-26 - Titulos dos Salmos em PT e comentario judaico recolhivel
 
 Pedidos do usuario: (1) corrigir Salmos cujo 1o versiculo nao aparecia em

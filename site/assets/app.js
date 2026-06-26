@@ -452,3 +452,21 @@ document.addEventListener('error', function(e){
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ openFor=null; closePop2(); } });
   window.addEventListener('resize', function(){ if(openFor) position(openFor); });
 })();
+
+// ---------- Caixas de diálogo de estudo (leitura judaica / comentário rabínico) ----------
+// Botão [data-dialog-open="id"] abre o <dialog> como popover modal sobre o versículo.
+// Fecha por ✕ (<form method="dialog">, nativo), Esc (nativo) ou clique no backdrop.
+(function(){
+  document.addEventListener('click', function(e){
+    var t=e.target.closest && e.target.closest('[data-dialog-open]');
+    if(t){
+      var dlg=document.getElementById(t.getAttribute('data-dialog-open'));
+      if(dlg && dlg.showModal){ e.preventDefault(); dlg.showModal(); }
+      return;
+    }
+    // clique direto no <dialog> (área do backdrop, fora do conteúdo) fecha
+    if(e.target && e.target.tagName==='DIALOG' && e.target.classList.contains('study-dialog')){
+      e.target.close();
+    }
+  });
+})();

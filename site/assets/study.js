@@ -287,7 +287,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
       else if(act==='share') shareVerse(cont, ref, action);
       return;
     }
-    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-toggle summary,a,button,select,input,textarea')) return;
+    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-open,.study-dialog,a,button,select,input,textarea')) return;
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
     var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
