@@ -285,18 +285,43 @@ def translit_disclosure(text, indent=4):
         f'{pad}</details>'
     )
 
+# tokens hebraicos (lemma+morph por palavra) carregados uma vez em main();
+# alimentam a interação palavra-a-palavra (significado + gramática) no hebraico.
+HEBREW_TOKENS = {}
+
+def hebrew_inner(v):
+    # monta o texto hebraico/aramaico com cada palavra interativa quando há tokens
+    # alinhados. Cada palavra vira <span class="w hw" ...>: "w"+data-f/data-i para
+    # o grifo/marca-texto (study.js), "hw"+data-l/data-m para o popover (significado
+    # + gramática). Retorna (html, tokenizado?). Sem tokens: texto simples (fallback).
+    original = v.get("original", "")
+    if v.get("idioma") not in ("hebraico", "aramaico"):
+        return esc(original), False
+    toks = HEBREW_TOKENS.get(v.get("referencia", ""))
+    words = original.split()
+    if not toks or len(toks) != len(words):
+        return esc(original), False
+    spans = []
+    for i, (w, lm) in enumerate(zip(words, toks)):
+        lemma, morph = (lm + ["", ""])[:2]
+        spans.append(f'<span class="w hw" data-f="orig" data-i="{i}" '
+                     f'data-l="{esc(lemma)}" data-m="{esc(morph)}">{esc(w)}</span>')
+    return " ".join(spans), True
+
 def original_html(v, indent=4):
     sc = script_class(v["idioma"], v.get("dir","ltr"))
     dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
-    original = esc(v.get("original",""))
+    inner_txt, tokenized = hebrew_inner(v) if v.get("idioma") != "grego" else (esc(v.get("original","")), False)
+    # já pré-tokenizado no servidor -> study.js não deve re-embrulhar (data-wrapped)
+    wrapped = ' data-wrapped="1"' if tokenized else ''
     if v.get("idioma") != "grego":
-        return f'{" " * indent}<p class="orig {sc}"{dir_attr}>{original}</p>'
+        return f'{" " * indent}<p class="orig {sc}"{dir_attr}{wrapped}>{inner_txt}</p>'
     pad = " " * indent
     inner = " " * (indent + 2)
     return (
         f'{pad}<details class="original-toggle">\n'
         f'{inner}<summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>\n'
-        f'{inner}<p class="orig {sc}"{dir_attr}>{original}</p>\n'
+        f'{inner}<p class="orig {sc}"{dir_attr}{wrapped}>{inner_txt}</p>\n'
         f'{pad}</details>'
     )
 
@@ -354,6 +379,44 @@ def commentary_block(v, commentary):
     <p class="block-note">Resumo original da Bíblia em Contexto — não reproduz comentários protegidos.</p>
     <div class="comm-list">{rows}</div>
   </section>"""
+
+def study_disclosure(section_id, title, body_html):
+    # bloco de estudo como CAIXA FLUTUANTE (dialog nativo) sobre o versículo: um
+    # botão discreto abre um popover modal com o conteúdo; fecha por ✕, Esc ou
+    # clique fora. Não atrapalha quem não quer. Sem JS inline (CSP): app.js liga
+    # [data-dialog-open] a showModal(); o ✕ usa <form method="dialog"> (nativo).
+    dlg_id = f"dlg-{section_id}"
+    return f"""
+  <section class="block jewish" id="{section_id}">
+    <button type="button" class="study-open" data-dialog-open="{dlg_id}" aria-haspopup="dialog">
+      <span class="dot"></span><span class="study-title">{esc(title)}</span><span class="study-arrow" aria-hidden="true">↗</span>
+    </button>
+    <dialog class="study-dialog" id="{dlg_id}" aria-label="{esc(title)}">
+      <div class="study-dialog-inner">
+        <header class="study-dialog-head">
+          <span class="study-title">{esc(title)}</span>
+          <form method="dialog"><button type="submit" class="study-dialog-close" aria-label="Fechar">✕</button></form>
+        </header>
+        <div class="study-dialog-body">
+{body_html}
+        </div>
+      </div>
+    </dialog>
+  </section>"""
+
+def jewish_reading_block(v, jewish_readings):
+    # leitura judaica como CONTEXTO (linguístico/histórico) — resumo ORIGINAL, curado.
+    # Apresentada com respeito, ao lado da leitura cristã; não a substitui nem contradiz.
+    items = jewish_readings.get(v["referencia"]) if jewish_readings else None
+    if not items:
+        return ""
+    rows = ""
+    for c in items:
+        rows += (f'<div class="comm-item"><span class="comm-tag">{esc(c.get("angulo",""))}</span>'
+                 f'<p>{esc(c.get("texto",""))}</p></div>')
+    body = (f'      <p class="block-note">Resumo original da Bíblia em Contexto, oferecido como contexto histórico e linguístico da tradição judaica. Apresentado com respeito — não substitui nem contradiz a leitura cristã.</p>\n'
+            f'      <div class="comm-list">{rows}</div>')
+    return study_disclosure("leitura-judaica", "Leitura judaica (contexto)", body)
 
 def glossary_terms_block(v, glossary_by_ref, prefix):
     # palavras-chave do original presentes neste versículo, ligando ao dicionário
@@ -444,7 +507,7 @@ def specimen_block(v):
 # ---------- páginas ----------
 def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=None,
                      verses_by_ref=None, commentary=None, glossary_by_ref=None,
-                     places_by_ref=None, red_letters=None):
+                     places_by_ref=None, red_letters=None, jewish_readings=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -457,7 +520,8 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
     }
     ch, vs = ref_chvs(v["referencia"])
 
-    # blocos: origem (se houver), comentário rabínico (Sefaria) e leitura curada
+    # blocos: origem (se houver) e comentário rabínico (link Sefaria).
+    # A leitura judaica curada é renderizada por jewish_reading_block (seção canônica).
     blocks = ""
     if v.get("origem","").strip():
         blocks += f"""
@@ -465,20 +529,11 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
     <h2><span class="dot"></span>Origem e transmissão</h2>
     <p>{esc(v.get('origem',''))}</p>
   </section>"""
-    if v.get("judaismo") and v.get("leitura_judaica"):
-        blocks += f"""
-  <section class="block jewish" id="leitura-judaica">
-    <h2><span class="dot"></span>Leitura judaica e comentário rabínico</h2>
-    <p>{esc(v['leitura_judaica'])}</p>
-  </section>"""
     sef = sefaria_url(v["livro"], ch, vs)
     if sef:
-        blocks += f"""
-  <section class="block jewish" id="rabinico">
-    <h2><span class="dot"></span>Comentário rabínico</h2>
-    <p>Leia este versículo ao lado dos comentaristas judaicos clássicos — Rashi, Talmud, Midrash, Ibn Ezra — no acervo aberto do Sefaria.</p>
-    <p><a class="ext-link" href="{sef}" target="_blank" rel="noopener">Abrir {esc(v['referencia'])} no Sefaria ↗</a></p>
-  </section>"""
+        sef_body = (f'      <p>Leia este versículo ao lado dos comentaristas judaicos clássicos — Rashi, Talmud, Midrash, Ibn Ezra — no acervo aberto do Sefaria.</p>\n'
+                    f'      <p><a class="ext-link" href="{sef}" target="_blank" rel="noopener">Abrir {esc(v["referencia"])} no Sefaria ↗</a></p>')
+        blocks += study_disclosure("rabinico", "Comentário rabínico", sef_body)
 
     # palavras
     kw = "".join(f'<span class="tag">{esc(p)}</span>' for p in v.get("palavras",[]))
@@ -540,6 +595,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
 
   {specimen_block(v)}
   {commentary_block(v, commentary)}
+  {jewish_reading_block(v, jewish_readings or {})}
   {blocks}
   {glossary_terms_block(v, glossary_by_ref, prefix)}
   {places_block(v, places_by_ref, prefix)}
@@ -1234,7 +1290,8 @@ var SHELL = [
   './manifest.webmanifest',
   './assets/styles.css?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
-  './assets/study.js?v=' + VERSION
+  './assets/study.js?v=' + VERSION,
+  './data/hebrew-lexicon.json'
 ];
 
 self.addEventListener('install', function(e){
@@ -1611,6 +1668,179 @@ document.addEventListener('error', function(e){
   if(reset) reset.addEventListener('click', function(){ save({}); refresh(); });
   refresh();
 })();
+
+// ---------- Hebraico palavra-a-palavra: significado + gramática (toque/hover) ----------
+(function(){
+  var hw=document.querySelector('.hw'); if(!hw) return;  // só em páginas com hebraico
+  // base do site (resolve data/ a partir do <script src=".../assets/app.js">)
+  function siteBase(){
+    var s=document.querySelector('script[src*="assets/app.js"]');
+    var src=s?s.getAttribute('src'):'';
+    return src.replace(/assets\/app\.js.*$/,'');
+  }
+  var BASE=siteBase();
+  // léxico (significados PT) carregado uma vez, sob demanda, e cacheado
+  var lexPromise=null;
+  function getLex(){
+    if(!lexPromise){
+      lexPromise=fetch(BASE+'data/hebrew-lexicon.json').then(function(r){return r.json();}).catch(function(){return {};});
+    }
+    return lexPromise;
+  }
+  // ---- decodificador de morfologia OSHM -> português (cobre toda palavra) ----
+  var POS={A:'adjetivo',C:'conjunção',D:'advérbio',N:'substantivo',P:'pronome',
+    R:'preposição',S:'sufixo',T:'partícula',V:'verbo'};
+  var GEN={m:'masculino',f:'feminino',c:'comum',b:'masc./fem.'};
+  var NUM={s:'singular',p:'plural',d:'dual'};
+  var STATE={a:'absoluto',c:'construto',d:'determinado'};
+  var NTYPE={c:'comum',g:'gentílico',p:'próprio'};
+  var PTYPE={d:'demonstrativo',f:'indefinido',i:'interrogativo',p:'pessoal',r:'relativo'};
+  var TTYPE={a:'de afirmação',d:'artigo definido',e:'de exortação',i:'interrogativa',
+    j:'interjeição',m:'demonstrativa',n:'de negação',o:'marcador de objeto direto',r:'relativa'};
+  var STEM={q:'Qal',N:'Nifal',p:'Piel',P:'Pual',h:'Hifil',H:'Hofal',t:'Hitpael',
+    Q:'Qal passivo',o:'Polel',O:'Polal',r:'Hitpolel',m:'Poel',M:'Poal',l:'Pilpel',
+    L:'Polpal',f:'Hitpalpel',D:'Nitpael',c:'Tifil',v:'Hishtafel'};
+  var ASPECT={p:'perfeito',q:'perfeito sequencial',i:'imperfeito',w:'imperfeito sequencial (wayyiqtol)',
+    h:'coortativo',j:'jussivo',v:'imperativo',r:'particípio ativo',s:'particípio passivo',
+    a:'infinitivo absoluto',c:'infinitivo construto'};
+  var PERSON={'1':'1ª pessoa','2':'2ª pessoa','3':'3ª pessoa'};
+  function decodeOne(seg){
+    if(!seg) return '';
+    var pos=seg.charAt(0), rest=seg.slice(1), parts=[POS[pos]||pos];
+    if(pos==='N'){
+      if(NTYPE[rest.charAt(0)]){ if(rest.charAt(0)!=='c') parts.push(NTYPE[rest.charAt(0)]); rest=rest.slice(1); }
+      if(GEN[rest.charAt(0)]) parts.push(GEN[rest.charAt(0)]);
+      if(NUM[rest.charAt(1)]) parts.push(NUM[rest.charAt(1)]);
+      if(STATE[rest.charAt(2)]) parts.push(STATE[rest.charAt(2)]);
+    } else if(pos==='V'){
+      parts.push(STEM[rest.charAt(0)]||rest.charAt(0));
+      parts.push(ASPECT[rest.charAt(1)]||rest.charAt(1));
+      var r2=rest.slice(2);
+      // particípio/infinitivo: gênero/número/estado; finitos: pessoa/gênero/número
+      if('rsac'.indexOf(rest.charAt(1))>-1){
+        if(GEN[r2.charAt(0)]) parts.push(GEN[r2.charAt(0)]);
+        if(NUM[r2.charAt(1)]) parts.push(NUM[r2.charAt(1)]);
+        if(STATE[r2.charAt(2)]) parts.push(STATE[r2.charAt(2)]);
+      } else {
+        if(PERSON[r2.charAt(0)]) parts.push(PERSON[r2.charAt(0)]);
+        if(GEN[r2.charAt(1)]) parts.push(GEN[r2.charAt(1)]);
+        if(NUM[r2.charAt(2)]) parts.push(NUM[r2.charAt(2)]);
+      }
+    } else if(pos==='A'){
+      var t=rest.charAt(0), off=0;
+      if(t==='c'){parts.push('numeral cardinal');off=1;} else if(t==='o'){parts.push('numeral ordinal');off=1;}
+      else if(t==='g'){parts.push('gentílico');off=1;}
+      var ra=rest.slice(off);
+      if(GEN[ra.charAt(0)]) parts.push(GEN[ra.charAt(0)]);
+      if(NUM[ra.charAt(1)]) parts.push(NUM[ra.charAt(1)]);
+      if(STATE[ra.charAt(2)]) parts.push(STATE[ra.charAt(2)]);
+    } else if(pos==='P'){
+      if(PTYPE[rest.charAt(0)]){ parts.push(PTYPE[rest.charAt(0)]); rest=rest.slice(1); }
+      if(PERSON[rest.charAt(0)]) parts.push(PERSON[rest.charAt(0)]);
+      if(GEN[rest.charAt(1)]) parts.push(GEN[rest.charAt(1)]);
+      if(NUM[rest.charAt(2)]) parts.push(NUM[rest.charAt(2)]);
+    } else if(pos==='S'){
+      if(rest.charAt(0)==='p'){ rest=rest.slice(1); parts=['sufixo pronominal'];
+        if(PERSON[rest.charAt(0)]) parts.push(PERSON[rest.charAt(0)]);
+        if(GEN[rest.charAt(1)]) parts.push(GEN[rest.charAt(1)]);
+        if(NUM[rest.charAt(2)]) parts.push(NUM[rest.charAt(2)]);
+      } else if(rest.charAt(0)==='d'){ parts=['hê direcional (“para”)']; }
+    } else if(pos==='T'){
+      if(TTYPE[rest.charAt(0)]) parts.push(TTYPE[rest.charAt(0)]);
+    }
+    return parts.filter(Boolean).join(' · ');
+  }
+  function decodeMorph(code){
+    if(!code) return '';
+    code=code.replace(/^[HA]/,'');  // tira o prefixo de idioma
+    return code.split('/').map(decodeOne).filter(Boolean).join('  +  ');
+  }
+  function headLemma(l){
+    var segs=(l||'').split('/');
+    for(var k=segs.length-1;k>=0;k--){ var m=segs[k].match(/(\d+)/); if(m) return m[1]; }
+    return null;
+  }
+  // ---- popover ----
+  var pop=null, openFor=null;
+  function buildPop(el, lex){
+    var word=el.textContent, lemma=el.getAttribute('data-l'), morph=el.getAttribute('data-m');
+    var head=headLemma(lemma), entry=head?lex[head]:null;
+    var html='<div class="hw-pop-word" dir="rtl" lang="he">'+word+'</div>';
+    if(entry&&entry.tr) html+='<div class="hw-pop-tr">'+entry.tr+'</div>';
+    if(entry&&entry.pt) html+='<div class="hw-pop-gloss">'+entry.pt+'</div>';
+    else html+='<div class="hw-pop-gloss hw-pop-soft">significado em curadoria</div>';
+    var g=decodeMorph(morph);
+    if(g) html+='<div class="hw-pop-morph">'+g+'</div>';
+    if(head) html+='<div class="hw-pop-foot">Strong H'+head+'</div>';
+    return html;
+  }
+  function showPop(el){
+    getLex().then(function(lex){
+      if(openFor!==el) return;  // já fechou/mudou
+      closePop2();
+      pop=document.createElement('div'); pop.className='hw-pop'; pop.setAttribute('role','tooltip');
+      pop.innerHTML=buildPop(el, lex);
+      document.body.appendChild(pop);
+      position(el);
+    });
+  }
+  function closePop2(){ if(pop){ pop.remove(); pop=null; } }
+  function position(el){
+    if(!pop) return;
+    var r=el.getBoundingClientRect(), pr=pop.getBoundingClientRect();
+    var top=r.bottom+window.scrollY+6, left=r.left+window.scrollX+(r.width/2)-(pr.width/2);
+    left=Math.max(8, Math.min(left, window.scrollX+document.documentElement.clientWidth-pr.width-8));
+    if(r.bottom+pr.height+12>document.documentElement.clientHeight) top=r.top+window.scrollY-pr.height-6;
+    pop.style.top=top+'px'; pop.style.left=left+'px';
+  }
+  var hoverCapable=!!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+  // toque/click: no touch alterna o popover; no desktop o hover já cuida disso
+  // (clicar com mouse fecharia o que o hover abriu) — só fechamos ao clicar fora.
+  document.addEventListener('click', function(e){
+    var el=e.target.closest && e.target.closest('.hw');
+    if(!el){ if(openFor){ openFor=null; closePop2(); } return; }
+    if(hoverCapable) return;                                  // desktop: hover comanda
+    if(document.body.classList.contains('hl-mode')) return;   // caneta: deixa marcar
+    if(openFor===el){ openFor=null; closePop2(); return; }
+    openFor=el; showPop(el);
+  });
+  // hover (apenas onde há mouse de verdade)
+  if(hoverCapable){
+    var hoverEl=null;
+    document.addEventListener('mouseover', function(e){
+      var el=e.target.closest && e.target.closest('.hw'); if(!el||el===hoverEl) return;
+      if(document.body.classList.contains('hl-mode')) return;
+      hoverEl=el; if(openFor && openFor!==el){ openFor=null; closePop2(); }
+      if(!openFor){ openFor=el; showPop(el); }
+    });
+    document.addEventListener('mouseout', function(e){
+      var el=e.target.closest && e.target.closest('.hw'); if(!el) return;
+      var to=e.relatedTarget;
+      if(to && to.closest && (to.closest('.hw')===el || to.closest('.hw-pop'))) return;
+      hoverEl=null; if(openFor===el){ openFor=null; closePop2(); }
+    });
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ openFor=null; closePop2(); } });
+  window.addEventListener('resize', function(){ if(openFor) position(openFor); });
+})();
+
+// ---------- Caixas de diálogo de estudo (leitura judaica / comentário rabínico) ----------
+// Botão [data-dialog-open="id"] abre o <dialog> como popover modal sobre o versículo.
+// Fecha por ✕ (<form method="dialog">, nativo), Esc (nativo) ou clique no backdrop.
+(function(){
+  document.addEventListener('click', function(e){
+    var t=e.target.closest && e.target.closest('[data-dialog-open]');
+    if(t){
+      var dlg=document.getElementById(t.getAttribute('data-dialog-open'));
+      if(dlg && dlg.showModal){ e.preventDefault(); dlg.showModal(); }
+      return;
+    }
+    // clique direto no <dialog> (área do backdrop, fora do conteúdo) fecha
+    if(e.target && e.target.tagName==='DIALOG' && e.target.classList.contains('study-dialog')){
+      e.target.close();
+    }
+  });
+})();
 """
     (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
 
@@ -1903,7 +2133,7 @@ def build_study_js():
       else if(act==='share') shareVerse(cont, ref, action);
       return;
     }
-    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,a,button,select,input,textarea')) return;
+    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-open,.study-dialog,a,button,select,input,textarea')) return;
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
     var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
@@ -2251,6 +2481,10 @@ def main():
     glossary=load_opt("glossary.json", []); commentary=load_opt("commentary.json", {})
     places=load_opt("places.json", []); plans=load_opt("reading-plans.json", [])
     red_letters=load_opt("red-letters.json", {})
+    jewish_readings=load_opt("jewish-readings.json", {})
+    # tokens hebraicos (lemma+morph por palavra) p/ interação palavra-a-palavra
+    global HEBREW_TOKENS
+    HEBREW_TOKENS = load_opt("hebrew-tokens.json", {})
     # garante slug em cada tema (deriva do título quando ausente)
     for t in topics:
         if not t.get("slug"):
@@ -2285,7 +2519,8 @@ def main():
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
         build_verse_page(v, articles_by_slug, prev_v, next_v, cross_refs, verses_by_ref,
-                         commentary, glossary_by_ref, places_by_ref, red_letters)
+                         commentary, glossary_by_ref, places_by_ref, red_letters,
+                         jewish_readings)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)

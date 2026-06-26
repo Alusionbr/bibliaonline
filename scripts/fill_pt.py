@@ -19,8 +19,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "site" / "data" / "verses.json"
+TITLES = ROOT / "site" / "data" / "psalm-titles.json"
 ALM_URL = "https://raw.githubusercontent.com/thiagobodruk/bible/master/json/pt_aa.json"
 NAME_FIX = {"Lamentações": "Lamentações de Jeremias", "Oseias": "Oséias"}
+
+def load_psalm_titles():
+    # inscrições (títulos) dos Salmos em PT — a Almeida de domínio público as
+    # imprime como cabeçalho sem número, então o hebraico (que conta o título
+    # como v1) ficava sem texto_pt. Aqui preenchemos essas linhas de título.
+    if TITLES.exists():
+        return json.loads(TITLES.read_text(encoding="utf-8"))
+    return {}
 
 def load_almeida():
     req = urllib.request.Request(ALM_URL, headers={"User-Agent": "Mozilla/5.0"})
@@ -40,7 +49,7 @@ def ref_chvs(referencia):
     m = re.search(r"(\d+):(\d+)", referencia)
     return int(m.group(1)), int(m.group(2))
 
-def resolve_pt(livro, ch, vs, amap, A, H):
+def resolve_pt(livro, ch, vs, amap, A, H, titles=None):
     """Resolve o texto Almeida (PT) para um versículo, tratando as diferenças
     de numeração hebraico↔português. Função pura (sem I/O) para ser testável.
 
@@ -49,7 +58,9 @@ def resolve_pt(livro, ch, vs, amap, A, H):
     amap: dict {(nome_almeida, cap, vers): texto}
     A: nº de versículos do capítulo na Almeida (alen)
     H: nº de versículos do capítulo no hebraico (hlen)
+    titles: dict {"Salmos c:v": título PT} para as inscrições dos Salmos
     Retorna o texto PT ou "" quando a numeração diverge (não inventa)."""
+    titles = titles or {}
     nm = NAME_FIX.get(livro, livro)
     if livro == "Joel":
         # Hebraico: 4 caps | Almeida: 3 caps. Hb2=27v, Alm2=32v (=Hb2+Hb3), Hb4->Alm3
@@ -89,7 +100,11 @@ def resolve_pt(livro, ch, vs, amap, A, H):
     elif livro == "Salmos":
         k = H - A  # nº de linhas de título (0, 1 ou 2)
         if k > 0:
-            return amap.get((nm, ch, vs - k), "") if vs > k else ""
+            if vs <= k:
+                # linha de inscrição (título): a Almeida não a numera; usa a
+                # inscrição curada (psalm-titles.json) quando disponível
+                return titles.get(f"Salmos {ch}:{vs}", "")
+            return amap.get((nm, ch, vs - k), "")
         return amap.get((nm, ch, vs), "")
     else:
         if A == H:

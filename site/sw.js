@@ -1,5 +1,5 @@
 /* Service worker do Bíblia em Contexto — gerado por build.py. Não editar à mão. */
-var VERSION = '1a16c7ac';
+var VERSION = '459a0ce2';
 var SHELL_CACHE = 'bec-shell-' + VERSION;
 var PAGE_CACHE  = 'bec-pages-'  + VERSION;
 // app-shell mínimo (relativo ao escopo do SW = raiz do site)
@@ -10,7 +10,8 @@ var SHELL = [
   './manifest.webmanifest',
   './assets/styles.css?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
-  './assets/study.js?v=' + VERSION
+  './assets/study.js?v=' + VERSION,
+  './data/hebrew-lexicon.json'
 ];
 
 self.addEventListener('install', function(e){

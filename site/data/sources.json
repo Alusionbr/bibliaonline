@@ -20,8 +20,20 @@
     "instituicao": "Open Scriptures Hebrew Bible Project",
     "licenca": "O texto do Westminster Leningrad Codex (WLC) está em domínio público. Os dados de lema e morfologia estão sob Creative Commons Attribution 4.0 (CC BY 4.0), que permite uso até comercial, com atribuição.",
     "status": "APROVADA PARA PUBLICAÇÃO COM ATRIBUIÇÃO",
-    "uso": "Texto original hebraico e aramaico (inclui as seções aramaicas de Daniel e Esdras).",
+    "uso": "Texto original hebraico e aramaico (inclui as seções aramaicas de Daniel e Esdras). Os dados de lema (Strong) e morfologia (OSHM) alimentam a interação palavra-a-palavra (significado + gramática) — ver site/data/hebrew-tokens.json.",
     "atribuicao": "Creditar: \"Open Scriptures Hebrew Bible\" (github.com/openscriptures/morphhb). Texto WLC em domínio público."
+  },
+  {
+    "id": "src-strongs-hebraico",
+    "nome": "Strong's Hebrew Dictionary (1894)",
+    "tipo": "Dicionário/léxico hebraico (números de Strong)",
+    "idioma": "Hebraico → inglês",
+    "url": "https://github.com/openscriptures/strongs",
+    "instituicao": "James Strong (1894); edição digital Open Scriptures",
+    "licenca": "O dicionário de Strong (1894) está em domínio público. Usamos apenas como REFERÊNCIA para conferir lema e sentido; as glosas em português (site/data/hebrew-lexicon.json) são ORIGINAIS, escritas por nós.",
+    "status": "REFERÊNCIA (domínio público); glosas PT são originais",
+    "uso": "Conferência de lema e sentido das palavras hebraicas mais frequentes para o léxico PT do popover palavra-a-palavra.",
+    "atribuicao": "Sentido conferido com Strong (1894), domínio público."
   },
   {
     "id": "src-nestle-1904",

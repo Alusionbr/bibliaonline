@@ -53,6 +53,8 @@ def site(tmp_path, build, monkeypatch):
          "idioma": "hebraico", "dir": "rtl", "definicao": "Deus.", "refs": ["Gênesis 1:1"]},
     ]
     commentary = {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Tudo começa em Deus."}]}
+    jewish_readings = {"Gênesis 1:1": [{"angulo": "Sentido do hebraico", "texto": "O verbo bara tem Deus como sujeito."}]}
+    hebrew_tokens = {"Gênesis 1:1": [["b/7225", "HR/Ncfsa"]]}  # 1 palavra alinhada
     places = [{
         "slug": "jerusalem", "nome": "Jerusalém", "tipo": "Cidade",
         "regiao": "Terra de Israel", "descricao": "Cidade do Templo.",
@@ -71,6 +73,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "cross-references.json").write_text(json.dumps(cross_refs, ensure_ascii=False), "utf-8")
     (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
     (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
+    (data_dir / "jewish-readings.json").write_text(json.dumps(jewish_readings, ensure_ascii=False), "utf-8")
+    (data_dir / "hebrew-tokens.json").write_text(json.dumps(hebrew_tokens, ensure_ascii=False), "utf-8")
     (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
     red_letters = {"João 1:1": True}
@@ -333,6 +337,41 @@ def test_fase3_comentario_teologico(site):
     assert "resumo original" in gen.lower()  # nota de autoria/licença
     joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert 'id="comentario"' not in joao
+
+
+def test_leitura_judaica_contexto(site):
+    # versículo com leitura judaica curada mostra o bloco de contexto + nota de respeito;
+    # versículo sem curadoria não mostra a seção
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'id="leitura-judaica"' in gen
+    assert "Leitura judaica (contexto)" in gen
+    assert "O verbo bara tem Deus como sujeito." in gen
+    assert "não substitui nem contradiz a leitura cristã" in gen  # enquadramento respeitoso
+    # caixa flutuante: botão abre um <dialog> modal sobre o versículo
+    sec = gen.split('id="leitura-judaica"', 1)[1][:800]
+    assert 'class="study-open" data-dialog-open="dlg-leitura-judaica"' in sec
+    assert '<dialog class="study-dialog" id="dlg-leitura-judaica"' in sec
+    assert '<form method="dialog">' in sec  # fecha sem JS inline (CSP)
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'id="leitura-judaica"' not in joao
+
+
+def test_hebraico_palavra_interativa(site):
+    # palavra hebraica vira <span class="w hw"> com lemma+morph; o <p class="orig">
+    # é marcado data-wrapped para o study.js não re-embrulhar (preservando os spans)
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'class="w hw"' in gen
+    assert 'data-l="b/7225"' in gen and 'data-m="HR/Ncfsa"' in gen
+    assert 'data-wrapped="1"' in gen
+    # grego não é tokenizado (João 1:1 não tem .hw)
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'class="w hw"' not in joao
+    # o app.js traz o decodificador de morfologia e o popover
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "decodeMorph" in app and "hebrew-lexicon.json" in app
+    # o léxico precisa estar no precache do service worker (offline)
+    sw = (site / "sw.js").read_text("utf-8")
+    assert "hebrew-lexicon.json" in sw
 
 
 def test_fase4_mapas(site):

@@ -15,6 +15,141 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-26 - Hebraico palavra-a-palavra (significado + gramatica ao tocar/hover)
+
+Pedido do usuario: passar o mouse/tocar em cada palavra hebraica e ver o
+significado com explicacao gramatical resumida (cobertura total, palavra por
+palavra).
+
+Mudancas:
+
+- **Dados (OSHB)**: `scripts/build_hebrew_tokens.py` baixa o OpenScriptures
+  Hebrew Bible (WLC + lema Strong + morfologia OSHM, CC BY 4.0) e gera
+  `site/data/hebrew-tokens.json` (mapa "Livro c:v" -> [[lemma, morph], ...]).
+  Alinhamento POSICIONAL com o nosso `original`: 23.213 versiculos do AT,
+  **100% alinhados, 0 divergentes** (o nosso texto ja vinha do WLC). ~6,2 MB.
+- **Render** (`scripts/build.py`): `original_html`/`hebrew_inner` quebram o
+  hebraico/aramaico em `<span class="w hw" data-f data-i data-l data-m>` e marcam
+  o `<p class="orig">` com `data-wrapped="1"` para o `study.js` nao re-embrulhar
+  (preserva os spans). `w` mantem o marca-texto; `hw` liga o popover. Vale para
+  pagina de versiculo e de capitulo.
+- **Gramatica** (`app.js`): `decodeMorph()` decodifica o codigo OSHM para
+  portugues (substantivo/verbo/adjetivo/pronome/particula/sufixo + genero,
+  numero, estado, binyan, tempo, pessoa...). Deterministico, cobre 100% das
+  palavras.
+- **Significado** (`site/data/hebrew-lexicon.json`): 167 lemas mais frequentes
+  com glosa PT ORIGINAL (~58,7% das ocorrencias do AT). Carregado uma vez,
+  pre-cacheado no `sw.js` (offline). Palavra sem glosa mostra translit +
+  gramatica + "significado em curadoria".
+- **Popover** (`app.js`): toque (mobile) alterna; hover (desktop) comanda; clique
+  no desktop so fecha ao clicar fora. Com a canetinha ligada (`body.hl-mode`) o
+  toque MARCA e o popover nao abre. Sem inline (CSP ok). CSS `.hw`/`.hw-pop` em
+  `styles.css`.
+- Atribuicao: `sources.json` ganha Strong 1894 (dominio publico, so referencia;
+  glosas PT sao nossas) e detalha o uso do OSHB.
+
+Validacao:
+
+- `python scripts/build_hebrew_tokens.py --write` (23.213 alinhados),
+  `python scripts/build.py`, `python -m pytest` (84 passando, novo
+  `test_hebraico_palavra_interativa`). `node --check app.js`/`sw.js`.
+- Teste de navegador real (Playwright/Chromium): hover em אֱלֹהִים mostra
+  "Deus..." + "substantivo · masculino · plural · absoluto"; toque (Pixel 5) em
+  בְּרֵאשִׁית mostra "preposicao + substantivo · feminino · singular · absoluto";
+  com a caneta ligada o toque marca e nao abre popover.
+
+## 2026-06-26 - Comentario judaico/rabinico vira caixa flutuante (dialog)
+
+Pedido do usuario: que o comentario judaico (e o rabinico) "surja como caixa de
+dialogo encima das passagens", igual ao popover do hebraico — em vez do bloco
+recolhivel por seta entregue antes.
+
+- `study_disclosure()` em `scripts/build.py` deixa de emitir
+  `<details class="study-toggle">` e passa a emitir um botao
+  `class="study-open" data-dialog-open="dlg-<id>"` + um `<dialog
+  class="study-dialog">` (popover modal nativo). O botao abre via `showModal()`
+  (wiring novo em `app.js`, sem JS inline — CSP ok); fecha pelo `✕`
+  (`<form method="dialog">`, nativo), `Esc` (nativo) ou clique no backdrop.
+- `styles.css`: trocadas as regras `.study-toggle` por `.study-open` (gatilho) e
+  `.study-dialog`/`::backdrop` (caixa flutuante sobre o versiculo).
+- Handler de toque (`app.js`) passa a ignorar `.study-open,.study-dialog` para
+  nao abrir a barra de estudo ao usar o dialog.
+- Teste `test_leitura_judaica_contexto` atualizado: exige o botao
+  `study-open`, o `<dialog class="study-dialog">` e o `<form method="dialog">`.
+- Vale para os dois blocos: "Leitura judaica (contexto)" e "Comentario
+  rabinico" (Sefaria), ambos via `study_disclosure()`.
+
+## 2026-06-26 - Titulos dos Salmos em PT e comentario judaico recolhivel
+
+Pedidos do usuario: (1) corrigir Salmos cujo 1o versiculo nao aparecia em
+portugues; (2) fazer o comentario judaico/rabinico "surgir durante os estudos
+sem atrapalhar quem nao tem interesse".
+
+Mudancas:
+
+- **Bug dos Salmos (inscricoes)**: o texto massoretico conta o titulo do Salmo
+  como versiculo 1 (ex.: `Salmos 3:1` = "מִזְמוֹר לְדָוִד..."), mas a Almeida
+  PD imprime o titulo como cabecalho sem numero — 66 versiculos em 62 Salmos
+  ficavam sem `texto_pt`. Novo `site/data/psalm-titles.json` (inscricoes em PT,
+  renderizadas fielmente do hebraico massoretico que ja temos) e
+  `scripts/fill_psalm_titles.py` (patch CIRURGICO que so preenche essas linhas
+  quando vazias). NAO usei `fill_pt.py --write` completo porque ele regrediria
+  177 versiculos do NT ja curados. `resolve_pt` agora aceita as inscricoes
+  (cobertura de teste em `test_fill_pt.py`).
+- **Comentario judaico recolhivel**: novo helper `study_disclosure()` envolve os
+  blocos "Leitura judaica (contexto)" e "Comentario rabinico" num `<details
+  class="study-toggle">` recolhido por padrao (disclosure nativo, sem JS inline
+  — CSP ok), igual ao padrao da transliteracao. Quem tem interesse abre a seta;
+  quem nao tem ignora. A nota de respeito continua visivel ao abrir. CSS
+  `.study-toggle` em `styles.css`; o handler de toque (`app.js`) passa a ignorar
+  `.study-toggle summary` para nao abrir a barra de estudo. Teste
+  `test_leitura_judaica_contexto` atualizado para exigir o `<details>` recolhido.
+
+Validacao:
+
+- `python scripts/fill_psalm_titles.py --write` (66 preenchidos, 0 sobrescritos),
+  `python scripts/build.py` e `python -m pytest` (verde). `node --check app.js`.
+- Conferido `site/versiculos/salmos-3-1/` e `salmos-19-1/` com titulo em PT (e em
+  `site/ler/salmos/3/`); `site/versiculos/deuteronomio-6-4/` com os dois blocos
+  judaicos recolhidos por padrao; NT intacto (Mateus 1:1).
+
+## 2026-06-26 - Leitura judaica de contexto (sem divergir do leitor cristao)
+
+Pedido do usuario: incluir comentarios judaicos/rabinicos que ajudem no estudo
+e entendimento SEM criar atrito com o leitor cristao. Decisoes confirmadas:
+postura "so contexto, sem divergencia" (contexto linguistico/historico; evitar
+passagens messianicas divergentes) e lote inicial medio (~30-40 versiculos).
+
+Mudancas:
+
+- Novo dado curado e VALIDADO: `site/data/jewish-readings.json` (41 versiculos
+  -> `{angulo, texto}`), com resumos ORIGINAIS de contexto da tradicao judaica
+  (Tora, Salmos, Proverbios, Eclesiastes e profetas mais lidos). Toda referencia
+  existe no dataset e tem texto PT (validado com a regra de slug do build).
+  Passagens messianicas divergentes (Isaias 53, Salmos 22, Genesis 3:15) ficaram
+  de fora de proposito.
+- `scripts/build.py`: nova funcao `jewish_reading_block()` (molde de
+  `commentary_block`) que gera a secao "Leitura judaica (contexto)" com nota de
+  respeito ("apresentado ao lado da leitura crista, nao a substitui nem
+  contradiz"). Carga via `load_opt("jewish-readings.json", {})`, novo parametro
+  em `build_verse_page` e chamada na montagem do corpo. Removido o bloco legado
+  baseado no campo `leitura_judaica` (sempre vazio em verses.json) para nao
+  duplicar o id `leitura-judaica`. O link automatico do Sefaria ("Comentario
+  rabinico") permanece como porta para aprofundar.
+- `tests/test_build_smoke.py`: fixture grava `jewish-readings.json` e novo teste
+  `test_leitura_judaica_contexto` confirma a secao, o conteudo e a nota de
+  respeito num versiculo curado, e a ausencia da secao onde nao ha curadoria.
+- `CLAUDE.md`: documentada a rubrica editorial e o novo arquivo de dados.
+
+Validacao:
+
+- `python scripts/build.py` (31173 versiculos) e `python -m pytest` (82 passando,
+  incluindo o teste novo).
+- Conferido HTML gerado: `site/versiculos/deuteronomio-6-4/` (Shema) com a secao
+  + nota de respeito + link Sefaria; `site/versiculos/genesis-1-1/` com o angulo
+  "Sentido do hebraico" (bara); `site/versiculos/isaias-53-5/` SEM leitura
+  curada (so o link automatico do Sefaria), confirmando a postura escolhida.
+
 ## 2026-06-25 - Letras vermelhas, TTS mais natural e cobertura PT do Êxodo
 
 Pedidos do usuario: (1) vozes do audio mais naturais e com entonacao;

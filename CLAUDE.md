@@ -43,6 +43,10 @@ HTML/CSS/JS estatico dentro de `site/`.
   - `commentary.json`: mapa "Livro c:v" -> lista de
     `{perspectiva, texto}` (bloco "Comentario" no versiculo). Os textos sao
     resumos ORIGINAIS; nao copie comentarios protegidos.
+  - `jewish-readings.json`: mapa "Livro c:v" -> lista de `{angulo, texto}`
+    (bloco "Leitura judaica (contexto)" no versiculo). Resumos ORIGINAIS de
+    contexto da tradicao judaica. Veja a rubrica editorial em "Funcionalidades
+    sensiveis".
   - `places.json`: lugares biblicos (slug, nome, tipo, regiao, descricao, lat,
     lon, refs) que geram o atlas `/mapas/` e o bloco "Lugares" no versiculo. O
     mapa e um LINK para o OpenStreetMap (sem embed/tiles), preservando CSP e
@@ -50,6 +54,17 @@ HTML/CSS/JS estatico dentro de `site/`.
   - `reading-plans.json`: planos de leitura (slug, titulo, descricao, dias),
     onde cada dia e uma lista de capitulos "Livro C". Gera `/planos/`; o
     progresso fica no localStorage (`bec.plan.<slug>`).
+  - `psalm-titles.json`: inscricoes (titulos) dos Salmos em PT, mapa
+    "Salmos c:v" -> texto. O texto massoretico conta o titulo como versiculo 1,
+    mas a Almeida PD nao o numera; este arquivo preenche essas linhas via
+    `scripts/fill_psalm_titles.py` (patch cirurgico, so onde esta vazio).
+  - `hebrew-tokens.json`: mapa "Livro c:v" -> lista de `[lemma, morph]` por
+    palavra (do OpenScriptures Hebrew Bible / OSHM, CC BY 4.0), alinhado 1:1 ao
+    `original`. Gerado por `scripts/build_hebrew_tokens.py`. Alimenta a interacao
+    palavra-a-palavra do hebraico. Nao editar a mao.
+  - `hebrew-lexicon.json`: mapa Strong (numero) -> `{he, tr, pt}` com glosa PT
+    ORIGINAL dos lemas hebraicos mais frequentes (significado no popover). Curado
+    e incremental; carregado uma vez pelo `app.js` e pre-cacheado no `sw.js`.
   - Ao adicionar referencias, valide que elas existem (mesma regra de slug do
     build) antes de commitar. Veja o padrao de validacao usado nas Fases 2/3.
 
@@ -201,7 +216,7 @@ data-driven, para serem faceis de entender e continuar:
 Exemplos ja implementados: `topic-refs.json` (temas), `cross-references.json`
 (referencias cruzadas), `glossary.json` (dicionario), `commentary.json`
 (comentario teologico), `places.json` (mapas/atlas), `reading-plans.json`
-(planos de leitura).
+(planos de leitura), `jewish-readings.json` (leitura judaica de contexto).
 
 ## Funcionalidades sensiveis
 
@@ -243,6 +258,50 @@ Paginas de capitulo e versiculo tem uma barra `data-audio` que usa a Web
 Speech API (`speechSynthesis`, `pt-BR`) para ler o texto em portugues. O
 controle so aparece se o navegador suportar a API. Nao distribuimos arquivos
 de audio de terceiros.
+
+### Leitura judaica (contexto)
+
+`jewish-readings.json` alimenta o bloco "Leitura judaica (contexto)" na pagina
+do versiculo (`jewish_reading_block` em `scripts/build.py`). O objetivo e
+ajudar no estudo SEM criar atrito com o leitor cristao. Rubrica editorial para
+quem adicionar conteudo:
+
+- Texto sempre RESUMO ORIGINAL; nunca copiar Rashi/Talmud/Midrash/Sefaria
+  verbatim (mesma regra de `commentary.json`).
+- So CONTEXTO linguistico/historico: sentido do hebraico, costumes, mundo
+  antigo, uso na tradicao e na liturgia judaica.
+- EVITAR passagens messianicas divergentes (ex.: Isaias 53, Salmos 22,
+  Genesis 3:15). A postura escolhida e "so contexto, sem divergencia": nesses
+  versiculos fica apenas o link automatico do Sefaria, sem leitura curada.
+- O bloco traz uma nota de respeito fixa: contexto da tradicao judaica,
+  apresentado ao lado da leitura crista, sem substitui-la nem contradize-la.
+- O bloco "Comentario rabinico" (link para o Sefaria) continua automatico em
+  versiculos do AT, como porta para aprofundar.
+- Validar referencias (existir no dataset + ter PT) antes de commitar.
+
+### Hebraico interativo (palavra-a-palavra)
+
+Cada palavra hebraica/aramaica nas paginas de versiculo e de capitulo e
+interativa: ao TOCAR (mobile) ou passar o MOUSE (desktop), abre um popover com
+significado (PT) + gramatica resumida.
+
+- Dados: `original_html()` em `scripts/build.py` quebra o texto em
+  `<span class="w hw" data-f data-i data-l data-m>` quando ha tokens alinhados em
+  `hebrew-tokens.json` (gerado de OSHB por `scripts/build_hebrew_tokens.py`). O
+  `<p class="orig">` recebe `data-wrapped="1"` para o `study.js` NAO re-embrulhar
+  (preservando os spans). A classe `w` mantem o marca-texto; a classe `hw` liga o
+  popover.
+- Significado: `hebrew-lexicon.json` (Strong -> glosa PT ORIGINAL, curado e
+  incremental). Palavra sem glosa ainda mostra translit + gramatica + nota
+  "significado em curadoria".
+- Gramatica: decodificador de morfologia OSHM -> PT embutido no `app.js`
+  (`decodeMorph`), deterministico, cobre 100% das palavras.
+- Coexistencia: com a canetinha ligada (`body.hl-mode`) o toque MARCA a palavra
+  e o popover NAO abre. No desktop o hover comanda; o clique so fecha ao clicar
+  fora. Tudo via `addEventListener` (sem inline; CSP ok). `sw.js` pre-cacheia o
+  `hebrew-lexicon.json` para funcionar offline.
+- Licenca: OSHB/OSHM e CC BY 4.0 (creditado em `sources.json`); Strong 1894 e
+  dominio publico, usado so como referencia (glosas PT sao nossas).
 
 ### Modo offline
 
