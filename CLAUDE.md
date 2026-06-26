@@ -43,6 +43,10 @@ HTML/CSS/JS estatico dentro de `site/`.
   - `commentary.json`: mapa "Livro c:v" -> lista de
     `{perspectiva, texto}` (bloco "Comentario" no versiculo). Os textos sao
     resumos ORIGINAIS; nao copie comentarios protegidos.
+  - `jewish-readings.json`: mapa "Livro c:v" -> lista de `{angulo, texto}`
+    (bloco "Leitura judaica (contexto)" no versiculo). Resumos ORIGINAIS de
+    contexto da tradicao judaica. Veja a rubrica editorial em "Funcionalidades
+    sensiveis".
   - `places.json`: lugares biblicos (slug, nome, tipo, regiao, descricao, lat,
     lon, refs) que geram o atlas `/mapas/` e o bloco "Lugares" no versiculo. O
     mapa e um LINK para o OpenStreetMap (sem embed/tiles), preservando CSP e
@@ -201,7 +205,7 @@ data-driven, para serem faceis de entender e continuar:
 Exemplos ja implementados: `topic-refs.json` (temas), `cross-references.json`
 (referencias cruzadas), `glossary.json` (dicionario), `commentary.json`
 (comentario teologico), `places.json` (mapas/atlas), `reading-plans.json`
-(planos de leitura).
+(planos de leitura), `jewish-readings.json` (leitura judaica de contexto).
 
 ## Funcionalidades sensiveis
 
@@ -243,6 +247,26 @@ Paginas de capitulo e versiculo tem uma barra `data-audio` que usa a Web
 Speech API (`speechSynthesis`, `pt-BR`) para ler o texto em portugues. O
 controle so aparece se o navegador suportar a API. Nao distribuimos arquivos
 de audio de terceiros.
+
+### Leitura judaica (contexto)
+
+`jewish-readings.json` alimenta o bloco "Leitura judaica (contexto)" na pagina
+do versiculo (`jewish_reading_block` em `scripts/build.py`). O objetivo e
+ajudar no estudo SEM criar atrito com o leitor cristao. Rubrica editorial para
+quem adicionar conteudo:
+
+- Texto sempre RESUMO ORIGINAL; nunca copiar Rashi/Talmud/Midrash/Sefaria
+  verbatim (mesma regra de `commentary.json`).
+- So CONTEXTO linguistico/historico: sentido do hebraico, costumes, mundo
+  antigo, uso na tradicao e na liturgia judaica.
+- EVITAR passagens messianicas divergentes (ex.: Isaias 53, Salmos 22,
+  Genesis 3:15). A postura escolhida e "so contexto, sem divergencia": nesses
+  versiculos fica apenas o link automatico do Sefaria, sem leitura curada.
+- O bloco traz uma nota de respeito fixa: contexto da tradicao judaica,
+  apresentado ao lado da leitura crista, sem substitui-la nem contradize-la.
+- O bloco "Comentario rabinico" (link para o Sefaria) continua automatico em
+  versiculos do AT, como porta para aprofundar.
+- Validar referencias (existir no dataset + ter PT) antes de commitar.
 
 ### Modo offline
 

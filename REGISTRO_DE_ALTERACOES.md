@@ -15,6 +15,43 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-26 - Leitura judaica de contexto (sem divergir do leitor cristao)
+
+Pedido do usuario: incluir comentarios judaicos/rabinicos que ajudem no estudo
+e entendimento SEM criar atrito com o leitor cristao. Decisoes confirmadas:
+postura "so contexto, sem divergencia" (contexto linguistico/historico; evitar
+passagens messianicas divergentes) e lote inicial medio (~30-40 versiculos).
+
+Mudancas:
+
+- Novo dado curado e VALIDADO: `site/data/jewish-readings.json` (41 versiculos
+  -> `{angulo, texto}`), com resumos ORIGINAIS de contexto da tradicao judaica
+  (Tora, Salmos, Proverbios, Eclesiastes e profetas mais lidos). Toda referencia
+  existe no dataset e tem texto PT (validado com a regra de slug do build).
+  Passagens messianicas divergentes (Isaias 53, Salmos 22, Genesis 3:15) ficaram
+  de fora de proposito.
+- `scripts/build.py`: nova funcao `jewish_reading_block()` (molde de
+  `commentary_block`) que gera a secao "Leitura judaica (contexto)" com nota de
+  respeito ("apresentado ao lado da leitura crista, nao a substitui nem
+  contradiz"). Carga via `load_opt("jewish-readings.json", {})`, novo parametro
+  em `build_verse_page` e chamada na montagem do corpo. Removido o bloco legado
+  baseado no campo `leitura_judaica` (sempre vazio em verses.json) para nao
+  duplicar o id `leitura-judaica`. O link automatico do Sefaria ("Comentario
+  rabinico") permanece como porta para aprofundar.
+- `tests/test_build_smoke.py`: fixture grava `jewish-readings.json` e novo teste
+  `test_leitura_judaica_contexto` confirma a secao, o conteudo e a nota de
+  respeito num versiculo curado, e a ausencia da secao onde nao ha curadoria.
+- `CLAUDE.md`: documentada a rubrica editorial e o novo arquivo de dados.
+
+Validacao:
+
+- `python scripts/build.py` (31173 versiculos) e `python -m pytest` (82 passando,
+  incluindo o teste novo).
+- Conferido HTML gerado: `site/versiculos/deuteronomio-6-4/` (Shema) com a secao
+  + nota de respeito + link Sefaria; `site/versiculos/genesis-1-1/` com o angulo
+  "Sentido do hebraico" (bara); `site/versiculos/isaias-53-5/` SEM leitura
+  curada (so o link automatico do Sefaria), confirmando a postura escolhida.
+
 ## 2026-06-25 - Letras vermelhas, TTS mais natural e cobertura PT do Êxodo
 
 Pedidos do usuario: (1) vozes do audio mais naturais e com entonacao;

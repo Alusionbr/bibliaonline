@@ -355,6 +355,23 @@ def commentary_block(v, commentary):
     <div class="comm-list">{rows}</div>
   </section>"""
 
+def jewish_reading_block(v, jewish_readings):
+    # leitura judaica como CONTEXTO (linguístico/histórico) — resumo ORIGINAL, curado.
+    # Apresentada com respeito, ao lado da leitura cristã; não a substitui nem contradiz.
+    items = jewish_readings.get(v["referencia"]) if jewish_readings else None
+    if not items:
+        return ""
+    rows = ""
+    for c in items:
+        rows += (f'<div class="comm-item"><span class="comm-tag">{esc(c.get("angulo",""))}</span>'
+                 f'<p>{esc(c.get("texto",""))}</p></div>')
+    return f"""
+  <section class="block jewish" id="leitura-judaica">
+    <h2><span class="dot"></span>Leitura judaica (contexto)</h2>
+    <p class="block-note">Resumo original da Bíblia em Contexto, oferecido como contexto histórico e linguístico da tradição judaica. Apresentado com respeito — não substitui nem contradiz a leitura cristã.</p>
+    <div class="comm-list">{rows}</div>
+  </section>"""
+
 def glossary_terms_block(v, glossary_by_ref, prefix):
     # palavras-chave do original presentes neste versículo, ligando ao dicionário
     terms = glossary_by_ref.get(v["referencia"]) if glossary_by_ref else None
@@ -444,7 +461,7 @@ def specimen_block(v):
 # ---------- páginas ----------
 def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=None,
                      verses_by_ref=None, commentary=None, glossary_by_ref=None,
-                     places_by_ref=None, red_letters=None):
+                     places_by_ref=None, red_letters=None, jewish_readings=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -457,19 +474,14 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
     }
     ch, vs = ref_chvs(v["referencia"])
 
-    # blocos: origem (se houver), comentário rabínico (Sefaria) e leitura curada
+    # blocos: origem (se houver) e comentário rabínico (link Sefaria).
+    # A leitura judaica curada é renderizada por jewish_reading_block (seção canônica).
     blocks = ""
     if v.get("origem","").strip():
         blocks += f"""
   <section class="block" id="origem">
     <h2><span class="dot"></span>Origem e transmissão</h2>
     <p>{esc(v.get('origem',''))}</p>
-  </section>"""
-    if v.get("judaismo") and v.get("leitura_judaica"):
-        blocks += f"""
-  <section class="block jewish" id="leitura-judaica">
-    <h2><span class="dot"></span>Leitura judaica e comentário rabínico</h2>
-    <p>{esc(v['leitura_judaica'])}</p>
   </section>"""
     sef = sefaria_url(v["livro"], ch, vs)
     if sef:
@@ -540,6 +552,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, cross_refs=N
 
   {specimen_block(v)}
   {commentary_block(v, commentary)}
+  {jewish_reading_block(v, jewish_readings or {})}
   {blocks}
   {glossary_terms_block(v, glossary_by_ref, prefix)}
   {places_block(v, places_by_ref, prefix)}
@@ -2251,6 +2264,7 @@ def main():
     glossary=load_opt("glossary.json", []); commentary=load_opt("commentary.json", {})
     places=load_opt("places.json", []); plans=load_opt("reading-plans.json", [])
     red_letters=load_opt("red-letters.json", {})
+    jewish_readings=load_opt("jewish-readings.json", {})
     # garante slug em cada tema (deriva do título quando ausente)
     for t in topics:
         if not t.get("slug"):
@@ -2285,7 +2299,8 @@ def main():
         prev_v = verses[i-1] if i > 0 else None
         next_v = verses[i+1] if i < n-1 else None
         build_verse_page(v, articles_by_slug, prev_v, next_v, cross_refs, verses_by_ref,
-                         commentary, glossary_by_ref, places_by_ref, red_letters)
+                         commentary, glossary_by_ref, places_by_ref, red_letters,
+                         jewish_readings)
     for a in articles: build_article_page(a)
     # navegação livro → capítulo → versículo
     build_books_index(order, struct)

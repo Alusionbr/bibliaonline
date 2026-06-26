@@ -53,6 +53,7 @@ def site(tmp_path, build, monkeypatch):
          "idioma": "hebraico", "dir": "rtl", "definicao": "Deus.", "refs": ["Gênesis 1:1"]},
     ]
     commentary = {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Tudo começa em Deus."}]}
+    jewish_readings = {"Gênesis 1:1": [{"angulo": "Sentido do hebraico", "texto": "O verbo bara tem Deus como sujeito."}]}
     places = [{
         "slug": "jerusalem", "nome": "Jerusalém", "tipo": "Cidade",
         "regiao": "Terra de Israel", "descricao": "Cidade do Templo.",
@@ -71,6 +72,7 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "cross-references.json").write_text(json.dumps(cross_refs, ensure_ascii=False), "utf-8")
     (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
     (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
+    (data_dir / "jewish-readings.json").write_text(json.dumps(jewish_readings, ensure_ascii=False), "utf-8")
     (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
     red_letters = {"João 1:1": True}
@@ -333,6 +335,18 @@ def test_fase3_comentario_teologico(site):
     assert "resumo original" in gen.lower()  # nota de autoria/licença
     joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert 'id="comentario"' not in joao
+
+
+def test_leitura_judaica_contexto(site):
+    # versículo com leitura judaica curada mostra o bloco de contexto + nota de respeito;
+    # versículo sem curadoria não mostra a seção
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'id="leitura-judaica"' in gen
+    assert "Leitura judaica (contexto)" in gen
+    assert "O verbo bara tem Deus como sujeito." in gen
+    assert "não substitui nem contradiz a leitura cristã" in gen  # enquadramento respeitoso
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'id="leitura-judaica"' not in joao
 
 
 def test_fase4_mapas(site):
