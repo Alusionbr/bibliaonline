@@ -47,6 +47,20 @@ def test_salmos_titulo_duplo(fill_pt):
     assert fill_pt.resolve_pt("Salmos", 51, 2, amap, A=19, H=21) == ""
 
 
+def test_salmos_titulo_curado_preenche_v1(fill_pt):
+    # quando há inscrição curada (psalm-titles.json), a linha de título recebe o
+    # texto PT em vez de ficar em branco
+    amap = {("Salmos", 3, 1): "Senhor, como se multiplicam..."}
+    titles = {"Salmos 3:1": "Salmo de Davi, quando fugia de Absalão, seu filho."}
+    assert fill_pt.resolve_pt("Salmos", 3, 1, amap, A=8, H=9, titles=titles) == \
+        "Salmo de Davi, quando fugia de Absalão, seu filho."
+    # o conteúdo (v2 hebraico) continua mapeando para a Almeida normalmente
+    assert fill_pt.resolve_pt("Salmos", 3, 2, amap, A=8, H=9, titles=titles) == \
+        "Senhor, como se multiplicam..."
+    # sem inscrição curada para o ref, mantém o comportamento antigo ("")
+    assert fill_pt.resolve_pt("Salmos", 3, 1, amap, A=8, H=9, titles={}) == ""
+
+
 def test_joel_remapeamento_de_capitulos(fill_pt):
     # Hebraico: 4 caps | Almeida: 3 caps.
     amap = {
