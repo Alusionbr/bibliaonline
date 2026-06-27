@@ -15,6 +15,44 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-27 - Toggle de contexto judaico (oculto por padrao) + curadoria do lexico hebraico
+
+Dois pedidos do usuario: (1) poder desativar os blocos de contexto judaico para
+nao "poluir" o site; (2) continuar a curadoria das palavras hebraicas.
+
+Decisoes do usuario (perguntadas antes de implementar): um unico interruptor
+controla AMBOS os blocos; ficam OCULTOS por padrao; o controle e um botao na
+barra de navegacao.
+
+Mudancas:
+
+- **Toggle "contexto judaico"** (`scripts/build.py`): novo botao na nav
+  (`data-rt="context"`, ao lado de A-/A+/lua). Espelha o padrao do tema: o
+  `THEME_BOOTSTRAP` aplica `html.ctx-on` antes da pintura (sem flash) lendo
+  `localStorage` (`bec.context`); o handler `[data-rt]` no `app.js` alterna a
+  classe, grava a preferencia e sincroniza `aria-pressed`. Sem JS inline (CSP).
+- **CSS** (`site/assets/styles.css`): `.block.jewish{display:none}` por padrao e
+  `html.ctx-on .block.jewish{display:block}` quando ligado; realce do botao ativo
+  (`aria-pressed="true"`). O seletor `.block.jewish` cobre exatamente os dois
+  blocos gerados por `study_disclosure` (Comentario rabinico + Leitura judaica).
+- **Lexico hebraico** (`site/data/hebrew-lexicon.json`): +295 lemas Strong de
+  alta frequencia com glosa PT ORIGINAL (de 167 para 462 entradas). Cobertura de
+  ocorrencias do AT subiu de ~59% para **~75%**. Forma hebraica/translit usam o
+  Strong's Hebrew (dominio publico) so como referencia; as glosas PT sao nossas.
+- **Helper** (`scripts/hebrew_lexicon_report.py`, novo, READ-ONLY): imprime a
+  cobertura % e os top-N lemas ainda sem glosa (mesma normalizacao do
+  `headLemma` do app.js) para priorizar as proximas rodadas.
+- **Testes** (`tests/test_build_smoke.py`): `test_toggle_contexto_judaico` (botao
+  na nav, bootstrap `bec.context`, handler no app.js, CSS de ocultar/mostrar) e
+  `test_lexico_hebraico_curado` (schema he/tr/pt, >=400 lemas, amostra de lemas
+  de alto impacto presentes).
+
+Validacao: `python scripts/build.py` OK; `node --check` em app.js/sw.js/study.js
+OK; `python -m pytest` = 86 passed; `git diff --check` limpo;
+`python scripts/hebrew_lexicon_report.py` reporta 75,4%. Conferido em
+`site/versiculos/genesis-1-1/index.html` (botao na nav, blocos ocultos por CSS,
+bootstrap presente).
+
 ## 2026-06-26 - Hebraico palavra-a-palavra (significado + gramatica ao tocar/hover)
 
 Pedido do usuario: passar o mouse/tocar em cada palavra hebraica e ver o

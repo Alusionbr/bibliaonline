@@ -356,6 +356,38 @@ def test_leitura_judaica_contexto(site):
     assert 'id="leitura-judaica"' not in joao
 
 
+def test_toggle_contexto_judaico(site):
+    # os blocos de contexto judaico (rabínico + leitura judaica) ficam OCULTOS por
+    # padrão e o leitor liga/desliga por um botão na nav (data-rt="context"); a
+    # preferência persiste em localStorage (bec.context). Sem JS inline (CSP).
+    from pathlib import Path
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'data-rt="context"' in gen  # botão na barra de navegação
+    # bootstrap sem-flash aplica a classe ctx-on antes da pintura
+    assert "localStorage.getItem('bec.context')==='on'" in gen
+    # handler no app.js alterna a classe e grava a preferência
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "rt==='context'" in app
+    assert "bec.context" in app
+    # CSS (asset mantido à mão): oculto por padrão, revelado por html.ctx-on
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".block.jewish{display:none}" in css
+    assert "html.ctx-on .block.jewish{display:block}" in css
+
+
+def test_lexico_hebraico_curado():
+    # o léxico curado (arquivo real do repo) tem glosas PT com schema he/tr/pt;
+    # lemas de alta frequência recém-curados estão presentes e com pt não-vazio
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[1] / "site" / "data" / "hebrew-lexicon.json"
+    lex = json.loads(path.read_text("utf-8"))
+    assert len(lex) >= 400
+    for k, v in lex.items():
+        assert v.get("he") and v.get("tr") and v.get("pt"), k
+    for strong in ("1285", "6547", "2617", "410"):  # aliança, Faraó, hesed, El
+        assert strong in lex and lex[strong]["pt"].strip()
+
+
 def test_hebraico_palavra_interativa(site):
     # palavra hebraica vira <span class="w hw"> com lemma+morph; o <p class="orig">
     # é marcado data-wrapped para o study.js não re-embrulhar (preservando os spans)
