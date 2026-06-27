@@ -1,2312 +1,464 @@
 {
- "1": {
-  "he": "אָב",
-  "tr": "av",
-  "pt": "pai; antepassado, ancestral"
- },
- "6": {
-  "he": "אָבַד",
-  "tr": "abad",
-  "pt": "perecer, ser destruído; perder-se, desaparecer"
- },
- "53": {
-  "he": "אֲבִישָׁלוֹם",
-  "tr": "abiyshalowm",
-  "pt": "Absalão (filho de Davi)"
- },
- "68": {
-  "he": "אֶבֶן",
-  "tr": "eben",
-  "pt": "pedra"
- },
- "85": {
-  "he": "אַבְרָהָם",
-  "tr": "abraham",
-  "pt": "Abraão"
- },
- "113": {
-  "he": "אָדוֹן",
-  "tr": "adon",
-  "pt": "senhor, dono, soberano"
- },
- "120": {
-  "he": "אָדָם",
-  "tr": "adam",
-  "pt": "ser humano, homem, humanidade; Adão"
- },
- "123": {
-  "he": "אֱדֹם",
-  "tr": "edom",
-  "pt": "Edom (povo e região; irmão de Jacó, Esaú)"
- },
- "127": {
-  "he": "אֲדָמָה",
-  "tr": "adamah",
-  "pt": "solo, terra (cultivável), chão"
- },
- "136": {
-  "he": "אֲדֹנָי",
-  "tr": "Adonai",
-  "pt": "o Senhor (título de Deus, \"meu Senhor\")"
- },
- "157": {
-  "he": "אָהַב",
-  "tr": "ahab",
-  "pt": "amar; ter afeição por"
- },
- "168": {
-  "he": "אֹהֶל",
-  "tr": "ohel",
-  "pt": "tenda, tabernáculo"
- },
- "175": {
-  "he": "אַהֲרֹן",
-  "tr": "Aharon",
-  "pt": "Arão (irmão de Moisés, primeiro sumo sacerdote)"
- },
- "176": {
-  "he": "אוֹ",
-  "tr": "o",
-  "pt": "ou (conjunção alternativa)"
- },
- "216": {
-  "he": "אוֹר",
-  "tr": "owr",
-  "pt": "luz, claridade; (concreto) luminar"
- },
- "227": {
-  "he": "אָז",
-  "tr": "az",
-  "pt": "então, naquele tempo; portanto"
- },
- "241": {
-  "he": "אֹזֶן",
-  "tr": "ozen",
-  "pt": "ouvido"
- },
- "251": {
-  "he": "אָח",
-  "tr": "ach",
-  "pt": "irmão; parente, semelhante"
- },
- "256": {
-  "he": "אַחְאָב",
-  "tr": "achab",
-  "pt": "Acabe (rei de Israel)"
- },
- "259": {
-  "he": "אֶחָד",
-  "tr": "echad",
-  "pt": "um; único; primeiro"
- },
- "269": {
-  "he": "אָחוֹת",
-  "tr": "achowth",
-  "pt": "irmã"
- },
- "310": {
-  "he": "אַחַר",
-  "tr": "achar",
-  "pt": "depois, atrás de, após"
- },
- "312": {
-  "he": "אַחֵר",
-  "tr": "acher",
-  "pt": "outro, diferente; seguinte"
- },
- "341": {
-  "he": "אֹיֵב",
-  "tr": "oyeb",
-  "pt": "inimigo, adversário, aquele que odeia"
- },
- "352": {
-  "he": "אַיִל",
-  "tr": "ayil",
-  "pt": "carneiro; (arquit.) pilar, ombreira; homem forte"
- },
- "369": {
-  "he": "אַיִן",
-  "tr": "ayin",
-  "pt": "não há, nada; ausência (partícula de negação)"
- },
- "376": {
-  "he": "אִישׁ",
-  "tr": "ish",
-  "pt": "homem, varão; cada um, alguém"
- },
- "389": {
-  "he": "אַךְ",
-  "tr": "ak",
-  "pt": "certamente, sem dúvida; apenas, somente (partícula)"
- },
- "398": {
-  "he": "אָכַל",
-  "tr": "achal",
-  "pt": "comer; consumir, devorar"
- },
- "408": {
-  "he": "אַל",
-  "tr": "al",
-  "pt": "não (negação de proibição/exortação)"
- },
- "410": {
-  "he": "אֵל",
-  "tr": "el",
-  "pt": "Deus; o Poderoso; (adj.) forte, poderoso"
- },
- "413": {
-  "he": "אֶל",
-  "tr": "el",
-  "pt": "a, para, em direção a (preposição de movimento)"
- },
- "426": {
-  "he": "אֱלָהּ",
-  "tr": "elahh",
-  "pt": "(aramaico) Deus, deus"
- },
- "428": {
-  "he": "אֵלֶּה",
-  "tr": "eleh",
-  "pt": "estes, estas (demonstrativo plural)"
- },
- "430": {
-  "he": "אֱלֹהִים",
-  "tr": "Elohim",
-  "pt": "Deus; deuses (forma plural, usada para o Deus único)"
- },
- "505": {
-  "he": "אֶלֶף",
-  "tr": "elef",
-  "pt": "mil (numeral)"
- },
- "517": {
-  "he": "אֵם",
-  "tr": "em",
-  "pt": "mãe"
- },
- "518": {
-  "he": "אִם",
-  "tr": "im",
-  "pt": "se, caso (condicional); por acaso?"
- },
- "520": {
-  "he": "אַמָּה",
-  "tr": "ammah",
-  "pt": "côvado (medida de comprimento, do cotovelo à ponta dos dedos)"
- },
- "539": {
-  "he": "אָמַן",
-  "tr": "aman",
-  "pt": "ser firme/fiel; crer, confiar; (causat.) sustentar"
- },
- "559": {
-  "he": "אָמַר",
-  "tr": "amar",
-  "pt": "dizer, falar, declarar"
- },
- "571": {
-  "he": "אֶמֶת",
-  "tr": "emeth",
-  "pt": "verdade, fidelidade; firmeza, certeza"
- },
- "587": {
-  "he": "אֲנַחְנוּ",
-  "tr": "anachnuw",
-  "pt": "nós"
- },
- "589": {
-  "he": "אֲנִי",
-  "tr": "ani",
-  "pt": "eu (pronome de 1ª pessoa)"
- },
- "595": {
-  "he": "אָנֹכִי",
-  "tr": "anochi",
-  "pt": "eu (forma enfática do pronome de 1ª pessoa)"
- },
- "622": {
-  "he": "אָסַף",
-  "tr": "acaph",
-  "pt": "ajuntar, reunir; recolher; retirar"
- },
- "637": {
-  "he": "אַף",
-  "tr": "aph",
-  "pt": "também, além disso; ainda que (partícula)"
- },
- "639": {
-  "he": "אַף",
-  "tr": "aph",
-  "pt": "narina, nariz; (por extensão) ira, raiva"
- },
- "669": {
-  "he": "אֶפְרַיִם",
-  "tr": "ephrayim",
-  "pt": "Efraim (filho de José; tribo)"
- },
- "702": {
-  "he": "אַרְבַּע",
-  "tr": "arba",
-  "pt": "quatro (numeral)"
- },
- "705": {
-  "he": "אַרְבָּעִים",
-  "tr": "arbaiym",
-  "pt": "quarenta"
- },
- "727": {
-  "he": "אָרוֹן",
-  "tr": "arown",
-  "pt": "arca, caixa, baú (inclui a Arca da Aliança)"
- },
- "753": {
-  "he": "אֹרֶךְ",
-  "tr": "orek",
-  "pt": "comprimento, extensão"
- },
- "758": {
-  "he": "אֲרָם",
-  "tr": "aram",
-  "pt": "Arã / Síria (povo e região)"
- },
- "776": {
-  "he": "אֶרֶץ",
-  "tr": "erets",
-  "pt": "terra, país, chão, mundo"
- },
- "784": {
-  "he": "אֵשׁ",
-  "tr": "esh",
-  "pt": "fogo"
- },
- "802": {
-  "he": "אִשָּׁה",
-  "tr": "ishah",
-  "pt": "mulher; esposa"
- },
- "804": {
-  "he": "אַשּׁוּר",
-  "tr": "ashshuwr",
-  "pt": "Assíria; Assur (povo e território)"
- },
- "834": {
-  "he": "אֲשֶׁר",
-  "tr": "asher",
-  "pt": "que, o qual, aquele que (pronome relativo)"
- },
- "853": {
-  "he": "אֵת",
-  "tr": "et",
-  "pt": "partícula que marca o objeto direto (não se traduz em português)"
- },
- "854": {
-  "he": "אֵת",
-  "tr": "et",
-  "pt": "com, junto de, perto de (preposição)"
- },
- "859": {
-  "he": "אַתָּה",
-  "tr": "atah",
-  "pt": "tu, você (pronome de 2ª pessoa)"
- },
- "894": {
-  "he": "בָּבֶל",
-  "tr": "babel",
-  "pt": "Babel / Babilônia"
- },
- "899": {
-  "he": "בֶּגֶד",
-  "tr": "beged",
-  "pt": "veste, roupa; manto; (fig.) traição"
- },
- "905": {
-  "he": "בַּד",
-  "tr": "bad",
-  "pt": "separação; parte; (adv.) à parte, sozinho; varal, vara"
- },
- "929": {
-  "he": "בְּהֵמָה",
-  "tr": "behemah",
-  "pt": "animal (quadrúpede); gado; besta"
- },
- "935": {
-  "he": "בּוֹא",
-  "tr": "bo",
-  "pt": "vir, entrar, chegar; (causativo) trazer"
- },
- "954": {
-  "he": "בּוּשׁ",
-  "tr": "buwsh",
-  "pt": "envergonhar-se; ficar envergonhado; decepcionar-se"
- },
- "977": {
-  "he": "בָּחַר",
-  "tr": "bachar",
-  "pt": "escolher, eleger; provar, selecionar"
- },
- "982": {
-  "he": "בָּטַח",
-  "tr": "batach",
-  "pt": "confiar, ter confiança; estar seguro"
- },
- "995": {
-  "he": "בִּין",
-  "tr": "biyn",
-  "pt": "discernir, entender, perceber; considerar"
- },
- "996": {
-  "he": "בֵּין",
-  "tr": "bein",
-  "pt": "entre, no meio de (preposição)"
- },
- "1004": {
-  "he": "בַּיִת",
-  "tr": "bayit",
-  "pt": "casa, lar; família; templo (\"a Casa\")"
- },
- "1008": {
-  "he": "בֵּית־אֵל",
-  "tr": "beyth-el",
-  "pt": "Betel (lugar)"
- },
- "1058": {
-  "he": "בָּכָה",
-  "tr": "bakah",
-  "pt": "chorar, lamentar; prantear"
- },
- "1060": {
-  "he": "בְּכוֹר",
-  "tr": "bekowr",
-  "pt": "primogênito; (fig.) o principal"
- },
- "1115": {
-  "he": "בִּלְתִּי",
-  "tr": "biltiy",
-  "pt": "não, sem; exceto (partícula de negação)"
- },
- "1116": {
-  "he": "בָּמָה",
-  "tr": "bamah",
-  "pt": "alto, lugar alto (de culto); colina"
- },
- "1121": {
-  "he": "בֵּן",
-  "tr": "ben",
-  "pt": "filho; descendente; membro de um grupo"
- },
- "1129": {
-  "he": "בָּנָה",
-  "tr": "banah",
-  "pt": "construir, edificar"
- },
- "1144": {
-  "he": "בִּנְיָמִין",
-  "tr": "binyamiyn",
-  "pt": "Benjamim (filho de Jacó; tribo)"
- },
- "1157": {
-  "he": "בְּעַד",
-  "tr": "bead",
-  "pt": "por, em favor de; ao redor; atrás de (preposição)"
- },
- "1197": {
-  "he": "בָּעַר",
-  "tr": "baar",
-  "pt": "arder, queimar; consumir (pelo fogo); (fig.) ser bruto"
- },
- "1241": {
-  "he": "בָּקָר",
-  "tr": "baqar",
-  "pt": "gado bovino, boi; manada"
- },
- "1242": {
-  "he": "בֹּקֶר",
-  "tr": "boqer",
-  "pt": "manhã, alvorada"
- },
- "1245": {
-  "he": "בָּקַשׁ",
-  "tr": "baqash",
-  "pt": "buscar, procurar; requerer, desejar"
- },
- "1285": {
-  "he": "בְּרִית",
-  "tr": "beriyth",
-  "pt": "aliança, pacto, concerto"
- },
- "1288": {
-  "he": "בָּרַךְ",
-  "tr": "barach",
-  "pt": "abençoar; (originalmente) ajoelhar-se"
- },
- "1320": {
-  "he": "בָּשָׂר",
-  "tr": "basar",
-  "pt": "carne; corpo; parentesco (por extensão)"
- },
- "1323": {
-  "he": "בַּת",
-  "tr": "bat",
-  "pt": "filha"
- },
- "1350": {
-  "he": "גָּאַל",
-  "tr": "gaal",
-  "pt": "resgatar, remir; ser o resgatador (parente próximo)"
- },
- "1366": {
-  "he": "גְּבוּל",
-  "tr": "gebuwl",
-  "pt": "fronteira, limite, território"
- },
- "1368": {
-  "he": "גִּבּוֹר",
-  "tr": "gibbowr",
-  "pt": "valente, herói, guerreiro; poderoso"
- },
- "1419": {
-  "he": "גָּדוֹל",
-  "tr": "gadol",
-  "pt": "grande; importante; mais velho"
- },
- "1431": {
-  "he": "גָּדַל",
-  "tr": "gadal",
-  "pt": "tornar-se grande; crescer; engrandecer, exaltar"
- },
- "1471": {
-  "he": "גּוֹי",
-  "tr": "goy",
-  "pt": "nação, povo; (plural) os gentios, as nações"
- },
- "1481": {
-  "he": "גּוּר",
-  "tr": "guwr",
-  "pt": "peregrinar, residir como estrangeiro; (outra raiz) temer"
- },
- "1540": {
-  "he": "גָּלָה",
-  "tr": "galah",
-  "pt": "descobrir, revelar; ir para o exílio, ser levado cativo"
- },
- "1568": {
-  "he": "גִּלְעָד",
-  "tr": "gilad",
-  "pt": "Gileade (região a leste do Jordão)"
- },
- "1571": {
-  "he": "גַּם",
-  "tr": "gam",
-  "pt": "também, igualmente, ainda; até mesmo"
- },
- "1616": {
-  "he": "גֵּר",
-  "tr": "ger",
-  "pt": "estrangeiro, peregrino; forasteiro residente"
- },
- "1696": {
-  "he": "דָּבַר",
-  "tr": "davar",
-  "pt": "falar, dizer, anunciar"
- },
- "1697": {
-  "he": "דָּבָר",
-  "tr": "davar",
-  "pt": "palavra; coisa, assunto, acontecimento"
- },
- "1732": {
-  "he": "דָּוִד",
-  "tr": "David",
-  "pt": "Davi (rei de Israel)"
- },
- "1755": {
-  "he": "דּוֹר",
-  "tr": "dowr",
-  "pt": "geração; era, período de tempo"
- },
- "1768": {
-  "he": "דִּי",
-  "tr": "diy",
-  "pt": "(aramaico) que, do qual; de (partícula relativa/genitiva)"
- },
- "1817": {
-  "he": "דֶּלֶת",
-  "tr": "deleth",
-  "pt": "porta, batente (que gira); folha de porta"
- },
- "1818": {
-  "he": "דָּם",
-  "tr": "dam",
-  "pt": "sangue"
- },
- "1847": {
-  "he": "דַּעַת",
-  "tr": "daath",
-  "pt": "conhecimento, saber; discernimento"
- },
- "1870": {
-  "he": "דֶּרֶךְ",
-  "tr": "derech",
-  "pt": "caminho, estrada; modo de viver, conduta"
- },
- "1875": {
-  "he": "דָּרַשׁ",
-  "tr": "darash",
-  "pt": "buscar, consultar (a Deus); procurar com cuidado; indagar"
- },
- "1931": {
-  "he": "הוּא",
-  "tr": "hu",
-  "pt": "ele; isso; o mesmo (pronome de 3ª pessoa)"
- },
- "1961": {
-  "he": "הָיָה",
-  "tr": "hayah",
-  "pt": "ser, existir, tornar-se, acontecer"
- },
- "1980": {
-  "he": "הָלַךְ",
-  "tr": "halach",
-  "pt": "andar, caminhar, ir; conduzir-se"
- },
- "1984": {
-  "he": "הָלַל",
-  "tr": "halal",
-  "pt": "louvar, exaltar, celebrar; (raiz) brilhar"
- },
- "1992": {
-  "he": "הֵם",
-  "tr": "hem",
-  "pt": "eles (pronome de 3ª pessoa plural)"
- },
- "2005": {
-  "he": "הֵן",
-  "tr": "hen",
-  "pt": "eis!, eis que; se (partícula que aponta/realça)"
- },
- "2009": {
-  "he": "הִנֵּה",
-  "tr": "hineh",
-  "pt": "eis que!, veja! (interjeição que chama a atenção)"
- },
- "2015": {
-  "he": "הָפַךְ",
-  "tr": "haphak",
-  "pt": "virar, revolver; transformar, mudar"
- },
- "2022": {
-  "he": "הַר",
-  "tr": "har",
-  "pt": "monte, montanha, serra"
- },
- "2026": {
-  "he": "הָרַג",
-  "tr": "harag",
-  "pt": "matar, ferir de morte"
- },
- "2063": {
-  "he": "זֹאת",
-  "tr": "zot",
-  "pt": "esta, isto (demonstrativo feminino)"
- },
- "2076": {
-  "he": "זָבַח",
-  "tr": "zabach",
-  "pt": "sacrificar, imolar (em sacrifício)"
- },
- "2077": {
-  "he": "זֶבַח",
-  "tr": "zebach",
-  "pt": "sacrifício, oferta (animal imolada)"
- },
- "2088": {
-  "he": "זֶה",
-  "tr": "zeh",
-  "pt": "este, isto (pronome demonstrativo masculino)"
- },
- "2091": {
-  "he": "זָהָב",
-  "tr": "zahav",
-  "pt": "ouro"
- },
- "2142": {
-  "he": "זָכַר",
-  "tr": "zakar",
-  "pt": "lembrar, recordar; fazer menção de"
- },
- "2181": {
-  "he": "זָנָה",
-  "tr": "zanah",
-  "pt": "prostituir-se; cometer fornicação/idolatria"
- },
- "2205": {
-  "he": "זָקֵן",
-  "tr": "zaqen",
-  "pt": "velho, idoso; ancião (líder)"
- },
- "2220": {
-  "he": "זְרוֹעַ",
-  "tr": "zerowa",
-  "pt": "braço; (fig.) força, poder"
- },
- "2233": {
-  "he": "זֶרַע",
-  "tr": "zera",
-  "pt": "semente; descendência, posteridade"
- },
- "2320": {
-  "he": "חֹדֶשׁ",
-  "tr": "chodesh",
-  "pt": "lua nova; mês"
- },
- "2346": {
-  "he": "חוֹמָה",
-  "tr": "chowmah",
-  "pt": "muro, muralha (de proteção)"
- },
- "2351": {
-  "he": "חוּץ",
-  "tr": "chuwts",
-  "pt": "lado de fora, exterior; rua; campo"
- },
- "2388": {
-  "he": "חָזַק",
-  "tr": "chazaq",
-  "pt": "ser/tornar-se forte; segurar com firmeza; fortalecer-se, encorajar"
- },
- "2396": {
-  "he": "חִזְקִיָּה",
-  "tr": "chizqiyah",
-  "pt": "Ezequias (rei de Judá)"
- },
- "2398": {
-  "he": "חָטָא",
-  "tr": "chata",
-  "pt": "errar o alvo; pecar, transgredir"
- },
- "2403": {
-  "he": "חַטָּאת",
-  "tr": "chatat",
-  "pt": "pecado, falta; oferta pelo pecado"
- },
- "2416": {
-  "he": "חַי",
-  "tr": "chai",
-  "pt": "vivo, vivente; vida"
- },
- "2421": {
-  "he": "חָיָה",
-  "tr": "chayah",
-  "pt": "viver; manter vivo, dar vida, reviver"
- },
- "2428": {
-  "he": "חַיִל",
-  "tr": "chayil",
-  "pt": "força, poder; exército, tropa; riqueza; valentia"
- },
- "2450": {
-  "he": "חָכָם",
-  "tr": "chakam",
-  "pt": "sábio; hábil, perito"
- },
- "2451": {
-  "he": "חׇכְמָה",
-  "tr": "chokmah",
-  "pt": "sabedoria, perícia, habilidade"
- },
- "2459": {
-  "he": "חֶלֶב",
-  "tr": "cheleb",
-  "pt": "gordura (a melhor parte); o melhor"
- },
- "2490": {
-  "he": "חָלַל",
-  "tr": "chalal",
-  "pt": "profanar, poluir; (outra raiz) começar; ferir"
- },
- "2534": {
-  "he": "חֵמָה",
-  "tr": "chemah",
-  "pt": "ardor, calor; ira, furor; veneno"
- },
- "2543": {
-  "he": "חֲמוֹר",
-  "tr": "chamowr",
-  "pt": "jumento, asno"
- },
- "2568": {
-  "he": "חָמֵשׁ",
-  "tr": "chamesh",
-  "pt": "cinco (numeral)"
- },
- "2572": {
-  "he": "חֲמִשִּׁים",
-  "tr": "chamishshiym",
-  "pt": "cinquenta"
- },
- "2583": {
-  "he": "חָנָה",
-  "tr": "chanah",
-  "pt": "acampar, armar tenda; inclinar-se"
- },
- "2617": {
-  "he": "חֵסֵד",
-  "tr": "checed",
-  "pt": "bondade leal, misericórdia, amor fiel; favor"
- },
- "2677": {
-  "he": "חֵצִי",
-  "tr": "chetsiy",
-  "pt": "metade, meio"
- },
- "2691": {
-  "he": "חָצֵר",
-  "tr": "chatser",
-  "pt": "pátio, átrio; aldeia, povoado"
- },
- "2706": {
-  "he": "חֹק",
-  "tr": "choq",
-  "pt": "estatuto, decreto; porção determinada; lei"
- },
- "2708": {
-  "he": "חֻקָּה",
-  "tr": "chuqqah",
-  "pt": "estatuto, ordenança; costume estabelecido"
- },
- "2719": {
-  "he": "חֶרֶב",
-  "tr": "cherev",
-  "pt": "espada; instrumento cortante"
- },
- "2734": {
-  "he": "חָרָה",
-  "tr": "charah",
-  "pt": "inflamar-se de ira; arder, irar-se"
- },
- "2803": {
-  "he": "חָשַׁב",
-  "tr": "chashab",
-  "pt": "pensar, planejar; considerar; imputar, contar"
- },
- "2889": {
-  "he": "טָהוֹר",
-  "tr": "tahowr",
-  "pt": "puro, limpo (ritual, físico ou moral)"
- },
- "2891": {
-  "he": "טָהֵר",
-  "tr": "taher",
-  "pt": "ser/ficar puro; purificar(-se); declarar limpo"
- },
- "2896": {
-  "he": "טוֹב",
-  "tr": "tov",
-  "pt": "bom, agradável, belo; (substantivo) o bem"
- },
- "2930": {
-  "he": "טָמֵא",
-  "tr": "tame",
-  "pt": "ser/tornar-se impuro; contaminar(-se), profanar"
- },
- "3027": {
-  "he": "יָד",
-  "tr": "yad",
-  "pt": "mão; poder, autoridade (figurado)"
- },
- "3034": {
-  "he": "יָדָה",
-  "tr": "yadah",
-  "pt": "louvar, dar graças, confessar; (raiz) lançar"
- },
- "3045": {
-  "he": "יָדַע",
-  "tr": "yada",
-  "pt": "conhecer, saber; experimentar intimamente"
- },
- "3063": {
-  "he": "יְהוּדָה",
-  "tr": "Yehudah",
-  "pt": "Judá (filho de Jacó, tribo e reino do sul)"
- },
- "3068": {
-  "he": "יְהוָה",
-  "tr": "YHWH",
-  "pt": "o Nome próprio de Deus (YHWH), ligado ao verbo \"ser/existir\"; lido \"Senhor\""
- },
- "3069": {
-  "he": "יְהוִה",
-  "tr": "YHWH",
-  "pt": "forma do Nome divino YHWH, vocalizada como \"Deus\""
- },
- "3091": {
-  "he": "יְהוֹשׁוּעַ",
-  "tr": "yehowshuwa",
-  "pt": "Josué (líder de Israel)"
- },
- "3097": {
-  "he": "יוֹאָב",
-  "tr": "yowab",
-  "pt": "Joabe"
- },
- "3117": {
-  "he": "יוֹם",
-  "tr": "yom",
-  "pt": "dia; tempo"
- },
- "3130": {
-  "he": "יוֹסֵף",
-  "tr": "yowceph",
-  "pt": "José"
- },
- "3162": {
-  "he": "יַחַד",
-  "tr": "yachad",
-  "pt": "junto, unidos; ao mesmo tempo; igualmente"
- },
- "3190": {
-  "he": "יָטַב",
-  "tr": "yatab",
-  "pt": "ser bom, ir bem; fazer bem; agradar"
- },
- "3196": {
-  "he": "יַיִן",
-  "tr": "yayin",
-  "pt": "vinho"
- },
- "3201": {
-  "he": "יָכֹל",
-  "tr": "yakol",
-  "pt": "poder, ser capaz; prevalecer"
- },
- "3205": {
-  "he": "יָלַד",
-  "tr": "yalad",
-  "pt": "dar à luz, gerar; nascer"
- },
- "3206": {
-  "he": "יֶלֶד",
-  "tr": "yeled",
-  "pt": "menino, criança; filho, rebento"
- },
- "3212": {
-  "he": "יָלַךְ",
-  "tr": "yalach",
-  "pt": "ir, andar, caminhar"
- },
- "3220": {
-  "he": "יָם",
-  "tr": "yam",
-  "pt": "mar; grande massa de água; oeste"
- },
- "3225": {
-  "he": "יָמִין",
-  "tr": "yamiyn",
-  "pt": "mão direita; lado direito; sul"
- },
- "3254": {
-  "he": "יָסַף",
-  "tr": "yacaph",
-  "pt": "acrescentar, aumentar; continuar a fazer; tornar a"
- },
- "3282": {
-  "he": "יַעַן",
-  "tr": "yaan",
-  "pt": "porque, por causa de; visto que (conjunção)"
- },
- "3290": {
-  "he": "יַעֲקֹב",
-  "tr": "Yaaqov",
-  "pt": "Jacó (patriarca de Israel)"
- },
- "3318": {
-  "he": "יָצָא",
-  "tr": "yatsa",
-  "pt": "sair, ir para fora; (causativo) fazer sair"
- },
- "3327": {
-  "he": "יִצְחָק",
-  "tr": "yitschaq",
-  "pt": "Isaque (filho de Abraão)"
- },
- "3372": {
-  "he": "יָרֵא",
-  "tr": "yare",
-  "pt": "temer, recear; reverenciar (a Deus)"
- },
- "3379": {
-  "he": "יָרׇבְעָם",
-  "tr": "yarobam",
-  "pt": "Jeroboão (rei de Israel)"
- },
- "3381": {
-  "he": "יָרַד",
-  "tr": "yarad",
-  "pt": "descer, baixar"
- },
- "3383": {
-  "he": "יַרְדֵּן",
-  "tr": "yarden",
-  "pt": "Jordão (rio)"
- },
- "3389": {
-  "he": "יְרוּשָׁלִַם",
-  "tr": "Yerushalaim",
-  "pt": "Jerusalém"
- },
- "3414": {
-  "he": "יִרְמְיָה",
-  "tr": "yirmeyah",
-  "pt": "Jeremias"
- },
- "3423": {
-  "he": "יָרַשׁ",
-  "tr": "yarash",
-  "pt": "tomar posse, herdar; desapossar, expulsar"
- },
- "3426": {
-  "he": "יֵשׁ",
-  "tr": "yesh",
-  "pt": "há, existe; existência"
- },
- "3427": {
-  "he": "יָשַׁב",
-  "tr": "yashav",
-  "pt": "sentar-se; habitar, morar, permanecer"
- },
- "3467": {
-  "he": "יָשַׁע",
-  "tr": "yasha",
-  "pt": "salvar, livrar; socorrer, dar vitória"
- },
- "3477": {
-  "he": "יָשָׁר",
-  "tr": "yashar",
-  "pt": "reto, direito; justo, íntegro"
- },
- "3478": {
-  "he": "יִשְׂרָאֵל",
-  "tr": "Yisrael",
-  "pt": "Israel (nome dado a Jacó e ao seu povo)"
- },
- "3498": {
-  "he": "יָתַר",
-  "tr": "yathar",
-  "pt": "restar, sobrar; exceder; deixar de resto"
- },
- "3499": {
-  "he": "יֶתֶר",
-  "tr": "yether",
-  "pt": "resto, sobra; restante; excelência; corda"
- },
- "3513": {
-  "he": "כָּבַד",
-  "tr": "kabad",
-  "pt": "ser pesado; honrar; tornar-se glorioso; ser duro"
- },
- "3519": {
-  "he": "כָּבוֹד",
-  "tr": "kabowd",
-  "pt": "glória, honra; peso, riqueza; esplendor"
- },
- "3532": {
-  "he": "כֶּבֶשׂ",
-  "tr": "kebes",
-  "pt": "cordeiro, carneiro novo"
- },
- "3541": {
-  "he": "כֹּה",
-  "tr": "koh",
-  "pt": "assim, deste modo (\"assim diz o Senhor\")"
- },
- "3548": {
-  "he": "כֹּהֵן",
-  "tr": "kohen",
-  "pt": "sacerdote"
- },
- "3559": {
-  "he": "כּוּן",
-  "tr": "kuwn",
-  "pt": "estar firme, estabelecer; preparar, dispor; firmar"
- },
- "3581": {
-  "he": "כֹּחַ",
-  "tr": "koach",
-  "pt": "força, vigor, poder; capacidade"
- },
- "3588": {
-  "he": "כִּי",
-  "tr": "ki",
-  "pt": "porque, pois, que; quando (conjunção)"
- },
- "3605": {
-  "he": "כֹּל",
-  "tr": "kol",
-  "pt": "tudo, todo, qualquer, a totalidade"
- },
- "3606": {
-  "he": "כֹּל",
-  "tr": "kol",
-  "pt": "(aramaico) tudo, todo, cada"
- },
- "3615": {
-  "he": "כָּלָה",
-  "tr": "kalah",
-  "pt": "acabar, terminar, completar; consumir, cessar"
- },
- "3627": {
-  "he": "כְּלִי",
-  "tr": "keli",
-  "pt": "objeto, utensílio, vaso, instrumento, arma"
- },
- "3644": {
-  "he": "כְּמוֹ",
-  "tr": "kemow",
-  "pt": "como, à semelhança de, conforme"
- },
- "3651": {
-  "he": "כֵּן",
-  "tr": "ken",
-  "pt": "assim, deste modo; correto, reto"
- },
- "3667": {
-  "he": "כְּנַעַן",
-  "tr": "kenaan",
-  "pt": "Canaã (filho de Cam; a terra e seus povos); mercador"
- },
- "3671": {
-  "he": "כָּנָף",
-  "tr": "kanaph",
-  "pt": "asa; extremidade, aba, canto (de veste, da terra)"
- },
- "3678": {
-  "he": "כִּסֵּא",
-  "tr": "kicce",
-  "pt": "trono; assento, cadeira"
- },
- "3680": {
-  "he": "כָּסָה",
-  "tr": "kacah",
-  "pt": "cobrir, encobrir; ocultar; perdoar (encobrir)"
- },
- "3701": {
-  "he": "כֶּסֶף",
-  "tr": "kesef",
-  "pt": "prata; dinheiro"
- },
- "3709": {
-  "he": "כַּף",
-  "tr": "kaph",
-  "pt": "palma da mão; planta do pé; concavidade"
- },
- "3722": {
-  "he": "כָּפַר",
-  "tr": "kaphar",
-  "pt": "expiar, fazer propiciação; cobrir; perdoar"
- },
- "3742": {
-  "he": "כְּרוּב",
-  "tr": "keruwb",
-  "pt": "querubim (figura angelical)"
- },
- "3754": {
-  "he": "כֶּרֶם",
-  "tr": "kerem",
-  "pt": "vinha, vinhedo"
- },
- "3772": {
-  "he": "כָּרַת",
-  "tr": "karat",
-  "pt": "cortar; eliminar; firmar (aliança — \"cortar aliança\")"
- },
- "3789": {
-  "he": "כָּתַב",
-  "tr": "kathab",
-  "pt": "escrever, inscrever, registrar"
- },
- "3808": {
-  "he": "לֹא",
-  "tr": "lo",
-  "pt": "não (negação absoluta)"
- },
- "3820": {
-  "he": "לֵב",
-  "tr": "lev",
-  "pt": "coração; mente, vontade, sentimentos (o interior)"
- },
- "3824": {
-  "he": "לֵבָב",
-  "tr": "lebab",
-  "pt": "coração (sede da mente, vontade e emoções)"
- },
- "3847": {
-  "he": "לָבַשׁ",
-  "tr": "labash",
-  "pt": "vestir(-se); revestir, pôr roupa"
- },
- "3881": {
-  "he": "לֵוִיִּי",
-  "tr": "leviyiy",
-  "pt": "levita (da tribo de Levi)"
- },
- "3898": {
-  "he": "לָחַם",
-  "tr": "lacham",
-  "pt": "guerrear, lutar, combater; (raiz) comer, devorar"
- },
- "3899": {
-  "he": "לֶחֶם",
-  "tr": "lechem",
-  "pt": "pão; alimento, comida"
- },
- "3915": {
-  "he": "לַיִל",
-  "tr": "layil",
-  "pt": "noite"
- },
- "3920": {
-  "he": "לָכַד",
-  "tr": "lakad",
-  "pt": "capturar, tomar; prender (em rede, cilada)"
- },
- "3947": {
-  "he": "לָקַח",
-  "tr": "laqach",
-  "pt": "tomar, pegar, receber, levar"
- },
- "3956": {
-  "he": "לָשׁוֹן",
-  "tr": "lashown",
-  "pt": "língua (órgão); idioma, fala"
- },
- "3966": {
-  "he": "מְאֹד",
-  "tr": "meod",
-  "pt": "muito, grandemente, intensamente"
- },
- "3967": {
-  "he": "מֵאָה",
-  "tr": "meah",
-  "pt": "cem (numeral)"
- },
- "4057": {
-  "he": "מִדְבָּר",
-  "tr": "midbar",
-  "pt": "deserto, lugar ermo; pastagem aberta"
- },
- "4100": {
-  "he": "מָה",
-  "tr": "mah",
-  "pt": "que?, o que?; como? (interrogativo)"
- },
- "4124": {
-  "he": "מוֹאָב",
-  "tr": "mowab",
-  "pt": "Moabe (povo e território)"
- },
- "4150": {
-  "he": "מוֹעֵד",
-  "tr": "mowed",
-  "pt": "tempo determinado, época fixa; assembleia; lugar de reunião"
- },
- "4191": {
-  "he": "מוּת",
-  "tr": "mut",
-  "pt": "morrer; (causativo) matar"
- },
- "4194": {
-  "he": "מָוֶת",
-  "tr": "maveth",
-  "pt": "morte"
- },
- "4196": {
-  "he": "מִזְבֵּחַ",
-  "tr": "mizbeach",
-  "pt": "altar"
- },
- "4264": {
-  "he": "מַחֲנֶה",
-  "tr": "machaneh",
-  "pt": "acampamento; exército, tropa"
- },
- "4294": {
-  "he": "מַטֶּה",
-  "tr": "matteh",
-  "pt": "vara, bastão, cajado; tribo (ramo)"
- },
- "4310": {
-  "he": "מִי",
-  "tr": "mi",
-  "pt": "quem? (interrogativo)"
- },
- "4325": {
-  "he": "מַיִם",
-  "tr": "mayim",
-  "pt": "água, águas"
- },
- "4390": {
-  "he": "מָלֵא",
-  "tr": "male",
-  "pt": "encher; estar cheio; cumprir-se, completar"
- },
- "4397": {
-  "he": "מֲלְאָךְ",
-  "tr": "malak",
-  "pt": "mensageiro; anjo (mensageiro de Deus)"
- },
- "4399": {
-  "he": "מְלָאכָה",
-  "tr": "melakah",
-  "pt": "trabalho, obra; ofício, ocupação; serviço"
- },
- "4421": {
-  "he": "מִלְחָמָה",
-  "tr": "milchamah",
-  "pt": "guerra, batalha, combate"
- },
- "4422": {
-  "he": "מָלַט",
-  "tr": "malat",
-  "pt": "escapar, livrar-se; ser posto a salvo"
- },
- "4427": {
-  "he": "מָלַךְ",
-  "tr": "malach",
-  "pt": "reinar, governar como rei; tornar-se rei"
- },
- "4428": {
-  "he": "מֶלֶךְ",
-  "tr": "melech",
-  "pt": "rei"
- },
- "4430": {
-  "he": "מֶלֶךְ",
-  "tr": "melek",
-  "pt": "(aramaico) rei"
- },
- "4438": {
-  "he": "מַלְכוּת",
-  "tr": "malkuwth",
-  "pt": "reino, domínio; realeza, reinado"
- },
- "4467": {
-  "he": "מַמְלָכָה",
-  "tr": "mamlakah",
-  "pt": "reino, domínio; realeza"
- },
- "4480": {
-  "he": "מִן",
-  "tr": "min",
-  "pt": "de, desde, a partir de; mais que (preposição)"
- },
- "4481": {
-  "he": "מִן",
-  "tr": "min",
-  "pt": "(aramaico) de, desde; por causa de (preposição)"
- },
- "4503": {
-  "he": "מִנְחָה",
-  "tr": "minchah",
-  "pt": "oferta, oblação; presente, tributo; oferta de cereais"
- },
- "4519": {
-  "he": "מְנַשֶּׁה",
-  "tr": "menashsheh",
-  "pt": "Manassés (filho de José; tribo)"
- },
- "4557": {
-  "he": "מִסְפָּר",
-  "tr": "micpar",
-  "pt": "número, conta; quantidade"
- },
- "4592": {
-  "he": "מְעַט",
-  "tr": "meat",
-  "pt": "pouco, um pouco; poucos"
- },
- "4605": {
-  "he": "מַעַל",
-  "tr": "maal",
-  "pt": "acima, em cima; para cima; em excesso"
- },
- "4616": {
-  "he": "מַעַן",
-  "tr": "maan",
-  "pt": "por causa de, a fim de, para que (propósito)"
- },
- "4639": {
-  "he": "מַעֲשֶׂה",
-  "tr": "maaseh",
-  "pt": "obra, feito, ação; trabalho manual"
- },
- "4672": {
-  "he": "מָצָא",
-  "tr": "matsa",
-  "pt": "achar, encontrar; alcançar, obter"
- },
- "4687": {
-  "he": "מִצְוָה",
-  "tr": "mitsvah",
-  "pt": "mandamento, preceito, ordem"
- },
- "4714": {
-  "he": "מִצְרַיִם",
-  "tr": "Mitsrayim",
-  "pt": "Egito; egípcios"
- },
- "4725": {
-  "he": "מָקוֹם",
-  "tr": "maqom",
-  "pt": "lugar, local, posição"
- },
- "4758": {
-  "he": "מַרְאֶה",
-  "tr": "mareh",
-  "pt": "aparência, aspecto; visão, vista"
- },
- "4872": {
-  "he": "מֹשֶׁה",
-  "tr": "Moshe",
-  "pt": "Moisés (o legislador de Israel)"
- },
- "4908": {
-  "he": "מִשְׁכָּן",
-  "tr": "mishkan",
-  "pt": "morada, habitação; tabernáculo"
- },
- "4940": {
-  "he": "מִשְׁפָּחָה",
-  "tr": "mishpachah",
-  "pt": "família, clã, parentela"
- },
- "4941": {
-  "he": "מִשְׁפָּט",
-  "tr": "mishpat",
-  "pt": "juízo, justiça; sentença, direito, ordenança"
- },
- "4994": {
-  "he": "נָא",
-  "tr": "na",
-  "pt": "por favor, peço-te, agora (partícula de súplica/ênfase)"
- },
- "5002": {
-  "he": "נְאֻם",
-  "tr": "neum",
-  "pt": "declaração, oráculo (\"diz o Senhor\")"
- },
- "5012": {
-  "he": "נָבָא",
-  "tr": "naba",
-  "pt": "profetizar; falar por inspiração"
- },
- "5030": {
-  "he": "נָבִיא",
-  "tr": "navi",
-  "pt": "profeta, porta-voz inspirado"
- },
- "5045": {
-  "he": "נֶגֶב",
-  "tr": "negeb",
-  "pt": "sul; o Neguebe (região seca ao sul)"
- },
- "5046": {
-  "he": "נָגַד",
-  "tr": "nagad",
-  "pt": "anunciar, declarar, contar, informar"
- },
- "5048": {
-  "he": "נֶגֶד",
-  "tr": "neged",
-  "pt": "em frente de, diante de; defronte, à vista de"
- },
- "5060": {
-  "he": "נָגַע",
-  "tr": "naga",
-  "pt": "tocar, alcançar; ferir; chegar"
- },
- "5066": {
-  "he": "נָגַשׁ",
-  "tr": "nagash",
-  "pt": "chegar perto, aproximar-se; trazer"
- },
- "5104": {
-  "he": "נָהָר",
-  "tr": "nahar",
-  "pt": "rio, corrente"
- },
- "5127": {
-  "he": "נוּס",
-  "tr": "nuwc",
-  "pt": "fugir, escapar; pôr-se em fuga"
- },
- "5158": {
-  "he": "נַחַל",
-  "tr": "nachal",
-  "pt": "vale, ribeiro; torrente (de inverno)"
- },
- "5159": {
-  "he": "נַחֲלָה",
-  "tr": "nachalah",
-  "pt": "herança, possessão; herdade"
- },
- "5162": {
-  "he": "נָחַם",
-  "tr": "nacham",
-  "pt": "consolar(-se); arrepender-se, ter compaixão"
- },
- "5178": {
-  "he": "נְחֹשֶׁת",
-  "tr": "nechosheth",
-  "pt": "cobre, bronze; coisa de bronze"
- },
- "5186": {
-  "he": "נָטָה",
-  "tr": "natah",
-  "pt": "estender, esticar; inclinar, desviar"
- },
- "5221": {
-  "he": "נָכָה",
-  "tr": "nacah",
-  "pt": "ferir, golpear, bater; matar"
- },
- "5265": {
-  "he": "נָסַע",
-  "tr": "naca",
-  "pt": "partir, pôr-se a caminho; arrancar (as estacas da tenda)"
- },
- "5288": {
-  "he": "נַעַר",
-  "tr": "naar",
-  "pt": "menino, jovem, rapaz; servo/criado"
- },
- "5307": {
-  "he": "נָפַל",
-  "tr": "nafal",
-  "pt": "cair, tombar; prostrar-se"
- },
- "5315": {
-  "he": "נֶפֶשׁ",
-  "tr": "nefesh",
-  "pt": "alma, vida, ser vivente; garganta, apetite, desejo"
- },
- "5337": {
-  "he": "נָצַל",
-  "tr": "natsal",
-  "pt": "livrar, arrancar, resgatar; arrebatar"
- },
- "5375": {
-  "he": "נָשָׂא",
-  "tr": "nasa",
-  "pt": "levantar, erguer, carregar; perdoar (a culpa)"
- },
- "5387": {
-  "he": "נָשִׂיא",
-  "tr": "nasiy",
-  "pt": "príncipe, líder, chefe; nuvem (que se levanta)"
- },
- "5414": {
-  "he": "נָתַן",
-  "tr": "natan",
-  "pt": "dar, conceder, pôr, colocar"
- },
- "5437": {
-  "he": "סָבַב",
-  "tr": "cabab",
-  "pt": "rodear, cercar; voltar-se, dar a volta"
- },
- "5439": {
-  "he": "סָבִיב",
-  "tr": "saviv",
-  "pt": "ao redor, em volta, em torno"
- },
- "5462": {
-  "he": "סָגַר",
-  "tr": "cagar",
-  "pt": "fechar, trancar; entregar (nas mãos)"
- },
- "5483": {
-  "he": "סוּס",
-  "tr": "cuwc",
-  "pt": "cavalo; (também) andorinha"
- },
- "5493": {
-  "he": "סוּר",
-  "tr": "sur",
-  "pt": "desviar-se, afastar-se, tirar"
- },
- "5608": {
-  "he": "סָפַר",
-  "tr": "caphar",
-  "pt": "contar, enumerar; relatar, narrar; (subst.) escriba"
- },
- "5612": {
-  "he": "סֵפֶר",
-  "tr": "cepher",
-  "pt": "livro, documento; escrito, carta"
- },
- "5647": {
-  "he": "עָבַד",
-  "tr": "abad",
-  "pt": "trabalhar, lavrar (a terra); servir, prestar culto"
- },
- "5650": {
-  "he": "עֶבֶד",
-  "tr": "eved",
-  "pt": "servo, escravo"
- },
- "5656": {
-  "he": "עֲבֹדָה",
-  "tr": "abodah",
-  "pt": "trabalho, serviço; culto, ministério; servidão"
- },
- "5674": {
-  "he": "עָבַר",
-  "tr": "avar",
-  "pt": "passar, atravessar, transpor"
- },
- "5676": {
-  "he": "עֵבֶר",
-  "tr": "eber",
-  "pt": "lado oposto, outro lado; além (de um rio)"
- },
- "5704": {
-  "he": "עַד",
-  "tr": "ad",
-  "pt": "até, enquanto (tempo ou espaço)"
- },
- "5712": {
-  "he": "עֵדָה",
-  "tr": "edah",
-  "pt": "congregação, assembleia; comunidade"
- },
- "5750": {
-  "he": "עוֹד",
-  "tr": "od",
-  "pt": "ainda, de novo, mais"
- },
- "5769": {
-  "he": "עוֹלָם",
-  "tr": "olam",
-  "pt": "eternidade, tempo perpétuo; antiguidade (\"para sempre\")"
- },
- "5771": {
-  "he": "עָוֺן",
-  "tr": "avon",
-  "pt": "iniquidade, culpa, perversidade; castigo da culpa"
- },
- "5785": {
-  "he": "עוֹר",
-  "tr": "owr",
-  "pt": "pele; couro"
- },
- "5797": {
-  "he": "עֹז",
-  "tr": "oz",
-  "pt": "força, poder; segurança; firmeza"
- },
- "5800": {
-  "he": "עָזַב",
-  "tr": "azab",
-  "pt": "deixar, abandonar; soltar, largar"
- },
- "5869": {
-  "he": "עַיִן",
-  "tr": "ayin",
-  "pt": "olho; fonte (de água); aparência"
- },
- "5892": {
-  "he": "עִיר",
-  "tr": "ir",
-  "pt": "cidade"
- },
- "5921": {
-  "he": "עַל",
-  "tr": "al",
-  "pt": "sobre, em cima de, por causa de, contra (preposição)"
- },
- "5927": {
-  "he": "עָלָה",
-  "tr": "alah",
-  "pt": "subir, ascender; oferecer (holocausto)"
- },
- "5930": {
-  "he": "עֹלָה",
-  "tr": "olah",
-  "pt": "holocausto (oferta queimada por inteiro); subida"
- },
- "5971": {
-  "he": "עַם",
-  "tr": "am",
-  "pt": "povo, nação, gente"
- },
- "5973": {
-  "he": "עִם",
-  "tr": "im",
-  "pt": "com, junto de (preposição)"
- },
- "5975": {
-  "he": "עָמַד",
-  "tr": "amad",
-  "pt": "estar de pé, permanecer, parar; persistir"
- },
- "5982": {
-  "he": "עַמּוּד",
-  "tr": "ammuwd",
-  "pt": "coluna, pilar; estrado"
- },
- "5983": {
-  "he": "עַמּוֹן",
-  "tr": "ammown",
-  "pt": "Amom (povo descendente de Ló)"
- },
- "6030": {
-  "he": "עָנָה",
-  "tr": "anah",
-  "pt": "responder, atender; testemunhar"
- },
- "6083": {
-  "he": "עָפָר",
-  "tr": "aphar",
-  "pt": "pó, poeira; terra, cinza"
- },
- "6086": {
-  "he": "עֵץ",
-  "tr": "ets",
-  "pt": "árvore; madeira, lenho"
- },
- "6098": {
-  "he": "עֵצָה",
-  "tr": "etsah",
-  "pt": "conselho, plano; prudência"
- },
- "6106": {
-  "he": "עֶצֶם",
-  "tr": "etsem",
-  "pt": "osso; (por extensão) corpo, substância, o próprio"
- },
- "6153": {
-  "he": "עֶרֶב",
-  "tr": "ereb",
-  "pt": "tarde, entardecer; crepúsculo"
- },
- "6213": {
-  "he": "עָשָׂה",
-  "tr": "asah",
-  "pt": "fazer, agir, produzir, realizar"
- },
- "6215": {
-  "he": "עֵשָׂו",
-  "tr": "esav",
-  "pt": "Esaú (filho de Isaque)"
- },
- "6235": {
-  "he": "עֶשֶׂר",
-  "tr": "eser",
-  "pt": "dez"
- },
- "6240": {
-  "he": "עָשָׂר",
-  "tr": "asar",
-  "pt": "dez (usado em compostos: -ze, p.ex. doze)"
- },
- "6242": {
-  "he": "עֶשְׂרִים",
-  "tr": "esriym",
-  "pt": "vinte"
- },
- "6256": {
-  "he": "עֵת",
-  "tr": "et",
-  "pt": "tempo, época, momento certo"
- },
- "6258": {
-  "he": "עַתָּה",
-  "tr": "atah",
-  "pt": "agora, neste momento; portanto"
- },
- "6310": {
-  "he": "פֶּה",
-  "tr": "peh",
-  "pt": "boca; abertura; ordem, mandamento (\"pela boca\")"
- },
- "6430": {
-  "he": "פְּלִשְׁתִּי",
-  "tr": "Pelishti",
-  "pt": "filisteu (habitante da Filístia)"
- },
- "6435": {
-  "he": "פֵּן",
-  "tr": "pen",
-  "pt": "para que não, a fim de que não (partícula)"
- },
- "6437": {
-  "he": "פָּנָה",
-  "tr": "panah",
-  "pt": "virar-se, voltar-se; encarar; olhar para"
- },
- "6440": {
-  "he": "פָּנִים",
-  "tr": "panim",
-  "pt": "face, rosto, presença; diante de"
- },
- "6471": {
-  "he": "פַּעַם",
-  "tr": "paam",
-  "pt": "vez, ocasião; passo; pancada"
- },
- "6485": {
-  "he": "פָּקַד",
-  "tr": "paqad",
-  "pt": "visitar, cuidar; contar, recensear; encarregar"
- },
- "6499": {
-  "he": "פַּר",
-  "tr": "par",
-  "pt": "novilho, touro jovem"
- },
- "6529": {
-  "he": "פְּרִי",
-  "tr": "periy",
-  "pt": "fruto"
- },
- "6547": {
-  "he": "פַּרְעֹה",
-  "tr": "paroh",
-  "pt": "Faraó (título dos reis do Egito)"
- },
- "6588": {
-  "he": "פֶּשַׁע",
-  "tr": "pesha",
-  "pt": "transgressão, rebelião; revolta"
- },
- "6605": {
-  "he": "פָּתַח",
-  "tr": "pathach",
-  "pt": "abrir; soltar; (outra raiz) gravar, entalhar"
- },
- "6607": {
-  "he": "פֶּתַח",
-  "tr": "pethach",
-  "pt": "porta, entrada; abertura"
- },
- "6629": {
-  "he": "צֹאן",
-  "tr": "tson",
-  "pt": "rebanho (de ovelhas e cabras); gado miúdo"
- },
- "6635": {
-  "he": "צָבָא",
-  "tr": "tsava",
-  "pt": "exército, hoste; serviço militar (\"Senhor dos Exércitos\")"
- },
- "6662": {
-  "he": "צַדִּיק",
-  "tr": "tsaddiyq",
-  "pt": "justo, reto; inocente (na causa)"
- },
- "6664": {
-  "he": "צֶדֶק",
-  "tr": "tsedeq",
-  "pt": "justiça, retidão; o que é reto e legítimo"
- },
- "6666": {
-  "he": "צְדָקָה",
-  "tr": "tsedaqah",
-  "pt": "justiça, retidão; ato justo"
- },
- "6680": {
-  "he": "צָוָה",
-  "tr": "tsavah",
-  "pt": "ordenar, mandar, dar instruções"
- },
- "6726": {
-  "he": "צִיּוֹן",
-  "tr": "tsiyown",
-  "pt": "Sião (monte e cidade de Jerusalém)"
- },
- "6828": {
-  "he": "צָפוֹן",
-  "tr": "tsaphown",
-  "pt": "norte; lado norte"
- },
- "6862": {
-  "he": "צַר",
-  "tr": "tsar",
-  "pt": "estreito, apertado; (subst.) angústia; adversário"
- },
- "6908": {
-  "he": "קָבַץ",
-  "tr": "qabats",
-  "pt": "ajuntar, reunir, congregar"
- },
- "6912": {
-  "he": "קָבַר",
-  "tr": "qabar",
-  "pt": "sepultar, enterrar"
- },
- "6918": {
-  "he": "קָדוֹשׁ",
-  "tr": "qadowsh",
-  "pt": "santo, sagrado; (subst.) o Santo"
- },
- "6942": {
-  "he": "קָדַשׁ",
-  "tr": "qadash",
-  "pt": "ser santo; santificar, consagrar; tratar como sagrado"
- },
- "6944": {
-  "he": "קֹדֶשׁ",
-  "tr": "qodesh",
-  "pt": "santidade; coisa ou lugar sagrado"
- },
- "6951": {
-  "he": "קָהָל",
-  "tr": "qahal",
-  "pt": "assembleia, congregação; multidão reunida"
- },
- "6963": {
-  "he": "קוֹל",
-  "tr": "qol",
-  "pt": "voz, som, ruído"
- },
- "6965": {
-  "he": "קוּם",
-  "tr": "qum",
-  "pt": "levantar-se, erguer-se; estabelecer, confirmar"
- },
- "6996": {
-  "he": "קָטָן",
-  "tr": "qatan",
-  "pt": "pequeno, menor; jovem"
- },
- "6999": {
-  "he": "קָטַר",
-  "tr": "qatar",
-  "pt": "queimar incenso; fazer subir em fumaça (oferta)"
- },
- "7097": {
-  "he": "קָצֶה",
-  "tr": "qatseh",
-  "pt": "extremidade, fim, ponta; limite"
- },
- "7121": {
-  "he": "קָרָא",
-  "tr": "qara",
-  "pt": "chamar, clamar; proclamar; ler (em voz alta)"
- },
- "7126": {
-  "he": "קָרַב",
-  "tr": "qarab",
-  "pt": "aproximar-se, chegar perto; trazer/apresentar (oferta)"
- },
- "7130": {
-  "he": "קֶרֶב",
-  "tr": "qereb",
-  "pt": "interior, parte de dentro; meio, entranhas"
- },
- "7200": {
-  "he": "רָאָה",
-  "tr": "raah",
-  "pt": "ver, olhar, perceber, contemplar"
- },
- "7218": {
-  "he": "רֹאשׁ",
-  "tr": "rosh",
-  "pt": "cabeça; chefe, topo, começo"
- },
- "7223": {
-  "he": "רִאשׁוֹן",
-  "tr": "rishown",
-  "pt": "primeiro; anterior; antepassado"
- },
- "7227": {
-  "he": "רַב",
-  "tr": "rav",
-  "pt": "muito, numeroso, grande; abundante"
- },
- "7230": {
-  "he": "רֹב",
-  "tr": "rob",
-  "pt": "abundância, multidão; grande quantidade"
- },
- "7235": {
-  "he": "רָבָה",
-  "tr": "rabah",
-  "pt": "multiplicar-se, aumentar, tornar-se numeroso"
- },
- "7272": {
-  "he": "רֶגֶל",
-  "tr": "regel",
-  "pt": "pé; passo"
- },
- "7291": {
-  "he": "רָדַף",
-  "tr": "radaph",
-  "pt": "perseguir, ir no encalço; correr atrás"
- },
- "7307": {
-  "he": "רוּחַ",
-  "tr": "ruach",
-  "pt": "vento, sopro, fôlego; espírito (de Deus ou do ser humano)"
- },
- "7311": {
-  "he": "רוּם",
-  "tr": "ruwm",
-  "pt": "ser alto, elevar-se; erguer, exaltar"
- },
- "7323": {
-  "he": "רוּץ",
-  "tr": "ruwts",
-  "pt": "correr; precipitar-se"
- },
- "7341": {
-  "he": "רֹחַב",
-  "tr": "rochab",
-  "pt": "largura; amplidão"
- },
- "7393": {
-  "he": "רֶכֶב",
-  "tr": "rekeb",
-  "pt": "carro (de guerra); cavalaria; mó superior"
- },
- "7451": {
-  "he": "רַע",
-  "tr": "ra",
-  "pt": "mau, mal; calamidade, aflição"
- },
- "7453": {
-  "he": "רֵעַ",
-  "tr": "rea",
-  "pt": "companheiro, amigo, próximo; outro"
- },
- "7458": {
-  "he": "רָעָב",
-  "tr": "raab",
-  "pt": "fome, carestia"
- },
- "7462": {
-  "he": "רָעָה",
-  "tr": "raah",
-  "pt": "apascentar, pastorear; alimentar(-se); (fig.) cuidar"
- },
- "7489": {
-  "he": "רָעַע",
-  "tr": "raa",
-  "pt": "ser mau; fazer o mal; estragar, quebrar"
- },
- "7535": {
-  "he": "רַק",
-  "tr": "raq",
-  "pt": "somente, apenas; contudo (partícula)"
- },
- "7563": {
-  "he": "רָשָׁע",
-  "tr": "rasha",
-  "pt": "ímpio, perverso, culpado; malvado"
- },
- "7586": {
-  "he": "שָׁאוּל",
-  "tr": "Shaul",
-  "pt": "Saul (primeiro rei de Israel)"
- },
- "7592": {
-  "he": "שָׁאַל",
-  "tr": "shaal",
-  "pt": "perguntar, indagar; pedir, requerer"
- },
- "7604": {
-  "he": "שָׁאַר",
-  "tr": "shaar",
-  "pt": "restar, sobrar; deixar de resto; permanecer"
- },
- "7626": {
-  "he": "שֵׁבֶט",
-  "tr": "shebet",
-  "pt": "vara, cetro; bastão de castigo; tribo"
- },
- "7646": {
-  "he": "שָׂבַע",
-  "tr": "saba",
-  "pt": "saciar-se, fartar-se; ter o suficiente"
- },
- "7650": {
-  "he": "שָׁבַע",
-  "tr": "shaba",
-  "pt": "jurar, fazer juramento"
- },
- "7651": {
-  "he": "שֶׁבַע",
-  "tr": "sheva",
-  "pt": "sete (numeral, número da plenitude)"
- },
- "7657": {
-  "he": "שִׁבְעִים",
-  "tr": "shibiym",
-  "pt": "setenta"
- },
- "7665": {
-  "he": "שָׁבַר",
-  "tr": "shabar",
-  "pt": "quebrar, despedaçar; romper"
- },
- "7676": {
-  "he": "שַׁבָּת",
-  "tr": "shabbath",
-  "pt": "sábado, dia de descanso"
- },
- "7704": {
-  "he": "שָׂדֶה",
-  "tr": "sadeh",
-  "pt": "campo, terreno, terra de cultivo"
- },
- "7725": {
-  "he": "שׁוּב",
-  "tr": "shuv",
-  "pt": "voltar, retornar; arrepender-se; (causativo) restaurar"
- },
- "7760": {
-  "he": "שׂוּם",
-  "tr": "sum",
-  "pt": "pôr, colocar, estabelecer, designar"
- },
- "7812": {
-  "he": "שָׁחָה",
-  "tr": "shachah",
-  "pt": "prostrar-se, inclinar-se (em reverência ou adoração)"
- },
- "7843": {
-  "he": "שָׁחַת",
-  "tr": "shachath",
-  "pt": "corromper, arruinar, destruir; estragar"
- },
- "7892": {
-  "he": "שִׁיר",
-  "tr": "shiyr",
-  "pt": "canto, cântico; canção"
- },
- "7901": {
-  "he": "שָׁכַב",
-  "tr": "shakab",
-  "pt": "deitar-se (para descanso, dormir ou relação sexual)"
- },
- "7911": {
-  "he": "שָׁכַח",
-  "tr": "shakach",
-  "pt": "esquecer"
- },
- "7931": {
-  "he": "שָׁכַן",
-  "tr": "shakan",
-  "pt": "habitar, morar, residir; assentar-se"
- },
- "7965": {
-  "he": "שָׁלוֹם",
-  "tr": "shalowm",
-  "pt": "paz, bem-estar, integridade; saúde, prosperidade (shalom)"
- },
- "7969": {
-  "he": "שָׁלוֹשׁ",
-  "tr": "shalosh",
-  "pt": "três (numeral)"
- },
- "7970": {
-  "he": "שְׁלוֹשִׁים",
-  "tr": "shelowshiym",
-  "pt": "trinta"
- },
- "7971": {
-  "he": "שָׁלַח",
-  "tr": "shalach",
-  "pt": "enviar, mandar, estender (a mão)"
- },
- "7992": {
-  "he": "שְׁלִישִׁי",
-  "tr": "sheliyshiy",
-  "pt": "terceiro; terça parte"
- },
- "7993": {
-  "he": "שָׁלַךְ",
-  "tr": "shalak",
-  "pt": "lançar, arremessar; atirar fora"
- },
- "7999": {
-  "he": "שָׁלַם",
-  "tr": "shalam",
-  "pt": "estar completo/em paz; pagar, recompensar; restituir"
- },
- "8010": {
-  "he": "שְׁלֹמֹה",
-  "tr": "Shelomoh",
-  "pt": "Salomão (filho e sucessor de Davi)"
- },
- "8033": {
-  "he": "שָׁם",
-  "tr": "sham",
-  "pt": "ali, lá; (para) lá"
- },
- "8034": {
-  "he": "שֵׁם",
-  "tr": "shem",
-  "pt": "nome; fama, reputação"
- },
- "8045": {
-  "he": "שָׁמַד",
-  "tr": "shamad",
-  "pt": "destruir, exterminar; assolar"
- },
- "8050": {
-  "he": "שְׁמוּאֵל",
-  "tr": "shemuwel",
-  "pt": "Samuel"
- },
- "8055": {
-  "he": "שָׂמַח",
-  "tr": "samach",
-  "pt": "alegrar-se, regozijar-se"
- },
- "8057": {
-  "he": "שִׂמְחָה",
-  "tr": "simchah",
-  "pt": "alegria, regozijo; festa"
- },
- "8064": {
-  "he": "שָׁמַיִם",
-  "tr": "shamayim",
-  "pt": "céus, firmamento"
- },
- "8081": {
-  "he": "שֶׁמֶן",
-  "tr": "shemen",
-  "pt": "azeite, óleo; gordura"
- },
- "8083": {
-  "he": "שְׁמֹנֶה",
-  "tr": "shemoneh",
-  "pt": "oito"
- },
- "8085": {
-  "he": "שָׁמַע",
-  "tr": "shama",
-  "pt": "ouvir, escutar; atender, obedecer"
- },
- "8104": {
-  "he": "שָׁמַר",
-  "tr": "shamar",
-  "pt": "guardar, vigiar, observar, proteger"
- },
- "8111": {
-  "he": "שֹׁמְרוֹן",
-  "tr": "shomerown",
-  "pt": "Samaria (cidade)"
- },
- "8121": {
-  "he": "שֶׁמֶשׁ",
-  "tr": "shemesh",
-  "pt": "sol; (por extensão) leste, nascente"
- },
- "8130": {
-  "he": "שָׂנֵא",
-  "tr": "sane",
-  "pt": "odiar, detestar"
- },
- "8141": {
-  "he": "שָׁנָה",
-  "tr": "shanah",
-  "pt": "ano"
- },
- "8145": {
-  "he": "שֵׁנִי",
-  "tr": "sheniy",
-  "pt": "segundo; outro; (adv.) novamente"
- },
- "8147": {
-  "he": "שְׁנַיִם",
-  "tr": "shenayim",
-  "pt": "dois; par"
- },
- "8179": {
-  "he": "שַׁעַר",
-  "tr": "shaar",
-  "pt": "porta, portão (da cidade)"
- },
- "8193": {
-  "he": "שָׂפָה",
-  "tr": "saphah",
-  "pt": "lábio; margem, borda; língua, fala"
- },
- "8199": {
-  "he": "שָׁפַט",
-  "tr": "shaphat",
-  "pt": "julgar, sentenciar; governar; defender a causa"
- },
- "8210": {
-  "he": "שָׁפַךְ",
-  "tr": "shaphak",
-  "pt": "derramar, entornar (sangue, líquido); espalhar"
- },
- "8255": {
-  "he": "שֶׁקֶל",
-  "tr": "sheqel",
-  "pt": "siclo (peso e moeda padrão)"
- },
- "8267": {
-  "he": "שֶׁקֶר",
-  "tr": "sheqer",
-  "pt": "mentira, falsidade; engano"
- },
- "8269": {
-  "he": "שַׂר",
-  "tr": "sar",
-  "pt": "chefe, príncipe, comandante, oficial"
- },
- "8313": {
-  "he": "שָׂרַף",
-  "tr": "saraph",
-  "pt": "queimar, incendiar"
- },
- "8334": {
-  "he": "שָׁרַת",
-  "tr": "sharath",
-  "pt": "servir, ministrar (como auxiliar ou no culto)"
- },
- "8337": {
-  "he": "שֵׁשׁ",
-  "tr": "shesh",
-  "pt": "seis"
- },
- "8354": {
-  "he": "שָׁתָה",
-  "tr": "shathah",
-  "pt": "beber"
- },
- "8432": {
-  "he": "תָּוֶךְ",
-  "tr": "tavech",
-  "pt": "meio, centro; no meio de"
- },
- "8441": {
-  "he": "תּוֹעֵבַה",
-  "tr": "towebah",
-  "pt": "abominação, coisa detestável"
- },
- "8451": {
-  "he": "תּוֹרָה",
-  "tr": "towrah",
-  "pt": "instrução, lei, ensino (Torá)"
- },
- "8478": {
-  "he": "תַּחַת",
-  "tr": "tachat",
-  "pt": "debaixo de, em lugar de, no lugar onde"
- },
- "8548": {
-  "he": "תָּמִיד",
-  "tr": "tamiyd",
-  "pt": "continuamente, sempre; o (sacrifício) contínuo"
- },
- "8549": {
-  "he": "תָּמִים",
-  "tr": "tamiym",
-  "pt": "íntegro, perfeito, sem defeito; completo"
- }
+  "853": {"he": "אֵת", "tr": "et", "pt": "partícula que marca o objeto direto (não se traduz em português)"},
+  "3068": {"he": "יְהוָה", "tr": "YHWH", "pt": "o Nome próprio de Deus (YHWH), ligado ao verbo \"ser/existir\"; lido \"Senhor\""},
+  "3069": {"he": "יְהוִה", "tr": "YHWH", "pt": "forma do Nome divino YHWH, vocalizada como \"Deus\""},
+  "5921": {"he": "עַל", "tr": "al", "pt": "sobre, em cima de, por causa de, contra (preposição)"},
+  "413": {"he": "אֶל", "tr": "el", "pt": "a, para, em direção a (preposição de movimento)"},
+  "834": {"he": "אֲשֶׁר", "tr": "asher", "pt": "que, o qual, aquele que (pronome relativo)"},
+  "3605": {"he": "כֹּל", "tr": "kol", "pt": "tudo, todo, qualquer, a totalidade"},
+  "559": {"he": "אָמַר", "tr": "amar", "pt": "dizer, falar, declarar"},
+  "3808": {"he": "לֹא", "tr": "lo", "pt": "não (negação absoluta)"},
+  "1121": {"he": "בֵּן", "tr": "ben", "pt": "filho; descendente; membro de um grupo"},
+  "3588": {"he": "כִּי", "tr": "ki", "pt": "porque, pois, que; quando (conjunção)"},
+  "1961": {"he": "הָיָה", "tr": "hayah", "pt": "ser, existir, tornar-se, acontecer"},
+  "6213": {"he": "עָשָׂה", "tr": "asah", "pt": "fazer, agir, produzir, realizar"},
+  "430": {"he": "אֱלֹהִים", "tr": "Elohim", "pt": "Deus; deuses (forma plural, usada para o Deus único)"},
+  "935": {"he": "בּוֹא", "tr": "bo", "pt": "vir, entrar, chegar; (causativo) trazer"},
+  "4428": {"he": "מֶלֶךְ", "tr": "melech", "pt": "rei"},
+  "3478": {"he": "יִשְׂרָאֵל", "tr": "Yisrael", "pt": "Israel (nome dado a Jacó e ao seu povo)"},
+  "776": {"he": "אֶרֶץ", "tr": "erets", "pt": "terra, país, chão, mundo"},
+  "3117": {"he": "יוֹם", "tr": "yom", "pt": "dia; tempo"},
+  "376": {"he": "אִישׁ", "tr": "ish", "pt": "homem, varão; cada um, alguém"},
+  "6440": {"he": "פָּנִים", "tr": "panim", "pt": "face, rosto, presença; diante de"},
+  "1004": {"he": "בַּיִת", "tr": "bayit", "pt": "casa, lar; família; templo (\"a Casa\")"},
+  "5414": {"he": "נָתַן", "tr": "natan", "pt": "dar, conceder, pôr, colocar"},
+  "1931": {"he": "הוּא", "tr": "hu", "pt": "ele; isso; o mesmo (pronome de 3ª pessoa)"},
+  "5971": {"he": "עַם", "tr": "am", "pt": "povo, nação, gente"},
+  "3027": {"he": "יָד", "tr": "yad", "pt": "mão; poder, autoridade (figurado)"},
+  "1697": {"he": "דָּבָר", "tr": "davar", "pt": "palavra; coisa, assunto, acontecimento"},
+  "7200": {"he": "רָאָה", "tr": "raah", "pt": "ver, olhar, perceber, contemplar"},
+  "5704": {"he": "עַד", "tr": "ad", "pt": "até, enquanto (tempo ou espaço)"},
+  "4480": {"he": "מִן", "tr": "min", "pt": "de, desde, a partir de; mais que (preposição)"},
+  "1": {"he": "אָב", "tr": "av", "pt": "pai; antepassado, ancestral"},
+  "2088": {"he": "זֶה", "tr": "zeh", "pt": "este, isto (pronome demonstrativo masculino)"},
+  "8085": {"he": "שָׁמַע", "tr": "shama", "pt": "ouvir, escutar; atender, obedecer"},
+  "1696": {"he": "דָּבַר", "tr": "davar", "pt": "falar, dizer, anunciar"},
+  "859": {"he": "אַתָּה", "tr": "atah", "pt": "tu, você (pronome de 2ª pessoa)"},
+  "5892": {"he": "עִיר", "tr": "ir", "pt": "cidade"},
+  "3427": {"he": "יָשַׁב", "tr": "yashav", "pt": "sentar-se; habitar, morar, permanecer"},
+  "3318": {"he": "יָצָא", "tr": "yatsa", "pt": "sair, ir para fora; (causativo) fazer sair"},
+  "1732": {"he": "דָּוִד", "tr": "David", "pt": "Davi (rei de Israel)"},
+  "7725": {"he": "שׁוּב", "tr": "shuv", "pt": "voltar, retornar; arrepender-se; (causativo) restaurar"},
+  "518": {"he": "אִם", "tr": "im", "pt": "se, caso (condicional); por acaso?"},
+  "5973": {"he": "עִם", "tr": "im", "pt": "com, junto de (preposição)"},
+  "3212": {"he": "יָלַךְ", "tr": "yalach", "pt": "ir, andar, caminhar"},
+  "259": {"he": "אֶחָד", "tr": "echad", "pt": "um; único; primeiro"},
+  "3947": {"he": "לָקַח", "tr": "laqach", "pt": "tomar, pegar, receber, levar"},
+  "3045": {"he": "יָדַע", "tr": "yada", "pt": "conhecer, saber; experimentar intimamente"},
+  "5869": {"he": "עַיִן", "tr": "ayin", "pt": "olho; fonte (de água); aparência"},
+  "5927": {"he": "עָלָה", "tr": "alah", "pt": "subir, ascender; oferecer (holocausto)"},
+  "854": {"he": "אֵת", "tr": "et", "pt": "com, junto de, perto de (preposição)"},
+  "8141": {"he": "שָׁנָה", "tr": "shanah", "pt": "ano"},
+  "589": {"he": "אֲנִי", "tr": "ani", "pt": "eu (pronome de 1ª pessoa)"},
+  "8034": {"he": "שֵׁם", "tr": "shem", "pt": "nome; fama, reputação"},
+  "7971": {"he": "שָׁלַח", "tr": "shalach", "pt": "enviar, mandar, estender (a mão)"},
+  "2009": {"he": "הִנֵּה", "tr": "hineh", "pt": "eis que!, veja! (interjeição que chama a atenção)"},
+  "4191": {"he": "מוּת", "tr": "mut", "pt": "morrer; (causativo) matar"},
+  "8033": {"he": "שָׁם", "tr": "sham", "pt": "ali, lá; (para) lá"},
+  "3063": {"he": "יְהוּדָה", "tr": "Yehudah", "pt": "Judá (filho de Jacó, tribo e reino do sul)"},
+  "398": {"he": "אָכַל", "tr": "achal", "pt": "comer; consumir, devorar"},
+  "5650": {"he": "עֶבֶד", "tr": "eved", "pt": "servo, escravo"},
+  "369": {"he": "אַיִן", "tr": "ayin", "pt": "não há, nada; ausência (partícula de negação)"},
+  "802": {"he": "אִשָּׁה", "tr": "ishah", "pt": "mulher; esposa"},
+  "3651": {"he": "כֵּן", "tr": "ken", "pt": "assim, deste modo; correto, reto"},
+  "8147": {"he": "שְׁנַיִם", "tr": "shenayim", "pt": "dois; par"},
+  "1571": {"he": "גַּם", "tr": "gam", "pt": "também, igualmente, ainda; até mesmo"},
+  "4872": {"he": "מֹשֶׁה", "tr": "Moshe", "pt": "Moisés (o legislador de Israel)"},
+  "5315": {"he": "נֶפֶשׁ", "tr": "nefesh", "pt": "alma, vida, ser vivente; garganta, apetite, desejo"},
+  "4100": {"he": "מָה", "tr": "mah", "pt": "que?, o que?; como? (interrogativo)"},
+  "3548": {"he": "כֹּהֵן", "tr": "kohen", "pt": "sacerdote"},
+  "428": {"he": "אֵלֶּה", "tr": "eleh", "pt": "estes, estas (demonstrativo plural)"},
+  "7121": {"he": "קָרָא", "tr": "qara", "pt": "chamar, clamar; proclamar; ler (em voz alta)"},
+  "408": {"he": "אַל", "tr": "al", "pt": "não (negação de proibição/exortação)"},
+  "310": {"he": "אַחַר", "tr": "achar", "pt": "depois, atrás de, após"},
+  "1870": {"he": "דֶּרֶךְ", "tr": "derech", "pt": "caminho, estrada; modo de viver, conduta"},
+  "7451": {"he": "רַע", "tr": "ra", "pt": "mau, mal; calamidade, aflição"},
+  "5375": {"he": "נָשָׂא", "tr": "nasa", "pt": "levantar, erguer, carregar; perdoar (a culpa)"},
+  "3389": {"he": "יְרוּשָׁלִַם", "tr": "Yerushalaim", "pt": "Jerusalém"},
+  "4714": {"he": "מִצְרַיִם", "tr": "Mitsrayim", "pt": "Egito; egípcios"},
+  "251": {"he": "אָח", "tr": "ach", "pt": "irmão; parente, semelhante"},
+  "6965": {"he": "קוּם", "tr": "qum", "pt": "levantar-se, erguer-se; estabelecer, confirmar"},
+  "2063": {"he": "זֹאת", "tr": "zot", "pt": "esta, isto (demonstrativo feminino)"},
+  "7218": {"he": "רֹאשׁ", "tr": "rosh", "pt": "cabeça; chefe, topo, começo"},
+  "3820": {"he": "לֵב", "tr": "lev", "pt": "coração; mente, vontade, sentimentos (o interior)"},
+  "1323": {"he": "בַּת", "tr": "bat", "pt": "filha"},
+  "7760": {"he": "שׂוּם", "tr": "sum", "pt": "pôr, colocar, estabelecer, designar"},
+  "3967": {"he": "מֵאָה", "tr": "meah", "pt": "cem (numeral)"},
+  "4325": {"he": "מַיִם", "tr": "mayim", "pt": "água, águas"},
+  "3541": {"he": "כֹּה", "tr": "koh", "pt": "assim, deste modo (\"assim diz o Senhor\")"},
+  "1471": {"he": "גּוֹי", "tr": "goy", "pt": "nação, povo; (plural) os gentios, as nações"},
+  "1992": {"he": "הֵם", "tr": "hem", "pt": "eles (pronome de 3ª pessoa plural)"},
+  "2896": {"he": "טוֹב", "tr": "tov", "pt": "bom, agradável, belo; (substantivo) o bem"},
+  "5674": {"he": "עָבַר", "tr": "avar", "pt": "passar, atravessar, transpor"},
+  "120": {"he": "אָדָם", "tr": "adam", "pt": "ser humano, homem, humanidade; Adão"},
+  "2022": {"he": "הַר", "tr": "har", "pt": "monte, montanha, serra"},
+  "1419": {"he": "גָּדוֹל", "tr": "gadol", "pt": "grande; importante; mais velho"},
+  "5975": {"he": "עָמַד", "tr": "amad", "pt": "estar de pé, permanecer, parar; persistir"},
+  "8478": {"he": "תַּחַת", "tr": "tachat", "pt": "debaixo de, em lugar de, no lugar onde"},
+  "1980": {"he": "הָלַךְ", "tr": "halach", "pt": "andar, caminhar, ir; conduzir-se"},
+  "505": {"he": "אֶלֶף", "tr": "elef", "pt": "mil (numeral)"},
+  "6963": {"he": "קוֹל", "tr": "qol", "pt": "voz, som, ruído"},
+  "2416": {"he": "חַי", "tr": "chai", "pt": "vivo, vivente; vida"},
+  "5221": {"he": "נָכָה", "tr": "nacah", "pt": "ferir, golpear, bater; matar"},
+  "3205": {"he": "יָלַד", "tr": "yalad", "pt": "dar à luz, gerar; nascer"},
+  "6310": {"he": "פֶּה", "tr": "peh", "pt": "boca; abertura; ordem, mandamento (\"pela boca\")"},
+  "6680": {"he": "צָוָה", "tr": "tsavah", "pt": "ordenar, mandar, dar instruções"},
+  "5750": {"he": "עוֹד", "tr": "od", "pt": "ainda, de novo, mais"},
+  "6635": {"he": "צָבָא", "tr": "tsava", "pt": "exército, hoste; serviço militar (\"Senhor dos Exércitos\")"},
+  "8104": {"he": "שָׁמַר", "tr": "shamar", "pt": "guardar, vigiar, observar, proteger"},
+  "6944": {"he": "קֹדֶשׁ", "tr": "qodesh", "pt": "santidade; coisa ou lugar sagrado"},
+  "7227": {"he": "רַב", "tr": "rav", "pt": "muito, numeroso, grande; abundante"},
+  "4672": {"he": "מָצָא", "tr": "matsa", "pt": "achar, encontrar; alcançar, obter"},
+  "136": {"he": "אֲדֹנָי", "tr": "Adonai", "pt": "o Senhor (título de Deus, \"meu Senhor\")"},
+  "5769": {"he": "עוֹלָם", "tr": "olam", "pt": "eternidade, tempo perpétuo; antiguidade (\"para sempre\")"},
+  "5307": {"he": "נָפַל", "tr": "nafal", "pt": "cair, tombar; prostrar-se"},
+  "6258": {"he": "עַתָּה", "tr": "atah", "pt": "agora, neste momento; portanto"},
+  "7969": {"he": "שָׁלוֹשׁ", "tr": "shalosh", "pt": "três (numeral)"},
+  "4941": {"he": "מִשְׁפָּט", "tr": "mishpat", "pt": "juízo, justiça; sentença, direito, ordenança"},
+  "4310": {"he": "מִי", "tr": "mi", "pt": "quem? (interrogativo)"},
+  "8064": {"he": "שָׁמַיִם", "tr": "shamayim", "pt": "céus, firmamento"},
+  "8269": {"he": "שַׂר", "tr": "sar", "pt": "chefe, príncipe, comandante, oficial"},
+  "8432": {"he": "תָּוֶךְ", "tr": "tavech", "pt": "meio, centro; no meio de"},
+  "2719": {"he": "חֶרֶב", "tr": "cherev", "pt": "espada; instrumento cortante"},
+  "996": {"he": "בֵּין", "tr": "bein", "pt": "entre, no meio de (preposição)"},
+  "7586": {"he": "שָׁאוּל", "tr": "Shaul", "pt": "Saul (primeiro rei de Israel)"},
+  "4196": {"he": "מִזְבֵּחַ", "tr": "mizbeach", "pt": "altar"},
+  "4994": {"he": "נָא", "tr": "na", "pt": "por favor, peço-te, agora (partícula de súplica/ênfase)"},
+  "3701": {"he": "כֶּסֶף", "tr": "kesef", "pt": "prata; dinheiro"},
+  "4725": {"he": "מָקוֹם", "tr": "maqom", "pt": "lugar, local, posição"},
+  "3220": {"he": "יָם", "tr": "yam", "pt": "mar; grande massa de água; oeste"},
+  "7651": {"he": "שֶׁבַע", "tr": "sheva", "pt": "sete (numeral, número da plenitude)"},
+  "2091": {"he": "זָהָב", "tr": "zahav", "pt": "ouro"},
+  "3381": {"he": "יָרַד", "tr": "yarad", "pt": "descer, baixar"},
+  "7307": {"he": "רוּחַ", "tr": "ruach", "pt": "vento, sopro, fôlego; espírito (de Deus ou do ser humano)"},
+  "784": {"he": "אֵשׁ", "tr": "esh", "pt": "fogo"},
+  "1129": {"he": "בָּנָה", "tr": "banah", "pt": "construir, edificar"},
+  "5002": {"he": "נְאֻם", "tr": "neum", "pt": "declaração, oráculo (\"diz o Senhor\")"},
+  "8179": {"he": "שַׁעַר", "tr": "shaar", "pt": "porta, portão (da cidade)"},
+  "5046": {"he": "נָגַד", "tr": "nagad", "pt": "anunciar, declarar, contar, informar"},
+  "1818": {"he": "דָּם", "tr": "dam", "pt": "sangue"},
+  "595": {"he": "אָנֹכִי", "tr": "anochi", "pt": "eu (forma enfática do pronome de 1ª pessoa)"},
+  "4427": {"he": "מָלַךְ", "tr": "malach", "pt": "reinar, governar como rei; tornar-se rei"},
+  "3290": {"he": "יַעֲקֹב", "tr": "Yaaqov", "pt": "Jacó (patriarca de Israel)"},
+  "168": {"he": "אֹהֶל", "tr": "ohel", "pt": "tenda, tabernáculo"},
+  "175": {"he": "אַהֲרֹן", "tr": "Aharon", "pt": "Arão (irmão de Moisés, primeiro sumo sacerdote)"},
+  "2568": {"he": "חָמֵשׁ", "tr": "chamesh", "pt": "cinco (numeral)"},
+  "6240": {"he": "עָשָׂר", "tr": "asar", "pt": "dez (usado em compostos: -ze, p.ex. doze)"},
+  "5439": {"he": "סָבִיב", "tr": "saviv", "pt": "ao redor, em volta, em torno"},
+  "7704": {"he": "שָׂדֶה", "tr": "sadeh", "pt": "campo, terreno, terra de cultivo"},
+  "6086": {"he": "עֵץ", "tr": "ets", "pt": "árvore; madeira, lenho"},
+  "1288": {"he": "בָּרַךְ", "tr": "barach", "pt": "abençoar; (originalmente) ajoelhar-se"},
+  "3372": {"he": "יָרֵא", "tr": "yare", "pt": "temer, recear; reverenciar (a Deus)"},
+  "113": {"he": "אָדוֹן", "tr": "adon", "pt": "senhor, dono, soberano"},
+  "6030": {"he": "עָנָה", "tr": "anah", "pt": "responder, atender; testemunhar"},
+  "3627": {"he": "כְּלִי", "tr": "keli", "pt": "objeto, utensílio, vaso, instrumento, arma"},
+  "176": {"he": "אוֹ", "tr": "o", "pt": "ou (conjunção alternativa)"},
+  "702": {"he": "אַרְבַּע", "tr": "arba", "pt": "quatro (numeral)"},
+  "4421": {"he": "מִלְחָמָה", "tr": "milchamah", "pt": "guerra, batalha, combate"},
+  "5030": {"he": "נָבִיא", "tr": "navi", "pt": "profeta, porta-voz inspirado"},
+  "4940": {"he": "מִשְׁפָּחָה", "tr": "mishpachah", "pt": "família, clã, parentela"},
+  "6485": {"he": "פָּקַד", "tr": "paqad", "pt": "visitar, cuidar; contar, recensear; encarregar"},
+  "5493": {"he": "סוּר", "tr": "sur", "pt": "desviar-se, afastar-se, tirar"},
+  "3966": {"he": "מְאֹד", "tr": "meod", "pt": "muito, grandemente, intensamente"},
+  "3899": {"he": "לֶחֶם", "tr": "lechem", "pt": "pão; alimento, comida"},
+  "2403": {"he": "חַטָּאת", "tr": "chatat", "pt": "pecado, falta; oferta pelo pecado"},
+  "6256": {"he": "עֵת", "tr": "et", "pt": "tempo, época, momento certo"},
+  "8010": {"he": "שְׁלֹמֹה", "tr": "Shelomoh", "pt": "Salomão (filho e sucessor de Davi)"},
+  "3772": {"he": "כָּרַת", "tr": "karat", "pt": "cortar; eliminar; firmar (aliança — \"cortar aliança\")"},
+  "6430": {"he": "פְּלִשְׁתִּי", "tr": "Pelishti", "pt": "filisteu (habitante da Filístia)"},
+  "6": {"he": "אָבַד", "tr": "abad", "pt": "perecer, ser destruído; perder-se, desaparecer"},
+  "53": {"he": "אֲבִישָׁלוֹם", "tr": "abiyshalowm", "pt": "Absalão (filho de Davi)"},
+  "68": {"he": "אֶבֶן", "tr": "eben", "pt": "pedra"},
+  "85": {"he": "אַבְרָהָם", "tr": "abraham", "pt": "Abraão"},
+  "123": {"he": "אֱדֹם", "tr": "edom", "pt": "Edom (povo e região; irmão de Jacó, Esaú)"},
+  "127": {"he": "אֲדָמָה", "tr": "adamah", "pt": "solo, terra (cultivável), chão"},
+  "157": {"he": "אָהַב", "tr": "ahab", "pt": "amar; ter afeição por"},
+  "216": {"he": "אוֹר", "tr": "owr", "pt": "luz, claridade; (concreto) luminar"},
+  "227": {"he": "אָז", "tr": "az", "pt": "então, naquele tempo; portanto"},
+  "241": {"he": "אֹזֶן", "tr": "ozen", "pt": "ouvido"},
+  "256": {"he": "אַחְאָב", "tr": "achab", "pt": "Acabe (rei de Israel)"},
+  "269": {"he": "אָחוֹת", "tr": "achowth", "pt": "irmã"},
+  "312": {"he": "אַחֵר", "tr": "acher", "pt": "outro, diferente; seguinte"},
+  "341": {"he": "אֹיֵב", "tr": "oyeb", "pt": "inimigo, adversário, aquele que odeia"},
+  "352": {"he": "אַיִל", "tr": "ayil", "pt": "carneiro; (arquit.) pilar, ombreira; homem forte"},
+  "389": {"he": "אַךְ", "tr": "ak", "pt": "certamente, sem dúvida; apenas, somente (partícula)"},
+  "410": {"he": "אֵל", "tr": "el", "pt": "Deus; o Poderoso; (adj.) forte, poderoso"},
+  "426": {"he": "אֱלָהּ", "tr": "elahh", "pt": "(aramaico) Deus, deus"},
+  "517": {"he": "אֵם", "tr": "em", "pt": "mãe"},
+  "520": {"he": "אַמָּה", "tr": "ammah", "pt": "côvado (medida de comprimento, do cotovelo à ponta dos dedos)"},
+  "539": {"he": "אָמַן", "tr": "aman", "pt": "ser firme/fiel; crer, confiar; (causat.) sustentar"},
+  "571": {"he": "אֶמֶת", "tr": "emeth", "pt": "verdade, fidelidade; firmeza, certeza"},
+  "587": {"he": "אֲנַחְנוּ", "tr": "anachnuw", "pt": "nós"},
+  "622": {"he": "אָסַף", "tr": "acaph", "pt": "ajuntar, reunir; recolher; retirar"},
+  "637": {"he": "אַף", "tr": "aph", "pt": "também, além disso; ainda que (partícula)"},
+  "639": {"he": "אַף", "tr": "aph", "pt": "narina, nariz; (por extensão) ira, raiva"},
+  "669": {"he": "אֶפְרַיִם", "tr": "ephrayim", "pt": "Efraim (filho de José; tribo)"},
+  "705": {"he": "אַרְבָּעִים", "tr": "arbaiym", "pt": "quarenta"},
+  "727": {"he": "אָרוֹן", "tr": "arown", "pt": "arca, caixa, baú (inclui a Arca da Aliança)"},
+  "753": {"he": "אֹרֶךְ", "tr": "orek", "pt": "comprimento, extensão"},
+  "758": {"he": "אֲרָם", "tr": "aram", "pt": "Arã / Síria (povo e região)"},
+  "804": {"he": "אַשּׁוּר", "tr": "ashshuwr", "pt": "Assíria; Assur (povo e território)"},
+  "894": {"he": "בָּבֶל", "tr": "babel", "pt": "Babel / Babilônia"},
+  "899": {"he": "בֶּגֶד", "tr": "beged", "pt": "veste, roupa; manto; (fig.) traição"},
+  "905": {"he": "בַּד", "tr": "bad", "pt": "separação; parte; (adv.) à parte, sozinho; varal, vara"},
+  "929": {"he": "בְּהֵמָה", "tr": "behemah", "pt": "animal (quadrúpede); gado; besta"},
+  "954": {"he": "בּוּשׁ", "tr": "buwsh", "pt": "envergonhar-se; ficar envergonhado; decepcionar-se"},
+  "977": {"he": "בָּחַר", "tr": "bachar", "pt": "escolher, eleger; provar, selecionar"},
+  "982": {"he": "בָּטַח", "tr": "batach", "pt": "confiar, ter confiança; estar seguro"},
+  "995": {"he": "בִּין", "tr": "biyn", "pt": "discernir, entender, perceber; considerar"},
+  "1008": {"he": "בֵּית־אֵל", "tr": "beyth-el", "pt": "Betel (lugar)"},
+  "1058": {"he": "בָּכָה", "tr": "bakah", "pt": "chorar, lamentar; prantear"},
+  "1060": {"he": "בְּכוֹר", "tr": "bekowr", "pt": "primogênito; (fig.) o principal"},
+  "1115": {"he": "בִּלְתִּי", "tr": "biltiy", "pt": "não, sem; exceto (partícula de negação)"},
+  "1116": {"he": "בָּמָה", "tr": "bamah", "pt": "alto, lugar alto (de culto); colina"},
+  "1144": {"he": "בִּנְיָמִין", "tr": "binyamiyn", "pt": "Benjamim (filho de Jacó; tribo)"},
+  "1157": {"he": "בְּעַד", "tr": "bead", "pt": "por, em favor de; ao redor; atrás de (preposição)"},
+  "1197": {"he": "בָּעַר", "tr": "baar", "pt": "arder, queimar; consumir (pelo fogo); (fig.) ser bruto"},
+  "1241": {"he": "בָּקָר", "tr": "baqar", "pt": "gado bovino, boi; manada"},
+  "1242": {"he": "בֹּקֶר", "tr": "boqer", "pt": "manhã, alvorada"},
+  "1245": {"he": "בָּקַשׁ", "tr": "baqash", "pt": "buscar, procurar; requerer, desejar"},
+  "1285": {"he": "בְּרִית", "tr": "beriyth", "pt": "aliança, pacto, concerto"},
+  "1320": {"he": "בָּשָׂר", "tr": "basar", "pt": "carne; corpo; parentesco (por extensão)"},
+  "1350": {"he": "גָּאַל", "tr": "gaal", "pt": "resgatar, remir; ser o resgatador (parente próximo)"},
+  "1366": {"he": "גְּבוּל", "tr": "gebuwl", "pt": "fronteira, limite, território"},
+  "1368": {"he": "גִּבּוֹר", "tr": "gibbowr", "pt": "valente, herói, guerreiro; poderoso"},
+  "1431": {"he": "גָּדַל", "tr": "gadal", "pt": "tornar-se grande; crescer; engrandecer, exaltar"},
+  "1481": {"he": "גּוּר", "tr": "guwr", "pt": "peregrinar, residir como estrangeiro; (outra raiz) temer"},
+  "1540": {"he": "גָּלָה", "tr": "galah", "pt": "descobrir, revelar; ir para o exílio, ser levado cativo"},
+  "1568": {"he": "גִּלְעָד", "tr": "gilad", "pt": "Gileade (região a leste do Jordão)"},
+  "1616": {"he": "גֵּר", "tr": "ger", "pt": "estrangeiro, peregrino; forasteiro residente"},
+  "1755": {"he": "דּוֹר", "tr": "dowr", "pt": "geração; era, período de tempo"},
+  "1768": {"he": "דִּי", "tr": "diy", "pt": "(aramaico) que, do qual; de (partícula relativa/genitiva)"},
+  "1817": {"he": "דֶּלֶת", "tr": "deleth", "pt": "porta, batente (que gira); folha de porta"},
+  "1847": {"he": "דַּעַת", "tr": "daath", "pt": "conhecimento, saber; discernimento"},
+  "1875": {"he": "דָּרַשׁ", "tr": "darash", "pt": "buscar, consultar (a Deus); procurar com cuidado; indagar"},
+  "1984": {"he": "הָלַל", "tr": "halal", "pt": "louvar, exaltar, celebrar; (raiz) brilhar"},
+  "2005": {"he": "הֵן", "tr": "hen", "pt": "eis!, eis que; se (partícula que aponta/realça)"},
+  "2015": {"he": "הָפַךְ", "tr": "haphak", "pt": "virar, revolver; transformar, mudar"},
+  "2026": {"he": "הָרַג", "tr": "harag", "pt": "matar, ferir de morte"},
+  "2076": {"he": "זָבַח", "tr": "zabach", "pt": "sacrificar, imolar (em sacrifício)"},
+  "2077": {"he": "זֶבַח", "tr": "zebach", "pt": "sacrifício, oferta (animal imolada)"},
+  "2142": {"he": "זָכַר", "tr": "zakar", "pt": "lembrar, recordar; fazer menção de"},
+  "2181": {"he": "זָנָה", "tr": "zanah", "pt": "prostituir-se; cometer fornicação/idolatria"},
+  "2205": {"he": "זָקֵן", "tr": "zaqen", "pt": "velho, idoso; ancião (líder)"},
+  "2220": {"he": "זְרוֹעַ", "tr": "zerowa", "pt": "braço; (fig.) força, poder"},
+  "2233": {"he": "זֶרַע", "tr": "zera", "pt": "semente; descendência, posteridade"},
+  "2320": {"he": "חֹדֶשׁ", "tr": "chodesh", "pt": "lua nova; mês"},
+  "2346": {"he": "חוֹמָה", "tr": "chowmah", "pt": "muro, muralha (de proteção)"},
+  "2351": {"he": "חוּץ", "tr": "chuwts", "pt": "lado de fora, exterior; rua; campo"},
+  "2388": {"he": "חָזַק", "tr": "chazaq", "pt": "ser/tornar-se forte; segurar com firmeza; fortalecer-se, encorajar"},
+  "2396": {"he": "חִזְקִיָּה", "tr": "chizqiyah", "pt": "Ezequias (rei de Judá)"},
+  "2398": {"he": "חָטָא", "tr": "chata", "pt": "errar o alvo; pecar, transgredir"},
+  "2421": {"he": "חָיָה", "tr": "chayah", "pt": "viver; manter vivo, dar vida, reviver"},
+  "2428": {"he": "חַיִל", "tr": "chayil", "pt": "força, poder; exército, tropa; riqueza; valentia"},
+  "2450": {"he": "חָכָם", "tr": "chakam", "pt": "sábio; hábil, perito"},
+  "2451": {"he": "חׇכְמָה", "tr": "chokmah", "pt": "sabedoria, perícia, habilidade"},
+  "2459": {"he": "חֶלֶב", "tr": "cheleb", "pt": "gordura (a melhor parte); o melhor"},
+  "2490": {"he": "חָלַל", "tr": "chalal", "pt": "profanar, poluir; (outra raiz) começar; ferir"},
+  "2534": {"he": "חֵמָה", "tr": "chemah", "pt": "ardor, calor; ira, furor; veneno"},
+  "2543": {"he": "חֲמוֹר", "tr": "chamowr", "pt": "jumento, asno"},
+  "2572": {"he": "חֲמִשִּׁים", "tr": "chamishshiym", "pt": "cinquenta"},
+  "2583": {"he": "חָנָה", "tr": "chanah", "pt": "acampar, armar tenda; inclinar-se"},
+  "2617": {"he": "חֵסֵד", "tr": "checed", "pt": "bondade leal, misericórdia, amor fiel; favor"},
+  "2677": {"he": "חֵצִי", "tr": "chetsiy", "pt": "metade, meio"},
+  "2691": {"he": "חָצֵר", "tr": "chatser", "pt": "pátio, átrio; aldeia, povoado"},
+  "2706": {"he": "חֹק", "tr": "choq", "pt": "estatuto, decreto; porção determinada; lei"},
+  "2708": {"he": "חֻקָּה", "tr": "chuqqah", "pt": "estatuto, ordenança; costume estabelecido"},
+  "2734": {"he": "חָרָה", "tr": "charah", "pt": "inflamar-se de ira; arder, irar-se"},
+  "2803": {"he": "חָשַׁב", "tr": "chashab", "pt": "pensar, planejar; considerar; imputar, contar"},
+  "2889": {"he": "טָהוֹר", "tr": "tahowr", "pt": "puro, limpo (ritual, físico ou moral)"},
+  "2891": {"he": "טָהֵר", "tr": "taher", "pt": "ser/ficar puro; purificar(-se); declarar limpo"},
+  "2930": {"he": "טָמֵא", "tr": "tame", "pt": "ser/tornar-se impuro; contaminar(-se), profanar"},
+  "3034": {"he": "יָדָה", "tr": "yadah", "pt": "louvar, dar graças, confessar; (raiz) lançar"},
+  "3091": {"he": "יְהוֹשׁוּעַ", "tr": "yehowshuwa", "pt": "Josué (líder de Israel)"},
+  "3097": {"he": "יוֹאָב", "tr": "yowab", "pt": "Joabe"},
+  "3130": {"he": "יוֹסֵף", "tr": "yowceph", "pt": "José"},
+  "3162": {"he": "יַחַד", "tr": "yachad", "pt": "junto, unidos; ao mesmo tempo; igualmente"},
+  "3190": {"he": "יָטַב", "tr": "yatab", "pt": "ser bom, ir bem; fazer bem; agradar"},
+  "3196": {"he": "יַיִן", "tr": "yayin", "pt": "vinho"},
+  "3201": {"he": "יָכֹל", "tr": "yakol", "pt": "poder, ser capaz; prevalecer"},
+  "3206": {"he": "יֶלֶד", "tr": "yeled", "pt": "menino, criança; filho, rebento"},
+  "3225": {"he": "יָמִין", "tr": "yamiyn", "pt": "mão direita; lado direito; sul"},
+  "3254": {"he": "יָסַף", "tr": "yacaph", "pt": "acrescentar, aumentar; continuar a fazer; tornar a"},
+  "3282": {"he": "יַעַן", "tr": "yaan", "pt": "porque, por causa de; visto que (conjunção)"},
+  "3327": {"he": "יִצְחָק", "tr": "yitschaq", "pt": "Isaque (filho de Abraão)"},
+  "3379": {"he": "יָרׇבְעָם", "tr": "yarobam", "pt": "Jeroboão (rei de Israel)"},
+  "3383": {"he": "יַרְדֵּן", "tr": "yarden", "pt": "Jordão (rio)"},
+  "3414": {"he": "יִרְמְיָה", "tr": "yirmeyah", "pt": "Jeremias"},
+  "3423": {"he": "יָרַשׁ", "tr": "yarash", "pt": "tomar posse, herdar; desapossar, expulsar"},
+  "3426": {"he": "יֵשׁ", "tr": "yesh", "pt": "há, existe; existência"},
+  "3467": {"he": "יָשַׁע", "tr": "yasha", "pt": "salvar, livrar; socorrer, dar vitória"},
+  "3477": {"he": "יָשָׁר", "tr": "yashar", "pt": "reto, direito; justo, íntegro"},
+  "3498": {"he": "יָתַר", "tr": "yathar", "pt": "restar, sobrar; exceder; deixar de resto"},
+  "3499": {"he": "יֶתֶר", "tr": "yether", "pt": "resto, sobra; restante; excelência; corda"},
+  "3513": {"he": "כָּבַד", "tr": "kabad", "pt": "ser pesado; honrar; tornar-se glorioso; ser duro"},
+  "3519": {"he": "כָּבוֹד", "tr": "kabowd", "pt": "glória, honra; peso, riqueza; esplendor"},
+  "3532": {"he": "כֶּבֶשׂ", "tr": "kebes", "pt": "cordeiro, carneiro novo"},
+  "3559": {"he": "כּוּן", "tr": "kuwn", "pt": "estar firme, estabelecer; preparar, dispor; firmar"},
+  "3581": {"he": "כֹּחַ", "tr": "koach", "pt": "força, vigor, poder; capacidade"},
+  "3606": {"he": "כֹּל", "tr": "kol", "pt": "(aramaico) tudo, todo, cada"},
+  "3615": {"he": "כָּלָה", "tr": "kalah", "pt": "acabar, terminar, completar; consumir, cessar"},
+  "3644": {"he": "כְּמוֹ", "tr": "kemow", "pt": "como, à semelhança de, conforme"},
+  "3667": {"he": "כְּנַעַן", "tr": "kenaan", "pt": "Canaã (filho de Cam; a terra e seus povos); mercador"},
+  "3671": {"he": "כָּנָף", "tr": "kanaph", "pt": "asa; extremidade, aba, canto (de veste, da terra)"},
+  "3678": {"he": "כִּסֵּא", "tr": "kicce", "pt": "trono; assento, cadeira"},
+  "3680": {"he": "כָּסָה", "tr": "kacah", "pt": "cobrir, encobrir; ocultar; perdoar (encobrir)"},
+  "3709": {"he": "כַּף", "tr": "kaph", "pt": "palma da mão; planta do pé; concavidade"},
+  "3722": {"he": "כָּפַר", "tr": "kaphar", "pt": "expiar, fazer propiciação; cobrir; perdoar"},
+  "3742": {"he": "כְּרוּב", "tr": "keruwb", "pt": "querubim (figura angelical)"},
+  "3754": {"he": "כֶּרֶם", "tr": "kerem", "pt": "vinha, vinhedo"},
+  "3789": {"he": "כָּתַב", "tr": "kathab", "pt": "escrever, inscrever, registrar"},
+  "3824": {"he": "לֵבָב", "tr": "lebab", "pt": "coração (sede da mente, vontade e emoções)"},
+  "3847": {"he": "לָבַשׁ", "tr": "labash", "pt": "vestir(-se); revestir, pôr roupa"},
+  "3881": {"he": "לֵוִיִּי", "tr": "leviyiy", "pt": "levita (da tribo de Levi)"},
+  "3898": {"he": "לָחַם", "tr": "lacham", "pt": "guerrear, lutar, combater; (raiz) comer, devorar"},
+  "3915": {"he": "לַיִל", "tr": "layil", "pt": "noite"},
+  "3920": {"he": "לָכַד", "tr": "lakad", "pt": "capturar, tomar; prender (em rede, cilada)"},
+  "3956": {"he": "לָשׁוֹן", "tr": "lashown", "pt": "língua (órgão); idioma, fala"},
+  "4057": {"he": "מִדְבָּר", "tr": "midbar", "pt": "deserto, lugar ermo; pastagem aberta"},
+  "4124": {"he": "מוֹאָב", "tr": "mowab", "pt": "Moabe (povo e território)"},
+  "4150": {"he": "מוֹעֵד", "tr": "mowed", "pt": "tempo determinado, época fixa; assembleia; lugar de reunião"},
+  "4194": {"he": "מָוֶת", "tr": "maveth", "pt": "morte"},
+  "4264": {"he": "מַחֲנֶה", "tr": "machaneh", "pt": "acampamento; exército, tropa"},
+  "4294": {"he": "מַטֶּה", "tr": "matteh", "pt": "vara, bastão, cajado; tribo (ramo)"},
+  "4390": {"he": "מָלֵא", "tr": "male", "pt": "encher; estar cheio; cumprir-se, completar"},
+  "4397": {"he": "מֲלְאָךְ", "tr": "malak", "pt": "mensageiro; anjo (mensageiro de Deus)"},
+  "4399": {"he": "מְלָאכָה", "tr": "melakah", "pt": "trabalho, obra; ofício, ocupação; serviço"},
+  "4422": {"he": "מָלַט", "tr": "malat", "pt": "escapar, livrar-se; ser posto a salvo"},
+  "4430": {"he": "מֶלֶךְ", "tr": "melek", "pt": "(aramaico) rei"},
+  "4438": {"he": "מַלְכוּת", "tr": "malkuwth", "pt": "reino, domínio; realeza, reinado"},
+  "4467": {"he": "מַמְלָכָה", "tr": "mamlakah", "pt": "reino, domínio; realeza"},
+  "4481": {"he": "מִן", "tr": "min", "pt": "(aramaico) de, desde; por causa de (preposição)"},
+  "4503": {"he": "מִנְחָה", "tr": "minchah", "pt": "oferta, oblação; presente, tributo; oferta de cereais"},
+  "4519": {"he": "מְנַשֶּׁה", "tr": "menashsheh", "pt": "Manassés (filho de José; tribo)"},
+  "4557": {"he": "מִסְפָּר", "tr": "micpar", "pt": "número, conta; quantidade"},
+  "4592": {"he": "מְעַט", "tr": "meat", "pt": "pouco, um pouco; poucos"},
+  "4605": {"he": "מַעַל", "tr": "maal", "pt": "acima, em cima; para cima; em excesso"},
+  "4616": {"he": "מַעַן", "tr": "maan", "pt": "por causa de, a fim de, para que (propósito)"},
+  "4639": {"he": "מַעֲשֶׂה", "tr": "maaseh", "pt": "obra, feito, ação; trabalho manual"},
+  "4687": {"he": "מִצְוָה", "tr": "mitsvah", "pt": "mandamento, preceito, ordem"},
+  "4758": {"he": "מַרְאֶה", "tr": "mareh", "pt": "aparência, aspecto; visão, vista"},
+  "4908": {"he": "מִשְׁכָּן", "tr": "mishkan", "pt": "morada, habitação; tabernáculo"},
+  "5012": {"he": "נָבָא", "tr": "naba", "pt": "profetizar; falar por inspiração"},
+  "5045": {"he": "נֶגֶב", "tr": "negeb", "pt": "sul; o Neguebe (região seca ao sul)"},
+  "5048": {"he": "נֶגֶד", "tr": "neged", "pt": "em frente de, diante de; defronte, à vista de"},
+  "5060": {"he": "נָגַע", "tr": "naga", "pt": "tocar, alcançar; ferir; chegar"},
+  "5066": {"he": "נָגַשׁ", "tr": "nagash", "pt": "chegar perto, aproximar-se; trazer"},
+  "5104": {"he": "נָהָר", "tr": "nahar", "pt": "rio, corrente"},
+  "5127": {"he": "נוּס", "tr": "nuwc", "pt": "fugir, escapar; pôr-se em fuga"},
+  "5158": {"he": "נַחַל", "tr": "nachal", "pt": "vale, ribeiro; torrente (de inverno)"},
+  "5159": {"he": "נַחֲלָה", "tr": "nachalah", "pt": "herança, possessão; herdade"},
+  "5162": {"he": "נָחַם", "tr": "nacham", "pt": "consolar(-se); arrepender-se, ter compaixão"},
+  "5178": {"he": "נְחֹשֶׁת", "tr": "nechosheth", "pt": "cobre, bronze; coisa de bronze"},
+  "5186": {"he": "נָטָה", "tr": "natah", "pt": "estender, esticar; inclinar, desviar"},
+  "5265": {"he": "נָסַע", "tr": "naca", "pt": "partir, pôr-se a caminho; arrancar (as estacas da tenda)"},
+  "5288": {"he": "נַעַר", "tr": "naar", "pt": "menino, jovem, rapaz; servo/criado"},
+  "5337": {"he": "נָצַל", "tr": "natsal", "pt": "livrar, arrancar, resgatar; arrebatar"},
+  "5387": {"he": "נָשִׂיא", "tr": "nasiy", "pt": "príncipe, líder, chefe; nuvem (que se levanta)"},
+  "5437": {"he": "סָבַב", "tr": "cabab", "pt": "rodear, cercar; voltar-se, dar a volta"},
+  "5462": {"he": "סָגַר", "tr": "cagar", "pt": "fechar, trancar; entregar (nas mãos)"},
+  "5483": {"he": "סוּס", "tr": "cuwc", "pt": "cavalo; (também) andorinha"},
+  "5608": {"he": "סָפַר", "tr": "caphar", "pt": "contar, enumerar; relatar, narrar; (subst.) escriba"},
+  "5612": {"he": "סֵפֶר", "tr": "cepher", "pt": "livro, documento; escrito, carta"},
+  "5647": {"he": "עָבַד", "tr": "abad", "pt": "trabalhar, lavrar (a terra); servir, prestar culto"},
+  "5656": {"he": "עֲבֹדָה", "tr": "abodah", "pt": "trabalho, serviço; culto, ministério; servidão"},
+  "5676": {"he": "עֵבֶר", "tr": "eber", "pt": "lado oposto, outro lado; além (de um rio)"},
+  "5712": {"he": "עֵדָה", "tr": "edah", "pt": "congregação, assembleia; comunidade"},
+  "5771": {"he": "עָוֺן", "tr": "avon", "pt": "iniquidade, culpa, perversidade; castigo da culpa"},
+  "5785": {"he": "עוֹר", "tr": "owr", "pt": "pele; couro"},
+  "5797": {"he": "עֹז", "tr": "oz", "pt": "força, poder; segurança; firmeza"},
+  "5800": {"he": "עָזַב", "tr": "azab", "pt": "deixar, abandonar; soltar, largar"},
+  "5930": {"he": "עֹלָה", "tr": "olah", "pt": "holocausto (oferta queimada por inteiro); subida"},
+  "5982": {"he": "עַמּוּד", "tr": "ammuwd", "pt": "coluna, pilar; estrado"},
+  "5983": {"he": "עַמּוֹן", "tr": "ammown", "pt": "Amom (povo descendente de Ló)"},
+  "6083": {"he": "עָפָר", "tr": "aphar", "pt": "pó, poeira; terra, cinza"},
+  "6098": {"he": "עֵצָה", "tr": "etsah", "pt": "conselho, plano; prudência"},
+  "6106": {"he": "עֶצֶם", "tr": "etsem", "pt": "osso; (por extensão) corpo, substância, o próprio"},
+  "6153": {"he": "עֶרֶב", "tr": "ereb", "pt": "tarde, entardecer; crepúsculo"},
+  "6215": {"he": "עֵשָׂו", "tr": "esav", "pt": "Esaú (filho de Isaque)"},
+  "6235": {"he": "עֶשֶׂר", "tr": "eser", "pt": "dez"},
+  "6242": {"he": "עֶשְׂרִים", "tr": "esriym", "pt": "vinte"},
+  "6435": {"he": "פֵּן", "tr": "pen", "pt": "para que não, a fim de que não (partícula)"},
+  "6437": {"he": "פָּנָה", "tr": "panah", "pt": "virar-se, voltar-se; encarar; olhar para"},
+  "6471": {"he": "פַּעַם", "tr": "paam", "pt": "vez, ocasião; passo; pancada"},
+  "6499": {"he": "פַּר", "tr": "par", "pt": "novilho, touro jovem"},
+  "6529": {"he": "פְּרִי", "tr": "periy", "pt": "fruto"},
+  "6547": {"he": "פַּרְעֹה", "tr": "paroh", "pt": "Faraó (título dos reis do Egito)"},
+  "6588": {"he": "פֶּשַׁע", "tr": "pesha", "pt": "transgressão, rebelião; revolta"},
+  "6605": {"he": "פָּתַח", "tr": "pathach", "pt": "abrir; soltar; (outra raiz) gravar, entalhar"},
+  "6607": {"he": "פֶּתַח", "tr": "pethach", "pt": "porta, entrada; abertura"},
+  "6629": {"he": "צֹאן", "tr": "tson", "pt": "rebanho (de ovelhas e cabras); gado miúdo"},
+  "6662": {"he": "צַדִּיק", "tr": "tsaddiyq", "pt": "justo, reto; inocente (na causa)"},
+  "6664": {"he": "צֶדֶק", "tr": "tsedeq", "pt": "justiça, retidão; o que é reto e legítimo"},
+  "6666": {"he": "צְדָקָה", "tr": "tsedaqah", "pt": "justiça, retidão; ato justo"},
+  "6726": {"he": "צִיּוֹן", "tr": "tsiyown", "pt": "Sião (monte e cidade de Jerusalém)"},
+  "6828": {"he": "צָפוֹן", "tr": "tsaphown", "pt": "norte; lado norte"},
+  "6862": {"he": "צַר", "tr": "tsar", "pt": "estreito, apertado; (subst.) angústia; adversário"},
+  "6908": {"he": "קָבַץ", "tr": "qabats", "pt": "ajuntar, reunir, congregar"},
+  "6912": {"he": "קָבַר", "tr": "qabar", "pt": "sepultar, enterrar"},
+  "6918": {"he": "קָדוֹשׁ", "tr": "qadowsh", "pt": "santo, sagrado; (subst.) o Santo"},
+  "6942": {"he": "קָדַשׁ", "tr": "qadash", "pt": "ser santo; santificar, consagrar; tratar como sagrado"},
+  "6951": {"he": "קָהָל", "tr": "qahal", "pt": "assembleia, congregação; multidão reunida"},
+  "6996": {"he": "קָטָן", "tr": "qatan", "pt": "pequeno, menor; jovem"},
+  "6999": {"he": "קָטַר", "tr": "qatar", "pt": "queimar incenso; fazer subir em fumaça (oferta)"},
+  "7097": {"he": "קָצֶה", "tr": "qatseh", "pt": "extremidade, fim, ponta; limite"},
+  "7126": {"he": "קָרַב", "tr": "qarab", "pt": "aproximar-se, chegar perto; trazer/apresentar (oferta)"},
+  "7130": {"he": "קֶרֶב", "tr": "qereb", "pt": "interior, parte de dentro; meio, entranhas"},
+  "7223": {"he": "רִאשׁוֹן", "tr": "rishown", "pt": "primeiro; anterior; antepassado"},
+  "7230": {"he": "רֹב", "tr": "rob", "pt": "abundância, multidão; grande quantidade"},
+  "7235": {"he": "רָבָה", "tr": "rabah", "pt": "multiplicar-se, aumentar, tornar-se numeroso"},
+  "7272": {"he": "רֶגֶל", "tr": "regel", "pt": "pé; passo"},
+  "7291": {"he": "רָדַף", "tr": "radaph", "pt": "perseguir, ir no encalço; correr atrás"},
+  "7311": {"he": "רוּם", "tr": "ruwm", "pt": "ser alto, elevar-se; erguer, exaltar"},
+  "7323": {"he": "רוּץ", "tr": "ruwts", "pt": "correr; precipitar-se"},
+  "7341": {"he": "רֹחַב", "tr": "rochab", "pt": "largura; amplidão"},
+  "7393": {"he": "רֶכֶב", "tr": "rekeb", "pt": "carro (de guerra); cavalaria; mó superior"},
+  "7453": {"he": "רֵעַ", "tr": "rea", "pt": "companheiro, amigo, próximo; outro"},
+  "7458": {"he": "רָעָב", "tr": "raab", "pt": "fome, carestia"},
+  "7462": {"he": "רָעָה", "tr": "raah", "pt": "apascentar, pastorear; alimentar(-se); (fig.) cuidar"},
+  "7489": {"he": "רָעַע", "tr": "raa", "pt": "ser mau; fazer o mal; estragar, quebrar"},
+  "7535": {"he": "רַק", "tr": "raq", "pt": "somente, apenas; contudo (partícula)"},
+  "7563": {"he": "רָשָׁע", "tr": "rasha", "pt": "ímpio, perverso, culpado; malvado"},
+  "7592": {"he": "שָׁאַל", "tr": "shaal", "pt": "perguntar, indagar; pedir, requerer"},
+  "7604": {"he": "שָׁאַר", "tr": "shaar", "pt": "restar, sobrar; deixar de resto; permanecer"},
+  "7626": {"he": "שֵׁבֶט", "tr": "shebet", "pt": "vara, cetro; bastão de castigo; tribo"},
+  "7646": {"he": "שָׂבַע", "tr": "saba", "pt": "saciar-se, fartar-se; ter o suficiente"},
+  "7650": {"he": "שָׁבַע", "tr": "shaba", "pt": "jurar, fazer juramento"},
+  "7657": {"he": "שִׁבְעִים", "tr": "shibiym", "pt": "setenta"},
+  "7665": {"he": "שָׁבַר", "tr": "shabar", "pt": "quebrar, despedaçar; romper"},
+  "7676": {"he": "שַׁבָּת", "tr": "shabbath", "pt": "sábado, dia de descanso"},
+  "7812": {"he": "שָׁחָה", "tr": "shachah", "pt": "prostrar-se, inclinar-se (em reverência ou adoração)"},
+  "7843": {"he": "שָׁחַת", "tr": "shachath", "pt": "corromper, arruinar, destruir; estragar"},
+  "7892": {"he": "שִׁיר", "tr": "shiyr", "pt": "canto, cântico; canção"},
+  "7901": {"he": "שָׁכַב", "tr": "shakab", "pt": "deitar-se (para descanso, dormir ou relação sexual)"},
+  "7911": {"he": "שָׁכַח", "tr": "shakach", "pt": "esquecer"},
+  "7931": {"he": "שָׁכַן", "tr": "shakan", "pt": "habitar, morar, residir; assentar-se"},
+  "7965": {"he": "שָׁלוֹם", "tr": "shalowm", "pt": "paz, bem-estar, integridade; saúde, prosperidade (shalom)"},
+  "7970": {"he": "שְׁלוֹשִׁים", "tr": "shelowshiym", "pt": "trinta"},
+  "7992": {"he": "שְׁלִישִׁי", "tr": "sheliyshiy", "pt": "terceiro; terça parte"},
+  "7993": {"he": "שָׁלַךְ", "tr": "shalak", "pt": "lançar, arremessar; atirar fora"},
+  "7999": {"he": "שָׁלַם", "tr": "shalam", "pt": "estar completo/em paz; pagar, recompensar; restituir"},
+  "8045": {"he": "שָׁמַד", "tr": "shamad", "pt": "destruir, exterminar; assolar"},
+  "8050": {"he": "שְׁמוּאֵל", "tr": "shemuwel", "pt": "Samuel"},
+  "8055": {"he": "שָׂמַח", "tr": "samach", "pt": "alegrar-se, regozijar-se"},
+  "8057": {"he": "שִׂמְחָה", "tr": "simchah", "pt": "alegria, regozijo; festa"},
+  "8081": {"he": "שֶׁמֶן", "tr": "shemen", "pt": "azeite, óleo; gordura"},
+  "8083": {"he": "שְׁמֹנֶה", "tr": "shemoneh", "pt": "oito"},
+  "8111": {"he": "שֹׁמְרוֹן", "tr": "shomerown", "pt": "Samaria (cidade)"},
+  "8121": {"he": "שֶׁמֶשׁ", "tr": "shemesh", "pt": "sol; (por extensão) leste, nascente"},
+  "8130": {"he": "שָׂנֵא", "tr": "sane", "pt": "odiar, detestar"},
+  "8145": {"he": "שֵׁנִי", "tr": "sheniy", "pt": "segundo; outro; (adv.) novamente"},
+  "8193": {"he": "שָׂפָה", "tr": "saphah", "pt": "lábio; margem, borda; língua, fala"},
+  "8199": {"he": "שָׁפַט", "tr": "shaphat", "pt": "julgar, sentenciar; governar; defender a causa"},
+  "8210": {"he": "שָׁפַךְ", "tr": "shaphak", "pt": "derramar, entornar (sangue, líquido); espalhar"},
+  "8255": {"he": "שֶׁקֶל", "tr": "sheqel", "pt": "siclo (peso e moeda padrão)"},
+  "8267": {"he": "שֶׁקֶר", "tr": "sheqer", "pt": "mentira, falsidade; engano"},
+  "8313": {"he": "שָׂרַף", "tr": "saraph", "pt": "queimar, incendiar"},
+  "8334": {"he": "שָׁרַת", "tr": "sharath", "pt": "servir, ministrar (como auxiliar ou no culto)"},
+  "8337": {"he": "שֵׁשׁ", "tr": "shesh", "pt": "seis"},
+  "8354": {"he": "שָׁתָה", "tr": "shathah", "pt": "beber"},
+  "8441": {"he": "תּוֹעֵבַה", "tr": "towebah", "pt": "abominação, coisa detestável"},
+  "8451": {"he": "תּוֹרָה", "tr": "towrah", "pt": "instrução, lei, ensino (Torá)"},
+  "8548": {"he": "תָּמִיד", "tr": "tamiyd", "pt": "continuamente, sempre; o (sacrifício) contínuo"},
+  "8549": {"he": "תָּמִים", "tr": "tamiym", "pt": "íntegro, perfeito, sem defeito; completo"}
 }
