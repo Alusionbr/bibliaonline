@@ -64,7 +64,13 @@ HTML/CSS/JS estatico dentro de `site/`.
     palavra-a-palavra do hebraico. Nao editar a mao.
   - `hebrew-lexicon.json`: mapa Strong (numero) -> `{he, tr, pt}` com glosa PT
     ORIGINAL dos lemas hebraicos mais frequentes (significado no popover). Curado
-    e incremental; carregado uma vez pelo `app.js` e pre-cacheado no `sw.js`.
+    e incremental; carregado uma vez pelo `app.js` e pre-cacheado no `sw.js`. Hoje
+    cobre ~75% das ocorrencias de palavras do AT. Para priorizar a proxima rodada
+    rode `python scripts/hebrew_lexicon_report.py [N]` (READ-ONLY): imprime a
+    cobertura % e os top-N lemas ainda sem glosa, por frequencia. As glosas PT sao
+    ESCRITAS por nos (originais); forma hebraica/translit podem usar o Strong's
+    Hebrew (dominio publico) so como referencia. Lemas sem numero Strong (ex.
+    preposicoes `l`/`b`) nao recebem glosa — a gramatica ja os descreve.
   - Ao adicionar referencias, valide que elas existem (mesma regra de slug do
     build) antes de commitar. Veja o padrao de validacao usado nas Fases 2/3.
 
@@ -278,6 +284,16 @@ quem adicionar conteudo:
 - O bloco "Comentario rabinico" (link para o Sefaria) continua automatico em
   versiculos do AT, como porta para aprofundar.
 - Validar referencias (existir no dataset + ter PT) antes de commitar.
+
+Ambos os blocos (`block jewish`, gerados por `study_disclosure`) ficam
+**ocultos por padrao** e sao revelados por um botao na barra de navegacao
+(`data-rt="context"`, ao lado de A-/A+/lua). A preferencia fica em
+`localStorage` (`bec.context` = `on`/`off`); o `THEME_BOOTSTRAP` aplica a classe
+`html.ctx-on` antes da pintura (sem flash) e o CSS esconde `.block.jewish` por
+padrao, mostrando so com `ctx-on`. O wiring (handler do botao + sync de
+`aria-pressed`) esta no `app.js` gerado por `scripts/build.py`. Sem JS inline
+(CSP). Assim o leitor que nao quer contexto judaico nao ve os blocos, e quem
+quer liga uma vez.
 
 ### Hebraico interativo (palavra-a-palavra)
 

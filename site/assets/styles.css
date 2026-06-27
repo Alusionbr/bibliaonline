@@ -211,6 +211,10 @@ section{padding:52px 0}
 .block h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
 .block p{margin:.4rem 0}
 .block.jewish h2 .dot{background:var(--he)}
+/* contexto judaico (rabínico + leitura judaica): oculto por padrão; o botão da
+   nav (data-rt="context") liga 'ctx-on' no <html> e revela os blocos. */
+.block.jewish{display:none}
+html.ctx-on .block.jewish{display:block}
 
 /* specimen / manuscrito */
 .specimen{max-width:var(--read);margin:30px auto 0;background:var(--paper);
@@ -460,6 +464,7 @@ body.hl-mode .pt,body.hl-mode .orig{-webkit-user-select:none;user-select:none;-w
 .reader-tools .rt{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;min-width:38px;min-height:38px;
   border:1px solid var(--line);background:transparent;color:var(--ink-soft);border-radius:10px;cursor:pointer}
 .reader-tools .rt:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
+.reader-tools .rt[aria-pressed="true"]{border-color:var(--gold-deep);color:var(--gold-deep);background:rgba(176,141,87,.12)}
 
 /* continuar lendo + ações rápidas na home */
 .continue-read{display:inline-block;margin:10px 0 0;font-family:"Inter",system-ui,sans-serif;font-size:.9rem;
