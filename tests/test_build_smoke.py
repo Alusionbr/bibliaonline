@@ -356,23 +356,24 @@ def test_leitura_judaica_contexto(site):
     assert 'id="leitura-judaica"' not in joao
 
 
-def test_toggle_contexto_judaico(site):
-    # os blocos de contexto judaico (rabínico + leitura judaica) ficam OCULTOS por
-    # padrão e o leitor liga/desliga por um botão na nav (data-rt="context"); a
-    # preferência persiste em localStorage (bec.context). Sem JS inline (CSP).
+def test_contexto_judaico_dialog(site):
+    # os blocos de contexto judaico (rabínico + leitura judaica) são sempre visíveis
+    # como botões-gatilho; clicar abre um <dialog> nativo (sem toggle global na nav).
     from pathlib import Path
     gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert 'data-rt="context"' in gen  # botão na barra de navegação
-    # bootstrap sem-flash aplica a classe ctx-on antes da pintura
-    assert "localStorage.getItem('bec.context')==='on'" in gen
-    # handler no app.js alterna a classe e grava a preferência
+    # section .block.jewish com botão e dialog presentes no HTML
+    assert 'class="block jewish"' in gen
+    assert 'class="study-open"' in gen
+    assert 'data-dialog-open="dlg-rabinico"' in gen
+    assert 'class="study-dialog"' in gen
+    # sem toggle global na nav
+    assert 'data-rt="context"' not in gen
+    # handler de dialog no app.js
     app = (site / "assets" / "app.js").read_text("utf-8")
-    assert "rt==='context'" in app
-    assert "bec.context" in app
-    # CSS (asset mantido à mão): oculto por padrão, revelado por html.ctx-on
+    assert "data-dialog-open" in app and "showModal" in app
+    # CSS não oculta .block.jewish
     css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
-    assert ".block.jewish{display:none}" in css
-    assert "html.ctx-on .block.jewish{display:block}" in css
+    assert ".block.jewish{display:none}" not in css
 
 
 def test_lexico_hebraico_curado():

@@ -166,7 +166,6 @@ THEME_BOOTSTRAP = (
     "(function(){try{var d=document.documentElement;"
     "if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');"
     "var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);"
-    "if(localStorage.getItem('bec.context')==='on')d.classList.add('ctx-on');"
     "}catch(e){}})();"
 )
 
@@ -232,7 +231,6 @@ def nav(prefix):
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
-      <button type="button" class="rt" data-rt="context" aria-pressed="false" aria-label="Mostrar contexto judaico" title="Contexto judaico (comentário rabínico e leitura judaica)">📜</button>
     </div>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
@@ -1508,22 +1506,12 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
   function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
   function setTheme(dark){ d.classList.toggle('dark',dark); try{localStorage.setItem('bec.theme',dark?'dark':'light');}catch(e){} }
-  // contexto judaico (comentário rabínico + leitura judaica): oculto por padrão;
-  // o leitor liga/desliga e a preferência fica no localStorage (bec.context).
-  function syncContextBtns(){
-    var on=d.classList.contains('ctx-on');
-    var btns=document.querySelectorAll('[data-rt="context"]');
-    for(var i=0;i<btns.length;i++) btns[i].setAttribute('aria-pressed',on?'true':'false');
-  }
-  function setContext(on){ d.classList.toggle('ctx-on',on); try{localStorage.setItem('bec.context',on?'on':'off');}catch(e){} syncContextBtns(); }
-  syncContextBtns();
   document.addEventListener('click',function(e){
     var b=e.target.closest && e.target.closest('[data-rt]'); if(!b) return;
     var rt=b.getAttribute('data-rt');
     if(rt==='font-inc') applyFont(Math.min(3,curFont()+1));
     else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
     else if(rt==='theme') setTheme(!d.classList.contains('dark'));
-    else if(rt==='context') setContext(!d.classList.contains('ctx-on'));
   });
   // seletor "Ir para livro": navega ao escolher outro livro
   document.addEventListener('change',function(e){
