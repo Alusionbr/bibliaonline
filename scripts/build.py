@@ -1439,7 +1439,6 @@ def build_cloud_js():
   window.BEC_CLOUD = { sb: sb, state: state };
   function uid(){ return state.user ? state.user.id : null; }
   function activeGroups(){ return state.memberships.filter(function(m){ return m.status==='active'; }); }
-  function isAdminOf(gid){ return state.memberships.some(function(m){ return m.group_id===gid && m.status==='active' && m.role==='admin'; }); }
   function membershipByCode(code){ return state.memberships.filter(function(m){ return m.groups && m.groups.invite_code===code; })[0]; }
   function roleIn(gid){ var m=state.memberships.filter(function(x){ return x.group_id===gid && x.status==='active'; })[0]; return m?m.role:null; }
   function canModerate(gid){ var r=roleIn(gid); return r==='admin'||r==='moderator'||state.isStaff; }
