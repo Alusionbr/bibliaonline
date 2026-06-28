@@ -1422,6 +1422,8 @@ def build_cloud_js():
     return e;
   }
   function clear(el){ while(el && el.firstChild) el.removeChild(el.firstChild); }
+  function nameHint(){ try { return localStorage.getItem('bec.cloud.name')||''; } catch(e){ return ''; } }
+  function setNameHint(v){ try { localStorage.setItem('bec.cloud.name', v); } catch(e){} }
   function fmtDate(s){ try { return new Date(s).toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'}); } catch(e){ return ''; } }
   var toastBox=null;
   function toast(msg, kind){
@@ -1444,6 +1446,12 @@ def build_cloud_js():
     try {
       var r = await sb.from('profiles').select('id,name,avatar_url').eq('id', uid()).maybeSingle();
       state.profile = r.data || null;
+      // 1º acesso: se o trigger não preencheu o nome (ex.: e-mail já existia antes),
+      // aplica o lembrete local digitado no cadastro.
+      if(state.profile && !((state.profile.name||'').trim())){
+        var hint=nameHint();
+        if(hint){ var u= await sb.from('profiles').update({name:hint}).eq('id', uid()); if(!u.error) state.profile.name=hint; }
+      }
     } catch(e){ state.profile=null; }
   }
   async function loadMemberships(){
@@ -1485,23 +1493,31 @@ def build_cloud_js():
   async function renderAccount(){
     var app=document.getElementById('conta-app'); if(!app) return; clear(app);
     if(!state.user){
+      var nameI = h('input',{type:'text', id:'login-name', placeholder:'Como quer ser chamado(a)', autocomplete:'name', value:nameHint()});
       var email = h('input',{type:'email', id:'login-email', placeholder:'voce@email.com', autocomplete:'email'});
       var btn = h('button',{class:'btn primary', type:'button', text:'Enviar link de acesso', on:{click:async function(){
         var v=(email.value||'').trim();
+        var nm=(nameI.value||'').trim();
         if(!v || v.indexOf('@')<0){ toast('Digite um e-mail válido.','err'); return; }
         btn.disabled=true; btn.textContent='Enviando…';
         try {
-          var r= await sb.auth.signInWithOtp({ email:v, options:{ emailRedirectTo: url('conta/') } });
+          // nome vai como metadado do usuário; o trigger handle_new_user o copia
+          // para profiles.name no 1º acesso. Guardamos também um lembrete local
+          // (fallback) caso o e-mail já existisse antes.
+          if(nm) setNameHint(nm);
+          var r= await sb.auth.signInWithOtp({ email:v, options:{ emailRedirectTo: url('conta/'), data: nm?{ name:nm }:undefined } });
           if(r.error) throw r.error;
           clear(app); app.appendChild(h('div',{class:'cloud-card'},[
             h('h2',{text:'Verifique seu e-mail'}),
-            h('p',{class:'read', text:'Enviamos um link de acesso para '+v+'. Abra no mesmo aparelho para entrar.'})
+            h('p',{class:'read', text:'Enviamos um link de acesso para '+v+'. Abra no mesmo aparelho para entrar — sem senha.'})
           ]));
         } catch(e){ toast('Não foi possível enviar: '+(e.message||e),'err'); btn.disabled=false; btn.textContent='Enviar link de acesso'; }
       }}});
       app.appendChild(h('div',{class:'cloud-card'},[
-        h('h2',{text:'Entrar / Criar conta'}),
-        h('p',{class:'read', text:'Use seu e-mail para receber um link mágico de acesso — sem senha. A leitura da Bíblia continua funcionando sem conta; a conta serve só para os grupos de estudo.'}),
+        h('h2',{text:'Entrar ou criar conta'}),
+        h('p',{class:'read', text:'A leitura da Bíblia continua livre, sem conta. A conta serve só para os grupos de estudo: você recebe um link mágico no e-mail (sem senha) e pronto.'}),
+        h('label',{class:'cloud-label', for:'login-name', text:'Seu nome'}),
+        nameI,
         h('label',{class:'cloud-label', for:'login-email', text:'E-mail'}),
         email, btn
       ]));
