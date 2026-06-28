@@ -37,24 +37,53 @@
   }
 
   // ---------- estado ----------
-  var state = { user:null, profile:null, memberships:[] };
+  var state = { user:null, profile:null, memberships:[], isStaff:false };
   window.BEC_CLOUD = { sb: sb, state: state };
   function uid(){ return state.user ? state.user.id : null; }
   function activeGroups(){ return state.memberships.filter(function(m){ return m.status==='active'; }); }
   function isAdminOf(gid){ return state.memberships.some(function(m){ return m.group_id===gid && m.status==='active' && m.role==='admin'; }); }
   function membershipByCode(code){ return state.memberships.filter(function(m){ return m.groups && m.groups.invite_code===code; })[0]; }
+  function roleIn(gid){ var m=state.memberships.filter(function(x){ return x.group_id===gid && x.status==='active'; })[0]; return m?m.role:null; }
+  function canModerate(gid){ var r=roleIn(gid); return r==='admin'||r==='moderator'||state.isStaff; }
+  function profileComplete(){ var p=state.profile; return !!(p && p.age && p.gender && p.account_type); }
+
+  // ---------- badges (papéis visíveis) ----------
+  function badge(cls, txt){ return h('span',{class:'badge '+cls, text:txt}); }
+  function renderBadges(o){
+    o=o||{}; var w=h('span',{class:'badges'});
+    if(o.role==='admin') w.appendChild(badge('role-admin','Admin'));
+    else if(o.role==='moderator') w.appendChild(badge('role-mod','Moderador'));
+    if(o.staff) w.appendChild(badge('staff','Equipe'));
+    if(o.type==='pastor') w.appendChild(badge('pastor','Pastor'));
+    else if(o.type==='aluno') w.appendChild(badge('aluno','Aluno'));
+    if(o.beta) w.appendChild(badge('beta','beta'));
+    return w;
+  }
+  async function loadStaffFlag(){
+    state.isStaff=false; if(!uid()) return;
+    try { var r= await sb.from('staff').select('user_id').eq('user_id', uid()).maybeSingle(); state.isStaff=!!(r && r.data); } catch(e){}
+  }
+  async function staffSet(ids){
+    var s={}; ids=(ids||[]).filter(Boolean); if(!ids.length) return s;
+    try { var r= await sb.from('staff').select('user_id').in('user_id', ids); if(!r.error) r.data.forEach(function(x){ s[x.user_id]=1; }); } catch(e){}
+    return s;
+  }
+  // exige cadastro completo antes de ações de grupo; injeta aviso e retorna false
+  function requireComplete(container){
+    if(profileComplete()) return true;
+    container.appendChild(h('div',{class:'cloud-card'},[
+      h('h2',{text:'Complete seu cadastro'}),
+      h('p',{class:'read', text:'Para participar dos grupos de estudo, complete seu cadastro (nome, idade, gênero e se é Pastor ou Aluno).'}),
+      h('a',{class:'btn primary', href:url('conta/'), text:'Completar cadastro'})
+    ]));
+    return false;
+  }
 
   async function loadProfile(){
     if(!uid()){ state.profile=null; return; }
     try {
-      var r = await sb.from('profiles').select('id,name,avatar_url').eq('id', uid()).maybeSingle();
+      var r = await sb.from('profiles').select('id,name,age,gender,account_type,is_beta').eq('id', uid()).maybeSingle();
       state.profile = r.data || null;
-      // 1º acesso: se o trigger não preencheu o nome (ex.: e-mail já existia antes),
-      // aplica o lembrete local digitado no cadastro.
-      if(state.profile && !((state.profile.name||'').trim())){
-        var hint=nameHint();
-        if(hint){ var u= await sb.from('profiles').update({name:hint}).eq('id', uid()); if(!u.error) state.profile.name=hint; }
-      }
     } catch(e){ state.profile=null; }
   }
   async function loadMemberships(){
@@ -79,6 +108,8 @@
       if(state.user && activeGroups().length){ g.setAttribute('data-count', String(activeGroups().length)); } else { g.removeAttribute('data-count'); }
       g.classList.toggle('has-pending', !!pending);
     }
+    var eq=document.getElementById('nav-equipe');
+    if(eq){ if(state.isStaff) eq.removeAttribute('hidden'); else eq.setAttribute('hidden','hidden'); }
   }
 
   // ---------- ROTEAMENTO ----------
@@ -88,8 +119,9 @@
     if(document.getElementById('grupos-app')) await renderGroupsIndex();
     if(document.getElementById('form-create-group')) initCreateGroup();
     if(document.getElementById('grupo-detail')) await renderGroupDetail();
+    if(document.getElementById('equipe-app')) await renderTeam();
     var vc = document.querySelector('.verse-cont[data-slug]');
-    if(vc) await renderVerseNotes(vc);
+    if(vc){ await renderVerseNotes(vc); injectSuggest(vc); }
   }
 
   // ---------- CONTA ----------
@@ -126,25 +158,61 @@
       ]));
       return;
     }
-    // logado
-    var nameInput = h('input',{type:'text', id:'profile-name', value:(state.profile&&state.profile.name)||'', placeholder:'Seu nome'});
-    var saveBtn = h('button',{class:'btn ghost', type:'button', text:'Salvar nome', on:{click:async function(){
-      var nm=(nameInput.value||'').trim();
-      var r= await sb.from('profiles').update({name:nm}).eq('id', uid());
-      if(r.error){ toast('Erro ao salvar.','err'); } else { state.profile=state.profile||{}; state.profile.name=nm; updateNav(); toast('Nome salvo.'); }
+    // logado — cadastro (obrigatório p/ grupos) + perfil
+    var p=state.profile||{};
+    var nameInput = h('input',{type:'text', id:'profile-name', value:p.name||nameHint()||'', placeholder:'Seu nome', maxlength:'60'});
+    var ageInput = h('input',{type:'number', id:'profile-age', value:p.age||'', placeholder:'Idade', min:'13', max:'120'});
+    var genderSel = h('select',{id:'profile-gender'},[
+      h('option',{value:'', text:'Gênero…'}),
+      h('option',{value:'m', text:'Masculino'}),
+      h('option',{value:'f', text:'Feminino'}),
+      h('option',{value:'prefiro_nao_dizer', text:'Prefiro não dizer'})
+    ]);
+    if(p.gender) genderSel.value=p.gender;
+    var typeSel = h('select',{id:'profile-type'},[
+      h('option',{value:'', text:'Você é…'}),
+      h('option',{value:'pastor', text:'Pastor(a)'}),
+      h('option',{value:'aluno', text:'Aluno(a)'})
+    ]);
+    if(p.account_type) typeSel.value=p.account_type;
+    var saveBtn = h('button',{class:'btn primary', type:'button', text:'Salvar cadastro', on:{click:async function(){
+      var nm=(nameInput.value||'').trim(), age=parseInt(ageInput.value,10), gen=genderSel.value, tp=typeSel.value;
+      if(nm.length<2){ toast('Informe seu nome.','err'); return; }
+      if(!age || age<13){ toast('Idade mínima 13 anos.','err'); return; }
+      if(!gen){ toast('Selecione o gênero.','err'); return; }
+      if(!tp){ toast('Selecione Pastor ou Aluno.','err'); return; }
+      saveBtn.disabled=true;
+      var r= await sb.rpc('save_profile', { p_name:nm, p_age:age, p_gender:gen, p_type:tp });
+      saveBtn.disabled=false;
+      if(r.error){ toast(rpcMsg(r.error,'Erro ao salvar.'),'err'); }
+      else { state.profile=Object.assign({}, p, {name:nm, age:age, gender:gen, account_type:tp}); setNameHint(nm); updateNav(); toast('Cadastro salvo.'); renderAccount(); }
     }}});
-    var out = h('button',{class:'btn', type:'button', text:'Sair', on:{click:async function(){ await sb.auth.signOut(); location.reload(); }}});
-    app.appendChild(h('div',{class:'cloud-card'},[
-      h('h2',{text:'Minha conta'}),
+    var out = h('button',{class:'btn ghost', type:'button', text:'Sair', on:{click:async function(){ await sb.auth.signOut(); location.reload(); }}});
+    var card=h('div',{class:'cloud-card'},[
+      h('h2',{text: profileComplete()?'Minha conta':'Complete seu cadastro'}),
       h('p',{class:'read', text:state.user.email||''}),
-      h('label',{class:'cloud-label', for:'profile-name', text:'Nome de exibição'}),
-      nameInput, h('div',{class:'cloud-row'},[saveBtn, out])
-    ]));
+      renderBadges({ staff:state.isStaff, type:p.account_type, beta:p.is_beta!==false }),
+      h('label',{class:'cloud-label', for:'profile-name', text:'Nome'}), nameInput,
+      h('div',{class:'cloud-grid2'},[
+        h('div',{},[h('label',{class:'cloud-label', for:'profile-age', text:'Idade'}), ageInput]),
+        h('div',{},[h('label',{class:'cloud-label', for:'profile-gender', text:'Gênero'}), genderSel])
+      ]),
+      h('label',{class:'cloud-label', for:'profile-type', text:'Perfil'}), typeSel,
+      h('div',{class:'cloud-row'},[saveBtn, out])
+    ]);
+    app.appendChild(card);
     app.appendChild(h('div',{class:'cloud-card'},[
       h('h2',{text:'Meus grupos'}),
       h('p',{class:'read', text:'Veja, crie e entre em grupos de estudo na página de grupos.'}),
       h('a',{class:'btn primary', href:url('grupos/'), text:'Ir para Grupos'})
     ]));
+    if(state.isStaff){
+      app.appendChild(h('div',{class:'cloud-card'},[
+        h('h2',{text:'Equipe'}),
+        h('p',{class:'read', text:'Você faz parte da equipe do site. Acesse o painel para revisar sugestões da comunidade.'}),
+        h('a',{class:'btn ghost', href:url('equipe/'), text:'Abrir painel da Equipe'})
+      ]));
+    }
   }
 
   // ---------- GRUPOS (índice) ----------
@@ -158,6 +226,10 @@
       ]));
       return;
     }
+    if(!requireComplete(app)) return;
+    // quota: só o criador vira admin, logo nº de grupos onde sou admin = grupos criados
+    var owned=state.memberships.filter(function(m){ return m.status==='active' && m.role==='admin'; }).length;
+    var atLimit = !state.isStaff && owned>=3;
     // ações
     var codeInput=h('input',{type:'text', placeholder:'código do convite', maxlength:'12'});
     var joinBtn=h('button',{class:'btn ghost', type:'button', text:'Entrar com código', on:{click:async function(){
@@ -172,8 +244,12 @@
         location.href=url('grupos/grupo/?c='+encodeURIComponent(c));
       } catch(e){ toast(rpcMsg(e,'Código inválido ou grupo não encontrado.'),'err'); joinBtn.disabled=false; }
     }}});
+    var createBtn = atLimit
+      ? h('span',{class:'btn primary disabled', title:'Limite de 3 grupos', text:'+ Criar grupo'})
+      : h('a',{class:'btn primary', href:url('grupos/novo/'), text:'+ Criar grupo'});
     app.appendChild(h('div',{class:'cloud-actions'},[
-      h('a',{class:'btn primary', href:url('grupos/novo/'), text:'+ Criar grupo'}),
+      createBtn,
+      h('span',{class:'quota', text:(state.isStaff?'Equipe':('Você criou '+owned+' de 3 grupos'))}),
       h('span',{class:'cloud-join'},[codeInput, joinBtn])
     ]));
     var actives=activeGroups(), pend=state.memberships.filter(function(m){ return m.status==='pending'; });
@@ -202,23 +278,21 @@
   function initCreateGroup(){
     var form=document.getElementById('form-create-group'); if(!form || form.dataset.bound) return; form.dataset.bound='1';
     if(!state.user){ location.href=url('conta/'); return; }
+    if(!profileComplete()){ location.href=url('conta/'); return; }
     form.addEventListener('submit', async function(e){
       e.preventDefault();
       var name=(form.querySelector('[name=name]').value||'').trim();
       var desc=(form.querySelector('[name=description]').value||'').trim();
       if(!name){ toast('Dê um nome ao grupo.','err'); return; }
       var btn=form.querySelector('button[type=submit]'); btn.disabled=true;
-      // id + código gerados no cliente => evita ler de volta (RLS) logo após criar
-      var gid = (window.crypto&&crypto.randomUUID)?crypto.randomUUID():('g'+Date.now()+Math.random().toString(16).slice(2));
-      var code = gid.replace(/-/g,'').slice(0,8);
       try {
-        var r1= await sb.from('groups').insert({ id:gid, name:name, description:desc, invite_code:code, created_by:uid() });
-        if(r1.error) throw r1.error;
-        var r2= await sb.from('group_members').insert({ group_id:gid, user_id:uid(), role:'admin', status:'active' });
-        if(r2.error) throw r2.error;
+        // criação atômica + limite de 3 validados no servidor (RPC security definer)
+        var r= await sb.rpc('create_group', { p_name:name, p_description:desc });
+        if(r.error) throw r.error;
+        var code = (r.data && r.data[0] && r.data[0].invite_code) || '';
         await loadMemberships();
-        location.href=url('grupos/grupo/?c='+code);
-      } catch(e2){ toast('Erro ao criar grupo: '+(e2.message||e2),'err'); btn.disabled=false; }
+        location.href = code ? url('grupos/grupo/?c='+code) : url('grupos/');
+      } catch(e2){ toast(rpcMsg(e2,'Erro ao criar grupo.'),'err'); btn.disabled=false; }
     });
   }
 
@@ -248,39 +322,42 @@
       }
       root.appendChild(card); return;
     }
-    var g=mem.groups, gid=g.id, admin=isAdminOf(gid);
+    var g=mem.groups, gid=g.id;
+    var ctx={ role: mem.role, admin: mem.role==='admin'||state.isStaff, mod: canModerate(gid), staff: state.isStaff };
     root.appendChild(h('header',{class:'group-head'},[
       h('h1',{text:g.name}),
+      renderBadges({ role: mem.role, staff: state.isStaff }),
       g.description?h('p',{class:'read', text:g.description}):null,
       h('p',{class:'group-code'},['Código do convite: ', h('code',{text:g.invite_code}),
         h('button',{class:'btn-mini', type:'button', text:'copiar', on:{click:function(){ try{ navigator.clipboard.writeText(g.invite_code); toast('Código copiado.'); }catch(e){} }}})])
     ]));
     var tabs=h('div',{class:'tabs', role:'tablist'});
     var panel=h('div',{class:'tab-panel'});
-    var defs=[['feed','Feed'],['membros','Membros'],['planos','Planos']];
+    var defs=[['feed','Feed'],['discussoes','Discussões'],['membros','Membros'],['planos','Planos']];
     defs.forEach(function(d){
       tabs.appendChild(h('button',{class:'tab', type:'button', 'data-tab':d[0], text:d[1], on:{click:function(){
         Array.prototype.forEach.call(tabs.children,function(b){ b.classList.toggle('on', b.getAttribute('data-tab')===d[0]); });
-        showTab(d[0], gid, g, admin, panel);
+        showTab(d[0], gid, g, ctx, panel);
       }}}));
     });
     root.appendChild(tabs); root.appendChild(panel);
     tabs.children[0].classList.add('on');
-    showTab('feed', gid, g, admin, panel);
+    showTab('feed', gid, g, ctx, panel);
     // realtime do grupo (feed)
     if(detailChan){ try{ sb.removeChannel(detailChan); }catch(e){} }
     detailChan = sb.channel('grp-'+gid)
       .on('postgres_changes',{event:'*',schema:'public',table:'activity_feed',filter:'group_id=eq.'+gid}, function(){
-        var on=tabs.querySelector('.tab.on'); if(on && on.getAttribute('data-tab')==='feed') showTab('feed',gid,g,admin,panel);
+        var on=tabs.querySelector('.tab.on'); if(on && on.getAttribute('data-tab')==='feed') showTab('feed',gid,g,ctx,panel);
       })
       .subscribe();
   }
 
-  async function showTab(name, gid, g, admin, panel){
+  async function showTab(name, gid, g, ctx, panel){
     clear(panel);
     if(name==='feed') return renderFeed(gid, panel);
-    if(name==='membros') return renderMembers(gid, admin, panel);
-    if(name==='planos') return renderPlans(gid, admin, panel);
+    if(name==='discussoes') return renderDiscussions(gid, ctx, panel);
+    if(name==='membros') return renderMembers(gid, ctx, panel);
+    if(name==='planos') return renderPlans(gid, ctx, panel);
   }
 
   async function renderFeed(gid, panel){
@@ -299,29 +376,35 @@
   function feedText(ev){
     var p=ev.payload||{};
     if(ev.event_type==='note_added') return 'comentou em '+ (p.verse_ref?refLabel(p.verse_ref):'um versículo')+'.';
+    if(ev.event_type==='topic_added') return 'abriu a discussão "'+(p.title||'')+'".';
     if(ev.event_type==='joined_group') return 'entrou no grupo.';
     return ev.event_type;
   }
   function refLabel(slug){ return slug; }
 
-  async function renderMembers(gid, admin, panel){
-    var r= await sb.from('group_members').select('id,role,status,user_id,profiles(name)').eq('group_id',gid).order('status',{ascending:true});
+  async function renderMembers(gid, ctx, panel){
+    var admin=ctx.admin;
+    var r= await sb.from('group_members').select('id,role,status,user_id,profiles(name,account_type,is_beta)').eq('group_id',gid).order('status',{ascending:true});
     if(r.error){ panel.appendChild(h('p',{class:'read', text:'Não foi possível carregar os membros.'})); return; }
+    var ids=r.data.map(function(m){ return m.user_id; });
+    var staff=await staffSet(ids);
     var pend=r.data.filter(function(m){ return m.status==='pending'; });
     var act=r.data.filter(function(m){ return m.status==='active'; });
+    function nameOf(m){ return (m.profiles&&m.profiles.name)||'(sem nome)'; }
+    function badgesOf(m){ var p=m.profiles||{}; return renderBadges({ role:m.role, staff:!!staff[m.user_id], type:p.account_type, beta:p.is_beta!==false }); }
     if(admin && pend.length){
       var pl=h('ul',{class:'member-list'});
       pend.forEach(function(m){
         pl.appendChild(h('li',{class:'member pending'},[
-          h('span',{text:(m.profiles&&m.profiles.name)||'(sem nome)'}),
+          h('span',{class:'member-name', text:nameOf(m)}),
           h('span',{class:'member-actions'},[
             h('button',{class:'btn-mini ok', type:'button', text:'Aprovar', on:{click:async function(){
-              var u= await sb.from('group_members').update({status:'active'}).eq('id',m.id);
-              if(u.error){ toast('Erro ao aprovar.','err'); } else { toast('Membro aprovado.'); renderMembers(gid,admin,panel); }
+              var u= await sb.rpc('decide_member',{p_member_id:m.id, p_approve:true});
+              if(u.error){ toast(rpcMsg(u.error,'Erro ao aprovar.'),'err'); } else { toast('Membro aprovado.'); renderMembers(gid,ctx,panel); }
             }}}),
             h('button',{class:'btn-mini', type:'button', text:'Recusar', on:{click:async function(){
-              var u= await sb.from('group_members').delete().eq('id',m.id);
-              if(u.error){ toast('Erro.','err'); } else { renderMembers(gid,admin,panel); }
+              var u= await sb.rpc('decide_member',{p_member_id:m.id, p_approve:false});
+              if(u.error){ toast('Erro.','err'); } else { renderMembers(gid,ctx,panel); }
             }}})
           ])
         ]));
@@ -330,21 +413,33 @@
     }
     var al=h('ul',{class:'member-list'});
     act.forEach(function(m){
-      al.appendChild(h('li',{class:'member'},[
-        h('span',{text:(m.profiles&&m.profiles.name)||'(sem nome)'}),
-        m.role==='admin'?h('span',{class:'tag', text:'admin'}):null,
-        (admin && m.user_id!==uid())?h('button',{class:'btn-mini', type:'button', text:'remover', on:{click:async function(){
+      var actions=h('span',{class:'member-actions'});
+      if(admin && m.role!=='admin'){
+        if(m.role==='moderator'){
+          actions.appendChild(h('button',{class:'btn-mini', type:'button', text:'Rebaixar', on:{click:async function(){
+            var u= await sb.rpc('set_member_role',{p_member_id:m.id, p_role:'member'});
+            if(u.error){ toast(rpcMsg(u.error,'Erro.'),'err'); } else { renderMembers(gid,ctx,panel); }
+          }}}));
+        } else {
+          actions.appendChild(h('button',{class:'btn-mini', type:'button', text:'Tornar moderador', on:{click:async function(){
+            var u= await sb.rpc('set_member_role',{p_member_id:m.id, p_role:'moderator'});
+            if(u.error){ toast(rpcMsg(u.error,'Erro.'),'err'); } else { toast('Agora é moderador.'); renderMembers(gid,ctx,panel); }
+          }}}));
+        }
+        actions.appendChild(h('button',{class:'btn-mini', type:'button', text:'Remover', on:{click:async function(){
           if(!confirm('Remover este membro?')) return;
-          var u= await sb.from('group_members').delete().eq('id',m.id);
-          if(!u.error){ renderMembers(gid,admin,panel); }
-        }}}):null
-      ]));
+          var u= await sb.rpc('remove_member',{p_member_id:m.id});
+          if(u.error){ toast(rpcMsg(u.error,'Erro.'),'err'); } else { renderMembers(gid,ctx,panel); }
+        }}}));
+      }
+      al.appendChild(h('li',{class:'member'},[ h('span',{class:'member-name', text:nameOf(m)}), badgesOf(m), actions ]));
     });
     panel.appendChild(h('section',{},[h('h3',{text:'Membros ('+act.length+')'}), al]));
   }
 
   // ---------- PLANOS do grupo ----------
-  async function renderPlans(gid, admin, panel){
+  async function renderPlans(gid, ctx, panel){
+    var admin=ctx.admin;
     if(admin){
       var nm=h('input',{type:'text', placeholder:'Nome do plano (ex.: João em 21 dias)'});
       var ta=h('textarea',{rows:'5', placeholder:'Um dia por linha. Capítulos separados por vírgula.\nEx.:\nJoão 1\nJoão 2, João 3'});
@@ -403,6 +498,95 @@
     return String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
   }
 
+  // ---------- DISCUSSÕES do grupo (fórum) ----------
+  var discChan=null, topicChan=null;
+  async function renderDiscussions(gid, ctx, panel){
+    if(discChan){ try{ sb.removeChannel(discChan); }catch(e){} discChan=null; }
+    if(topicChan){ try{ sb.removeChannel(topicChan); }catch(e){} topicChan=null; }
+    // novo tópico
+    var tt=h('input',{type:'text', placeholder:'Título do tópico', maxlength:'140'});
+    var tb=h('textarea',{rows:'3', placeholder:'Escreva o primeiro comentário (opcional)'});
+    var addT=h('button',{class:'btn primary', type:'button', text:'Abrir discussão', on:{click:async function(){
+      var title=(tt.value||'').trim(); if(title.length<2){ toast('Dê um título ao tópico.','err'); return; }
+      addT.disabled=true;
+      var r= await sb.rpc('create_topic',{ p_group_id:gid, p_title:title, p_body:(tb.value||'').trim() });
+      addT.disabled=false;
+      if(r.error){ toast(rpcMsg(r.error,'Erro ao criar tópico.'),'err'); } else { tt.value=''; tb.value=''; toast('Discussão criada.'); renderDiscussions(gid,ctx,panel); }
+    }}});
+    panel.appendChild(h('details',{class:'plan-new'},[ h('summary',{text:'+ Nova discussão'}), h('div',{class:'cloud-card'},[tt, tb, addT]) ]));
+    var listWrap=h('div',{}); panel.appendChild(listWrap);
+    await loadTopics(gid, ctx, listWrap);
+    discChan = sb.channel('disc-'+gid)
+      .on('postgres_changes',{event:'*',schema:'public',table:'group_topics',filter:'group_id=eq.'+gid}, function(){ loadTopics(gid, ctx, listWrap); })
+      .subscribe();
+  }
+  async function loadTopics(gid, ctx, listWrap){
+    var r= await sb.from('group_topics').select('id,title,pinned,locked,created_at,updated_at,user_id,profiles(name)')
+      .eq('group_id',gid).order('pinned',{ascending:false}).order('updated_at',{ascending:false}).limit(80);
+    clear(listWrap);
+    if(r.error){ listWrap.appendChild(h('p',{class:'read', text:'Não foi possível carregar as discussões.'})); return; }
+    if(!r.data.length){ listWrap.appendChild(h('p',{class:'read', text:'Nenhuma discussão ainda. Abra a primeira.'})); return; }
+    var ul=h('ul',{class:'topic-list'});
+    r.data.forEach(function(t){
+      ul.appendChild(h('li',{class:'topic'+(t.pinned?' pinned':'')},[
+        h('button',{class:'topic-open', type:'button', on:{click:function(){ openTopic(t, gid, ctx, listWrap); }}},[
+          t.pinned?h('span',{class:'topic-flag', text:'📌'}):null,
+          t.locked?h('span',{class:'topic-flag', text:'🔒'}):null,
+          h('span',{class:'topic-title', text:t.title})
+        ]),
+        h('span',{class:'topic-meta', text:'por '+((t.profiles&&t.profiles.name)||'Membro')+' · '+fmtDate(t.updated_at)})
+      ]));
+    });
+    listWrap.appendChild(ul);
+  }
+  async function openTopic(t, gid, ctx, listWrap){
+    clear(listWrap);
+    listWrap.appendChild(h('button',{class:'btn-mini', type:'button', text:'← voltar', on:{click:function(){ if(topicChan){ try{ sb.removeChannel(topicChan); }catch(e){} topicChan=null; } loadTopics(gid, ctx, listWrap); }}}));
+    var head=h('div',{class:'topic-head'},[ h('h3',{text:t.title}) ]);
+    if(ctx.mod){
+      head.appendChild(h('span',{class:'topic-mod'},[
+        h('button',{class:'btn-mini', type:'button', text:t.pinned?'Desafixar':'Fixar', on:{click:async function(){ var r=await sb.rpc('moderate_topic',{p_topic_id:t.id,p_pin:!t.pinned,p_lock:null,p_delete:false}); if(!r.error){ t.pinned=!t.pinned; toast('Atualizado.'); } }}}),
+        h('button',{class:'btn-mini', type:'button', text:t.locked?'Destrancar':'Trancar', on:{click:async function(){ var r=await sb.rpc('moderate_topic',{p_topic_id:t.id,p_pin:null,p_lock:!t.locked,p_delete:false}); if(!r.error){ t.locked=!t.locked; toast('Atualizado.'); } }}}),
+        h('button',{class:'btn-mini', type:'button', text:'Apagar', on:{click:async function(){ if(!confirm('Apagar esta discussão?')) return; var r=await sb.rpc('moderate_topic',{p_topic_id:t.id,p_pin:null,p_lock:null,p_delete:true}); if(!r.error){ toast('Apagada.'); if(topicChan){ try{ sb.removeChannel(topicChan); }catch(e){} } loadTopics(gid,ctx,listWrap); } }}})
+      ]));
+    }
+    listWrap.appendChild(head);
+    var postsEl=h('div',{class:'post-list'}); listWrap.appendChild(postsEl);
+    await loadPosts(t, gid, ctx, postsEl);
+    // responder
+    var rb=h('textarea',{rows:'2', placeholder: t.locked&&!ctx.mod?'Tópico trancado':'Responder…'});
+    if(t.locked&&!ctx.mod) rb.disabled=true;
+    var send=h('button',{class:'btn primary', type:'button', text:'Responder', on:{click:async function(){
+      var body=(rb.value||'').trim(); if(!body){ return; }
+      var r= await sb.rpc('add_post',{ p_topic_id:t.id, p_body:body });
+      if(r.error){ toast(rpcMsg(r.error,'Erro ao responder.'),'err'); } else { rb.value=''; loadPosts(t, gid, ctx, postsEl); }
+    }}});
+    listWrap.appendChild(h('div',{class:'gn-form'},[ rb, h('div',{class:'cloud-row'},[send]) ]));
+    if(topicChan){ try{ sb.removeChannel(topicChan); }catch(e){} }
+    topicChan = sb.channel('topic-'+t.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'topic_posts',filter:'topic_id=eq.'+t.id}, function(){ loadPosts(t, gid, ctx, postsEl); })
+      .subscribe();
+  }
+  async function loadPosts(t, gid, ctx, postsEl){
+    var r= await sb.from('topic_posts').select('id,body,created_at,user_id,profiles(name,account_type,is_beta)').eq('topic_id',t.id).order('created_at',{ascending:true});
+    clear(postsEl);
+    if(r.error){ postsEl.appendChild(h('p',{class:'read muted', text:'Não foi possível carregar as respostas.'})); return; }
+    var ids=r.data.map(function(p){ return p.user_id; });
+    var staff=await staffSet(ids);
+    if(!r.data.length){ postsEl.appendChild(h('p',{class:'gn-empty', text:'Sem respostas ainda.'})); return; }
+    r.data.forEach(function(p){
+      var pr=p.profiles||{};
+      var post=h('article',{class:'post'},[
+        h('div',{class:'gn-meta'},[ h('strong',{text:pr.name||'Membro'}), renderBadges({ staff:!!staff[p.user_id], type:pr.account_type, beta:pr.is_beta!==false }), h('time',{text:fmtDate(p.created_at)}) ]),
+        h('p',{class:'gn-body', text:p.body})
+      ]);
+      if(p.user_id===uid() || ctx.mod){
+        post.appendChild(h('button',{class:'btn-mini', type:'button', text:'apagar', on:{click:async function(){ if(!confirm('Apagar resposta?')) return; var d=await sb.rpc('delete_post',{p_post_id:p.id}); if(!d.error){ loadPosts(t,gid,ctx,postsEl); } else { toast(rpcMsg(d.error,'Erro.'),'err'); } }}}));
+      }
+      postsEl.appendChild(post);
+    });
+  }
+
   // ---------- NOTAS do grupo no versículo ----------
   var verseChan=null;
   async function renderVerseNotes(vc){
@@ -442,22 +626,26 @@
   async function loadVerseNotes(slug, listEl, groups){
     var gids=groups.map(function(m){ return m.group_id; });
     var r= await sb.from('group_notes')
-      .select('id,body,created_at,user_id,group_id,profiles(name),groups(name)')
+      .select('id,body,created_at,user_id,group_id,profiles(name,account_type,is_beta),groups(name)')
       .eq('verse_ref',slug).in('group_id',gids).order('created_at',{ascending:true});
     clear(listEl);
     if(r.error){ listEl.appendChild(h('p',{class:'read muted', text:'Não foi possível carregar as notas do grupo.'})); return; }
     if(!r.data.length){ listEl.appendChild(h('p',{class:'gn-empty', text:'Nenhuma nota do grupo neste versículo ainda. Seja o primeiro.'})); return; }
+    var staff=await staffSet(r.data.map(function(n){ return n.user_id; }));
     r.data.forEach(function(n){
-      var who=(n.profiles&&n.profiles.name)||'Membro';
+      var pr=n.profiles||{};
+      var who=pr.name||'Membro';
       var gname=(n.groups&&n.groups.name)||'';
       var card=h('article',{class:'gn-note'});
-      card.appendChild(h('div',{class:'gn-meta'},[ h('strong',{text:who}), gname?h('span',{class:'gn-group-tag', text:gname}):null, h('time',{text:fmtDate(n.created_at)}) ]));
+      card.appendChild(h('div',{class:'gn-meta'},[ h('strong',{text:who}),
+        renderBadges({ staff:!!staff[n.user_id], type:pr.account_type, beta:pr.is_beta!==false }),
+        gname?h('span',{class:'gn-group-tag', text:gname}):null, h('time',{text:fmtDate(n.created_at)}) ]));
       card.appendChild(h('p',{class:'gn-body', text:n.body}));
-      if(n.user_id===uid()){
+      if(n.user_id===uid() || canModerate(n.group_id)){
         card.appendChild(h('button',{class:'btn-mini', type:'button', text:'apagar', on:{click:async function(){
-          if(!confirm('Apagar sua nota?')) return;
+          if(!confirm('Apagar esta nota?')) return;
           var d= await sb.from('group_notes').delete().eq('id',n.id);
-          if(!d.error){ loadVerseNotes(slug, listEl, groups); }
+          if(!d.error){ loadVerseNotes(slug, listEl, groups); } else { toast('Erro ao apagar.','err'); }
         }}}));
       }
       // comentários
@@ -489,9 +677,70 @@
 
   function rpcMsg(e, fallback){ var m=(e&&(e.message||e.error_description||e.hint))||''; if(/function .* does not exist|404|not found/i.test(m)) return 'Recurso ainda não disponível no servidor.'; return m||fallback; }
 
+  // ---------- COLABORAÇÃO BETA: sugerir correção ----------
+  function injectSuggest(vc){
+    if(!state.user || document.getElementById('suggest-btn')) return;
+    var slug=vc.getAttribute('data-slug')||'';
+    var btn=h('button',{id:'suggest-btn', class:'btn-mini suggest-btn', type:'button', text:'Sugerir correção', on:{click:function(){ openSuggest(slug); }}});
+    var anchor=vc.querySelector('.verse-hero')||vc;
+    anchor.appendChild(btn);
+  }
+  function openSuggest(slug){
+    var ta=h('textarea',{rows:'4', placeholder:'Descreva o erro ou a sugestão para este versículo…'});
+    var back=h('div',{class:'modal-back'});
+    function close(){ if(back.parentNode) back.parentNode.removeChild(back); }
+    var send=h('button',{class:'btn primary', type:'button', text:'Enviar', on:{click:async function(){
+      var body=(ta.value||'').trim(); if(body.length<3){ toast('Escreva sua sugestão.','err'); return; }
+      send.disabled=true;
+      var r= await sb.rpc('submit_suggestion',{ p_kind:'correcao', p_verse_ref:slug, p_page_url:location.pathname, p_body:body });
+      send.disabled=false;
+      if(r.error){ toast(rpcMsg(r.error,'Erro ao enviar.'),'err'); } else { toast('Obrigado! Sua sugestão foi enviada para revisão.'); close(); }
+    }}});
+    back.appendChild(h('div',{class:'suggest-modal'},[
+      h('h3',{text:'Sugerir correção'}),
+      h('p',{class:'read', text:'Sua contribuição (beta) vai para a fila de revisão da equipe. Obrigado por ajudar a melhorar o site.'}),
+      ta, h('div',{class:'cloud-row'},[ send, h('button',{class:'btn ghost', type:'button', text:'Cancelar', on:{click:close}}) ])
+    ]));
+    back.addEventListener('click', function(e){ if(e.target===back) close(); });
+    document.body.appendChild(back);
+  }
+
+  // ---------- EQUIPE (staff): fila de sugestões ----------
+  async function renderTeam(){
+    var app=document.getElementById('equipe-app'); if(!app) return; clear(app);
+    if(!state.user){ app.appendChild(h('div',{class:'cloud-card'},[h('p',{class:'read', text:'Entre na sua conta.'}), h('a',{class:'btn primary', href:url('conta/'), text:'Entrar'})])); return; }
+    if(!state.isStaff){ app.appendChild(h('div',{class:'cloud-card'},[h('h2',{text:'Acesso restrito'}), h('p',{class:'read', text:'Esta área é da equipe do site.'})])); return; }
+    app.appendChild(h('p',{class:'read muted', text:'Fila de sugestões e correções enviadas pela comunidade (beta).'}));
+    var listEl=h('div',{class:'team-queue'}); app.appendChild(listEl);
+    await loadTeamQueue(listEl);
+  }
+  async function loadTeamQueue(listEl){
+    var r= await sb.from('suggestions').select('id,kind,verse_ref,page_url,body,status,created_at,profiles(name)').order('created_at',{ascending:false}).limit(100);
+    clear(listEl);
+    if(r.error){ listEl.appendChild(h('p',{class:'read', text:'Não foi possível carregar a fila.'})); return; }
+    if(!r.data.length){ listEl.appendChild(h('p',{class:'read', text:'Nenhuma sugestão por enquanto.'})); return; }
+    r.data.forEach(function(s){
+      var who=(s.profiles&&s.profiles.name)||'Usuário';
+      var card=h('article',{class:'team-item status-'+(s.status||'pendente')},[
+        h('div',{class:'gn-meta'},[ h('strong',{text:who}), h('span',{class:'tag', text:s.kind==='correcao'?'correção':'sugestão'}),
+          s.verse_ref?h('a',{class:'gn-group-tag', href:url('versiculos/'+s.verse_ref+'/'), text:s.verse_ref}):null,
+          h('span',{class:'tag', text:s.status||'pendente'}), h('time',{text:fmtDate(s.created_at)}) ]),
+        h('p',{class:'gn-body', text:s.body})
+      ]);
+      if(s.status==='pendente'){
+        card.appendChild(h('div',{class:'cloud-row'},[
+          h('button',{class:'btn-mini ok', type:'button', text:'Aprovar', on:{click:async function(){ var u=await sb.rpc('review_suggestion',{p_id:s.id,p_status:'aprovada'}); if(!u.error){ loadTeamQueue(listEl); } }}}),
+          h('button',{class:'btn-mini', type:'button', text:'Descartar', on:{click:async function(){ var u=await sb.rpc('review_suggestion',{p_id:s.id,p_status:'descartada'}); if(!u.error){ loadTeamQueue(listEl); } }}})
+        ]));
+      }
+      listEl.appendChild(card);
+    });
+  }
+
   // ---------- BOOT ----------
   async function refresh(){
     await loadProfile();
+    await loadStaffFlag();
     await loadMemberships();
     await route();
   }

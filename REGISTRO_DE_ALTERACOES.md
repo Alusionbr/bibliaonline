@@ -15,6 +15,48 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-28 - Fase 2 da comunidade: papeis, discussoes, cadastro e colaboracao beta
+
+Evolucao da camada colaborativa para uma comunidade de estudos. Decisoes do
+usuario: papeis fixos (admin/moderador/membro), Equipe do site (superadmin) com
+acesso global, colaboracao beta via "Sugerir correcao", limite de 3 grupos por
+usuario, cadastro com idade(>=13)/genero/Pastor-ou-Aluno, discussoes em grupo.
+Prioridade explicita: facil revisao humana e site seguro contra ataques.
+
+Eixo de seguranca: fechado o furo da Fase 1 (insert de `group_members` permitia
+auto-promocao a admin). Agora auto-entrada so vira member/pending; toda mutacao
+sensivel passa por RPC `security definer` com checagem de quem chama.
+
+SQL (entregavel `supabase/community.sql`, idempotente, rodar 1x no Supabase):
+- `profiles` + colunas age/gender/account_type/is_beta; escrita so via
+  `save_profile` (sem UPDATE direto).
+- `group_members.role` agora inclui `moderator`; policy de insert endurecida.
+- Tabela `staff` (nao editavel pelo cliente) + helpers `is_staff`/`is_group_mod`.
+- Novas tabelas: `group_topics`, `topic_posts`, `suggestions`, `audit_log`.
+- RLS recriado (fonte unica) com `OR is_staff()` para moderacao global.
+- RPCs: create_group(limite 3), decide_member, set_member_role, remove_member,
+  create_topic, add_post, moderate_topic, delete_post, submit_suggestion,
+  review_suggestion. Trigger `rl_guard` (anti-flood) + `audit_log` + feed de topico.
+- Lembrete: `insert into staff(user_id) values ('<seu-uid>')`.
+
+Front-end (`build_cloud_js` em scripts/build.py; cloud.js NAO editar a mao):
+- Completar cadastro em /conta/ (idade/genero/tipo) via save_profile; bloqueia
+  acoes de grupo ate completar.
+- Badges (Equipe/Admin/Moderador/Pastor/Aluno/beta) em autor de nota, membros,
+  posts e cabecalho do grupo.
+- Criar grupo via create_group + cota "X de 3"; gestao de membros (aprovar,
+  promover/rebaixar moderador, remover) via RPCs.
+- Aba "Discussoes" (topicos + respostas + moderacao + Realtime).
+- Botao "Sugerir correcao" no versiculo; painel /equipe/ com a fila de sugestoes.
+- Link "Equipe" no nav revelado por JS so para staff.
+
+Pagina nova: /equipe/ (build_team_page, noindex). CSS da comunidade em styles.css.
+
+Testes: novos smoke tests (recursos no cloud.js, /equipe/ com noindex, nav-equipe
+oculto, community.sql presente). Suite completa verde; node --check cloud.js OK.
+
+Pendente do usuario: rodar `supabase/community.sql` e se adicionar a `staff`.
+
 ## 2026-06-28 - Camada colaborativa: grupos de estudo, notas compartilhadas e planos (Supabase)
 
 Pedido do usuario: transformar o site numa plataforma de estudo em conjunto -

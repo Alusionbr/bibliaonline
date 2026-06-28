@@ -780,3 +780,53 @@ a.group-item:hover{border-color:var(--gold);box-shadow:0 6px 16px rgba(30,22,10,
   transition:opacity .3s ease,transform .3s ease;max-width:90vw}
 .cloud-toast.err{background:#7a2e22}
 .cloud-toast.out{opacity:0;transform:translateY(8px)}
+
+/* ---- Fase 2: comunidade (badges, discussões, sugestões, equipe) ---- */
+.cloud-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.badges{display:inline-flex;flex-wrap:wrap;gap:5px;vertical-align:middle}
+.badge{font-family:"Inter",sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.03em;
+  text-transform:uppercase;border-radius:999px;padding:2px 8px;line-height:1.5;border:1px solid transparent}
+.badge.staff{background:var(--gold);color:#20170a}
+.badge.role-admin{background:var(--gold-deep);color:#fff}
+.badge.role-mod{background:#465a93;color:#fff}
+.badge.pastor{background:#5a3d86;color:#fff}
+.badge.aluno{background:var(--vellum-2);color:var(--ink-soft);border-color:var(--line)}
+.badge.beta{background:#2f7d5b;color:#fff}
+.quota{font-family:"Inter",sans-serif;font-size:.82rem;color:var(--muted)}
+.btn.primary.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+.member-name{font-weight:600}
+
+/* discussões (fórum) */
+.topic-list{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:8px}
+.topic{display:flex;flex-direction:column;gap:2px;background:var(--paper);border:1px solid var(--line);
+  border-radius:12px;padding:10px 14px}
+.topic.pinned{border-color:var(--gold)}
+.topic-open{display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;
+  text-align:left;padding:0;color:var(--ink);font-family:"Fraunces",serif;font-size:1.02rem}
+.topic-open:hover .topic-title{color:var(--gold-deep)}
+.topic-flag{font-size:.85rem}
+.topic-meta{font-family:"Inter",sans-serif;font-size:.74rem;color:var(--muted)}
+.topic-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:.8rem 0 .4rem}
+.topic-head h3{margin:0}
+.topic-mod{display:flex;gap:6px;flex-wrap:wrap}
+.post-list{display:grid;gap:10px;margin:.6rem 0}
+.post{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fff}
+
+/* modal de sugestão */
+.suggest-btn{margin-top:.8rem;display:inline-block}
+.modal-back{position:fixed;inset:0;z-index:9998;background:rgba(20,15,8,.5);
+  display:flex;align-items:center;justify-content:center;padding:18px}
+.suggest-modal{background:var(--paper);border:1px solid var(--line);border-radius:16px;
+  padding:20px 22px;max-width:520px;width:100%;box-shadow:var(--shadow);display:grid;gap:10px}
+.suggest-modal h3{margin:0}
+.suggest-modal textarea{width:100%;font-family:"Inter",sans-serif;font-size:1rem;border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;background:#fff;color:var(--ink);resize:vertical}
+
+/* painel da equipe */
+.team-queue{display:grid;gap:12px;margin-top:.6rem}
+.team-item{border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:var(--paper)}
+.team-item.status-aprovada{border-left:4px solid #2f7d5b}
+.team-item.status-descartada{opacity:.6}
+.team-item.status-pendente{border-left:4px solid var(--gold)}
+
+@media (max-width:520px){ .cloud-grid2{grid-template-columns:1fr} }

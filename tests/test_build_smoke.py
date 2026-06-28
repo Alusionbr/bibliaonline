@@ -518,3 +518,42 @@ def test_nuvem_sw_precacheia_cloud(site):
     sw = (site / "sw.js").read_text("utf-8")
     assert "assets/cloud.js" in sw
     assert "assets/supabase.min.js" in sw
+
+
+# ---------------------------------------------------------------------------
+# Fase 2 — comunidade (papéis, discussões, cadastro, sugestões, equipe).
+# ---------------------------------------------------------------------------
+def test_comunidade_cloud_js_recursos(site):
+    cloud = (site / "assets" / "cloud.js").read_text("utf-8")
+    for fn in ["save_profile", "create_group", "set_member_role", "decide_member",
+               "renderBadges", "renderDiscussions", "create_topic", "add_post",
+               "submit_suggestion", "renderTeam", "review_suggestion"]:
+        assert fn in cloud, fn
+    # gestão de membros não usa mais update/delete direto nas tabelas sensíveis
+    assert "rpc('decide_member'" in cloud
+    assert "rpc('create_group'" in cloud
+
+
+def test_comunidade_pagina_equipe(site):
+    assert (site / "equipe" / "index.html").exists()
+    eq = (site / "equipe" / "index.html").read_text("utf-8")
+    assert 'id="equipe-app"' in eq
+    assert "noindex" in eq  # painel da equipe não é indexável
+
+
+def test_comunidade_nav_equipe_oculto(site):
+    # link "Equipe" existe no HTML mas começa oculto (revelado por JS só para staff)
+    home = (site / "index.html").read_text("utf-8")
+    assert 'id="nav-equipe"' in home
+    assert 'id="nav-equipe" hidden' in home
+
+
+def test_comunidade_sql_migration_presente():
+    # o SQL da Fase 2 deve existir no repo (entregável p/ rodar no Supabase)
+    from pathlib import Path
+    sql = (Path(__file__).resolve().parents[1] / "supabase" / "community.sql")
+    assert sql.exists()
+    txt = sql.read_text("utf-8")
+    for tok in ["create_group", "save_profile", "is_staff", "group_topics",
+                "suggestions", "rl_guard", "gm_insert_self_pending"]:
+        assert tok in txt, tok
