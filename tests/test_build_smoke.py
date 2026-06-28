@@ -456,3 +456,65 @@ def test_letras_vermelhas_jesus(site):
     # versículo não marcado não recebe a classe
     gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
     assert "pt-jesus" not in gen
+
+
+# ---------------------------------------------------------------------------
+# Camada colaborativa (Supabase): conta, grupos, notas compartilhadas.
+# ---------------------------------------------------------------------------
+def test_nuvem_csp_supabase(site):
+    # a CSP deve liberar o domínio Supabase em connect-src (https + wss p/ Realtime)
+    home = (site / "index.html").read_text("utf-8")
+    assert "connect-src" in home
+    assert "supabase.co" in home
+    assert "wss://" in home
+
+
+def test_nuvem_cloud_js_gerado(site):
+    # cloud.js gerado, com as peças-chave do cliente e SEM placeholders
+    cloud = (site / "assets" / "cloud.js")
+    assert cloud.exists()
+    txt = cloud.read_text("utf-8")
+    assert "createClient" in txt
+    assert "onAuthStateChange" in txt
+    assert "BEC_CLOUD" in txt
+    assert "group_notes" in txt
+    assert "__SUPABASE_URL__" not in txt and "__SUPABASE_ANON__" not in txt
+
+
+def test_nuvem_scripts_no_footer(site):
+    # supabase.min.js deve carregar ANTES de cloud.js em todas as páginas
+    home = (site / "index.html").read_text("utf-8")
+    assert "assets/supabase.min.js" in home
+    assert "assets/cloud.js" in home
+    assert home.index("supabase.min.js") < home.index("cloud.js")
+    # também presente nas páginas de versículo (onde aparecem as notas do grupo)
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "assets/cloud.js" in gen
+
+
+def test_nuvem_paginas_conta_grupos(site):
+    assert (site / "conta" / "index.html").exists()
+    assert (site / "grupos" / "index.html").exists()
+    assert (site / "grupos" / "novo" / "index.html").exists()
+    assert (site / "grupos" / "grupo" / "index.html").exists()
+    conta = (site / "conta" / "index.html").read_text("utf-8")
+    assert 'id="conta-app"' in conta
+    assert "noindex" in conta  # páginas pessoais não são indexadas
+    grupos = (site / "grupos" / "index.html").read_text("utf-8")
+    assert 'id="grupos-app"' in grupos
+    novo = (site / "grupos" / "novo" / "index.html").read_text("utf-8")
+    assert 'id="form-create-group"' in novo
+    detalhe = (site / "grupos" / "grupo" / "index.html").read_text("utf-8")
+    assert 'id="grupo-detail"' in detalhe
+
+
+def test_nuvem_nav_tem_conta_e_grupos(site):
+    home = (site / "index.html").read_text("utf-8")
+    assert 'id="nav-grupos"' in home
+    assert 'id="nav-conta"' in home
+
+
+def test_nuvem_sw_precacheia_cloud(site):
+    sw = (site / "sw.js").read_text("utf-8")
+    assert "assets/cloud.js" in sw
+    assert "assets/supabase.min.js" in sw

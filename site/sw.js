@@ -1,5 +1,5 @@
 /* Service worker do Bíblia em Contexto — gerado por build.py. Não editar à mão. */
-var VERSION = '4c24bcee';
+var VERSION = '74c924e1';
 var SHELL_CACHE = 'bec-shell-' + VERSION;
 var PAGE_CACHE  = 'bec-pages-'  + VERSION;
 // app-shell mínimo (relativo ao escopo do SW = raiz do site)
@@ -11,6 +11,8 @@ var SHELL = [
   './assets/styles.css?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
   './assets/study.js?v=' + VERSION,
+  './assets/supabase.min.js?v=' + VERSION,
+  './assets/cloud.js?v=' + VERSION,
   './data/hebrew-lexicon.json'
 ];
 

@@ -337,6 +337,50 @@ de volta ao atlas.
 (`bec.plan.<slug>`), sem servidor. O wiring esta em `app.js` (procura
 `[data-plan]`).
 
+### Camada colaborativa (grupos de estudo) — Supabase
+
+Camada OPT-IN e aditiva sobre o site estatico. Sem login, o site continua
+identico ao anterior (offline, localStorage, leitura). Da nuvem: cadastro,
+grupos (papeis admin/membro, aprovacao de entrada), notas de estudo
+compartilhadas por versiculo + comentarios, planos do grupo + progresso
+coletivo e feed de atividade.
+
+- Backend: **Supabase** (Postgres + Auth + Realtime + RLS). Projeto:
+  `pxqhpntifbtjaoqtirao`. O schema (8 tabelas + RLS + triggers) foi criado no
+  dashboard; ver o resumo no `REGISTRO_DE_ALTERACOES.md` e as RPCs em
+  `supabase/rpc.sql`.
+- `site/assets/cloud.js` — **gerado por `build_cloud_js()` em `scripts/build.py`;
+  NAO editar a mao.** Unico ponto que fala com o Supabase. Carregado em todas as
+  paginas pelo `footer()`, depois de `study.js`.
+- `site/assets/supabase.min.js` — bundle UMD do `@supabase/supabase-js`
+  (commitado, versao fixada; baixado uma vez). Carregado ANTES de `cloud.js`
+  (expoe `window.supabase`), mantendo `script-src 'self'` (sem CDN em runtime).
+  Para atualizar a versao, baixe o novo UMD e commite — mudanca deliberada.
+- Constantes `SUPABASE_URL` / `SUPABASE_ANON` no topo do `build.py`. A anon key
+  e **publica por design** (vai no JS do navegador); a seguranca real vem das
+  policies de RLS. A **service_role NUNCA** entra no repositorio. Trocar de
+  projeto Supabase => atualizar `SUPABASE_URL` e rodar o build (o dominio entra
+  na CSP e no `cloud.js`).
+- CSP: `connect-src` libera o dominio Supabase em `https://` e `wss://` (o `wss`
+  e obrigatorio para o Realtime via WebSocket).
+- Paginas: `/conta/` (login magic link), `/grupos/` (meus grupos),
+  `/grupos/novo/` (criar) e `/grupos/grupo/?c=<codigo>` (shell unico; a
+  identidade do grupo vem do parametro `c`, pois grupos sao dinamicos e nao podem
+  ser pre-gerados). Todas com `noindex` (conteudo pessoal/privado, nao indexavel).
+- Notas do grupo no versiculo: `cloud.js` injeta `.group-notes-block` em
+  `.verse-cont[data-slug]`, separada da nota pessoal (localStorage). So aparece
+  se logado E membro ativo de algum grupo. A chave da nota e o `data-slug`
+  (ex.: `genesis-1-1`), ASCII estavel.
+- Realtime: assinaturas em `group_notes` (por versiculo) e `activity_feed` (por
+  grupo). Toda chamada de rede tem `.catch()` que degrada em silencio — offline
+  mantem a experiencia atual.
+- Sem JS inline (CSP): tudo via `addEventListener` em `cloud.js`.
+- `supabase/rpc.sql`: rodar UMA vez no SQL Editor do Supabase. Sao duas funcoes
+  `security definer` (`join_group`, `group_brief`) necessarias porque o RLS de
+  `groups` so libera membros ativos — quem tem apenas o codigo de convite precisa
+  de uma RPC para resolver codigo -> grupo. Enquanto nao rodar, o "entrar por
+  codigo" mostra um aviso amigavel (nao quebra).
+
 ### Seguranca (CSP)
 
 Todas as paginas tem `Content-Security-Policy` estrita via `<meta>`. Nao ha

@@ -15,6 +15,49 @@ mudado, como foi testado e qual commit publicou a mudanca.
 7. Registrar o resultado da validacao.
 8. Fazer commit com mensagem clara e enviar ao GitHub quando aprovado.
 
+## 2026-06-28 - Camada colaborativa: grupos de estudo, notas compartilhadas e planos (Supabase)
+
+Pedido do usuario: transformar o site numa plataforma de estudo em conjunto -
+grupos com cadastro, planos de estudo do grupo e notas de estudo compartilhadas.
+
+Decisoes do usuario: backend Supabase (Postgres + Auth + Realtime + RLS, projeto
+ja provisionado pelo proprio usuario via dashboard) e escopo "plataforma completa"
+(login, grupos, papeis admin/membro, aprovacao de entrada, notas compartilhadas
+por versiculo, comentarios, planos do grupo, progresso coletivo, feed).
+
+Principio: a camada de nuvem e OPT-IN e aditiva. Sem login, o site continua
+identico ao anterior (offline, localStorage, leitura). Toda chamada de rede em
+`cloud.js` degrada em silencio.
+
+Mudancas (tudo no gerador `scripts/build.py`):
+- Constantes `SUPABASE_URL` / `SUPABASE_ANON` (anon key e publica por design; a
+  seguranca real vem do RLS; service_role NUNCA entra no repo).
+- CSP: `connect-src` passa a liberar o dominio Supabase em https + wss (Realtime).
+- `head(..., noindex=False)`: paginas pessoais (conta/grupos) usam `noindex`.
+- `nav()`: novos links "Grupos" e "Conta".
+- `footer()` e SHELL do service worker: carregam `supabase.min.js` (bundle UMD
+  commitado, versao fixada) ANTES de `cloud.js` (gerado).
+- Novo `build_cloud_js()` -> `site/assets/cloud.js`: unico ponto que fala com o
+  Supabase. Auth por magic link, grupos (criar via id/codigo no cliente, entrar
+  por codigo, aprovacao do admin), notas do grupo por versiculo + comentarios
+  (Realtime), planos do grupo + progresso coletivo, feed de atividade.
+- Novas paginas-stub: `/conta/`, `/grupos/`, `/grupos/novo/`, `/grupos/grupo/`
+  (esta ultima e um shell unico; identidade vem de `?c=<codigo>`).
+- CSS: bloco da camada colaborativa em `site/assets/styles.css`.
+- `supabase/rpc.sql`: duas funcoes `security definer` (`join_group`, `group_brief`)
+  necessarias porque o RLS de `groups` so libera membros ativos - quem tem so o
+  codigo de convite precisa de uma RPC para resolver codigo -> grupo. Rodar UMA
+  vez no SQL Editor do Supabase.
+
+Testes: 6 testes novos em `tests/test_build_smoke.py` (CSP Supabase, cloud.js
+gerado sem placeholders, ordem dos scripts no footer, paginas conta/grupos com
+noindex, links do nav, precache do SW). Suite completa verde
+(`python -m pytest`). `node --check site/assets/cloud.js` OK.
+
+Pendente para producao: rodar `supabase/rpc.sql`; reativar "Confirm email" no
+Supabase antes de uso real; validacao manual ponta-a-ponta (login -> criar grupo
+-> aprovar membro -> nota em tempo real -> plano do grupo).
+
 ## 2026-06-27 - Toggle de contexto judaico (oculto por padrao) + curadoria do lexico hebraico
 
 Dois pedidos do usuario: (1) poder desativar os blocos de contexto judaico para

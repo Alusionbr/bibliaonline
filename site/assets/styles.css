@@ -669,3 +669,114 @@ html.dark .plan-day{background:var(--paper)}
   border-top:1px solid var(--line);padding-top:.4rem}
 .hw-pop-foot{font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em}
 @media (prefers-reduced-motion: reduce){ .hw-pop{animation:none} }
+
+/* ----------------------------------------------------------------------------
+   Camada colaborativa (cloud.js): conta, grupos, notas do grupo, planos.
+   Superfícies claras (sala de leitura). Ghost aqui usa tinta escura (ao contrário
+   do footer/hero escuros) para ler bem sobre pergaminho.
+---------------------------------------------------------------------------- */
+.cloud-app{max-width:var(--read);margin:0 auto}
+.cloud-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 22px;box-shadow:0 8px 22px rgba(30,22,10,.05);margin:0 0 18px}
+.cloud-card h2{margin:0 0 .5rem;font-size:1.2rem}
+.cloud-card .read{margin:.2rem 0 1rem}
+.cloud-label{display:block;font-family:"Inter",sans-serif;font-size:.8rem;font-weight:600;
+  color:var(--muted);margin:.6rem 0 .3rem}
+.cloud-app input[type=text],.cloud-app input[type=email],.cloud-app textarea,.cloud-app select,
+.group-notes-block textarea,.group-notes-block select,.tab-panel input[type=text],.tab-panel textarea{
+  width:100%;font-family:"Inter",sans-serif;font-size:1rem;color:var(--ink);background:#fff;
+  border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.cloud-app textarea,.tab-panel textarea,.group-notes-block textarea{resize:vertical;line-height:1.45}
+.cloud-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.cloud-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 22px}
+.cloud-join{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cloud-join input{width:auto;min-width:160px}
+/* ghost legível sobre fundo claro nestas áreas */
+.cloud-app .btn.ghost,.tab-panel .btn.ghost,.group-notes-block .btn.ghost{
+  border-color:var(--line);color:var(--ink);background:var(--vellum-2)}
+.cloud-app .btn.ghost:hover,.tab-panel .btn.ghost:hover,.group-notes-block .btn.ghost:hover{
+  background:var(--vellum);color:var(--ink)}
+
+/* lista de grupos */
+.group-list{display:grid;gap:12px;margin:.5rem 0 1.4rem}
+.group-item{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--paper);
+  border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-decoration:none;color:var(--ink)}
+a.group-item:hover{border-color:var(--gold);box-shadow:0 6px 16px rgba(30,22,10,.06)}
+.group-item strong{font-size:1.05rem}
+.group-item.pending{opacity:.85}
+.group-desc{flex-basis:100%;color:var(--muted);font-size:.9rem}
+
+/* cabeçalho do grupo + abas */
+.group-head h1{margin:0 0 .3rem}
+.group-code{font-family:"Inter",sans-serif;font-size:.85rem;color:var(--muted);display:flex;
+  align-items:center;gap:8px;flex-wrap:wrap}
+.group-code code{background:var(--vellum-2);border:1px solid var(--line);border-radius:8px;
+  padding:2px 8px;color:var(--gold-deep);font-weight:600;letter-spacing:.05em}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:1.2rem 0 1rem}
+.tab{font-family:"Inter",sans-serif;font-weight:600;font-size:.95rem;background:none;border:none;
+  color:var(--muted);padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent}
+.tab.on{color:var(--ink);border-bottom-color:var(--gold)}
+.tab-panel section{margin:0 0 1.4rem}
+.tab-panel h3{margin:0 0 .6rem;font-size:1.05rem}
+
+/* feed */
+.feed{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed-item{display:flex;justify-content:space-between;gap:12px;align-items:baseline;
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.feed-txt{font-family:"Inter",sans-serif;font-size:.95rem}
+.feed-item time{font-family:"Inter",sans-serif;font-size:.74rem;color:var(--muted);white-space:nowrap}
+
+/* membros */
+.member-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.member{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);
+  border-radius:12px;padding:10px 14px;font-family:"Inter",sans-serif}
+.member.pending{background:var(--vellum-2)}
+.member-actions{margin-left:auto;display:flex;gap:6px}
+
+/* botões pequenos */
+.btn-mini{font-family:"Inter",sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);
+  border-radius:999px;padding:4px 10px;margin-left:6px}
+.btn-mini:hover{background:var(--vellum-2)}
+.btn-mini.ok{background:var(--gold);color:#20170a;border-color:transparent}
+
+/* planos do grupo */
+.plan-new{margin:0 0 1.2rem}
+.plan-new summary{cursor:pointer;font-family:"Inter",sans-serif;font-weight:600;color:var(--gold-deep)}
+.plan-new .cloud-card{margin-top:10px;display:grid;gap:10px}
+.group-plan{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.plan-days{list-style:none;margin:.4rem 0 0;padding:0;display:grid;gap:6px}
+.plan-day{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.plan-day label{display:flex;align-items:baseline;gap:8px;font-family:"Inter",sans-serif;font-size:.95rem;flex-wrap:wrap}
+.plan-day-n{font-weight:600}
+.plan-count{font-family:"Inter",sans-serif;font-size:.74rem;color:var(--muted);white-space:nowrap}
+
+/* notas do grupo no versículo */
+.group-notes-block{max-width:var(--read);margin:1.6rem auto 0;background:var(--paper);
+  border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:0 8px 22px rgba(30,22,10,.05)}
+.gn-title{margin:0 0 .8rem;font-size:1.1rem}
+.gn-empty{color:var(--muted);font-style:italic}
+.gn-note{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 10px;background:#fff}
+.gn-meta{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-family:"Inter",sans-serif;font-size:.82rem;color:var(--muted)}
+.gn-meta strong{color:var(--ink);font-size:.92rem}
+.gn-group-tag{background:var(--vellum-2);border:1px solid var(--line);border-radius:999px;
+  padding:1px 8px;color:var(--gold-deep);font-weight:600}
+.gn-body{margin:.5rem 0 .3rem;line-height:1.5}
+.gn-form{margin-top:1rem;display:grid;gap:8px}
+.gn-thread{margin-top:.6rem;border-top:1px solid var(--line);padding-top:.6rem;display:grid;gap:6px}
+.gn-comment{font-family:"Inter",sans-serif;font-size:.9rem;line-height:1.4}
+.gn-comment strong{color:var(--ink)}
+.gn-comment-input{margin-top:4px}
+
+/* aviso de pendências no nav */
+#nav-grupos.has-pending::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--gold);margin-left:5px;vertical-align:middle}
+
+/* toasts */
+#cloud-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.cloud-toast{font-family:"Inter",sans-serif;font-size:.9rem;background:var(--dark);color:#f6efe0;
+  border-radius:12px;padding:10px 16px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:1;
+  transition:opacity .3s ease,transform .3s ease;max-width:90vw}
+.cloud-toast.err{background:#7a2e22}
+.cloud-toast.out{opacity:0;transform:translateY(8px)}
