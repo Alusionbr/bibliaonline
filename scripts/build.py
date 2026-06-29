@@ -20,6 +20,10 @@ DATA = SITE / "data"
 BASE_URL = "https://alusionbr.github.io/bibliaonline"  # domínio do GitHub Pages
 SITE_NAME = "Bíblia em Contexto"
 
+# Supabase config (auth)
+SUPABASE_URL = "https://pxqhpntifbtjaoqtirao.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWhwbnRpZmJ0amFvcXRpcmFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1OTY3ODYsImV4cCI6MjA5ODE3Mjc4Nn0.s8ZJUMzQI7ACsb48I4lkcqj0Y2lQXoD-zIfojRCaRug"
+
 def asset_ver():
     # versão dos assets (cache-busting): muda quando o build (que gera o JS) ou
     # o CSS mudam, forçando o navegador a baixar styles.css/app.js/study.js novos.
@@ -176,6 +180,7 @@ def _sha256_b64(s):
 # CSP estrita: sem 'unsafe-inline' em scripts (o único inline é liberado por hash).
 # Estilos inline (atributos style="...") usam 'unsafe-inline' — baixo risco.
 # Imagens de manuscrito vêm de domínios públicos externos (https). Fetch/SW: mesma origem.
+# connect-src permite Supabase API para autenticação.
 CSP = "; ".join([
     "default-src 'self'",
     "base-uri 'self'",
@@ -184,7 +189,7 @@ CSP = "; ".join([
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https:",
-    "connect-src 'self'",
+    f"connect-src 'self' {SUPABASE_URL}",
     "manifest-src 'self'",
     "worker-src 'self'",
     "form-action 'self'",
@@ -233,6 +238,7 @@ def nav(prefix):
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
       <button type="button" class="rt" data-rt="context" aria-pressed="false" aria-label="Mostrar contexto judaico" title="Contexto judaico (comentário rabínico e leitura judaica)">📜</button>
+      <a href="{prefix}conta/" class="rt auth-link" aria-label="Entrar na conta" title="Entrar">👤</a>
     </div>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
@@ -2424,6 +2430,92 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix), encoding="utf-8")
 
+def build_login_page():
+    prefix = "../"
+    title = f"Minha Conta | {SITE_NAME}"
+    desc = "Faça login ou crie uma conta para sincronizar suas anotações e estudo."
+    canonical = f"{BASE_URL}/conta/"
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="../index.html">Início</a> · Conta</p>
+  <header class="verse-head"><h1>Minha Conta</h1></header>
+
+  <div id="auth-state-logged-out" class="auth-form-container">
+    <p class="read" style="color:var(--muted)">Faça login para sincronizar suas anotações e estudo entre dispositivos.</p>
+
+    <form id="login-form" class="auth-form">
+      <div class="form-group">
+        <label for="login-email">E-mail:</label>
+        <input type="email" id="login-email" name="email" required placeholder="seu@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Senha:</label>
+        <input type="password" id="login-password" name="password" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn primary">Entrar</button>
+      <div id="login-error" class="form-error" hidden></div>
+    </form>
+
+    <div class="auth-divider">ou</div>
+
+    <div class="oauth-buttons">
+      <button type="button" id="oauth-google" class="btn oauth-btn oauth-google" title="OAuth Google ainda não ativado">
+        <span>Google</span>
+      </button>
+      <button type="button" id="oauth-apple" class="btn oauth-btn oauth-apple" title="OAuth Apple ainda não ativado">
+        <span>Apple</span>
+      </button>
+    </div>
+
+    <p class="read" style="text-align:center; margin-top:20px; color:var(--muted)">
+      Não tem conta?
+      <button type="button" id="magic-link-btn" class="link-btn">Usar Magic Link (sem senha)</button>
+    </p>
+  </div>
+
+  <div id="auth-state-logged-in" class="auth-form-container" hidden>
+    <div class="auth-user-info">
+      <p class="read">Bem-vindo!</p>
+      <div id="user-email" class="user-email"></div>
+    </div>
+    <button type="button" id="logout-btn" class="btn ghost">Sair da conta</button>
+  </div>
+
+  <div id="auth-loading" hidden style="text-align:center;padding:20px">
+    <p>Autenticando…</p>
+  </div>
+</main>"""
+    footer_with_auth = f"""
+<footer class="footer">
+  <div class="footer-in">
+    <div>
+      <strong>Bíblia em Contexto</strong>
+      <p>Estudo bíblico com os idiomas originais, manuscritos e fontes rastreáveis. Texto bíblico de domínio público; comentários originais.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <a href="{prefix}index.html#versiculos">Versículos</a>
+        <a href="{prefix}temas/">Temas</a>
+        <a href="{prefix}index.html#artigos">Artigos</a>
+      </div>
+      <div>
+        <a href="{prefix}index.html#fontes">Fontes e licenças</a>
+        <a href="{prefix}index.html#metodologia">Metodologia</a>
+        <a href="{prefix}index.html#topo">Voltar ao topo ↑</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
+<script src="{prefix}assets/supabase-auth.js?v={ASSET_VER}"></script>
+<script src="{prefix}assets/account.js?v={ASSET_VER}"></script>
+</body></html>"""
+    out = SITE / "conta" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer_with_auth, encoding="utf-8")
+
 def build_meta(verses, articles, order, struct, topics=None, glossary=None, places=None, plans=None):
     # sitemap
     urls = [BASE_URL + "/", f"{BASE_URL}/ler/", f"{BASE_URL}/linha-do-tempo/", f"{BASE_URL}/temas/"]
@@ -2524,6 +2616,7 @@ def main():
     build_sw_js()
     build_offline_page()
     build_annotations_page()
+    build_login_page()
     n_idx = build_search_index(verses, articles, topics, glossary, places, plans)
     build_random_pool(verses)
     n = len(verses)
