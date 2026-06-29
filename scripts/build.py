@@ -276,6 +276,7 @@ def footer(prefix):
   </div>
 </footer>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
+<script src="{prefix}assets/supabase-auth.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
@@ -2487,34 +2488,76 @@ def build_login_page():
     <p>Autenticando…</p>
   </div>
 </main>"""
-    footer_with_auth = f"""
-<footer class="footer">
-  <div class="footer-in">
-    <div>
-      <strong>Bíblia em Contexto</strong>
-      <p>Estudo bíblico com os idiomas originais, manuscritos e fontes rastreáveis. Texto bíblico de domínio público; comentários originais.</p>
-    </div>
-    <div class="cols">
-      <div>
-        <a href="{prefix}index.html#versiculos">Versículos</a>
-        <a href="{prefix}temas/">Temas</a>
-        <a href="{prefix}index.html#artigos">Artigos</a>
-      </div>
-      <div>
-        <a href="{prefix}index.html#fontes">Fontes e licenças</a>
-        <a href="{prefix}index.html#metodologia">Metodologia</a>
-        <a href="{prefix}index.html#topo">Voltar ao topo ↑</a>
-      </div>
-    </div>
-  </div>
-</footer>
-<script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
-<script src="{prefix}assets/supabase-auth.js?v={ASSET_VER}"></script>
-<script src="{prefix}assets/account.js?v={ASSET_VER}"></script>
-</body></html>"""
+    # footer da /conta/: usa o footer padrão mas injeta account.js antes de fechar
+    # (supabase-auth.js já está no footer global com defer)
+    base_footer = footer(prefix)
+    footer_with_auth = base_footer.replace(
+        '</body></html>',
+        f'<script src="{prefix}assets/account.js?v={ASSET_VER}" defer></script>\n</body></html>'
+    )
     out = SITE / "conta" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + footer_with_auth, encoding="utf-8")
+
+def build_admin_page():
+    prefix = "../"
+    title = f"Admin | {SITE_NAME}"
+    desc = "Área administrativa — restrita a staff."
+    canonical = f"{BASE_URL}/admin/"
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="../index.html">Início</a> · Admin</p>
+
+  <div id="admin-loading" style="text-align:center;padding:40px">
+    <p>Verificando acesso…</p>
+  </div>
+
+  <div id="admin-denied" hidden style="text-align:center;padding:40px">
+    <header class="verse-head"><h1>Acesso restrito</h1></header>
+    <p class="read" style="color:var(--muted)">Esta área é restrita a administradores.
+    <a href="../conta/">Fazer login</a></p>
+  </div>
+
+  <div id="admin-content" hidden>
+    <header class="verse-head"><h1>Painel Admin</h1></header>
+    <p class="admin-greeting read"></p>
+
+    <section class="admin-section">
+      <h2>Sobre o projeto</h2>
+      <ul class="admin-info">
+        <li>Versículos: <a href="../ler/">Ler a Bíblia</a></li>
+        <li>Temas curados: <a href="../temas/">Temas</a></li>
+        <li>Dicionário: <a href="../dicionario/">Dicionário</a></li>
+        <li>Mapas: <a href="../mapas/">Atlas</a></li>
+        <li>Planos: <a href="../planos/">Planos de leitura</a></li>
+      </ul>
+    </section>
+
+    <section class="admin-section">
+      <h2>Repositório</h2>
+      <p class="read">
+        Código-fonte e dados em <a href="https://github.com/Alusionbr/bibliaonline" target="_blank" rel="noopener">
+        github.com/Alusionbr/bibliaonline</a>.
+      </p>
+    </section>
+
+    <section class="admin-section">
+      <h2>Sessão</h2>
+      <div id="admin-session-info" class="admin-info admin-mono"></div>
+      <button type="button" id="admin-logout" class="btn ghost" style="margin-top:14px">Sair da conta</button>
+    </section>
+  </div>
+</main>"""
+
+    # footer da /admin/: usa o footer padrão e injeta admin.js antes de fechar
+    base_footer = footer(prefix)
+    admin_footer = base_footer.replace(
+        '</body></html>',
+        f'<script src="{prefix}assets/admin.js?v={ASSET_VER}" defer></script>\n</body></html>'
+    )
+    out = SITE / "admin" / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(head(title, desc, canonical, prefix) + nav(prefix) + body + admin_footer, encoding="utf-8")
 
 def build_meta(verses, articles, order, struct, topics=None, glossary=None, places=None, plans=None):
     # sitemap
@@ -2617,6 +2660,7 @@ def main():
     build_offline_page()
     build_annotations_page()
     build_login_page()
+    build_admin_page()
     n_idx = build_search_index(verses, articles, topics, glossary, places, plans)
     build_random_pool(verses)
     n = len(verses)

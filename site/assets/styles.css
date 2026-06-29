@@ -700,3 +700,41 @@ html.dark .plan-day{background:var(--paper)}
 .btn.ghost{background:transparent;color:var(--gold-deep);border:1px solid var(--gold-deep)}
 .btn.ghost:hover{background:rgba(177,135,60,.08);color:var(--gold)}
 @media (prefers-reduced-motion: reduce){ .hw-pop{animation:none} }
+
+/* nav: avatar de conta logado */
+a.auth-link{display:grid;place-items:center;text-decoration:none;color:var(--ink)}
+a.auth-link.auth-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--gold-deep);color:var(--paper);
+  font-family:"Inter",system-ui,sans-serif;font-size:.85rem;font-weight:700;
+  line-height:1;border:none;cursor:pointer
+}
+a.auth-link.auth-avatar:hover{background:var(--gold)}
+
+/* dropdown de conta */
+.auth-dropdown{
+  position:absolute;z-index:200;min-width:200px;
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 12px 36px rgba(30,22,10,.18);padding:6px 0;
+  font-family:"Inter",system-ui,sans-serif;font-size:.9rem
+}
+.auth-dd-email{padding:10px 16px 6px;color:var(--muted);font-size:.82rem;
+  border-bottom:1px solid var(--line);margin-bottom:4px;word-break:break-all}
+.auth-dd-item{display:block;width:100%;padding:9px 16px;text-align:left;
+  text-decoration:none;color:var(--ink);background:none;border:none;
+  font-family:inherit;font-size:.9rem;cursor:pointer}
+.auth-dd-item:hover{background:var(--vellum-2);color:var(--ink)}
+.auth-dd-logout{color:var(--muted)}
+html.dark .auth-dropdown{background:var(--dark-2);border-color:var(--line-2)}
+html.dark .auth-dd-item:hover{background:rgba(255,255,255,.06)}
+
+/* página /admin/ */
+.admin-section{max-width:var(--read);margin:32px auto 0;
+  border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.admin-section h2{font-size:1.1rem;margin:0 0 12px;color:var(--gold-deep)}
+.admin-info{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;
+  font-family:"Inter",system-ui,sans-serif;font-size:.9rem;color:var(--ink-soft)}
+.admin-mono{gap:6px;font-size:.82rem;color:var(--muted);font-family:monospace,monospace;display:flex;
+  flex-direction:column}
+.admin-greeting{color:var(--gold-deep);font-family:"Inter",system-ui,sans-serif;
+  font-weight:600;text-align:center;margin:8px 0 24px}

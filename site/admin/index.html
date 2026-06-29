@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-jotwqeJaSEyV2cb7xkudhWqRQXpvoODJF7SZFd/LVjk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://pxqhpntifbtjaoqtirao.supabase.co; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Admin | Bíblia em Contexto</title>
+<meta name="description" content="Área administrativa — restrita a staff.">
+<meta name="robots" content="index, follow, noai, noimageai">
+<link rel="canonical" href="https://alusionbr.github.io/bibliaonline/admin/">
+<meta name="theme-color" content="#1a1610">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Admin | Bíblia em Contexto">
+<meta property="og:description" content="Área administrativa — restrita a staff.">
+<meta property="og:site_name" content="Bíblia em Contexto">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/styles.css?v=0dccba77">
+</head>
+<body>
+<script>(function(){try{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.context')==='on')d.classList.add('ctx-on');}catch(e){}})();</script>
+<a class="skip" href="#main">Pular para o conteúdo</a>
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">ב</span>
+      <span class="brand-name">Bíblia em Contexto</span>
+    </a>
+    <div class="reader-tools">
+      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
+      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
+      <button type="button" class="rt" data-rt="context" aria-pressed="false" aria-label="Mostrar contexto judaico" title="Contexto judaico (comentário rabínico e leitura judaica)">📜</button>
+      <a href="../conta/" class="rt auth-link" aria-label="Entrar na conta" title="Entrar">👤</a>
+    </div>
+    <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
+    <div class="nav-links" data-links>
+      <a href="../ler/">Bíblia</a>
+      <a href="../planos/">Planos</a>
+      <a href="../temas/">Temas</a>
+      <a href="../dicionario/">Dicionário</a>
+      <a href="../mapas/">Mapas</a>
+      <a href="../linha-do-tempo/">Linha do tempo</a>
+      <a href="../anotacoes/">Anotações</a>
+    </div>
+  </div>
+</nav>
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="../index.html">Início</a> · Admin</p>
+
+  <div id="admin-loading" style="text-align:center;padding:40px">
+    <p>Verificando acesso…</p>
+  </div>
+
+  <div id="admin-denied" hidden style="text-align:center;padding:40px">
+    <header class="verse-head"><h1>Acesso restrito</h1></header>
+    <p class="read" style="color:var(--muted)">Esta área é restrita a administradores.
+    <a href="../conta/">Fazer login</a></p>
+  </div>
+
+  <div id="admin-content" hidden>
+    <header class="verse-head"><h1>Painel Admin</h1></header>
+    <p class="admin-greeting read"></p>
+
+    <section class="admin-section">
+      <h2>Sobre o projeto</h2>
+      <ul class="admin-info">
+        <li>Versículos: <a href="../ler/">Ler a Bíblia</a></li>
+        <li>Temas curados: <a href="../temas/">Temas</a></li>
+        <li>Dicionário: <a href="../dicionario/">Dicionário</a></li>
+        <li>Mapas: <a href="../mapas/">Atlas</a></li>
+        <li>Planos: <a href="../planos/">Planos de leitura</a></li>
+      </ul>
+    </section>
+
+    <section class="admin-section">
+      <h2>Repositório</h2>
+      <p class="read">
+        Código-fonte e dados em <a href="https://github.com/Alusionbr/bibliaonline" target="_blank" rel="noopener">
+        github.com/Alusionbr/bibliaonline</a>.
+      </p>
+    </section>
+
+    <section class="admin-section">
+      <h2>Sessão</h2>
+      <div id="admin-session-info" class="admin-info admin-mono"></div>
+      <button type="button" id="admin-logout" class="btn ghost" style="margin-top:14px">Sair da conta</button>
+    </section>
+  </div>
+</main>
+<footer class="footer">
+  <div class="footer-in">
+    <div>
+      <strong>Bíblia em Contexto</strong>
+      <p>Estudo bíblico com os idiomas originais, manuscritos e fontes rastreáveis. Texto bíblico de domínio público; comentários originais.</p>
+    </div>
+    <div class="cols">
+      <div>
+        <a href="../index.html#versiculos">Versículos</a>
+        <a href="../temas/">Temas</a>
+        <a href="../index.html#artigos">Artigos</a>
+      </div>
+      <div>
+        <a href="../index.html#fontes">Fontes e licenças</a>
+        <a href="../index.html#metodologia">Metodologia</a>
+        <a href="../index.html#topo">Voltar ao topo ↑</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="../assets/app.js?v=0dccba77"></script>
+<script src="../assets/supabase-auth.js?v=0dccba77" defer></script>
+<script src="../assets/study.js?v=0dccba77" defer></script>
+<script src="../assets/admin.js?v=0dccba77" defer></script>
+</body></html>
