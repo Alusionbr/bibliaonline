@@ -127,33 +127,87 @@
   async function renderAccount(){
     var app=document.getElementById('conta-app'); if(!app) return; clear(app);
     if(!state.user){
-      var nameI = h('input',{type:'text', id:'login-name', placeholder:'Como quer ser chamado(a)', autocomplete:'name', value:nameHint()});
-      var email = h('input',{type:'email', id:'login-email', placeholder:'voce@email.com', autocomplete:'email'});
-      var btn = h('button',{class:'btn primary', type:'button', text:'Enviar link de acesso', on:{click:async function(){
-        var v=(email.value||'').trim();
-        var nm=(nameI.value||'').trim();
-        if(!v || v.indexOf('@')<0){ toast('Digite um e-mail válido.','err'); return; }
-        btn.disabled=true; btn.textContent='Enviando…';
+      function authErrMsg(e){
+        var m=(e&&e.message)||'';
+        if(/invalid.login/i.test(m)||/invalid.credentials/i.test(m)||/invalid password/i.test(m)) return 'E-mail ou senha incorretos.';
+        if(/email.not.confirmed/i.test(m)) return 'Confirme seu e-mail antes de entrar.';
+        if(/user.already.registered/i.test(m)||/already.registered/i.test(m)) return 'E-mail já cadastrado. Tente entrar com sua senha.';
+        if(/password.*characters/i.test(m)||/should be at least/i.test(m)) return 'Senha deve ter pelo menos 6 caracteres.';
+        if(/rate.limit/i.test(m)) return 'Muitas tentativas. Aguarde alguns minutos.';
+        return m||'Erro inesperado. Tente novamente.';
+      }
+      var nameI = h('input',{type:'text', id:'login-name', placeholder:'Seu nome (novo cadastro)', autocomplete:'name', value:nameHint()});
+      var emailI = h('input',{type:'email', id:'login-email', placeholder:'voce@email.com', autocomplete:'email'});
+      var passI = h('input',{type:'password', id:'login-pass', placeholder:'Senha (mín. 6 caracteres)', autocomplete:'current-password'});
+      var btnEnter = h('button',{class:'btn primary', type:'button', text:'Entrar', on:{click:async function(){
+        var v=(emailI.value||'').trim(), pw=(passI.value||'');
+        if(!v||v.indexOf('@')<0){ toast('Digite um e-mail válido.','err'); return; }
+        if(!pw){ toast('Digite sua senha.','err'); return; }
+        btnEnter.disabled=true; btnEnter.textContent='Entrando…';
         try {
-          // nome vai como metadado do usuário; o trigger handle_new_user o copia
-          // para profiles.name no 1º acesso. Guardamos também um lembrete local
-          // (fallback) caso o e-mail já existisse antes.
-          if(nm) setNameHint(nm);
-          var r= await sb.auth.signInWithOtp({ email:v, options:{ emailRedirectTo: url('conta/'), data: nm?{ name:nm }:undefined } });
+          var r= await sb.auth.signInWithPassword({ email:v, password:pw });
           if(r.error) throw r.error;
-          clear(app); app.appendChild(h('div',{class:'cloud-card'},[
-            h('h2',{text:'Verifique seu e-mail'}),
-            h('p',{class:'read', text:'Enviamos um link de acesso para '+v+'. Abra no mesmo aparelho para entrar — sem senha.'})
-          ]));
-        } catch(e){ toast('Não foi possível enviar: '+(e.message||e),'err'); btn.disabled=false; btn.textContent='Enviar link de acesso'; }
+        } catch(e){ toast(authErrMsg(e),'err'); btnEnter.disabled=false; btnEnter.textContent='Entrar'; }
+      }}});
+      var btnSign = h('button',{class:'btn ghost', type:'button', text:'Criar conta', on:{click:async function(){
+        var v=(emailI.value||'').trim(), pw=(passI.value||''), nm=(nameI.value||'').trim();
+        if(!v||v.indexOf('@')<0){ toast('Digite um e-mail válido.','err'); return; }
+        if(pw.length<6){ toast('Senha deve ter pelo menos 6 caracteres.','err'); return; }
+        if(nm.length<2){ toast('Informe seu nome (campo acima).','err'); return; }
+        btnSign.disabled=true; btnSign.textContent='Criando…';
+        if(nm) setNameHint(nm);
+        try {
+          var r= await sb.auth.signUp({ email:v, password:pw, options:{ emailRedirectTo: url('conta/'), data:{ name:nm } } });
+          if(r.error) throw r.error;
+          if(r.data && r.data.session){
+            // auto-confirm ativo: sessão aberta, onAuthStateChange dispara refresh
+          } else {
+            clear(app); app.appendChild(h('div',{class:'cloud-card'},[
+              h('h2',{text:'Verifique seu e-mail'}),
+              h('p',{class:'read', text:'Enviamos um link de confirmação para '+v+'. Abra-o para ativar sua conta e entrar.'})
+            ]));
+          }
+        } catch(e){ toast(authErrMsg(e),'err'); btnSign.disabled=false; btnSign.textContent='Criar conta'; }
+      }}});
+      var btnGoogle = h('button',{class:'btn oauth google', type:'button', text:'Entrar com Google', on:{click:async function(){
+        var r= await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: url('conta/') } });
+        if(r.error) toast('Google: '+(r.error.message||'erro'),'err');
+      }}});
+      var btnApple = h('button',{class:'btn oauth apple', type:'button', text:'Entrar com Apple', on:{click:async function(){
+        var r= await sb.auth.signInWithOAuth({ provider:'apple', options:{ redirectTo: url('conta/') } });
+        if(r.error) toast('Apple: '+(r.error.message||'erro'),'err');
+      }}});
+      // magic link como opção secundária (discreta)
+      var magicSec = h('div',{class:'magic-link-sec'});
+      magicSec.style.display='none';
+      var magicEmail = h('input',{type:'email', id:'login-email-magic', placeholder:'voce@email.com', autocomplete:'email'});
+      var btnMagic = h('button',{class:'btn ghost', type:'button', text:'Enviar link', on:{click:async function(){
+        var v=(magicEmail.value||'').trim();
+        if(!v||v.indexOf('@')<0){ toast('Digite um e-mail válido.','err'); return; }
+        btnMagic.disabled=true; btnMagic.textContent='Enviando…';
+        try {
+          var r= await sb.auth.signInWithOtp({ email:v, options:{ emailRedirectTo: url('conta/') } });
+          if(r.error) throw r.error;
+          clear(magicSec); magicSec.appendChild(h('p',{class:'read', text:'Link enviado para '+v+'. Abra no mesmo aparelho.'}));
+        } catch(e){ toast('Não foi possível enviar: '+(e.message||e),'err'); btnMagic.disabled=false; btnMagic.textContent='Enviar link'; }
+      }}});
+      magicSec.appendChild(h('label',{class:'cloud-label', for:'login-email-magic', text:'E-mail para link mágico'}));
+      magicSec.appendChild(magicEmail);
+      magicSec.appendChild(btnMagic);
+      var toggleMagic = h('button',{class:'btn link', type:'button', text:'Entrar com link por e-mail (sem senha)', on:{click:function(){
+        magicSec.style.display = magicSec.style.display==='none' ? 'grid' : 'none';
       }}});
       app.appendChild(h('div',{class:'cloud-card'},[
         h('h2',{text:'Entrar ou criar conta'}),
-        h('p',{class:'read', text:'A leitura da Bíblia continua livre, sem conta. A conta serve só para os grupos de estudo: você recebe um link mágico no e-mail (sem senha) e pronto.'}),
-        h('label',{class:'cloud-label', for:'login-name', text:'Seu nome'}),
-        nameI,
-        h('label',{class:'cloud-label', for:'login-email', text:'E-mail'}),
-        email, btn
+        h('p',{class:'read', text:'A leitura da Bíblia continua livre, sem conta. A conta serve só para os grupos de estudo.'}),
+        h('label',{class:'cloud-label', for:'login-name', text:'Nome (para novo cadastro)'}), nameI,
+        h('label',{class:'cloud-label', for:'login-email', text:'E-mail'}), emailI,
+        h('label',{class:'cloud-label', for:'login-pass', text:'Senha'}), passI,
+        h('div',{class:'cloud-row'},[btnEnter, btnSign]),
+        h('div',{class:'cloud-divider', text:'ou continue com'}),
+        h('div',{class:'oauth-row'},[btnGoogle, btnApple]),
+        h('div',{class:'cloud-divider'}),
+        toggleMagic, magicSec
       ]));
       return;
     }

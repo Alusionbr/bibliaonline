@@ -557,3 +557,20 @@ def test_comunidade_sql_migration_presente():
     for tok in ["create_group", "save_profile", "is_staff", "group_topics",
                 "suggestions", "rl_guard", "gm_insert_self_pending"]:
         assert tok in txt, tok
+
+
+# ---------------------------------------------------------------------------
+# Login por e-mail+senha + OAuth (Google, Apple).
+# ---------------------------------------------------------------------------
+def test_login_email_senha_e_oauth(site):
+    cloud = (site / "assets" / "cloud.js").read_text("utf-8")
+    # login por senha
+    assert "signInWithPassword" in cloud
+    # criação de conta com senha
+    assert "signUp" in cloud
+    # OAuth (Google + Apple)
+    assert "signInWithOAuth" in cloud
+    assert "provider:'google'" in cloud
+    assert "provider:'apple'" in cloud
+    # link mágico mantido como opção secundária
+    assert "signInWithOtp" in cloud
