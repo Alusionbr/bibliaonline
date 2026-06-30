@@ -2105,12 +2105,13 @@ def build_study_js():
     var s=cloudSession||readSession(), logged=!!(s&&s.user);
     var ov=document.createElement('div'); ov.className='bec-modal';
     ov.innerHTML='<div class="bec-modal-box auth-box">'+
-      '<p><b>'+(logged?'Sua conta':'Entrar na conta')+'</b></p>'+
+      '<p><b>'+(logged?'Sua conta':'Entrar ou criar conta')+'</b></p>'+
       (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
       (logged?'<p>'+esc(s.user.email||'')+'</p><div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Fechar</button><button type="button" class="btn danger" data-logout>Sair</button></div>':
+      '<p class="auth-help">Se ainda não tem conta, digite seu email e uma senha e toque em Criar conta.</p>'+
       '<label>Email<br><input type="email" data-email autocomplete="email"></label><br>'+
       '<label>Senha<br><input type="password" data-pass autocomplete="current-password"></label>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-signup>Criar conta</button><button type="button" class="btn primary" data-login>Entrar</button></div>')+
+      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-login>Entrar</button><button type="button" class="btn primary" data-signup>Criar conta</button></div>')+
       '</div>';
     ov.addEventListener('click', function(e){
       if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
