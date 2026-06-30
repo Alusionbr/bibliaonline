@@ -521,7 +521,16 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 .bec-modal-box{background:var(--paper);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;
   box-shadow:var(--shadow);font-family:"Inter",system-ui,sans-serif}
 .bec-modal-box p{margin:0 0 16px}
-.bec-modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.bec-modal-box label{display:block;margin:0 0 12px;color:var(--ink-soft);font-weight:600}
+.bec-modal-box input{width:100%;margin-top:5px;border:1px solid var(--line);background:#fff;color:var(--ink);
+  border-radius:10px;padding:11px 12px;font:inherit;outline:0}
+.bec-modal-box input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(177,135,60,.18)}
+.auth-help{color:var(--muted);font-size:.92rem}
+.bec-modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.bec-modal .btn.ghost{border-color:var(--line);color:var(--ink-soft);background:var(--vellum-2)}
+.bec-modal .btn.ghost:hover{background:#fff;color:var(--ink);border-color:var(--gold)}
+.bec-modal .btn.primary{border:1px solid var(--gold-deep)}
+.bec-modal .btn:disabled{opacity:.72;cursor:wait}
 .btn.danger{background:#b3261e;color:#fff;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:600}
 .btn.danger:hover{background:#8f1e17}
 

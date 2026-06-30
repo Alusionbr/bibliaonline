@@ -2101,6 +2101,21 @@ def build_study_js():
     b.textContent=s && s.user && s.user.email ? 'Conta' : 'Entrar';
     b.title=s && s.user && s.user.email ? s.user.email : 'Entrar ou criar conta';
   }
+  function normalizeAuth(res){
+    if(!res) return null;
+    if(res.session) return {
+      access_token:res.session.access_token,
+      refresh_token:res.session.refresh_token,
+      expires_at:res.session.expires_at,
+      user:res.user || res.session.user
+    };
+    return {
+      access_token:res.access_token,
+      refresh_token:res.refresh_token,
+      expires_at:res.expires_at,
+      user:res.user
+    };
+  }
   function showAccount(msg){
     var s=cloudSession||readSession(), logged=!!(s&&s.user);
     var ov=document.createElement('div'); ov.className='bec-modal';
@@ -2117,17 +2132,22 @@ def build_study_js():
       if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
       if(e.target.closest && e.target.closest('[data-logout]')){ cloudFetch('/auth/v1/logout',{method:'POST',token:s.access_token}).catch(function(){}); writeSession(null); ov.remove(); }
       if(e.target.closest && (e.target.closest('[data-login]')||e.target.closest('[data-signup]'))){
+        e.preventDefault();
         var email=ov.querySelector('[data-email]').value.trim(), pass=ov.querySelector('[data-pass]').value;
         var signup=!!e.target.closest('[data-signup]');
         if(!email || pass.length<8){ ov.remove(); showAccount('Informe email e senha com pelo menos 8 caracteres.'); return; }
+        var clicked=e.target.closest('[data-login]')||e.target.closest('[data-signup]');
+        clicked.disabled=true; clicked.textContent=signup?'Criando...':'Entrando...';
         var path=signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
         cloudFetch(path,{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(function(res){
-          if(signup && !res.access_token) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})});
-          return res;
+          var auth=normalizeAuth(res);
+          if(signup && (!auth || !auth.access_token)) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(normalizeAuth);
+          return auth;
         }).then(function(res){
+          if(!res || !res.access_token || !res.user) throw new Error('auth');
           writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
           return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); });
-        }).then(function(){ ov.remove(); location.reload(); }).catch(function(){ ov.remove(); showAccount('Nao foi possivel entrar. Confira email e senha.'); });
+        }).then(function(){ ov.remove(); location.reload(); }).catch(function(err){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.'); });
       }
     });
     document.body.appendChild(ov);
