@@ -2153,6 +2153,52 @@ def build_study_js():
     document.body.appendChild(ov);
     var emailInput=ov.querySelector('[data-email]'); if(emailInput) emailInput.focus();
   }
+  function showAccount(msg, mode, vals){
+    var s=cloudSession||readSession(), logged=!!(s&&s.user);
+    mode=mode||'signup'; vals=vals||{};
+    var signupMode=mode!=='login';
+    var ov=document.createElement('div'); ov.className='bec-modal';
+    ov.innerHTML='<div class="bec-modal-box auth-box">'+
+      '<p><b>'+(logged?'Sua conta':(signupMode?'Criar conta':'Entrar na conta'))+'</b></p>'+
+      (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
+      (logged?'<p>'+esc(s.user.email||'')+'</p><div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Fechar</button><button type="button" class="btn danger" data-logout>Sair</button></div>':
+      '<p class="auth-help">'+(signupMode?'Digite seu email e crie uma senha com pelo menos 8 caracteres.':'Entre com o email e a senha que voce cadastrou.')+'</p>'+
+      '<label>Email<br><input type="email" data-email autocomplete="email" value="'+esc(vals.email||'')+'"></label><br>'+
+      '<label>Senha<br><input type="password" data-pass autocomplete="'+(signupMode?'new-password':'current-password')+'" value="'+esc(vals.pass||'')+'"></label>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-switch="'+(signupMode?'login':'signup')+'">'+(signupMode?'Ja tenho conta':'Criar conta')+'</button><button type="button" class="btn primary" data-auth="'+(signupMode?'signup':'login')+'">'+(signupMode?'Criar conta':'Entrar')+'</button></div>')+
+      '</div>';
+    ov.addEventListener('click', function(e){
+      if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
+      if(e.target.closest && e.target.closest('[data-logout]')){ cloudFetch('/auth/v1/logout',{method:'POST',token:s.access_token}).catch(function(){}); writeSession(null); ov.remove(); }
+      var sw=e.target.closest && e.target.closest('[data-switch]');
+      if(sw){
+        e.preventDefault();
+        var curEmail=ov.querySelector('[data-email]').value.trim(), curPass=ov.querySelector('[data-pass]').value;
+        ov.remove(); showAccount('', sw.getAttribute('data-switch'), {email:curEmail, pass:curPass});
+        return;
+      }
+      var authBtn=e.target.closest && e.target.closest('[data-auth]');
+      if(authBtn){
+        e.preventDefault();
+        var email=ov.querySelector('[data-email]').value.trim(), pass=ov.querySelector('[data-pass]').value;
+        var signup=authBtn.getAttribute('data-auth')==='signup';
+        if(!email || pass.length<8){ ov.remove(); showAccount('Informe email e senha com pelo menos 8 caracteres.', signup?'signup':'login', {email:email, pass:pass}); return; }
+        authBtn.disabled=true; authBtn.textContent=signup?'Criando...':'Entrando...';
+        var path=signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
+        cloudFetch(path,{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(function(res){
+          var auth=normalizeAuth(res);
+          if(signup && (!auth || !auth.access_token)) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(normalizeAuth);
+          return auth;
+        }).then(function(res){
+          if(!res || !res.access_token || !res.user) throw new Error('auth');
+          writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
+          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); });
+        }).then(function(){ ov.remove(); location.reload(); }).catch(function(){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.', signup?'signup':'login', {email:email}); });
+      }
+    });
+    document.body.appendChild(ov);
+    var emailInput=ov.querySelector('[data-email]'); if(emailInput) emailInput.focus();
+  }
   function makeAccountButton(){
     if(!cloudReady() || document.querySelector('[data-account]')) return;
     var tools=document.querySelector('.reader-tools') || document.body;

@@ -527,7 +527,8 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 .bec-modal-box input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(177,135,60,.18)}
 .auth-help{color:var(--muted);font-size:.92rem}
 .bec-modal-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
-.bec-modal .btn.ghost{border-color:var(--line);color:var(--ink-soft);background:var(--vellum-2)}
+.bec-modal .btn{min-height:46px;justify-content:center}
+.bec-modal .btn.ghost{border:1px solid var(--gold-deep);color:var(--ink);background:#fff}
 .bec-modal .btn.ghost:hover{background:#fff;color:var(--ink);border-color:var(--gold)}
 .bec-modal .btn.primary{border:1px solid var(--gold-deep)}
 .bec-modal .btn:disabled{opacity:.72;cursor:wait}
