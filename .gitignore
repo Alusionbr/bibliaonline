@@ -7,3 +7,5 @@ __pycache__/
 gcm-trace.log
 .pytest_cache/
 .coverage
+
+site/assets/supabase-config.js

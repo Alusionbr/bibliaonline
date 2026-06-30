@@ -269,6 +269,7 @@ def footer(prefix):
     </div>
   </div>
 </footer>
+<script src="{prefix}assets/supabase-config.js"></script>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 </body></html>"""

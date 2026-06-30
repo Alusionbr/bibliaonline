@@ -37,6 +37,22 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Build static site
+        run: python3 scripts/build.py
+
+      - name: Generate Supabase config
+        env:
+          SUPABASE_URL: https://pxqhpntifbtjaoqtirao.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "SUPABASE_PUBLISHABLE_KEY is not configured" >&2
+            exit 1
+          fi
+
+          mkdir -p site/assets
+          node -e "const fs = require('fs'); const config = { url: process.env.SUPABASE_URL, publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY }; fs.writeFileSync('site/assets/supabase-config.js', 'window.BEC_SUPABASE_CONFIG = ' + JSON.stringify(config, null, 2) + ';\\n');"
+
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
