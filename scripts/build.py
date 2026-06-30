@@ -184,7 +184,7 @@ CSP = "; ".join([
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https:",
-    "connect-src 'self'",
+    "connect-src 'self' https://pxqhpntifbtjaoqtirao.supabase.co",
     "manifest-src 'self'",
     "worker-src 'self'",
     "form-action 'self'",
@@ -1862,7 +1862,7 @@ def build_study_js():
 // Tudo salvo no localStorage deste navegador. Nada vai para servidor.
 (function(){
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
-  function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){}}
+  function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){} if(k==='notes'||k==='vhl'||k==='whl'||k==='favorites') scheduleCloudSync();}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   // referência "Livro c:v" → slug e URL absoluta do versículo (BEC_BASE injetado no build)
   function refToSlug(ref){
@@ -2005,7 +2005,142 @@ def build_study_js():
   }
 
   // ---------- seta de ferramentas ocultas (salvar/compartilhar, anotações, apagar) ----------
-  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); }
+  // ---------- conta e sincronizacao Supabase ----------
+  var cloudSession=null, cloudTimer=null, cloudBusy=false;
+  var SESSION_KEY='bec.supabase.session';
+  function cfg(){ return window.BEC_SUPABASE_CONFIG || null; }
+  function cloudReady(){ var c=cfg(); return !!(c && c.url && c.publishableKey && window.fetch); }
+  function readSession(){ try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null');}catch(e){return null;} }
+  function writeSession(s){ cloudSession=s||null; try{ if(s) localStorage.setItem(SESSION_KEY, JSON.stringify(s)); else localStorage.removeItem(SESSION_KEY); }catch(e){} updateAccountButton(); }
+  function authHeaders(token){
+    var c=cfg();
+    return {'apikey':c.publishableKey,'Authorization':'Bearer '+(token||c.publishableKey),'Content-Type':'application/json'};
+  }
+  function cloudFetch(path, opts){
+    opts=opts||{}; opts.headers=Object.assign(authHeaders(opts.token), opts.headers||{});
+    delete opts.token;
+    return fetch(cfg().url+path, opts).then(function(r){
+      if(!r.ok) return r.text().then(function(t){ throw new Error(t||r.statusText); });
+      if(r.status===204) return null;
+      return r.json();
+    });
+  }
+  function ensureFreshSession(){
+    var s=cloudSession||readSession();
+    if(!s || !s.access_token) return Promise.resolve(null);
+    cloudSession=s;
+    var now=Math.floor(Date.now()/1000);
+    if(s.expires_at && s.expires_at-now>60) return Promise.resolve(s);
+    if(!s.refresh_token) return Promise.resolve(s);
+    return cloudFetch('/auth/v1/token?grant_type=refresh_token', {
+      method:'POST',
+      body:JSON.stringify({refresh_token:s.refresh_token})
+    }).then(function(n){
+      var ns={access_token:n.access_token,refresh_token:n.refresh_token||s.refresh_token,expires_at:n.expires_at,user:n.user||s.user};
+      writeSession(ns); return ns;
+    }).catch(function(){ writeSession(null); return null; });
+  }
+  function statePayload(){
+    return {
+      user_id:cloudSession && cloudSession.user && cloudSession.user.id,
+      notes:load('notes'),
+      verse_highlights:load('vhl'),
+      word_highlights:load('whl'),
+      favorites:load('favorites'),
+      preferences:{
+        theme:localStorage.getItem('bec.theme')||'',
+        fontscale:localStorage.getItem('bec.fontscale')||'',
+        context:localStorage.getItem('bec.context')||'',
+        bookorder:localStorage.getItem('bec.bookorder')||'',
+        lastRead:(function(){try{return JSON.parse(localStorage.getItem('bec.lastRead')||'null');}catch(e){return null;}})()
+      },
+      updated_at:new Date().toISOString()
+    };
+  }
+  function mergeObj(a,b){ var out={}, k; a=a||{}; b=b||{}; for(k in a) out[k]=a[k]; for(k in b) out[k]=b[k]; return out; }
+  function applyRemote(row){
+    if(!row) return false;
+    function put(k,v){ try{localStorage.setItem('bec.'+k,JSON.stringify(v||{}));}catch(e){} }
+    put('notes', mergeObj(row.notes, load('notes')));
+    put('vhl', mergeObj(row.verse_highlights, load('vhl')));
+    put('whl', mergeObj(row.word_highlights, load('whl')));
+    put('favorites', mergeObj(row.favorites, load('favorites')));
+    return true;
+  }
+  function pullCloud(){
+    return ensureFreshSession().then(function(s){
+      if(!s) return null;
+      var id=encodeURIComponent(s.user.id);
+      return cloudFetch('/rest/v1/user_study_state?select=notes,verse_highlights,word_highlights,favorites,preferences&user_id=eq.'+id+'&limit=1', {token:s.access_token})
+        .then(function(rows){ return rows && rows[0] ? rows[0] : null; });
+    });
+  }
+  function pushCloud(){
+    return ensureFreshSession().then(function(s){
+      if(!s || !cloudSession.user) return null;
+      return cloudFetch('/rest/v1/user_study_state?on_conflict=user_id', {
+        method:'POST',
+        token:s.access_token,
+        headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+        body:JSON.stringify([statePayload()])
+      });
+    });
+  }
+  function scheduleCloudSync(){
+    if(!cloudReady() || !cloudSession || cloudBusy) return;
+    clearTimeout(cloudTimer);
+    cloudTimer=setTimeout(function(){
+      cloudBusy=true;
+      pushCloud().catch(function(){}).then(function(){ cloudBusy=false; updateAccountButton(); });
+    }, 700);
+  }
+  function updateAccountButton(){
+    var b=document.querySelector('[data-account]');
+    if(!b) return;
+    var s=cloudSession||readSession();
+    b.textContent=s && s.user && s.user.email ? 'Conta' : 'Entrar';
+    b.title=s && s.user && s.user.email ? s.user.email : 'Entrar ou criar conta';
+  }
+  function showAccount(msg){
+    var s=cloudSession||readSession(), logged=!!(s&&s.user);
+    var ov=document.createElement('div'); ov.className='bec-modal';
+    ov.innerHTML='<div class="bec-modal-box auth-box">'+
+      '<p><b>'+(logged?'Sua conta':'Entrar na conta')+'</b></p>'+
+      (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
+      (logged?'<p>'+esc(s.user.email||'')+'</p><div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Fechar</button><button type="button" class="btn danger" data-logout>Sair</button></div>':
+      '<label>Email<br><input type="email" data-email autocomplete="email"></label><br>'+
+      '<label>Senha<br><input type="password" data-pass autocomplete="current-password"></label>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-signup>Criar conta</button><button type="button" class="btn primary" data-login>Entrar</button></div>')+
+      '</div>';
+    ov.addEventListener('click', function(e){
+      if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
+      if(e.target.closest && e.target.closest('[data-logout]')){ cloudFetch('/auth/v1/logout',{method:'POST',token:s.access_token}).catch(function(){}); writeSession(null); ov.remove(); }
+      if(e.target.closest && (e.target.closest('[data-login]')||e.target.closest('[data-signup]'))){
+        var email=ov.querySelector('[data-email]').value.trim(), pass=ov.querySelector('[data-pass]').value;
+        var signup=!!e.target.closest('[data-signup]');
+        if(!email || pass.length<8){ ov.remove(); showAccount('Informe email e senha com pelo menos 8 caracteres.'); return; }
+        var path=signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
+        cloudFetch(path,{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(function(res){
+          if(signup && !res.access_token) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})});
+          return res;
+        }).then(function(res){
+          writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
+          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); });
+        }).then(function(){ ov.remove(); location.reload(); }).catch(function(){ ov.remove(); showAccount('Nao foi possivel entrar. Confira email e senha.'); });
+      }
+    });
+    document.body.appendChild(ov);
+    var emailInput=ov.querySelector('[data-email]'); if(emailInput) emailInput.focus();
+  }
+  function makeAccountButton(){
+    if(!cloudReady() || document.querySelector('[data-account]')) return;
+    var tools=document.querySelector('.reader-tools') || document.body;
+    var b=document.createElement('button'); b.type='button'; b.className='rt'; b.setAttribute('data-account',''); b.title='Entrar ou criar conta'; b.textContent='Entrar';
+    b.onclick=function(){ showAccount(); };
+    tools.appendChild(b);
+    ensureFreshSession().then(function(s){ if(s){ writeSession(s); pullCloud().then(function(row){ if(applyRemote(row)) scheduleCloudSync(); }); } else updateAccountButton(); });
+  }
+  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); scheduleCloudSync(); }
   function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return exportText(allRefs(n,v,w),n,v,w); }
   function makeToolsMenu(){
     if(document.querySelector('.tools-fab')) return;
@@ -2299,6 +2434,7 @@ def build_study_js():
 
   function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
   setupAll();
+  makeAccountButton();
   makePenTools();
   makeToolsMenu();
   // versículos carregados por rolagem infinita também recebem as ferramentas
@@ -2378,7 +2514,7 @@ def build_study_js():
       .catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
     if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
-    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); }); };
+    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); scheduleCloudSync(); }); };
     var sh=document.getElementById('anot-share');
     if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
       if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }
