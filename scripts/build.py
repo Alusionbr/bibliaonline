@@ -2140,8 +2140,8 @@ def build_study_js():
     tools.appendChild(b);
     ensureFreshSession().then(function(s){ if(s){ writeSession(s); pullCloud().then(function(row){ if(applyRemote(row)) scheduleCloudSync(); }); } else updateAccountButton(); });
   }
-  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); scheduleCloudSync(); }
-  function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return exportText(allRefs(n,v,w),n,v,w); }
+  function clearAll(){ ['notes','vhl','whl','favorites'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); scheduleCloudSync(); }
+  function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'),f=load('favorites'); return exportText(allRefs(n,v,w,f),n,v,w,f); }
   function makeToolsMenu(){
     if(document.querySelector('.tools-fab')) return;
     var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
@@ -2172,6 +2172,7 @@ def build_study_js():
       '<button type="button" data-act="note" aria-label="Anotar" title="Anotar">🗒</button>'+
       '<button type="button" data-act="copy" aria-label="Copiar versículo" title="Copiar versículo">⧉</button>'+
       '<button type="button" data-act="share" aria-label="Compartilhar" title="Compartilhar">↗</button>';
+    bar.innerHTML='<button type="button" data-act="fav" aria-label="Favoritar" title="Favoritar">★</button>'+bar.innerHTML;
     document.body.appendChild(bar);
     return bar;
   }
@@ -2183,6 +2184,8 @@ def build_study_js():
     bar.setAttribute('data-ref', ref||'');
     var h=bar.querySelector('[data-act="vhl"]');
     if(h) h.classList.toggle('on', !!vhl[ref]);
+    var f=bar.querySelector('[data-act="fav"]');
+    if(f) f.classList.toggle('on', !!load('favorites')[ref]);
     var n=bar.querySelector('[data-act="note"]');
     if(n){
       var noteIsOpen=!!(activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden);
@@ -2230,6 +2233,7 @@ def build_study_js():
 
   function apply(cont, ref){
     if(load('vhl')[ref]) cont.classList.add('v-hl');
+    if(load('favorites')[ref]) cont.classList.add('fav');
     var notes=load('notes');
     if(notes[ref]){
       var ta=cont.querySelector('.note-box textarea');
@@ -2266,6 +2270,14 @@ def build_study_js():
     refreshStudyBar();
   }
 
+  function toggleFavorite(cont, ref, btn){
+    var all=load('favorites');
+    if(all[ref]){ delete all[ref]; cont.classList.remove('fav'); if(btn) btn.classList.remove('on'); }
+    else { all[ref]=1; cont.classList.add('fav'); if(btn) btn.classList.add('on'); }
+    save('favorites', all);
+    refreshStudyBar();
+  }
+
   document.addEventListener('click', function(e){
     var action=e.target.closest && e.target.closest('.study-context button, .note-actions button');
     if(action){
@@ -2275,7 +2287,8 @@ def build_study_js():
       if(!cont) return;
       var ref=cont.getAttribute('data-ref'), act=action.dataset.act;
       activateStudy(cont);
-      if(act==='vhl') toggleVerse(cont, ref, action);
+      if(act==='fav') toggleFavorite(cont, ref, action);
+      else if(act==='vhl') toggleVerse(cont, ref, action);
       else if(act==='note'){ var nb=cont.querySelector('.note-box'); setNoteOpen(cont, !(nb && !nb.hidden)); }
       else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), action);
       else if(act==='share') shareVerse(cont, ref, action);
@@ -2452,14 +2465,15 @@ def build_study_js():
     var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
     return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
   }
-  function allRefs(notes, vhl, whl){
-    var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
+  function allRefs(notes, vhl, whl, fav){
+    var s={}; [notes,vhl,whl,fav].forEach(function(o){ Object.keys(o||{}).forEach(function(r){ s[r]=1; }); });
     return Object.keys(s).sort();
   }
-  function exportText(keys, notes, vhl, whl){
+  function exportText(keys, notes, vhl, whl, fav){
     var out='Minhas anotações — Bíblia em Contexto\n\n';
     keys.forEach(function(ref){
       out+=ref+'\n';
+      if(fav && fav[ref]) out+='  [favorito]\n';
       if(vhl[ref]) out+='  [versículo grifado]\n';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -2476,8 +2490,9 @@ def build_study_js():
     a.click(); a.remove(); URL.revokeObjectURL(u);
   }
   function importData(obj){
-    var n=load('notes'), v=load('vhl'), w=load('whl');
+    var n=load('notes'), v=load('vhl'), w=load('whl'), f=load('favorites');
     if(obj.notes) Object.keys(obj.notes).forEach(function(r){ n[r]=obj.notes[r]; });
+    if(obj.favorites) Object.keys(obj.favorites).forEach(function(r){ f[r]=obj.favorites[r]; });
     if(obj.vhl) Object.keys(obj.vhl).forEach(function(r){ v[r]=obj.vhl[r]; });
     if(obj.whl) Object.keys(obj.whl).forEach(function(r){
       var rec=obj.whl[r]; w[r]=w[r]||{};
@@ -2486,14 +2501,15 @@ def build_study_js():
         rec[f].forEach(function(o){ if(!have[o.i]) ex.push(o); }); w[r][f]=ex;
       });
     });
-    save('notes',n); save('vhl',v); save('whl',w);
+    save('notes',n); save('vhl',v); save('whl',w); save('favorites',f);
   }
   function render(){
     var box=document.getElementById('anotacoes'); if(!box) return;
-    var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
+    var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), fav=load('favorites'), keys=allRefs(notes,vhl,whl,fav);
     if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e use “Grifar” ou “Anotar”.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
       var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
+      if(fav[ref]) h+='<p class="anot-tag">★ favorito</p>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -2508,15 +2524,15 @@ def build_study_js():
     render();
     var c=document.getElementById('anot-copy'), t=document.getElementById('anot-txt'),
         j=document.getElementById('anot-json'), x=document.getElementById('anot-clear');
-    function data(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return {keys:allRefs(n,v,w),notes:n,vhl:v,whl:w}; }
-    if(c) c.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
+    function data(){ var n=load('notes'),v=load('vhl'),w=load('whl'),f=load('favorites'); return {keys:allRefs(n,v,w,f),notes:n,vhl:v,whl:w,favorites:f}; }
+    if(c) c.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl,d.favorites);
       (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ c.textContent='Copiado!'; setTimeout(function(){c.textContent='Copiar tudo';},1500); })
       .catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
-    if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
-    if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
-    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); scheduleCloudSync(); }); };
+    if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl,d.favorites), 'text/plain'); };
+    if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl'),favorites:load('favorites')}, null, 2), 'application/json'); };
+    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl','favorites'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); scheduleCloudSync(); }); };
     var sh=document.getElementById('anot-share');
-    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
+    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl,d.favorites);
       if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }
       else (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ sh.textContent='Copiado!'; setTimeout(function(){sh.textContent='Compartilhar';},1500); }).catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     var imp=document.getElementById('anot-import'), impf=document.getElementById('anot-import-file');
