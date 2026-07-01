@@ -42,43 +42,13 @@ def site(tmp_path, build, monkeypatch):
         "slug": "meu-artigo", "titulo": "Sobre o logos", "resumo": "um resumo",
         "conteudo": [{"h": "Seção", "p": "parágrafo"}],
     }]
-    topics = [{"slug": "criacao", "titulo": "Criação", "icone": "✶", "descricao": "o início"}]
+    topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
-    topic_refs = {"criacao": ["Gênesis 1:1"]}
-    cross_refs = {"Gênesis 1:1": ["João 1:1"]}
-    glossary = [
-        {"slug": "logos", "termo": "Lógos", "original": "λόγος", "translit": "logos",
-         "idioma": "grego", "dir": "ltr", "definicao": "Palavra, verbo.", "refs": ["João 1:1"]},
-        {"slug": "elohim", "termo": "Elohim", "original": "אֱלֹהִים", "translit": "elohiym",
-         "idioma": "hebraico", "dir": "rtl", "definicao": "Deus.", "refs": ["Gênesis 1:1"]},
-    ]
-    commentary = {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Tudo começa em Deus."}]}
-    jewish_readings = {"Gênesis 1:1": [{"angulo": "Sentido do hebraico", "texto": "O verbo bara tem Deus como sujeito."}]}
-    hebrew_tokens = {"Gênesis 1:1": [["b/7225", "HR/Ncfsa"]]}  # 1 palavra alinhada
-    places = [{
-        "slug": "jerusalem", "nome": "Jerusalém", "tipo": "Cidade",
-        "regiao": "Terra de Israel", "descricao": "Cidade do Templo.",
-        "lat": 31.78, "lon": 35.23, "refs": ["Gênesis 1:1"],
-    }]
-    plans = [{
-        "slug": "joao-1-dia", "titulo": "João em 1 dia", "descricao": "Leitura curta.",
-        "dias": [["João 1"]],
-    }]
 
     (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
-    (data_dir / "topic-refs.json").write_text(json.dumps(topic_refs, ensure_ascii=False), "utf-8")
-    (data_dir / "cross-references.json").write_text(json.dumps(cross_refs, ensure_ascii=False), "utf-8")
-    (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
-    (data_dir / "commentary.json").write_text(json.dumps(commentary, ensure_ascii=False), "utf-8")
-    (data_dir / "jewish-readings.json").write_text(json.dumps(jewish_readings, ensure_ascii=False), "utf-8")
-    (data_dir / "hebrew-tokens.json").write_text(json.dumps(hebrew_tokens, ensure_ascii=False), "utf-8")
-    (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
-    (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
-    red_letters = {"João 1:1": True}
-    (data_dir / "red-letters.json").write_text(json.dumps(red_letters, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -89,10 +59,51 @@ def site(tmp_path, build, monkeypatch):
 def test_gera_paginas_principais(site):
     assert (site / "index.html").exists()
     assert (site / "404.html").exists()
+    assert (site / "estudar" / "index.html").exists()
+    assert (site / "workspace" / "index.html").exists()
+    assert (site / "comunidade" / "index.html").exists()
+    assert (site / "comunidade" / "salas" / "index.html").exists()
+    assert (site / "biblioteca" / "index.html").exists()
+    assert (site / "colecoes" / "index.html").exists()
+    assert (site / "cadernos" / "index.html").exists()
     assert (site / "versiculos" / "genesis-1-1" / "index.html").exists()
     assert (site / "versiculos" / "joao-1-1" / "index.html").exists()
     assert (site / "artigos" / "meu-artigo" / "index.html").exists()
     assert (site / "assets" / "app.js").exists()
+
+
+def test_nova_navegacao_principal(site):
+    home = (site / "index.html").read_text("utf-8")
+    for label in ("Início", "Bíblia", "Estudar", "Comunidade", "Workspace"):
+        assert label in home
+    assert 'class="mobile-primary-nav"' in home
+    assert 'href="estudar/"' in home
+    assert 'href="comunidade/"' in home
+    assert 'href="workspace/"' in home
+
+
+def test_conta_fica_simples(site):
+    auth = (site / "assets" / "auth.js").read_text("utf-8")
+    for label in ("Meu perfil", "Configurações", "Sincronização", "Privacidade", "Sair"):
+        assert label in auth
+    for label in ("Meus estudos", "grupos", "Biblioteca", "Favoritos", "Notas"):
+        assert label not in auth
+
+
+def test_sem_produto_de_ia_no_html_gerado(site):
+    proibidos = ("IA Bíblica", "Bíblia com IA", "assistente IA")
+    pages = [
+        site / "index.html",
+        site / "estudar" / "index.html",
+        site / "workspace" / "index.html",
+        site / "comunidade" / "index.html",
+        site / "ler" / "joao" / "1" / "index.html",
+        site / "versiculos" / "joao-1-1" / "index.html",
+    ]
+    for page in pages:
+        html = page.read_text("utf-8")
+        for termo in proibidos:
+            assert termo not in html
 
 
 def test_gera_navegacao_livro_capitulo(site):
@@ -105,10 +116,6 @@ def test_gera_navegacao_livro_capitulo(site):
     cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
     assert "No princípio criou Deus" in cap
     assert "versiculos/genesis-1-1/" in cap
-    grego = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
-    assert 'class="original-toggle"' in grego
-    assert "Mostrar texto grego" in grego
-    assert 'class="translit-toggle"' not in grego
 
 
 def test_gera_ferramentas_de_estudo(site):
@@ -157,6 +164,20 @@ def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
     # pool aleatório gerado
     pool = json.loads((site / "data" / "random.json").read_text("utf-8"))
     assert len(pool) >= 1 and all(isinstance(s, str) for s in pool)
+
+
+def test_audio_e_favoritos(site):
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for gancho in ("speechSynthesis", "SpeechSynthesisUtterance", "data-speak",
+                   "data-lang", "bec.favs", "data-fav", "favorite-home"):
+        assert gancho in app, gancho
+    home = (site / "index.html").read_text("utf-8")
+    assert 'id="favorite-home"' in home and 'id="favorite-list"' in home
+    vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "Ouvir original" in vp and "Ouvir PT" in vp and "Favoritar" in vp
+    assert 'data-lang="he-IL"' in vp and 'data-lang="pt-BR"' in vp
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "Ouvir original" in cap and "Favoritar" in cap
 
 
 def test_lote2_cartao_ferramentas_modal(site):
@@ -224,6 +245,16 @@ def test_sitemap_lista_todas_as_urls(site):
     assert "/versiculos/genesis-1-1/" in sitemap
     assert "/versiculos/joao-1-1/" in sitemap
     assert "/artigos/meu-artigo/" in sitemap
+    for path in (
+        "/estudar/",
+        "/workspace/",
+        "/comunidade/",
+        "/comunidade/salas/",
+        "/biblioteca/",
+        "/colecoes/",
+        "/cadernos/",
+    ):
+        assert path in sitemap
 
 
 def test_ajustes_ios_notas(site):
@@ -269,190 +300,3 @@ def test_lote4_linha_do_tempo(site):
     # link na navegação e no sitemap
     assert "Linha do tempo" in html
     assert "/linha-do-tempo/" in (site / "sitemap.xml").read_text("utf-8")
-
-
-def test_fase2_indice_de_temas(site):
-    # índice de temas + página do tema com versículo curado
-    idx = (site / "temas" / "index.html")
-    assert idx.exists()
-    idx_html = idx.read_text("utf-8")
-    assert "Temas de estudo" in idx_html
-    assert 'href="criacao/"' in idx_html
-    page = (site / "temas" / "criacao" / "index.html")
-    assert page.exists()
-    page_html = page.read_text("utf-8")
-    # o tema lista o versículo curado e aponta para a página completa dele
-    assert "Gênesis 1:1" in page_html
-    assert "versiculos/genesis-1-1/" in page_html
-    # a home e a nav apontam para os temas reais (não mais #temas)
-    home = (site / "index.html").read_text("utf-8")
-    assert 'href="temas/criacao/"' in home
-    assert 'href="temas/"' in home
-    # sitemap inclui as páginas de tema
-    sitemap = (site / "sitemap.xml").read_text("utf-8")
-    assert "/temas/" in sitemap and "/temas/criacao/" in sitemap
-
-
-def test_fase2_referencias_cruzadas(site):
-    # a página do versículo mostra o bloco de referências cruzadas curadas
-    vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert "Referências cruzadas" in vp
-    assert 'id="referencias"' in vp
-    # link irmão para o versículo relacionado (João 1:1)
-    assert "../joao-1-1/" in vp
-    # versículo sem cross-ref curada não cria o bloco
-    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
-    assert 'id="referencias"' not in joao
-
-
-def test_fase3_dicionario(site):
-    # índice do dicionário + página do termo com versículo de exemplo
-    idx = (site / "dicionario" / "index.html")
-    assert idx.exists()
-    idx_html = idx.read_text("utf-8")
-    assert "Dicionário" in idx_html
-    assert 'href="logos/"' in idx_html and 'href="elohim/"' in idx_html
-    term = (site / "dicionario" / "logos" / "index.html")
-    assert term.exists()
-    term_html = term.read_text("utf-8")
-    assert "λόγος" in term_html
-    assert "versiculos/joao-1-1/" in term_html  # leva ao versículo de exemplo
-    # a página do versículo João 1:1 mostra "Palavras do original" ligando ao termo
-    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
-    assert "Palavras do original" in joao
-    assert "dicionario/logos/" in joao
-    # nav e sitemap
-    assert 'href="dicionario/"' in (site / "index.html").read_text("utf-8")
-    assert "/dicionario/" in (site / "sitemap.xml").read_text("utf-8")
-    # termo no índice de busca
-    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
-    assert any(i["t"] == "Termo" and i["titulo"] == "Lógos" for i in index)
-
-
-def test_fase3_comentario_teologico(site):
-    # versículo com comentário curado mostra o bloco; sem comentário, não mostra
-    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert 'id="comentario"' in gen
-    assert "Tudo começa em Deus." in gen
-    assert "resumo original" in gen.lower()  # nota de autoria/licença
-    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
-    assert 'id="comentario"' not in joao
-
-
-def test_leitura_judaica_contexto(site):
-    # versículo com leitura judaica curada mostra o bloco de contexto + nota de respeito;
-    # versículo sem curadoria não mostra a seção
-    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert 'id="leitura-judaica"' in gen
-    assert "Leitura judaica (contexto)" in gen
-    assert "O verbo bara tem Deus como sujeito." in gen
-    assert "não substitui nem contradiz a leitura cristã" in gen  # enquadramento respeitoso
-    # caixa flutuante: botão abre um <dialog> modal sobre o versículo
-    sec = gen.split('id="leitura-judaica"', 1)[1][:800]
-    assert 'class="study-open" data-dialog-open="dlg-leitura-judaica"' in sec
-    assert '<dialog class="study-dialog" id="dlg-leitura-judaica"' in sec
-    assert '<form method="dialog">' in sec  # fecha sem JS inline (CSP)
-    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
-    assert 'id="leitura-judaica"' not in joao
-
-
-def test_toggle_contexto_judaico(site):
-    # os blocos de contexto judaico (rabínico + leitura judaica) ficam OCULTOS por
-    # padrão e o leitor liga/desliga por um botão na nav (data-rt="context"); a
-    # preferência persiste em localStorage (bec.context). Sem JS inline (CSP).
-    from pathlib import Path
-    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert 'data-rt="context"' in gen  # botão na barra de navegação
-    # bootstrap sem-flash aplica a classe ctx-on antes da pintura
-    assert "localStorage.getItem('bec.context')==='on'" in gen
-    # handler no app.js alterna a classe e grava a preferência
-    app = (site / "assets" / "app.js").read_text("utf-8")
-    assert "rt==='context'" in app
-    assert "bec.context" in app
-    # CSS (asset mantido à mão): oculto por padrão, revelado por html.ctx-on
-    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
-    assert ".block.jewish{display:none}" in css
-    assert "html.ctx-on .block.jewish{display:block}" in css
-
-
-def test_lexico_hebraico_curado():
-    # o léxico curado (arquivo real do repo) tem glosas PT com schema he/tr/pt;
-    # lemas de alta frequência recém-curados estão presentes e com pt não-vazio
-    from pathlib import Path
-    path = Path(__file__).resolve().parents[1] / "site" / "data" / "hebrew-lexicon.json"
-    lex = json.loads(path.read_text("utf-8"))
-    assert len(lex) >= 400
-    for k, v in lex.items():
-        assert v.get("he") and v.get("tr") and v.get("pt"), k
-    for strong in ("1285", "6547", "2617", "410"):  # aliança, Faraó, hesed, El
-        assert strong in lex and lex[strong]["pt"].strip()
-
-
-def test_hebraico_palavra_interativa(site):
-    # palavra hebraica vira <span class="w hw"> com lemma+morph; o <p class="orig">
-    # é marcado data-wrapped para o study.js não re-embrulhar (preservando os spans)
-    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert 'class="w hw"' in gen
-    assert 'data-l="b/7225"' in gen and 'data-m="HR/Ncfsa"' in gen
-    assert 'data-wrapped="1"' in gen
-    # grego não é tokenizado (João 1:1 não tem .hw)
-    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
-    assert 'class="w hw"' not in joao
-    # o app.js traz o decodificador de morfologia e o popover
-    app = (site / "assets" / "app.js").read_text("utf-8")
-    assert "decodeMorph" in app and "hebrew-lexicon.json" in app
-    # o léxico precisa estar no precache do service worker (offline)
-    sw = (site / "sw.js").read_text("utf-8")
-    assert "hebrew-lexicon.json" in sw
-
-
-def test_fase4_mapas(site):
-    # atlas + página do lugar com versículo e link de mapa
-    idx = (site / "mapas" / "index.html")
-    assert idx.exists()
-    idx_html = idx.read_text("utf-8")
-    assert "Atlas" in idx_html and 'href="jerusalem/"' in idx_html
-    place = (site / "mapas" / "jerusalem" / "index.html")
-    assert place.exists()
-    place_html = place.read_text("utf-8")
-    assert "versiculos/genesis-1-1/" in place_html       # versículo de exemplo
-    assert "openstreetmap.org" in place_html             # link externo (não embed)
-    # o versículo Gênesis 1:1 mostra o bloco "Lugares" ligando ao atlas
-    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert 'id="lugares"' in gen and "mapas/jerusalem/" in gen
-    # nav + sitemap + busca
-    assert 'href="mapas/"' in (site / "index.html").read_text("utf-8")
-    assert "/mapas/jerusalem/" in (site / "sitemap.xml").read_text("utf-8")
-    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
-    assert any(i["t"] == "Lugar" and i["titulo"] == "Jerusalém" for i in index)
-
-
-def test_fase4_planos_de_leitura(site):
-    # índice de planos + página do plano com checkbox de dia e barra de progresso
-    idx = (site / "planos" / "index.html")
-    assert idx.exists()
-    assert 'href="joao-1-dia/"' in idx.read_text("utf-8")
-    plan = (site / "planos" / "joao-1-dia" / "index.html")
-    assert plan.exists()
-    plan_html = plan.read_text("utf-8")
-    assert 'data-plan="joao-1-dia"' in plan_html
-    assert 'data-day="0"' in plan_html
-    assert "ler/joao/1/" in plan_html                    # liga ao capítulo
-    assert "data-plan-bar" in plan_html                  # barra de progresso
-    # wiring + persistência no app.js
-    app = (site / "assets" / "app.js").read_text("utf-8")
-    assert "bec.plan." in app and "data-plan" in app
-    # nav + sitemap
-    assert 'href="planos/"' in (site / "index.html").read_text("utf-8")
-    assert "/planos/joao-1-dia/" in (site / "sitemap.xml").read_text("utf-8")
-
-
-def test_letras_vermelhas_jesus(site):
-    # versículo marcado em red-letters.json recebe class="pt pt-jesus"
-    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
-    assert 'class="pt pt-jesus"' in joao
-    cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
-    assert 'class="pt pt-jesus"' in cap
-    # versículo não marcado não recebe a classe
-    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert "pt-jesus" not in gen

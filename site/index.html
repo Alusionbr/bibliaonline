@@ -3,8 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-jotwqeJaSEyV2cb7xkudhWqRQXpvoODJF7SZFd/LVjk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Bíblia em Contexto — a Bíblia com os idiomas originais, manuscritos e fontes</title>
 <meta name="description" content="Leia cada versículo no idioma original (hebraico, grego, aramaico), com tradução de domínio público, foto do manuscrito quando há, e comentário rabínico ou explicação de origem.">
 <meta name="robots" content="index, follow, noai, noimageai">
@@ -18,10 +16,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=4c24bcee">
+<link rel="stylesheet" href="assets/styles.css?v=d1792c99">
 </head>
 <body>
-<script>(function(){try{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.context')==='on')d.classList.add('ctx-on');}catch(e){}})();</script>
+<script>(function(){try{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}catch(e){}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <nav class="nav">
   <div class="nav-in">
@@ -33,19 +31,24 @@
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
-      <button type="button" class="rt" data-rt="context" aria-pressed="false" aria-label="Mostrar contexto judaico" title="Contexto judaico (comentário rabínico e leitura judaica)">📜</button>
     </div>
+    <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
+      <a href="index.html">Início</a>
       <a href="ler/">Bíblia</a>
-      <a href="planos/">Planos</a>
-      <a href="temas/">Temas</a>
-      <a href="dicionario/">Dicionário</a>
-      <a href="mapas/">Mapas</a>
-      <a href="linha-do-tempo/">Linha do tempo</a>
-      <a href="anotacoes/">Anotações</a>
+      <a href="estudar/">Estudar</a>
+      <a href="comunidade/">Comunidade</a>
+      <a href="workspace/">Workspace</a>
     </div>
   </div>
+</nav>
+<nav class="mobile-primary-nav" aria-label="Navegação principal">
+  <a href="index.html">Início</a>
+  <a href="ler/">Bíblia</a>
+  <a href="estudar/">Estudar</a>
+  <a href="comunidade/">Comunidade</a>
+  <a href="workspace/">Workspace</a>
 </nav>
 <header class="hero" id="topo">
   <div class="hero-in">
@@ -74,18 +77,45 @@
   <section class="search-section">
     <div class="searchbox">
       <span class="ico">⌕</span>
-      <input id="q" type="search" placeholder="Buscar: Salmo 23, shalom, &quot;no princípio&quot;, logos…" autocomplete="off" aria-label="Buscar">
-    </div>
-    <div class="search-filters" role="group" aria-label="Filtrar resultados da busca">
-      <button type="button" class="sf on" data-filter="all">Tudo</button>
-      <button type="button" class="sf" data-filter="Versículo">Versículos</button>
-      <button type="button" class="sf" data-filter="Artigo">Artigos</button>
-      <button type="button" class="sf" data-filter="Tema">Temas</button>
+      <input id="q" type="search" placeholder="Buscar: Salmo 23, shalom, aramaico, logos…" autocomplete="off" aria-label="Buscar">
     </div>
     <div id="results" class="search-results"></div>
-    <a id="continue-read" class="continue-read" href="#" hidden></a>
-    <div class="quick-actions">
-      <button type="button" id="random-verse" class="btn ghost">🕊️ Um versículo para você</button>
+    <div class="home-panel wrap">
+      <article class="home-block continue-block">
+        <span>Leitura</span>
+        <h3>Continuar leitura</h3>
+        <a id="continue-read" class="continue-read" href="#" hidden></a>
+        <p class="fallback-read">Abra um capítulo para o Workspace lembrar onde você parou.</p>
+      </article>
+      <article class="home-block">
+        <span>Hoje</span>
+        <h3>Plano de hoje</h3>
+        <p>Romanos 1 · leitura leve com notas e grifos.</p>
+        <a href="estudar/#criar-plano">Criar plano</a>
+      </article>
+      <article class="home-block">
+        <span>Caderno</span>
+        <h3>Últimas anotações</h3>
+        <p>Revise suas notas locais e exporte quando precisar.</p>
+        <a href="anotacoes/">Abrir anotações</a>
+      </article>
+      <article class="home-block" id="favorite-home" hidden>
+        <span>Biblioteca</span>
+        <h3>Favoritos recentes</h3>
+        <div id="favorite-list" class="favorite-list"></div>
+      </article>
+      <article class="home-block">
+        <span>Descobrir</span>
+        <h3>Explorar um trecho</h3>
+        <p>Receba um versículo e abra o contexto completo.</p>
+        <button type="button" id="random-verse" class="inline-action">Um versículo para você</button>
+      </article>
+      <article class="home-block">
+        <span>Salas</span>
+        <h3>Relacionadas ao estudo</h3>
+        <p>Sala Evangelho de João, Romanos verso a verso e Salmos para oração.</p>
+        <a href="comunidade/salas/">Ver Salas de Estudo</a>
+      </article>
     </div>
   </section>
 
@@ -95,7 +125,7 @@
       <h2>Livros</h2>
       <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
     </div>
-    
+
   <div class="order-toggle" role="group" aria-label="Ordenar livros">
     <span class="ot-lbl">Ordenar:</span>
     <button type="button" class="ot on" data-sort="bib">Bíblica</button>
@@ -375,11 +405,10 @@
     <div class="sec-head">
       <p class="eyebrow">Por onde começar</p>
       <h2>Temas de estudo</h2>
-      <p>Pontos de entrada para quem busca um assunto, não uma referência exata. Cada tema reúne versículos curados.</p>
+      <p>Pontos de entrada para quem busca um assunto, não uma referência exata.</p>
     </div>
-    <div class="chips wrap"><a class="chip" href="temas/ansiedade/"><span class="gl">◌</span>Ansiedade</a><a class="chip" href="temas/medo/"><span class="gl">⌁</span>Medo</a><a class="chip" href="temas/fe/"><span class="gl">✦</span>Fé</a><a class="chip" href="temas/oracao/"><span class="gl">✧</span>Oração</a><a class="chip" href="temas/perdao/"><span class="gl">☉</span>Perdão</a><a class="chip" href="temas/casamento/"><span class="gl">∞</span>Casamento</a><a class="chip" href="temas/dinheiro/"><span class="gl">₪</span>Dinheiro</a><a class="chip" href="temas/sofrimento/"><span class="gl">∴</span>Sofrimento</a><a class="chip" href="temas/hebraico/"><span class="gl">א</span>Hebraico bíblico</a><a class="chip" href="temas/grego/"><span class="gl">Ω</span>Grego bíblico</a><a class="chip" href="temas/aramaico/"><span class="gl">ܐ</span>Aramaico na Bíblia</a><a class="chip" href="temas/manuscritos/"><span class="gl">▧</span>Manuscritos</a>
+    <div class="chips wrap"><a class="chip" href="#versiculos"><span class="gl">◌</span>Ansiedade</a><a class="chip" href="#versiculos"><span class="gl">⌁</span>Medo</a><a class="chip" href="#versiculos"><span class="gl">✦</span>Fé</a><a class="chip" href="#versiculos"><span class="gl">✧</span>Oração</a><a class="chip" href="#versiculos"><span class="gl">☉</span>Perdão</a><a class="chip" href="#versiculos"><span class="gl">∞</span>Casamento</a><a class="chip" href="#versiculos"><span class="gl">₪</span>Dinheiro</a><a class="chip" href="#versiculos"><span class="gl">∴</span>Sofrimento</a><a class="chip" href="#versiculos"><span class="gl">א</span>Hebraico bíblico</a><a class="chip" href="#versiculos"><span class="gl">Ω</span>Grego bíblico</a><a class="chip" href="#versiculos"><span class="gl">ܐ</span>Aramaico na Bíblia</a><a class="chip" href="#versiculos"><span class="gl">▧</span>Manuscritos</a>
     </div>
-    <p class="read" style="text-align:center;margin-top:18px"><a href="temas/">Ver todos os temas →</a></p>
   </section>
 
   <section id="artigos">
@@ -523,18 +552,21 @@
     </div>
     <div class="cols">
       <div>
-        <a href="index.html#versiculos">Versículos</a>
-        <a href="temas/">Temas</a>
-        <a href="index.html#artigos">Artigos</a>
+        <a href="ler/">Bíblia</a>
+        <a href="estudar/">Estudar</a>
+        <a href="workspace/">Workspace</a>
       </div>
       <div>
+        <a href="comunidade/">Comunidade</a>
+        <a href="biblioteca/">Biblioteca</a>
         <a href="index.html#fontes">Fontes e licenças</a>
-        <a href="index.html#metodologia">Metodologia</a>
-        <a href="index.html#topo">Voltar ao topo ↑</a>
       </div>
     </div>
   </div>
 </footer>
-<script src="assets/app.js?v=4c24bcee"></script>
-<script src="assets/study.js?v=4c24bcee" defer></script>
+<script src="assets/supabase-config.js?v=d1792c99" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+<script src="assets/auth.js?v=d1792c99" defer></script>
+<script src="assets/app.js?v=d1792c99"></script>
+<script src="assets/study.js?v=d1792c99" defer></script>
 </body></html>

@@ -3,8 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-jotwqeJaSEyV2cb7xkudhWqRQXpvoODJF7SZFd/LVjk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>João 1 — original, transliteração e tradução | Bíblia em Contexto</title>
 <meta name="description" content="João 1: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta name="robots" content="index, follow, noai, noimageai">
@@ -18,10 +16,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4c24bcee">
+<link rel="stylesheet" href="../../../assets/styles.css?v=d1792c99">
 </head>
 <body>
-<script>(function(){try{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.context')==='on')d.classList.add('ctx-on');}catch(e){}})();</script>
+<script>(function(){try{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}catch(e){}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <nav class="nav">
   <div class="nav-in">
@@ -33,19 +31,24 @@
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
-      <button type="button" class="rt" data-rt="context" aria-pressed="false" aria-label="Mostrar contexto judaico" title="Contexto judaico (comentário rabínico e leitura judaica)">📜</button>
     </div>
+    <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
+      <a href="../../../index.html">Início</a>
       <a href="../../../ler/">Bíblia</a>
-      <a href="../../../planos/">Planos</a>
-      <a href="../../../temas/">Temas</a>
-      <a href="../../../dicionario/">Dicionário</a>
-      <a href="../../../mapas/">Mapas</a>
-      <a href="../../../linha-do-tempo/">Linha do tempo</a>
-      <a href="../../../anotacoes/">Anotações</a>
+      <a href="../../../estudar/">Estudar</a>
+      <a href="../../../comunidade/">Comunidade</a>
+      <a href="../../../workspace/">Workspace</a>
     </div>
   </div>
+</nav>
+<nav class="mobile-primary-nav" aria-label="Navegação principal">
+  <a href="../../../index.html">Início</a>
+  <a href="../../../ler/">Bíblia</a>
+  <a href="../../../estudar/">Estudar</a>
+  <a href="../../../comunidade/">Comunidade</a>
+  <a href="../../../workspace/">Workspace</a>
 </nav>
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="../../../index.html">Início</a> · <a href="../../../ler/">Livros</a> · <a href="../">João</a> · 1</p>
@@ -53,13 +56,7 @@
     <span class="lang-tag lang-grego">Grego</span>
     <h1>João 1</h1>
   </header>
-  
-  <div class="audio-bar" data-audio hidden>
-    <button type="button" class="abtn" data-audio-play aria-label="Ouvir">🔊 Ouvir</button>
-    <button type="button" class="abtn abtn-stop" data-audio-stop aria-label="Parar" hidden>⏹</button>
-    <span class="audio-hint">leitura em voz alta</span>
-  </div>
-  
+
   <div class="book-jump-wrap">
     <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
     <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
@@ -71,565 +68,513 @@
     <div class="ch-verse" id="v1" data-ref="João 1:1">
       <a class="ch-num" href="../../../versiculos/joao-1-1/" aria-label="Versículo 1">1</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Ἐν ἀρχῇ ἦν ὁ Λόγος, καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν, καὶ Θεὸς ἦν ὁ Λόγος.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Ἐν ἀρχῇ ἦν ὁ Λόγος, καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν, καὶ Θεὸς ἦν ὁ Λόγος.</p>
+        <p class="translit"></p>
         <p class="pt">No princípio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Ἐν ἀρχῇ ἦν ὁ Λόγος, καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν, καὶ Θεὸς ἦν ὁ Λόγος." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="No princípio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:1" data-url="../../../versiculos/joao-1-1/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v2" data-ref="João 1:2">
       <a class="ch-num" href="../../../versiculos/joao-1-2/" aria-label="Versículo 2">2</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Οὗτος ἦν ἐν ἀρχῇ πρὸς τὸν Θεόν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Οὗτος ἦν ἐν ἀρχῇ πρὸς τὸν Θεόν.</p>
+        <p class="translit"></p>
         <p class="pt">Ele estava no princípio com Deus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Οὗτος ἦν ἐν ἀρχῇ πρὸς τὸν Θεόν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ele estava no princípio com Deus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:2" data-url="../../../versiculos/joao-1-2/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v3" data-ref="João 1:3">
       <a class="ch-num" href="../../../versiculos/joao-1-3/" aria-label="Versículo 3">3</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">πάντα δι’ αὐτοῦ ἐγένετο, καὶ χωρὶς αὐτοῦ ἐγένετο οὐδὲ ἕν ὃ γέγονεν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">πάντα δι’ αὐτοῦ ἐγένετο, καὶ χωρὶς αὐτοῦ ἐγένετο οὐδὲ ἕν ὃ γέγονεν.</p>
+        <p class="translit"></p>
         <p class="pt">Todas as coisas foram feitas por intermédio dele, e sem ele nada do que foi feito se fez.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="πάντα δι’ αὐτοῦ ἐγένετο, καὶ χωρὶς αὐτοῦ ἐγένετο οὐδὲ ἕν ὃ γέγονεν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Todas as coisas foram feitas por intermédio dele, e sem ele nada do que foi feito se fez." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:3" data-url="../../../versiculos/joao-1-3/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v4" data-ref="João 1:4">
       <a class="ch-num" href="../../../versiculos/joao-1-4/" aria-label="Versículo 4">4</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἐν αὐτῷ ζωὴ ἦν, καὶ ἡ ζωὴ ἦν τὸ φῶς τῶν ἀνθρώπων.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ἐν αὐτῷ ζωὴ ἦν, καὶ ἡ ζωὴ ἦν τὸ φῶς τῶν ἀνθρώπων.</p>
+        <p class="translit"></p>
         <p class="pt">Nele estava a vida, e a vida era a luz dos homens;</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἐν αὐτῷ ζωὴ ἦν, καὶ ἡ ζωὴ ἦν τὸ φῶς τῶν ἀνθρώπων." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Nele estava a vida, e a vida era a luz dos homens;" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:4" data-url="../../../versiculos/joao-1-4/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v5" data-ref="João 1:5">
       <a class="ch-num" href="../../../versiculos/joao-1-5/" aria-label="Versículo 5">5</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ τὸ φῶς ἐν τῇ σκοτίᾳ φαίνει, καὶ ἡ σκοτία αὐτὸ οὐ κατέλαβεν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ τὸ φῶς ἐν τῇ σκοτίᾳ φαίνει, καὶ ἡ σκοτία αὐτὸ οὐ κατέλαβεν.</p>
+        <p class="translit"></p>
         <p class="pt">a luz resplandece nas trevas, e as trevas não prevaleceram contra ela.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ τὸ φῶς ἐν τῇ σκοτίᾳ φαίνει, καὶ ἡ σκοτία αὐτὸ οὐ κατέλαβεν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="a luz resplandece nas trevas, e as trevas não prevaleceram contra ela." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:5" data-url="../../../versiculos/joao-1-5/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v6" data-ref="João 1:6">
       <a class="ch-num" href="../../../versiculos/joao-1-6/" aria-label="Versículo 6">6</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Ἐγένετο ἄνθρωπος, ἀπεσταλμένος παρὰ Θεοῦ, ὄνομα αὐτῷ Ἰωάνης·</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Ἐγένετο ἄνθρωπος, ἀπεσταλμένος παρὰ Θεοῦ, ὄνομα αὐτῷ Ἰωάνης·</p>
+        <p class="translit"></p>
         <p class="pt">Houve um homem enviado de Deus, cujo nome era João.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Ἐγένετο ἄνθρωπος, ἀπεσταλμένος παρὰ Θεοῦ, ὄνομα αὐτῷ Ἰωάνης·" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Houve um homem enviado de Deus, cujo nome era João." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:6" data-url="../../../versiculos/joao-1-6/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v7" data-ref="João 1:7">
       <a class="ch-num" href="../../../versiculos/joao-1-7/" aria-label="Versículo 7">7</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">οὗτος ἦλθεν εἰς μαρτυρίαν, ἵνα μαρτυρήσῃ περὶ τοῦ φωτός, ἵνα πάντες πιστεύσωσιν δι’ αὐτοῦ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">οὗτος ἦλθεν εἰς μαρτυρίαν, ἵνα μαρτυρήσῃ περὶ τοῦ φωτός, ἵνα πάντες πιστεύσωσιν δι’ αὐτοῦ.</p>
+        <p class="translit"></p>
         <p class="pt">Este veio como testemunha, a fim de dar testemunho da luz, para que todos cressem por meio dele.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="οὗτος ἦλθεν εἰς μαρτυρίαν, ἵνα μαρτυρήσῃ περὶ τοῦ φωτός, ἵνα πάντες πιστεύσωσιν δι’ αὐτοῦ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Este veio como testemunha, a fim de dar testemunho da luz, para que todos cressem por meio dele." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:7" data-url="../../../versiculos/joao-1-7/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v8" data-ref="João 1:8">
       <a class="ch-num" href="../../../versiculos/joao-1-8/" aria-label="Versículo 8">8</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">οὐκ ἦν ἐκεῖνος τὸ φῶς, ἀλλ’ ἵνα μαρτυρήσῃ περὶ τοῦ φωτός.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">οὐκ ἦν ἐκεῖνος τὸ φῶς, ἀλλ’ ἵνα μαρτυρήσῃ περὶ τοῦ φωτός.</p>
+        <p class="translit"></p>
         <p class="pt">Ele não era a luz, mas veio para dar testemunho da luz.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="οὐκ ἦν ἐκεῖνος τὸ φῶς, ἀλλ’ ἵνα μαρτυρήσῃ περὶ τοῦ φωτός." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ele não era a luz, mas veio para dar testemunho da luz." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:8" data-url="../../../versiculos/joao-1-8/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v9" data-ref="João 1:9">
       <a class="ch-num" href="../../../versiculos/joao-1-9/" aria-label="Versículo 9">9</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Ἦν τὸ φῶς τὸ ἀληθινὸν, ὃ φωτίζει πάντα ἄνθρωπον, ἐρχόμενον εἰς τὸν κόσμον.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Ἦν τὸ φῶς τὸ ἀληθινὸν, ὃ φωτίζει πάντα ἄνθρωπον, ἐρχόμενον εἰς τὸν κόσμον.</p>
+        <p class="translit"></p>
         <p class="pt">Pois a verdadeira luz, que alumia a todo homem, estava chegando ao mundo.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Ἦν τὸ φῶς τὸ ἀληθινὸν, ὃ φωτίζει πάντα ἄνθρωπον, ἐρχόμενον εἰς τὸν κόσμον." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Pois a verdadeira luz, que alumia a todo homem, estava chegando ao mundo." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:9" data-url="../../../versiculos/joao-1-9/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v10" data-ref="João 1:10">
       <a class="ch-num" href="../../../versiculos/joao-1-10/" aria-label="Versículo 10">10</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἐν τῷ κόσμῳ ἦν, καὶ ὁ κόσμος δι’ αὐτοῦ ἐγένετο, καὶ ὁ κόσμος αὐτὸν οὐκ ἔγνω.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ἐν τῷ κόσμῳ ἦν, καὶ ὁ κόσμος δι’ αὐτοῦ ἐγένετο, καὶ ὁ κόσμος αὐτὸν οὐκ ἔγνω.</p>
+        <p class="translit"></p>
         <p class="pt">Estava ele no mundo, e o mundo foi feito por intermédio dele, e o mundo não o conheceu.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἐν τῷ κόσμῳ ἦν, καὶ ὁ κόσμος δι’ αὐτοῦ ἐγένετο, καὶ ὁ κόσμος αὐτὸν οὐκ ἔγνω." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Estava ele no mundo, e o mundo foi feito por intermédio dele, e o mundo não o conheceu." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:10" data-url="../../../versiculos/joao-1-10/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v11" data-ref="João 1:11">
       <a class="ch-num" href="../../../versiculos/joao-1-11/" aria-label="Versículo 11">11</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">εἰς τὰ ἴδια ἦλθεν, καὶ οἱ ἴδιοι αὐτὸν οὐ παρέλαβον.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">εἰς τὰ ἴδια ἦλθεν, καὶ οἱ ἴδιοι αὐτὸν οὐ παρέλαβον.</p>
+        <p class="translit"></p>
         <p class="pt">Veio para o que era seu, e os seus não o receberam.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="εἰς τὰ ἴδια ἦλθεν, καὶ οἱ ἴδιοι αὐτὸν οὐ παρέλαβον." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Veio para o que era seu, e os seus não o receberam." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:11" data-url="../../../versiculos/joao-1-11/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v12" data-ref="João 1:12">
       <a class="ch-num" href="../../../versiculos/joao-1-12/" aria-label="Versículo 12">12</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ὅσοι δὲ ἔλαβον αὐτόν, ἔδωκεν αὐτοῖς ἐξουσίαν τέκνα Θεοῦ γενέσθαι, τοῖς πιστεύουσιν εἰς τὸ ὄνομα αὐτοῦ,</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ὅσοι δὲ ἔλαβον αὐτόν, ἔδωκεν αὐτοῖς ἐξουσίαν τέκνα Θεοῦ γενέσθαι, τοῖς πιστεύουσιν εἰς τὸ ὄνομα αὐτοῦ,</p>
+        <p class="translit"></p>
         <p class="pt">Mas, a todos quantos o receberam, aos que crêem no seu nome, deu-lhes o poder de se tornarem filhos de Deus;</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ὅσοι δὲ ἔλαβον αὐτόν, ἔδωκεν αὐτοῖς ἐξουσίαν τέκνα Θεοῦ γενέσθαι, τοῖς πιστεύουσιν εἰς τὸ ὄνομα αὐτοῦ," data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Mas, a todos quantos o receberam, aos que crêem no seu nome, deu-lhes o poder de se tornarem filhos de Deus;" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:12" data-url="../../../versiculos/joao-1-12/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v13" data-ref="João 1:13">
       <a class="ch-num" href="../../../versiculos/joao-1-13/" aria-label="Versículo 13">13</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">οἳ οὐκ ἐξ αἱμάτων οὐδὲ ἐκ θελήματος σαρκὸς οὐδὲ ἐκ θελήματος ἀνδρὸς ἀλλ’ ἐκ Θεοῦ ἐγεννήθησαν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">οἳ οὐκ ἐξ αἱμάτων οὐδὲ ἐκ θελήματος σαρκὸς οὐδὲ ἐκ θελήματος ἀνδρὸς ἀλλ’ ἐκ Θεοῦ ἐγεννήθησαν.</p>
+        <p class="translit"></p>
         <p class="pt">os quais não nasceram do sangue, nem da vontade da carne, nem da vontade do varão, mas de Deus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="οἳ οὐκ ἐξ αἱμάτων οὐδὲ ἐκ θελήματος σαρκὸς οὐδὲ ἐκ θελήματος ἀνδρὸς ἀλλ’ ἐκ Θεοῦ ἐγεννήθησαν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="os quais não nasceram do sangue, nem da vontade da carne, nem da vontade do varão, mas de Deus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:13" data-url="../../../versiculos/joao-1-13/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v14" data-ref="João 1:14">
       <a class="ch-num" href="../../../versiculos/joao-1-14/" aria-label="Versículo 14">14</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Καὶ ὁ Λόγος σὰρξ ἐγένετο καὶ ἐσκήνωσεν ἐν ἡμῖν, καὶ ἐθεασάμεθα τὴν δόξαν αὐτοῦ, δόξαν ὡς μονογενοῦς παρὰ Πατρός, πλήρης χάριτος καὶ ἀληθείας.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Καὶ ὁ Λόγος σὰρξ ἐγένετο καὶ ἐσκήνωσεν ἐν ἡμῖν, καὶ ἐθεασάμεθα τὴν δόξαν αὐτοῦ, δόξαν ὡς μονογενοῦς παρὰ Πατρός, πλήρης χάριτος καὶ ἀληθείας.</p>
+        <p class="translit"></p>
         <p class="pt">E o Verbo se fez carne, e habitou entre nós, cheio de graça e de verdade; e vimos a sua glória, como a glória do unigênito do Pai.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Καὶ ὁ Λόγος σὰρξ ἐγένετο καὶ ἐσκήνωσεν ἐν ἡμῖν, καὶ ἐθεασάμεθα τὴν δόξαν αὐτοῦ, δόξαν ὡς μονογενοῦς παρὰ Πατρός, πλήρης χάριτος καὶ ἀληθείας." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="E o Verbo se fez carne, e habitou entre nós, cheio de graça e de verdade; e vimos a sua glória, como a glória do unigênito do Pai." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:14" data-url="../../../versiculos/joao-1-14/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v15" data-ref="João 1:15">
       <a class="ch-num" href="../../../versiculos/joao-1-15/" aria-label="Versículo 15">15</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Ἰωάνης μαρτυρεῖ περὶ αὐτοῦ καὶ κέκραγεν λέγων Οὗτος ἦν ὃν εἶπον Ὁ ὀπίσω μου ἐρχόμενος ἔμπροσθέν μου γέγονεν, ὅτι πρῶτός μου ἦν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Ἰωάνης μαρτυρεῖ περὶ αὐτοῦ καὶ κέκραγεν λέγων Οὗτος ἦν ὃν εἶπον Ὁ ὀπίσω μου ἐρχόμενος ἔμπροσθέν μου γέγονεν, ὅτι πρῶτός μου ἦν.</p>
+        <p class="translit"></p>
         <p class="pt">João deu testemunho dele, e clamou, dizendo: Este é aquele de quem eu disse: O que vem depois de mim, passou adiante de mim; porque antes de mim ele já existia.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Ἰωάνης μαρτυρεῖ περὶ αὐτοῦ καὶ κέκραγεν λέγων Οὗτος ἦν ὃν εἶπον Ὁ ὀπίσω μου ἐρχόμενος ἔμπροσθέν μου γέγονεν, ὅτι πρῶτός μου ἦν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="João deu testemunho dele, e clamou, dizendo: Este é aquele de quem eu disse: O que vem depois de mim, passou adiante de mim; porque antes de mim ele já existia." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:15" data-url="../../../versiculos/joao-1-15/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v16" data-ref="João 1:16">
       <a class="ch-num" href="../../../versiculos/joao-1-16/" aria-label="Versículo 16">16</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ὅτι ἐκ τοῦ πληρώματος αὐτοῦ ἡμεῖς πάντες ἐλάβομεν, καὶ χάριν ἀντὶ χάριτος·</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ὅτι ἐκ τοῦ πληρώματος αὐτοῦ ἡμεῖς πάντες ἐλάβομεν, καὶ χάριν ἀντὶ χάριτος·</p>
+        <p class="translit"></p>
         <p class="pt">Pois todos nós recebemos da sua plenitude, e graça sobre graça.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ὅτι ἐκ τοῦ πληρώματος αὐτοῦ ἡμεῖς πάντες ἐλάβομεν, καὶ χάριν ἀντὶ χάριτος·" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Pois todos nós recebemos da sua plenitude, e graça sobre graça." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:16" data-url="../../../versiculos/joao-1-16/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v17" data-ref="João 1:17">
       <a class="ch-num" href="../../../versiculos/joao-1-17/" aria-label="Versículo 17">17</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ὅτι ὁ νόμος διὰ Μωϋσέως ἐδόθη, ἡ χάρις καὶ ἡ ἀλήθεια διὰ Ἰησοῦ Χριστοῦ ἐγένετο.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ὅτι ὁ νόμος διὰ Μωϋσέως ἐδόθη, ἡ χάρις καὶ ἡ ἀλήθεια διὰ Ἰησοῦ Χριστοῦ ἐγένετο.</p>
+        <p class="translit"></p>
         <p class="pt">Porque a lei foi dada por meio de Moisés; a graça e a verdade vieram por Jesus Cristo.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ὅτι ὁ νόμος διὰ Μωϋσέως ἐδόθη, ἡ χάρις καὶ ἡ ἀλήθεια διὰ Ἰησοῦ Χριστοῦ ἐγένετο." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Porque a lei foi dada por meio de Moisés; a graça e a verdade vieram por Jesus Cristo." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:17" data-url="../../../versiculos/joao-1-17/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v18" data-ref="João 1:18">
       <a class="ch-num" href="../../../versiculos/joao-1-18/" aria-label="Versículo 18">18</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Θεὸν οὐδεὶς ἑώρακεν πώποτε· μονογενὴς Θεὸς ὁ ὢν εἰς τὸν κόλπον τοῦ Πατρὸς, ἐκεῖνος ἐξηγήσατο.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Θεὸν οὐδεὶς ἑώρακεν πώποτε· μονογενὴς Θεὸς ὁ ὢν εἰς τὸν κόλπον τοῦ Πατρὸς, ἐκεῖνος ἐξηγήσατο.</p>
+        <p class="translit"></p>
         <p class="pt">Ninguém jamais viu a Deus. O Deus unigênito, que está no seio do Pai, esse o deu a conhecer.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Θεὸν οὐδεὶς ἑώρακεν πώποτε· μονογενὴς Θεὸς ὁ ὢν εἰς τὸν κόλπον τοῦ Πατρὸς, ἐκεῖνος ἐξηγήσατο." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ninguém jamais viu a Deus. O Deus unigênito, que está no seio do Pai, esse o deu a conhecer." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:18" data-url="../../../versiculos/joao-1-18/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v19" data-ref="João 1:19">
       <a class="ch-num" href="../../../versiculos/joao-1-19/" aria-label="Versículo 19">19</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Καὶ αὕτη ἐστὶν ἡ μαρτυρία τοῦ Ἰωάνου ὅτε ἀπέστειλαν πρὸς αὐτὸν οἱ Ἰουδαῖοι ἐξ Ἱεροσολύμων ἱερεῖς καὶ Λευείτας ἵνα ἐρωτήσωσιν αὐτόν Σὺ τίς εἶ;</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Καὶ αὕτη ἐστὶν ἡ μαρτυρία τοῦ Ἰωάνου ὅτε ἀπέστειλαν πρὸς αὐτὸν οἱ Ἰουδαῖοι ἐξ Ἱεροσολύμων ἱερεῖς καὶ Λευείτας ἵνα ἐρωτήσωσιν αὐτόν Σὺ τίς εἶ;</p>
+        <p class="translit"></p>
         <p class="pt">E este foi o testemunho de João, quando os judeus lhe enviaram de Jerusalém sacerdotes e levitas para que lhe perguntassem: Quem és tu?</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Καὶ αὕτη ἐστὶν ἡ μαρτυρία τοῦ Ἰωάνου ὅτε ἀπέστειλαν πρὸς αὐτὸν οἱ Ἰουδαῖοι ἐξ Ἱεροσολύμων ἱερεῖς καὶ Λευείτας ἵνα ἐρωτήσωσιν αὐτόν Σὺ τίς εἶ;" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="E este foi o testemunho de João, quando os judeus lhe enviaram de Jerusalém sacerdotes e levitas para que lhe perguntassem: Quem és tu?" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:19" data-url="../../../versiculos/joao-1-19/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v20" data-ref="João 1:20">
       <a class="ch-num" href="../../../versiculos/joao-1-20/" aria-label="Versículo 20">20</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ ὡμολόγησεν καὶ οὐκ ἠρνήσατο, καὶ ὡμολόγησεν ὅτι Ἐγὼ οὐκ εἰμὶ ὁ Χριστός.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ ὡμολόγησεν καὶ οὐκ ἠρνήσατο, καὶ ὡμολόγησεν ὅτι Ἐγὼ οὐκ εἰμὶ ὁ Χριστός.</p>
+        <p class="translit"></p>
         <p class="pt">Ele, pois, confessou e não negou; sim, confessou: Eu não sou o Cristo.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ ὡμολόγησεν καὶ οὐκ ἠρνήσατο, καὶ ὡμολόγησεν ὅτι Ἐγὼ οὐκ εἰμὶ ὁ Χριστός." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ele, pois, confessou e não negou; sim, confessou: Eu não sou o Cristo." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:20" data-url="../../../versiculos/joao-1-20/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v21" data-ref="João 1:21">
       <a class="ch-num" href="../../../versiculos/joao-1-21/" aria-label="Versículo 21">21</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ ἠρώτησαν αὐτόν Τί οὖν; σὺ Ἡλείας εἶ; καὶ λέγει Οὐκ εἰμί. Ὁ προφήτης εἶ σύ; καὶ ἀπεκρίθη Οὔ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ ἠρώτησαν αὐτόν Τί οὖν; σὺ Ἡλείας εἶ; καὶ λέγει Οὐκ εἰμί. Ὁ προφήτης εἶ σύ; καὶ ἀπεκρίθη Οὔ.</p>
+        <p class="translit"></p>
         <p class="pt">Ao que lhe perguntaram: Pois que? És tu Elias? Respondeu ele: Não sou. És tu o profeta? E respondeu: Não.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ ἠρώτησαν αὐτόν Τί οὖν; σὺ Ἡλείας εἶ; καὶ λέγει Οὐκ εἰμί. Ὁ προφήτης εἶ σύ; καὶ ἀπεκρίθη Οὔ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ao que lhe perguntaram: Pois que? És tu Elias? Respondeu ele: Não sou. És tu o profeta? E respondeu: Não." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:21" data-url="../../../versiculos/joao-1-21/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v22" data-ref="João 1:22">
       <a class="ch-num" href="../../../versiculos/joao-1-22/" aria-label="Versículo 22">22</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">εἶπαν οὖν αὐτῷ Τίς εἶ; ἵνα ἀπόκρισιν δῶμεν τοῖς πέμψασιν ἡμᾶς· τί λέγεις περὶ σεαυτοῦ;</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">εἶπαν οὖν αὐτῷ Τίς εἶ; ἵνα ἀπόκρισιν δῶμεν τοῖς πέμψασιν ἡμᾶς· τί λέγεις περὶ σεαυτοῦ;</p>
+        <p class="translit"></p>
         <p class="pt">Disseram-lhe, pois: Quem és? para podermos dar resposta aos que nos enviaram; que dizes de ti mesmo?</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="εἶπαν οὖν αὐτῷ Τίς εἶ; ἵνα ἀπόκρισιν δῶμεν τοῖς πέμψασιν ἡμᾶς· τί λέγεις περὶ σεαυτοῦ;" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Disseram-lhe, pois: Quem és? para podermos dar resposta aos que nos enviaram; que dizes de ti mesmo?" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:22" data-url="../../../versiculos/joao-1-22/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v23" data-ref="João 1:23">
       <a class="ch-num" href="../../../versiculos/joao-1-23/" aria-label="Versículo 23">23</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἔφη Ἐγὼ φωνὴ βοῶντος ἐν τῇ ἐρήμῳ Εὐθύνατε τὴν ὁδὸν Κυρίου, καθὼς εἶπεν Ἡσαΐας ὁ προφήτης.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ἔφη Ἐγὼ φωνὴ βοῶντος ἐν τῇ ἐρήμῳ Εὐθύνατε τὴν ὁδὸν Κυρίου, καθὼς εἶπεν Ἡσαΐας ὁ προφήτης.</p>
+        <p class="translit"></p>
         <p class="pt">Respondeu ele: Eu sou a voz do que clama no deserto: Endireitai o caminho do Senhor, como disse o profeta Isaías.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἔφη Ἐγὼ φωνὴ βοῶντος ἐν τῇ ἐρήμῳ Εὐθύνατε τὴν ὁδὸν Κυρίου, καθὼς εἶπεν Ἡσαΐας ὁ προφήτης." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Respondeu ele: Eu sou a voz do que clama no deserto: Endireitai o caminho do Senhor, como disse o profeta Isaías." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:23" data-url="../../../versiculos/joao-1-23/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v24" data-ref="João 1:24">
       <a class="ch-num" href="../../../versiculos/joao-1-24/" aria-label="Versículo 24">24</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Καὶ ἀπεσταλμένοι ἦσαν ἐκ τῶν Φαρισαίων.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Καὶ ἀπεσταλμένοι ἦσαν ἐκ τῶν Φαρισαίων.</p>
+        <p class="translit"></p>
         <p class="pt">E os que tinham sido enviados eram dos fariseus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Καὶ ἀπεσταλμένοι ἦσαν ἐκ τῶν Φαρισαίων." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="E os que tinham sido enviados eram dos fariseus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:24" data-url="../../../versiculos/joao-1-24/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v25" data-ref="João 1:25">
       <a class="ch-num" href="../../../versiculos/joao-1-25/" aria-label="Versículo 25">25</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ ἠρώτησαν αὐτὸν καὶ εἶπαν αὐτῷ Τί οὖν βαπτίζεις εἰ σὺ οὐκ εἶ ὁ Χριστὸς οὐδὲ Ἡλείας οὐδὲ ὁ προφήτης;</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ ἠρώτησαν αὐτὸν καὶ εἶπαν αὐτῷ Τί οὖν βαπτίζεις εἰ σὺ οὐκ εἶ ὁ Χριστὸς οὐδὲ Ἡλείας οὐδὲ ὁ προφήτης;</p>
+        <p class="translit"></p>
         <p class="pt">Então lhe perguntaram: Por que batizas, pois, se tu não és o Cristo, nem Elias, nem o profeta?</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ ἠρώτησαν αὐτὸν καὶ εἶπαν αὐτῷ Τί οὖν βαπτίζεις εἰ σὺ οὐκ εἶ ὁ Χριστὸς οὐδὲ Ἡλείας οὐδὲ ὁ προφήτης;" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Então lhe perguntaram: Por que batizas, pois, se tu não és o Cristo, nem Elias, nem o profeta?" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:25" data-url="../../../versiculos/joao-1-25/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v26" data-ref="João 1:26">
       <a class="ch-num" href="../../../versiculos/joao-1-26/" aria-label="Versículo 26">26</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἀπεκρίθη αὐτοῖς ὁ Ἰωάνης λέγων Ἐγὼ βαπτίζω ἐν ὕδατι· μέσος ὑμῶν στήκει ὃν ὑμεῖς οὐκ οἴδατε,</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ἀπεκρίθη αὐτοῖς ὁ Ἰωάνης λέγων Ἐγὼ βαπτίζω ἐν ὕδατι· μέσος ὑμῶν στήκει ὃν ὑμεῖς οὐκ οἴδατε,</p>
+        <p class="translit"></p>
         <p class="pt">Respondeu-lhes João: Eu batizo em água; no meio de vós está um a quem vós não conheceis.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἀπεκρίθη αὐτοῖς ὁ Ἰωάνης λέγων Ἐγὼ βαπτίζω ἐν ὕδατι· μέσος ὑμῶν στήκει ὃν ὑμεῖς οὐκ οἴδατε," data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Respondeu-lhes João: Eu batizo em água; no meio de vós está um a quem vós não conheceis." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:26" data-url="../../../versiculos/joao-1-26/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v27" data-ref="João 1:27">
       <a class="ch-num" href="../../../versiculos/joao-1-27/" aria-label="Versículo 27">27</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ὁ ὀπίσω μου ἐρχόμενος, οὗ οὐκ εἰμὶ ἐγὼ ἄξιος ἵνα λύσω αὐτοῦ τὸν ἱμάντα τοῦ ὑποδήματος.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ὁ ὀπίσω μου ἐρχόμενος, οὗ οὐκ εἰμὶ ἐγὼ ἄξιος ἵνα λύσω αὐτοῦ τὸν ἱμάντα τοῦ ὑποδήματος.</p>
+        <p class="translit"></p>
         <p class="pt">aquele que vem depois de mim, de quem eu não sou digno de desatar a correia da alparca.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ὁ ὀπίσω μου ἐρχόμενος, οὗ οὐκ εἰμὶ ἐγὼ ἄξιος ἵνα λύσω αὐτοῦ τὸν ἱμάντα τοῦ ὑποδήματος." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="aquele que vem depois de mim, de quem eu não sou digno de desatar a correia da alparca." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:27" data-url="../../../versiculos/joao-1-27/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v28" data-ref="João 1:28">
       <a class="ch-num" href="../../../versiculos/joao-1-28/" aria-label="Versículo 28">28</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Ταῦτα ἐν Βηθανίᾳ ἐγένετο πέραν τοῦ Ἰορδάνου, ὅπου ἦν ὁ Ἰωάνης βαπτίζων.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Ταῦτα ἐν Βηθανίᾳ ἐγένετο πέραν τοῦ Ἰορδάνου, ὅπου ἦν ὁ Ἰωάνης βαπτίζων.</p>
+        <p class="translit"></p>
         <p class="pt">Estas coisas aconteceram em Betânia, além do Jordão, onde João estava batizando.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Ταῦτα ἐν Βηθανίᾳ ἐγένετο πέραν τοῦ Ἰορδάνου, ὅπου ἦν ὁ Ἰωάνης βαπτίζων." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Estas coisas aconteceram em Betânia, além do Jordão, onde João estava batizando." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:28" data-url="../../../versiculos/joao-1-28/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v29" data-ref="João 1:29">
       <a class="ch-num" href="../../../versiculos/joao-1-29/" aria-label="Versículo 29">29</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Τῇ ἐπαύριον βλέπει τὸν Ἰησοῦν ἐρχόμενον πρὸς αὐτόν, καὶ λέγει Ἴδε ὁ Ἀμνὸς τοῦ Θεοῦ ὁ αἴρων τὴν ἁμαρτίαν τοῦ κόσμου.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Τῇ ἐπαύριον βλέπει τὸν Ἰησοῦν ἐρχόμενον πρὸς αὐτόν, καὶ λέγει Ἴδε ὁ Ἀμνὸς τοῦ Θεοῦ ὁ αἴρων τὴν ἁμαρτίαν τοῦ κόσμου.</p>
+        <p class="translit"></p>
         <p class="pt">No dia seguinte João viu a Jesus, que vinha para ele, e disse: Eis o Cordeiro de Deus, que tira o pecado do mundo.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Τῇ ἐπαύριον βλέπει τὸν Ἰησοῦν ἐρχόμενον πρὸς αὐτόν, καὶ λέγει Ἴδε ὁ Ἀμνὸς τοῦ Θεοῦ ὁ αἴρων τὴν ἁμαρτίαν τοῦ κόσμου." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="No dia seguinte João viu a Jesus, que vinha para ele, e disse: Eis o Cordeiro de Deus, que tira o pecado do mundo." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:29" data-url="../../../versiculos/joao-1-29/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v30" data-ref="João 1:30">
       <a class="ch-num" href="../../../versiculos/joao-1-30/" aria-label="Versículo 30">30</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">οὗτός ἐστιν ὑπὲρ οὗ ἐγὼ εἶπον Ὀπίσω μου ἔρχεται ἀνὴρ ὃς ἔμπροσθέν μου γέγονεν, ὅτι πρῶτός μου ἦν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">οὗτός ἐστιν ὑπὲρ οὗ ἐγὼ εἶπον Ὀπίσω μου ἔρχεται ἀνὴρ ὃς ἔμπροσθέν μου γέγονεν, ὅτι πρῶτός μου ἦν.</p>
+        <p class="translit"></p>
         <p class="pt">este é aquele de quem eu disse: Depois de mim vem um varão que passou adiante de mim, porque antes de mim ele já existia.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="οὗτός ἐστιν ὑπὲρ οὗ ἐγὼ εἶπον Ὀπίσω μου ἔρχεται ἀνὴρ ὃς ἔμπροσθέν μου γέγονεν, ὅτι πρῶτός μου ἦν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="este é aquele de quem eu disse: Depois de mim vem um varão que passou adiante de mim, porque antes de mim ele já existia." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:30" data-url="../../../versiculos/joao-1-30/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v31" data-ref="João 1:31">
       <a class="ch-num" href="../../../versiculos/joao-1-31/" aria-label="Versículo 31">31</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">κἀγὼ οὐκ ᾔδειν αὐτόν, ἀλλ’ ἵνα φανερωθῇ τῷ Ἰσραὴλ, διὰ τοῦτο ἦλθον ἐγὼ ἐν ὕδατι βαπτίζων.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">κἀγὼ οὐκ ᾔδειν αὐτόν, ἀλλ’ ἵνα φανερωθῇ τῷ Ἰσραὴλ, διὰ τοῦτο ἦλθον ἐγὼ ἐν ὕδατι βαπτίζων.</p>
+        <p class="translit"></p>
         <p class="pt">Eu não o conhecia; mas, para que ele fosse manifestado a Israel, é que vim batizando em água.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="κἀγὼ οὐκ ᾔδειν αὐτόν, ἀλλ’ ἵνα φανερωθῇ τῷ Ἰσραὴλ, διὰ τοῦτο ἦλθον ἐγὼ ἐν ὕδατι βαπτίζων." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Eu não o conhecia; mas, para que ele fosse manifestado a Israel, é que vim batizando em água." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:31" data-url="../../../versiculos/joao-1-31/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v32" data-ref="João 1:32">
       <a class="ch-num" href="../../../versiculos/joao-1-32/" aria-label="Versículo 32">32</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Καὶ ἐμαρτύρησεν Ἰωάνης λέγων ὅτι Τεθέαμαι τὸ Πνεῦμα καταβαῖνον ὡς περιστερὰν ἐξ οὐρανοῦ, καὶ ἔμεινεν ἐπ’ αὐτόν.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Καὶ ἐμαρτύρησεν Ἰωάνης λέγων ὅτι Τεθέαμαι τὸ Πνεῦμα καταβαῖνον ὡς περιστερὰν ἐξ οὐρανοῦ, καὶ ἔμεινεν ἐπ’ αὐτόν.</p>
+        <p class="translit"></p>
         <p class="pt">E João deu testemunho, dizendo: Vi o Espírito descer do céu como pomba, e repousar sobre ele.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Καὶ ἐμαρτύρησεν Ἰωάνης λέγων ὅτι Τεθέαμαι τὸ Πνεῦμα καταβαῖνον ὡς περιστερὰν ἐξ οὐρανοῦ, καὶ ἔμεινεν ἐπ’ αὐτόν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="E João deu testemunho, dizendo: Vi o Espírito descer do céu como pomba, e repousar sobre ele." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:32" data-url="../../../versiculos/joao-1-32/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v33" data-ref="João 1:33">
       <a class="ch-num" href="../../../versiculos/joao-1-33/" aria-label="Versículo 33">33</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">κἀγὼ οὐκ ᾔδειν αὐτόν, ἀλλ’ ὁ πέμψας με βαπτίζειν ἐν ὕδατι ἐκεῖνός μοι εἶπεν Ἐφ’ ὃν ἂν ἴδῃς τὸ Πνεῦμα καταβαῖνον καὶ μένον ἐπ’ αὐτόν, οὗτός ἐστιν ὁ βαπτίζων ἐν Πνεύματι Ἁγίῳ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">κἀγὼ οὐκ ᾔδειν αὐτόν, ἀλλ’ ὁ πέμψας με βαπτίζειν ἐν ὕδατι ἐκεῖνός μοι εἶπεν Ἐφ’ ὃν ἂν ἴδῃς τὸ Πνεῦμα καταβαῖνον καὶ μένον ἐπ’ αὐτόν, οὗτός ἐστιν ὁ βαπτίζων ἐν Πνεύματι Ἁγίῳ.</p>
+        <p class="translit"></p>
         <p class="pt">Eu não o conhecia; mas o que me enviou a batizar em água, esse me disse: Aquele sobre quem vires descer o Espírito, e sobre ele permanecer, esse é o que batiza no Espírito Santo.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="κἀγὼ οὐκ ᾔδειν αὐτόν, ἀλλ’ ὁ πέμψας με βαπτίζειν ἐν ὕδατι ἐκεῖνός μοι εἶπεν Ἐφ’ ὃν ἂν ἴδῃς τὸ Πνεῦμα καταβαῖνον καὶ μένον ἐπ’ αὐτόν, οὗτός ἐστιν ὁ βαπτίζων ἐν Πνεύματι Ἁγίῳ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Eu não o conhecia; mas o que me enviou a batizar em água, esse me disse: Aquele sobre quem vires descer o Espírito, e sobre ele permanecer, esse é o que batiza no Espírito Santo." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:33" data-url="../../../versiculos/joao-1-33/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v34" data-ref="João 1:34">
       <a class="ch-num" href="../../../versiculos/joao-1-34/" aria-label="Versículo 34">34</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">κἀγὼ ἑώρακα, καὶ μεμαρτύρηκα ὅτι οὗτός ἐστιν ὁ Υἱὸς τοῦ Θεοῦ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">κἀγὼ ἑώρακα, καὶ μεμαρτύρηκα ὅτι οὗτός ἐστιν ὁ Υἱὸς τοῦ Θεοῦ.</p>
+        <p class="translit"></p>
         <p class="pt">Eu mesmo vi e já vos dei testemunho de que este é o Filho de Deus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="κἀγὼ ἑώρακα, καὶ μεμαρτύρηκα ὅτι οὗτός ἐστιν ὁ Υἱὸς τοῦ Θεοῦ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Eu mesmo vi e já vos dei testemunho de que este é o Filho de Deus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:34" data-url="../../../versiculos/joao-1-34/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v35" data-ref="João 1:35">
       <a class="ch-num" href="../../../versiculos/joao-1-35/" aria-label="Versículo 35">35</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Τῇ ἐπαύριον πάλιν εἱστήκει ὁ Ἰωάνης καὶ ἐκ τῶν μαθητῶν αὐτοῦ δύο,</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Τῇ ἐπαύριον πάλιν εἱστήκει ὁ Ἰωάνης καὶ ἐκ τῶν μαθητῶν αὐτοῦ δύο,</p>
+        <p class="translit"></p>
         <p class="pt">No dia seguinte João estava outra vez ali, com dois dos seus discípulos</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Τῇ ἐπαύριον πάλιν εἱστήκει ὁ Ἰωάνης καὶ ἐκ τῶν μαθητῶν αὐτοῦ δύο," data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="No dia seguinte João estava outra vez ali, com dois dos seus discípulos" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:35" data-url="../../../versiculos/joao-1-35/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v36" data-ref="João 1:36">
       <a class="ch-num" href="../../../versiculos/joao-1-36/" aria-label="Versículo 36">36</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ ἐμβλέψας τῷ Ἰησοῦ περιπατοῦντι λέγει Ἴδε ὁ Ἀμνὸς τοῦ Θεοῦ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ ἐμβλέψας τῷ Ἰησοῦ περιπατοῦντι λέγει Ἴδε ὁ Ἀμνὸς τοῦ Θεοῦ.</p>
+        <p class="translit"></p>
         <p class="pt">e, olhando para Jesus, que passava, disse: Eis o Cordeiro de Deus!</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ ἐμβλέψας τῷ Ἰησοῦ περιπατοῦντι λέγει Ἴδε ὁ Ἀμνὸς τοῦ Θεοῦ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="e, olhando para Jesus, que passava, disse: Eis o Cordeiro de Deus!" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:36" data-url="../../../versiculos/joao-1-36/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v37" data-ref="João 1:37">
       <a class="ch-num" href="../../../versiculos/joao-1-37/" aria-label="Versículo 37">37</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ ἤκουσαν οἱ δύο μαθηταὶ αὐτοῦ λαλοῦντος καὶ ἠκολούθησαν τῷ Ἰησοῦ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ ἤκουσαν οἱ δύο μαθηταὶ αὐτοῦ λαλοῦντος καὶ ἠκολούθησαν τῷ Ἰησοῦ.</p>
+        <p class="translit"></p>
         <p class="pt">Aqueles dois discípulos ouviram-no dizer isto, e seguiram a Jesus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ ἤκουσαν οἱ δύο μαθηταὶ αὐτοῦ λαλοῦντος καὶ ἠκολούθησαν τῷ Ἰησοῦ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Aqueles dois discípulos ouviram-no dizer isto, e seguiram a Jesus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:37" data-url="../../../versiculos/joao-1-37/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v38" data-ref="João 1:38">
       <a class="ch-num" href="../../../versiculos/joao-1-38/" aria-label="Versículo 38">38</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">στραφεὶς δὲ ὁ Ἰησοῦς καὶ θεασάμενος αὐτοὺς ἀκολουθοῦντας λέγει αὐτοῖς Τί ζητεῖτε; οἱ δὲ εἶπαν αὐτῷ Ῥαββεί, (ὃ λέγεται μεθερμηνευόμενον Διδάσκαλε,) ποῦ μένεις;</p>
-        </details>
-
-        <p class="pt pt-jesus">Voltando-se Jesus e vendo que o seguiam, perguntou-lhes: Que buscais? Disseram-lhe eles: rabi {que, traduzido, quer dizer Mestre}, onde pousas?</p>
+        <p class="orig scr-greek" dir="ltr">στραφεὶς δὲ ὁ Ἰησοῦς καὶ θεασάμενος αὐτοὺς ἀκολουθοῦντας λέγει αὐτοῖς Τί ζητεῖτε; οἱ δὲ εἶπαν αὐτῷ Ῥαββεί, (ὃ λέγεται μεθερμηνευόμενον Διδάσκαλε,) ποῦ μένεις;</p>
+        <p class="translit"></p>
+        <p class="pt">Voltando-se Jesus e vendo que o seguiam, perguntou-lhes: Que buscais? Disseram-lhe eles: rabi {que, traduzido, quer dizer Mestre}, onde pousas?</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="στραφεὶς δὲ ὁ Ἰησοῦς καὶ θεασάμενος αὐτοὺς ἀκολουθοῦντας λέγει αὐτοῖς Τί ζητεῖτε; οἱ δὲ εἶπαν αὐτῷ Ῥαββεί, (ὃ λέγεται μεθερμηνευόμενον Διδάσκαλε,) ποῦ μένεις;" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Voltando-se Jesus e vendo que o seguiam, perguntou-lhes: Que buscais? Disseram-lhe eles: rabi {que, traduzido, quer dizer Mestre}, onde pousas?" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:38" data-url="../../../versiculos/joao-1-38/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v39" data-ref="João 1:39">
       <a class="ch-num" href="../../../versiculos/joao-1-39/" aria-label="Versículo 39">39</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">λέγει αὐτοῖς Ἔρχεσθε καὶ ὄψεσθε. ἦλθαν οὖν καὶ εἶδαν ποῦ μένει, καὶ παρ’ αὐτῷ ἔμειναν τὴν ἡμέραν ἐκείνην· ὥρα ἦν ὡς δεκάτη.</p>
-        </details>
-
-        <p class="pt pt-jesus">Respondeu-lhes: Vinde, e vereis. Foram, pois, e viram onde pousava; e passaram o dia com ele; era cerca da hora décima.</p>
+        <p class="orig scr-greek" dir="ltr">λέγει αὐτοῖς Ἔρχεσθε καὶ ὄψεσθε. ἦλθαν οὖν καὶ εἶδαν ποῦ μένει, καὶ παρ’ αὐτῷ ἔμειναν τὴν ἡμέραν ἐκείνην· ὥρα ἦν ὡς δεκάτη.</p>
+        <p class="translit"></p>
+        <p class="pt">Respondeu-lhes: Vinde, e vereis. Foram, pois, e viram onde pousava; e passaram o dia com ele; era cerca da hora décima.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="λέγει αὐτοῖς Ἔρχεσθε καὶ ὄψεσθε. ἦλθαν οὖν καὶ εἶδαν ποῦ μένει, καὶ παρ’ αὐτῷ ἔμειναν τὴν ἡμέραν ἐκείνην· ὥρα ἦν ὡς δεκάτη." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Respondeu-lhes: Vinde, e vereis. Foram, pois, e viram onde pousava; e passaram o dia com ele; era cerca da hora décima." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:39" data-url="../../../versiculos/joao-1-39/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v40" data-ref="João 1:40">
       <a class="ch-num" href="../../../versiculos/joao-1-40/" aria-label="Versículo 40">40</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Ἦν Ἀνδρέας ὁ ἀδελφὸς Σίμωνος Πέτρου εἷς ἐκ τῶν δύο τῶν ἀκουσάντων παρὰ Ἰωάνου καὶ ἀκολουθησάντων αὐτῷ·</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">Ἦν Ἀνδρέας ὁ ἀδελφὸς Σίμωνος Πέτρου εἷς ἐκ τῶν δύο τῶν ἀκουσάντων παρὰ Ἰωάνου καὶ ἀκολουθησάντων αὐτῷ·</p>
+        <p class="translit"></p>
         <p class="pt">André, irmão de Simão Pedro, era um dos dois que ouviram João falar, e que seguiram a Jesus.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Ἦν Ἀνδρέας ὁ ἀδελφὸς Σίμωνος Πέτρου εἷς ἐκ τῶν δύο τῶν ἀκουσάντων παρὰ Ἰωάνου καὶ ἀκολουθησάντων αὐτῷ·" data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="André, irmão de Simão Pedro, era um dos dois que ouviram João falar, e que seguiram a Jesus." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:40" data-url="../../../versiculos/joao-1-40/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v41" data-ref="João 1:41">
       <a class="ch-num" href="../../../versiculos/joao-1-41/" aria-label="Versículo 41">41</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">εὑρίσκει οὗτος πρῶτον τὸν ἀδελφὸν τὸν ἴδιον Σίμωνα καὶ λέγει αὐτῷ Εὑρήκαμεν τὸν Μεσσίαν (ὅ ἐστιν μεθερμηνευόμενον Χριστός).</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">εὑρίσκει οὗτος πρῶτον τὸν ἀδελφὸν τὸν ἴδιον Σίμωνα καὶ λέγει αὐτῷ Εὑρήκαμεν τὸν Μεσσίαν (ὅ ἐστιν μεθερμηνευόμενον Χριστός).</p>
+        <p class="translit"></p>
         <p class="pt">Ele achou primeiro a seu irmão Simão, e disse-lhe: Havemos achado o Messias {que, traduzido, quer dizer Cristo}.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="εὑρίσκει οὗτος πρῶτον τὸν ἀδελφὸν τὸν ἴδιον Σίμωνα καὶ λέγει αὐτῷ Εὑρήκαμεν τὸν Μεσσίαν (ὅ ἐστιν μεθερμηνευόμενον Χριστός)." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ele achou primeiro a seu irmão Simão, e disse-lhe: Havemos achado o Messias {que, traduzido, quer dizer Cristo}." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:41" data-url="../../../versiculos/joao-1-41/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v42" data-ref="João 1:42">
       <a class="ch-num" href="../../../versiculos/joao-1-42/" aria-label="Versículo 42">42</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἤγαγεν αὐτὸν πρὸς τὸν Ἰησοῦν. ἐμβλέψας αὐτῷ ὁ Ἰησοῦς εἶπεν Σὺ εἶ Σίμων ὁ υἱὸς Ἰωάνου, σὺ κληθήσῃ Κηφᾶς (ὃ ἑρμηνεύεται Πέτρος).</p>
-        </details>
-
-        <p class="pt pt-jesus">E o levou a Jesus. Jesus, fixando nele o olhar, disse: Tu és Simão, filho de João, tu serás chamado Cefas {que quer dizer Pedro}.</p>
+        <p class="orig scr-greek" dir="ltr">ἤγαγεν αὐτὸν πρὸς τὸν Ἰησοῦν. ἐμβλέψας αὐτῷ ὁ Ἰησοῦς εἶπεν Σὺ εἶ Σίμων ὁ υἱὸς Ἰωάνου, σὺ κληθήσῃ Κηφᾶς (ὃ ἑρμηνεύεται Πέτρος).</p>
+        <p class="translit"></p>
+        <p class="pt">E o levou a Jesus. Jesus, fixando nele o olhar, disse: Tu és Simão, filho de João, tu serás chamado Cefas {que quer dizer Pedro}.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἤγαγεν αὐτὸν πρὸς τὸν Ἰησοῦν. ἐμβλέψας αὐτῷ ὁ Ἰησοῦς εἶπεν Σὺ εἶ Σίμων ὁ υἱὸς Ἰωάνου, σὺ κληθήσῃ Κηφᾶς (ὃ ἑρμηνεύεται Πέτρος)." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="E o levou a Jesus. Jesus, fixando nele o olhar, disse: Tu és Simão, filho de João, tu serás chamado Cefas {que quer dizer Pedro}." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:42" data-url="../../../versiculos/joao-1-42/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v43" data-ref="João 1:43">
       <a class="ch-num" href="../../../versiculos/joao-1-43/" aria-label="Versículo 43">43</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">Τῇ ἐπαύριον ἠθέλησεν ἐξελθεῖν εἰς τὴν Γαλιλαίαν. καὶ εὑρίσκει Φίλιππον. καὶ λέγει αὐτῷ ὁ Ἰησοῦς Ἀκολούθει μοι.</p>
-        </details>
-
-        <p class="pt pt-jesus">No dia seguinte Jesus resolveu partir para a Galiléia, e achando a Felipe disse-lhe: Segue-me.</p>
+        <p class="orig scr-greek" dir="ltr">Τῇ ἐπαύριον ἠθέλησεν ἐξελθεῖν εἰς τὴν Γαλιλαίαν. καὶ εὑρίσκει Φίλιππον. καὶ λέγει αὐτῷ ὁ Ἰησοῦς Ἀκολούθει μοι.</p>
+        <p class="translit"></p>
+        <p class="pt">No dia seguinte Jesus resolveu partir para a Galiléia, e achando a Felipe disse-lhe: Segue-me.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="Τῇ ἐπαύριον ἠθέλησεν ἐξελθεῖν εἰς τὴν Γαλιλαίαν. καὶ εὑρίσκει Φίλιππον. καὶ λέγει αὐτῷ ὁ Ἰησοῦς Ἀκολούθει μοι." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="No dia seguinte Jesus resolveu partir para a Galiléia, e achando a Felipe disse-lhe: Segue-me." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:43" data-url="../../../versiculos/joao-1-43/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v44" data-ref="João 1:44">
       <a class="ch-num" href="../../../versiculos/joao-1-44/" aria-label="Versículo 44">44</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἦν δὲ ὁ Φίλιππος ἀπὸ Βηθσαϊδά, ἐκ τῆς πόλεως Ἀνδρέου καὶ Πέτρου.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ἦν δὲ ὁ Φίλιππος ἀπὸ Βηθσαϊδά, ἐκ τῆς πόλεως Ἀνδρέου καὶ Πέτρου.</p>
+        <p class="translit"></p>
         <p class="pt">Ora, Felipe era de Betsaida, cidade de André e de Pedro.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἦν δὲ ὁ Φίλιππος ἀπὸ Βηθσαϊδά, ἐκ τῆς πόλεως Ἀνδρέου καὶ Πέτρου." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ora, Felipe era de Betsaida, cidade de André e de Pedro." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:44" data-url="../../../versiculos/joao-1-44/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v45" data-ref="João 1:45">
       <a class="ch-num" href="../../../versiculos/joao-1-45/" aria-label="Versículo 45">45</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">εὑρίσκει Φίλιππος τὸν Ναθαναὴλ καὶ λέγει αὐτῷ Ὃν ἔγραψεν Μωϋσῆς ἐν τῷ νόμῳ καὶ οἱ προφῆται εὑρήκαμεν, Ἰησοῦν υἱὸν τοῦ Ἰωσὴφ τὸν ἀπὸ Ναζαρέτ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">εὑρίσκει Φίλιππος τὸν Ναθαναὴλ καὶ λέγει αὐτῷ Ὃν ἔγραψεν Μωϋσῆς ἐν τῷ νόμῳ καὶ οἱ προφῆται εὑρήκαμεν, Ἰησοῦν υἱὸν τοῦ Ἰωσὴφ τὸν ἀπὸ Ναζαρέτ.</p>
+        <p class="translit"></p>
         <p class="pt">Felipe achou a Natanael, e disse-lhe: Acabamos de achar aquele de quem escreveram Moisés na lei, e os profetas: Jesus de Nazaré, filho de José.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="εὑρίσκει Φίλιππος τὸν Ναθαναὴλ καὶ λέγει αὐτῷ Ὃν ἔγραψεν Μωϋσῆς ἐν τῷ νόμῳ καὶ οἱ προφῆται εὑρήκαμεν, Ἰησοῦν υἱὸν τοῦ Ἰωσὴφ τὸν ἀπὸ Ναζαρέτ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Felipe achou a Natanael, e disse-lhe: Acabamos de achar aquele de quem escreveram Moisés na lei, e os profetas: Jesus de Nazaré, filho de José." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:45" data-url="../../../versiculos/joao-1-45/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v46" data-ref="João 1:46">
       <a class="ch-num" href="../../../versiculos/joao-1-46/" aria-label="Versículo 46">46</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ εἶπεν αὐτῷ Ναθαναήλ Ἐκ Ναζαρὲτ δύναταί τι ἀγαθὸν εἶναι; λέγει αὐτῷ ὁ Φίλιππος Ἔρχου καὶ ἴδε.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">καὶ εἶπεν αὐτῷ Ναθαναήλ Ἐκ Ναζαρὲτ δύναταί τι ἀγαθὸν εἶναι; λέγει αὐτῷ ὁ Φίλιππος Ἔρχου καὶ ἴδε.</p>
+        <p class="translit"></p>
         <p class="pt">Perguntou-lhe Natanael: Pode haver coisa bem vinda de Nazaré? Disse-lhe Felipe: Vem e vê.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ εἶπεν αὐτῷ Ναθαναήλ Ἐκ Ναζαρὲτ δύναταί τι ἀγαθὸν εἶναι; λέγει αὐτῷ ὁ Φίλιππος Ἔρχου καὶ ἴδε." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Perguntou-lhe Natanael: Pode haver coisa bem vinda de Nazaré? Disse-lhe Felipe: Vem e vê." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:46" data-url="../../../versiculos/joao-1-46/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v47" data-ref="João 1:47">
       <a class="ch-num" href="../../../versiculos/joao-1-47/" aria-label="Versículo 47">47</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">εἶδεν Ἰησοῦς τὸν Ναθαναὴλ ἐρχόμενον πρὸς αὐτὸν καὶ λέγει περὶ αὐτοῦ Ἴδε ἀληθῶς Ἰσραηλείτης, ἐν ᾧ δόλος οὐκ ἔστιν.</p>
-        </details>
-
-        <p class="pt pt-jesus">Jesus, vendo Natanael aproximar-se dele, disse a seu respeito: Eis um verdadeiro israelita, em quem não há dolo!</p>
+        <p class="orig scr-greek" dir="ltr">εἶδεν Ἰησοῦς τὸν Ναθαναὴλ ἐρχόμενον πρὸς αὐτὸν καὶ λέγει περὶ αὐτοῦ Ἴδε ἀληθῶς Ἰσραηλείτης, ἐν ᾧ δόλος οὐκ ἔστιν.</p>
+        <p class="translit"></p>
+        <p class="pt">Jesus, vendo Natanael aproximar-se dele, disse a seu respeito: Eis um verdadeiro israelita, em quem não há dolo!</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="εἶδεν Ἰησοῦς τὸν Ναθαναὴλ ἐρχόμενον πρὸς αὐτὸν καὶ λέγει περὶ αὐτοῦ Ἴδε ἀληθῶς Ἰσραηλείτης, ἐν ᾧ δόλος οὐκ ἔστιν." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Jesus, vendo Natanael aproximar-se dele, disse a seu respeito: Eis um verdadeiro israelita, em quem não há dolo!" data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:47" data-url="../../../versiculos/joao-1-47/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v48" data-ref="João 1:48">
       <a class="ch-num" href="../../../versiculos/joao-1-48/" aria-label="Versículo 48">48</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">λέγει αὐτῷ Ναθαναήλ Πόθεν με γινώσκεις; ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Πρὸ τοῦ σε Φίλιππον φωνῆσαι ὄντα ὑπὸ τὴν συκῆν εἶδόν σε.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">λέγει αὐτῷ Ναθαναήλ Πόθεν με γινώσκεις; ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Πρὸ τοῦ σε Φίλιππον φωνῆσαι ὄντα ὑπὸ τὴν συκῆν εἶδόν σε.</p>
+        <p class="translit"></p>
         <p class="pt">Perguntou-lhe Natanael: Donde me conheces? Respondeu-lhe Jesus: Antes que Felipe te chamasse, eu te vi, quando estavas debaixo da figueira.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="λέγει αὐτῷ Ναθαναήλ Πόθεν με γινώσκεις; ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Πρὸ τοῦ σε Φίλιππον φωνῆσαι ὄντα ὑπὸ τὴν συκῆν εἶδόν σε." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Perguntou-lhe Natanael: Donde me conheces? Respondeu-lhe Jesus: Antes que Felipe te chamasse, eu te vi, quando estavas debaixo da figueira." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:48" data-url="../../../versiculos/joao-1-48/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v49" data-ref="João 1:49">
       <a class="ch-num" href="../../../versiculos/joao-1-49/" aria-label="Versículo 49">49</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἀπεκρίθη αὐτῷ Ναθαναήλ Ῥαββεί, σὺ εἶ ὁ Υἱὸς τοῦ Θεοῦ, σὺ Βασιλεὺς εἶ τοῦ Ἰσραήλ.</p>
-        </details>
-
+        <p class="orig scr-greek" dir="ltr">ἀπεκρίθη αὐτῷ Ναθαναήλ Ῥαββεί, σὺ εἶ ὁ Υἱὸς τοῦ Θεοῦ, σὺ Βασιλεὺς εἶ τοῦ Ἰσραήλ.</p>
+        <p class="translit"></p>
         <p class="pt">Respondeu-lhe Natanael: Rabi, tu és o Filho de Deus, tu és rei de Israel.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἀπεκρίθη αὐτῷ Ναθαναήλ Ῥαββεί, σὺ εἶ ὁ Υἱὸς τοῦ Θεοῦ, σὺ Βασιλεὺς εἶ τοῦ Ἰσραήλ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Respondeu-lhe Natanael: Rabi, tu és o Filho de Deus, tu és rei de Israel." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:49" data-url="../../../versiculos/joao-1-49/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v50" data-ref="João 1:50">
       <a class="ch-num" href="../../../versiculos/joao-1-50/" aria-label="Versículo 50">50</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Ὅτι εἶπόν σοι ὅτι εἶδόν σε ὑποκάτω τῆς συκῆς, πιστεύεις; μείζω τούτων ὄψῃ.</p>
-        </details>
-
-        <p class="pt pt-jesus">Ao que lhe disse Jesus: Porque te disse: Vi-te debaixo da figueira, crês? coisas maiores do que estas verás.</p>
+        <p class="orig scr-greek" dir="ltr">ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Ὅτι εἶπόν σοι ὅτι εἶδόν σε ὑποκάτω τῆς συκῆς, πιστεύεις; μείζω τούτων ὄψῃ.</p>
+        <p class="translit"></p>
+        <p class="pt">Ao que lhe disse Jesus: Porque te disse: Vi-te debaixo da figueira, crês? coisas maiores do que estas verás.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Ὅτι εἶπόν σοι ὅτι εἶδόν σε ὑποκάτω τῆς συκῆς, πιστεύεις; μείζω τούτων ὄψῃ." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="Ao que lhe disse Jesus: Porque te disse: Vi-te debaixo da figueira, crês? coisas maiores do que estas verás." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:50" data-url="../../../versiculos/joao-1-50/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
     <div class="ch-verse" id="v51" data-ref="João 1:51">
       <a class="ch-num" href="../../../versiculos/joao-1-51/" aria-label="Versículo 51">51</a>
       <div class="ch-body">
-        <details class="original-toggle">
-          <summary><span class="translit-arrow" aria-hidden="true">&gt;</span><span class="sr-only">Mostrar texto grego</span></summary>
-          <p class="orig scr-greek" dir="ltr">καὶ λέγει αὐτῷ Ἀμὴν ἀμὴν λέγω ὑμῖν, ὄψεσθε τὸν οὐρανὸν ἀνεῳγότα καὶ τοὺς ἀγγέλους τοῦ Θεοῦ ἀναβαίνοντας καὶ καταβαίνοντας ἐπὶ τὸν Υἱὸν τοῦ ἀνθρώπου.</p>
-        </details>
-
-        <p class="pt pt-jesus">E acrescentou: Em verdade, em verdade vos digo que vereis o céu aberto, e os anjos de Deus subindo e descendo sobre o Filho do homem.</p>
+        <p class="orig scr-greek" dir="ltr">καὶ λέγει αὐτῷ Ἀμὴν ἀμὴν λέγω ὑμῖν, ὄψεσθε τὸν οὐρανὸν ἀνεῳγότα καὶ τοὺς ἀγγέλους τοῦ Θεοῦ ἀναβαίνοντας καὶ καταβαίνοντας ἐπὶ τὸν Υἱὸν τοῦ ἀνθρώπου.</p>
+        <p class="translit"></p>
+        <p class="pt">E acrescentou: Em verdade, em verdade vos digo que vereis o céu aberto, e os anjos de Deus subindo e descendo sobre o Filho do homem.</p>
+        <div class="verse-tools"><button type="button" class="listen" data-speak="καὶ λέγει αὐτῷ Ἀμὴν ἀμὴν λέγω ὑμῖν, ὄψεσθε τὸν οὐρανὸν ἀνεῳγότα καὶ τοὺς ἀγγέλους τοῦ Θεοῦ ἀναβαίνοντας καὶ καταβαίνοντας ἐπὶ τὸν Υἱὸν τοῦ ἀνθρώπου." data-lang="el-GR">Ouvir original</button><button type="button" class="listen" data-speak="E acrescentou: Em verdade, em verdade vos digo que vereis o céu aberto, e os anjos de Deus subindo e descendo sobre o Filho do homem." data-lang="pt-BR">Ouvir PT</button><button type="button" class="listen fav" data-fav data-ref="João 1:51" data-url="../../../versiculos/joao-1-51/" aria-pressed="false">☆ Favoritar</button></div>
       </div>
     </div>
   </div>
+
+  <section class="study-map">
+    <div class="study-map-head">
+      <p class="eyebrow">Mapa de Estudos</p>
+      <h2>João 1</h2>
+      <p>Dados demonstrativos para organizar pessoas, perguntas e salas pelo conteúdo bíblico estudado.</p>
+    </div>
+    <div class="metric-grid">
+      <div><b>24</b><span>pessoas lendo hoje</span></div>
+      <div><b>8</b><span>discussões</span></div>
+      <div><b>15</b><span>perguntas</span></div>
+      <div><b>4</b><span>estudos públicos</span></div>
+    </div>
+    <div class="study-card-grid">
+
+    <article class="study-card">
+      <span>Salas relacionadas</span>
+      <h3>Sala João 1</h3>
+      <p>Leitura guiada com discussões por trecho e materiais de apoio.</p>
+    </article>
+    <article class="study-card">
+      <span>Perguntas recentes</span>
+      <h3>Contexto e aplicação</h3>
+      <p>Perguntas organizadas por livro, capítulo e versículo.</p>
+    </article>
+    <article class="study-card">
+      <span>Coleções públicas</span>
+      <h3>Referências do estudo</h3>
+      <p>Versículos, artigos, mapas e manuscritos reunidos por tema.</p>
+    </article>
+    </div>
+    <p class="map-actions"><a class="btn primary" href="../../../comunidade/salas/">Ver Salas de Estudo</a><a class="btn quiet" href="../../../estudar/">Abrir ferramentas de estudo</a></p>
+  </section>
+
+  <section class="study-desk">
+    <div>
+      <p class="eyebrow">Mesa de Estudo</p>
+      <h2>Mesa de Estudo: João 1</h2>
+      <p>Um ponto de encontro entre Bíblia, notas, coleções, perguntas, manuscritos, plano e progresso.</p>
+    </div>
+    <div class="desk-tabs" aria-label="Ferramentas da Mesa de Estudo">
+      <a href="../../../ler/">Bíblia</a>
+      <a href="../../../anotacoes/">Minhas notas</a>
+      <a href="../../../colecoes/">Coleções</a>
+      <a href="../../../comunidade/">Pessoas estudando</a>
+      <a href="../../../comunidade/">Perguntas</a>
+      <a href="../../../linha-do-tempo/">Mapa</a>
+      <a href="../../../estudar/">Plano</a>
+    </div>
+  </section>
   <nav class="pager" aria-label="Folhear capítulos"><span class="pg empty"></span><a class="pg next" href="../2/"><span>Capítulo →</span><b>João 2</b></a></nav>
   <p class="backline"><a href="../">← Todos os capítulos de João</a></p>
 </main>
@@ -641,18 +586,21 @@
     </div>
     <div class="cols">
       <div>
-        <a href="../../../index.html#versiculos">Versículos</a>
-        <a href="../../../temas/">Temas</a>
-        <a href="../../../index.html#artigos">Artigos</a>
+        <a href="../../../ler/">Bíblia</a>
+        <a href="../../../estudar/">Estudar</a>
+        <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
+        <a href="../../../comunidade/">Comunidade</a>
+        <a href="../../../biblioteca/">Biblioteca</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
-        <a href="../../../index.html#metodologia">Metodologia</a>
-        <a href="../../../index.html#topo">Voltar ao topo ↑</a>
       </div>
     </div>
   </div>
 </footer>
-<script src="../../../assets/app.js?v=4c24bcee"></script>
-<script src="../../../assets/study.js?v=4c24bcee" defer></script>
+<script src="../../../assets/supabase-config.js?v=d1792c99" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+<script src="../../../assets/auth.js?v=d1792c99" defer></script>
+<script src="../../../assets/app.js?v=d1792c99"></script>
+<script src="../../../assets/study.js?v=d1792c99" defer></script>
 </body></html>

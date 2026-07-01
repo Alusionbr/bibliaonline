@@ -1,9 +1,9 @@
 var BEC_BASE="https://alusionbr.github.io/bibliaonline";
-// Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
+﻿// Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
 // Tudo salvo no localStorage deste navegador. Nada vai para servidor.
 (function(){
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
-  function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){} if(k==='notes'||k==='vhl'||k==='whl'||k==='favorites') scheduleCloudSync();}
+  function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   // referência "Livro c:v" → slug e URL absoluta do versículo (BEC_BASE injetado no build)
   function refToSlug(ref){
@@ -36,8 +36,13 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     wrapWords(cont.querySelector('.pt'),'pt');
     wrapWords(cont.querySelector('.orig'),'orig');
     var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
-    cont.classList.add('study-target');
-    cont.setAttribute('tabindex','0');
+    var bar=document.createElement('div'); bar.className='study';
+    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">use a caneta 🖍 para grifar; selecione para copiar</span>' : '';
+    bar.innerHTML='<button type="button" data-act="vhl">🖍 Grifar versículo</button>'+
+      '<button type="button" data-act="note">🗒 Anotar</button>'+
+      '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+
+      '<button type="button" data-act="share">↗ Compartilhar</button>'+hint;
+    anchor.appendChild(bar);
     var nb=document.createElement('div'); nb.className='note-box'; nb.hidden=true;
     nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>'+
       '<div class="note-actions"><button type="button" data-act="copy-note">⧉ Copiar versículo + nota</button></div>';
@@ -46,12 +51,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     apply(cont, ref);
   }
 
-  function flash(btn, txt){
-    var o=btn.textContent;
-    if(btn.closest && btn.closest('.study-context')) btn.textContent = txt==='Falhou' ? '!' : '✓';
-    else btn.textContent=txt;
-    setTimeout(function(){btn.textContent=o;},1400);
-  }
+  function flash(btn, txt){ var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1400); }
   function copyText(str, btn){
     (navigator.clipboard?navigator.clipboard.writeText(str):Promise.reject())
       .then(function(){ if(btn) flash(btn,'Copiado!'); })
@@ -146,319 +146,8 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   }
 
   // ---------- seta de ferramentas ocultas (salvar/compartilhar, anotações, apagar) ----------
-  // ---------- conta e sincronizacao Supabase ----------
-  var cloudSession=null, cloudTimer=null, cloudBusy=false;
-  var SESSION_KEY='bec.supabase.session';
-  function cfg(){ return window.BEC_SUPABASE_CONFIG || null; }
-  function cloudReady(){ var c=cfg(); return !!(c && c.url && c.publishableKey && window.fetch); }
-  function readSession(){ try{return JSON.parse(localStorage.getItem(SESSION_KEY)||'null');}catch(e){return null;} }
-  function writeSession(s){ cloudSession=s||null; try{ if(s) localStorage.setItem(SESSION_KEY, JSON.stringify(s)); else localStorage.removeItem(SESSION_KEY); }catch(e){} updateAccountButton(); }
-  function authHeaders(token){
-    var c=cfg();
-    return {'apikey':c.publishableKey,'Authorization':'Bearer '+(token||c.publishableKey),'Content-Type':'application/json'};
-  }
-  function cloudFetch(path, opts){
-    opts=opts||{}; opts.headers=Object.assign(authHeaders(opts.token), opts.headers||{});
-    delete opts.token;
-    return fetch(cfg().url+path, opts).then(function(r){
-      if(!r.ok) return r.text().then(function(t){ throw new Error(t||r.statusText); });
-      if(r.status===204) return null;
-      return r.json();
-    });
-  }
-  function ensureFreshSession(){
-    var s=cloudSession||readSession();
-    if(!s || !s.access_token) return Promise.resolve(null);
-    cloudSession=s;
-    var now=Math.floor(Date.now()/1000);
-    if(s.expires_at && s.expires_at-now>60) return Promise.resolve(s);
-    if(!s.refresh_token) return Promise.resolve(s);
-    return cloudFetch('/auth/v1/token?grant_type=refresh_token', {
-      method:'POST',
-      body:JSON.stringify({refresh_token:s.refresh_token})
-    }).then(function(n){
-      var ns={access_token:n.access_token,refresh_token:n.refresh_token||s.refresh_token,expires_at:n.expires_at,user:n.user||s.user};
-      writeSession(ns); return ns;
-    }).catch(function(){ writeSession(null); return null; });
-  }
-  function loadPrefs(){ try{return JSON.parse(localStorage.getItem('bec.preferences')||'{}');}catch(e){return{};} }
-  function savePrefs(p){ try{localStorage.setItem('bec.preferences',JSON.stringify(p||{}));}catch(e){} scheduleCloudSync(); }
-  function accountPrefs(){
-    var p=loadPrefs();
-    p.profile=p.profile||{};
-    p.customStudies=Array.isArray(p.customStudies)?p.customStudies:[];
-    p.groups=Array.isArray(p.groups)?p.groups:[];
-    return p;
-  }
-  function statePayload(){
-    var prefs=loadPrefs();
-    prefs.theme=localStorage.getItem('bec.theme')||'';
-    prefs.fontscale=localStorage.getItem('bec.fontscale')||'';
-    prefs.context=localStorage.getItem('bec.context')||'';
-    prefs.bookorder=localStorage.getItem('bec.bookorder')||'';
-    prefs.lastRead=(function(){try{return JSON.parse(localStorage.getItem('bec.lastRead')||'null');}catch(e){return null;}})();
-    return {
-      user_id:cloudSession && cloudSession.user && cloudSession.user.id,
-      notes:load('notes'),
-      verse_highlights:load('vhl'),
-      word_highlights:load('whl'),
-      favorites:load('favorites'),
-      preferences:prefs,
-      updated_at:new Date().toISOString()
-    };
-  }
-  function mergeObj(a,b){ var out={}, k; a=a||{}; b=b||{}; for(k in a) out[k]=a[k]; for(k in b) out[k]=b[k]; return out; }
-  function applyRemote(row){
-    if(!row) return false;
-    function put(k,v){ try{localStorage.setItem('bec.'+k,JSON.stringify(v||{}));}catch(e){} }
-    put('notes', mergeObj(row.notes, load('notes')));
-    put('vhl', mergeObj(row.verse_highlights, load('vhl')));
-    put('whl', mergeObj(row.word_highlights, load('whl')));
-    put('favorites', mergeObj(row.favorites, load('favorites')));
-    try{localStorage.setItem('bec.preferences',JSON.stringify(mergeObj(row.preferences, loadPrefs())));}catch(e){}
-    return true;
-  }
-  function pullCloud(){
-    return ensureFreshSession().then(function(s){
-      if(!s) return null;
-      var id=encodeURIComponent(s.user.id);
-      return cloudFetch('/rest/v1/user_study_state?select=notes,verse_highlights,word_highlights,favorites,preferences&user_id=eq.'+id+'&limit=1', {token:s.access_token})
-        .then(function(rows){ return rows && rows[0] ? rows[0] : null; });
-    });
-  }
-  function pushCloud(){
-    return ensureFreshSession().then(function(s){
-      if(!s || !cloudSession.user) return null;
-      return cloudFetch('/rest/v1/user_study_state?on_conflict=user_id', {
-        method:'POST',
-        token:s.access_token,
-        headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
-        body:JSON.stringify([statePayload()])
-      });
-    });
-  }
-  function scheduleCloudSync(){
-    if(!cloudReady() || !cloudSession || cloudBusy) return;
-    clearTimeout(cloudTimer);
-    cloudTimer=setTimeout(function(){
-      cloudBusy=true;
-      pushCloud().catch(function(){}).then(function(){ cloudBusy=false; updateAccountButton(); });
-    }, 700);
-  }
-  function updateAccountButton(){
-    var b=document.querySelector('[data-account]');
-    if(!b) return;
-    var s=cloudSession||readSession();
-    b.textContent=s && s.user && s.user.email ? 'Conta' : 'Entrar';
-    b.title=s && s.user && s.user.email ? s.user.email : 'Entrar ou criar conta';
-  }
-  function normalizeAuth(res){
-    if(!res) return null;
-    if(res.session) return {
-      access_token:res.session.access_token,
-      refresh_token:res.session.refresh_token,
-      expires_at:res.session.expires_at,
-      user:res.user || res.session.user
-    };
-    return {
-      access_token:res.access_token,
-      refresh_token:res.refresh_token,
-      expires_at:res.expires_at,
-      user:res.user
-    };
-  }
-  function showAccount(msg){
-    var s=cloudSession||readSession(), logged=!!(s&&s.user);
-    var ov=document.createElement('div'); ov.className='bec-modal';
-    ov.innerHTML='<div class="bec-modal-box auth-box">'+
-      '<p><b>'+(logged?'Sua conta':'Entrar ou criar conta')+'</b></p>'+
-      (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
-      (logged?'<p>'+esc(s.user.email||'')+'</p><div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Fechar</button><button type="button" class="btn danger" data-logout>Sair</button></div>':
-      '<p class="auth-help">Se ainda não tem conta, digite seu email e uma senha e toque em Criar conta.</p>'+
-      '<label>Email<br><input type="email" data-email autocomplete="email"></label><br>'+
-      '<label>Senha<br><input type="password" data-pass autocomplete="current-password"></label>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-login>Entrar</button><button type="button" class="btn primary" data-signup>Criar conta</button></div>')+
-      '</div>';
-    ov.addEventListener('click', function(e){
-      if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
-      if(e.target.closest && e.target.closest('[data-logout]')){ cloudFetch('/auth/v1/logout',{method:'POST',token:s.access_token}).catch(function(){}); writeSession(null); ov.remove(); }
-      if(e.target.closest && (e.target.closest('[data-login]')||e.target.closest('[data-signup]'))){
-        e.preventDefault();
-        var email=ov.querySelector('[data-email]').value.trim(), pass=ov.querySelector('[data-pass]').value;
-        var signup=!!e.target.closest('[data-signup]');
-        if(!email || pass.length<8){ ov.remove(); showAccount('Informe email e senha com pelo menos 8 caracteres.'); return; }
-        var clicked=e.target.closest('[data-login]')||e.target.closest('[data-signup]');
-        clicked.disabled=true; clicked.textContent=signup?'Criando...':'Entrando...';
-        var path=signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
-        cloudFetch(path,{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(function(res){
-          var auth=normalizeAuth(res);
-          if(signup && (!auth || !auth.access_token)) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(normalizeAuth);
-          return auth;
-        }).then(function(res){
-          if(signup && res && res.user && !res.access_token){
-            ov.remove();
-            showAccount('Conta criada. Confira seu email para confirmar a conta e depois entre.', 'login', {email:email});
-            return false;
-          }
-          if(!res || !res.access_token || !res.user) throw new Error('auth');
-          writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
-          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); }).catch(function(){ return null; }).then(function(){ return true; });
-        }).then(function(ok){ if(ok){ ov.remove(); location.reload(); } }).catch(function(err){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.'); });
-      }
-    });
-    document.body.appendChild(ov);
-    var emailInput=ov.querySelector('[data-email]'); if(emailInput) emailInput.focus();
-  }
-  function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
-  function prefId(prefix){ return prefix+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7); }
-  function accountItemHtml(kind, item){
-    var meta=[];
-    if(item.pace) meta.push(item.pace);
-    if(item.visibility) meta.push(item.visibility);
-    if(item.topic) meta.push(item.topic);
-    return '<div class="account-item">'+
-      '<div><b>'+esc(item.title||item.name||'Sem titulo')+'</b>'+
-      (meta.length?'<span>'+esc(meta.join(' · '))+'</span>':'')+
-      (item.focus?'<p>'+esc(item.focus)+'</p>':'')+
-      (item.refs?'<p>'+esc(item.refs)+'</p>':'')+
-      (item.description?'<p>'+esc(item.description)+'</p>':'')+
-      '</div><button type="button" class="btn ghost mini" data-del-'+kind+'="'+escAttr(item.id||'')+'">Remover</button></div>';
-  }
-  function accountPanelHtml(s, msg){
-    var p=accountPrefs(), profile=p.profile||{};
-    var studies=p.customStudies||[], groups=p.groups||[];
-    return '<div class="bec-modal-box auth-box account-box">'+
-      '<div class="account-head"><div><p><b>Sua conta</b></p><span>'+esc(s.user.email||'')+'</span></div><button type="button" class="btn ghost mini" data-close>Fechar</button></div>'+
-      (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
-      '<section class="account-section"><h3>Perfil</h3>'+
-      '<label>Nome<br><input type="text" data-profile-name autocomplete="name" value="'+escAttr(profile.name||'')+'"></label>'+
-      '<label>Sobre voce<br><textarea data-profile-bio rows="3">'+esc(profile.bio||'')+'</textarea></label>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn primary" data-save-profile>Salvar perfil</button></div></section>'+
-      '<section class="account-section"><h3>Estudos personalizados</h3>'+
-      '<div class="account-list">'+(studies.length?studies.map(function(x){return accountItemHtml('study',x);}).join(''):'<p class="empty small">Nenhum estudo criado.</p>')+'</div>'+
-      '<label>Titulo do estudo<br><input type="text" data-study-title value=""></label>'+
-      '<label>Objetivo<br><input type="text" data-study-focus value=""></label>'+
-      '<div class="account-grid"><label>Ritmo<br><select data-study-pace><option>Diario</option><option>Semanal</option><option>Livre</option></select></label>'+
-      '<label>Passagens<br><input type="text" data-study-refs value=""></label></div>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn primary" data-add-study>Criar estudo</button></div></section>'+
-      '<section class="account-section"><h3>Grupos</h3>'+
-      '<div class="account-list">'+(groups.length?groups.map(function(x){return accountItemHtml('group',x);}).join(''):'<p class="empty small">Nenhum grupo criado.</p>')+'</div>'+
-      '<label>Nome do grupo<br><input type="text" data-group-name value=""></label>'+
-      '<label>Descricao<br><input type="text" data-group-description value=""></label>'+
-      '<div class="account-grid"><label>Tema<br><input type="text" data-group-topic value=""></label>'+
-      '<label>Privacidade<br><select data-group-visibility><option>Privado</option><option>Convite</option><option>Publico</option></select></label></div>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn primary" data-add-group>Criar grupo</button></div></section>'+
-      '<div class="bec-modal-actions account-bottom"><button type="button" class="btn danger" data-logout>Sair</button></div>'+
-      '</div>';
-  }
-  function persistAccountPrefs(p, ov, msg){
-    savePrefs(p);
-    pushCloud().catch(function(){}).then(function(){ ov.remove(); showAccount(msg); });
-  }
-  function showAccount(msg, mode, vals){
-    var s=cloudSession||readSession(), logged=!!(s&&s.user);
-    mode=mode||'signup'; vals=vals||{};
-    var signupMode=mode!=='login';
-    var ov=document.createElement('div'); ov.className='bec-modal';
-    if(logged) ov.innerHTML=accountPanelHtml(s, msg);
-    else ov.innerHTML='<div class="bec-modal-box auth-box">'+
-      '<p><b>'+(logged?'Sua conta':(signupMode?'Criar conta':'Entrar na conta'))+'</b></p>'+
-      (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
-      '<p class="auth-help">'+(signupMode?'Digite seu email e crie uma senha com pelo menos 8 caracteres.':'Entre com o email e a senha que voce cadastrou.')+'</p>'+
-      '<label>Email<br><input type="email" data-email autocomplete="email" value="'+esc(vals.email||'')+'"></label><br>'+
-      '<label>Senha<br><input type="password" data-pass autocomplete="'+(signupMode?'new-password':'current-password')+'" value="'+esc(vals.pass||'')+'"></label>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-switch="'+(signupMode?'login':'signup')+'">'+(signupMode?'Ja tenho conta':'Criar conta')+'</button><button type="button" class="btn primary" data-auth="'+(signupMode?'signup':'login')+'">'+(signupMode?'Criar conta':'Entrar')+'</button></div>'+
-      '</div>';
-    ov.addEventListener('click', function(e){
-      if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
-      if(e.target.closest && e.target.closest('[data-logout]')){ cloudFetch('/auth/v1/logout',{method:'POST',token:s.access_token}).catch(function(){}); writeSession(null); ov.remove(); }
-      if(logged && e.target.closest){
-        if(e.target.closest('[data-save-profile]')){
-          e.preventDefault();
-          var p=accountPrefs();
-          p.profile={name:(ov.querySelector('[data-profile-name]').value||'').trim(), bio:(ov.querySelector('[data-profile-bio]').value||'').trim()};
-          persistAccountPrefs(p, ov, 'Perfil salvo.');
-          return;
-        }
-        if(e.target.closest('[data-add-study]')){
-          e.preventDefault();
-          var title=(ov.querySelector('[data-study-title]').value||'').trim();
-          if(!title){ ov.remove(); showAccount('Informe o titulo do estudo.'); return; }
-          var ps=accountPrefs();
-          ps.customStudies.push({id:prefId('study'), title:title, focus:(ov.querySelector('[data-study-focus]').value||'').trim(), pace:ov.querySelector('[data-study-pace]').value, refs:(ov.querySelector('[data-study-refs]').value||'').trim(), createdAt:new Date().toISOString()});
-          persistAccountPrefs(ps, ov, 'Estudo criado.');
-          return;
-        }
-        if(e.target.closest('[data-add-group]')){
-          e.preventDefault();
-          var name=(ov.querySelector('[data-group-name]').value||'').trim();
-          if(!name){ ov.remove(); showAccount('Informe o nome do grupo.'); return; }
-          var pg=accountPrefs();
-          pg.groups.push({id:prefId('group'), name:name, description:(ov.querySelector('[data-group-description]').value||'').trim(), topic:(ov.querySelector('[data-group-topic]').value||'').trim(), visibility:ov.querySelector('[data-group-visibility]').value, createdAt:new Date().toISOString()});
-          persistAccountPrefs(pg, ov, 'Grupo criado.');
-          return;
-        }
-        var ds=e.target.closest('[data-del-study]');
-        if(ds){
-          e.preventDefault();
-          var pds=accountPrefs(), id=ds.getAttribute('data-del-study');
-          pds.customStudies=pds.customStudies.filter(function(x){return x.id!==id;});
-          persistAccountPrefs(pds, ov, 'Estudo removido.');
-          return;
-        }
-        var dg=e.target.closest('[data-del-group]');
-        if(dg){
-          e.preventDefault();
-          var pdg=accountPrefs(), gid=dg.getAttribute('data-del-group');
-          pdg.groups=pdg.groups.filter(function(x){return x.id!==gid;});
-          persistAccountPrefs(pdg, ov, 'Grupo removido.');
-          return;
-        }
-      }
-      var sw=e.target.closest && e.target.closest('[data-switch]');
-      if(sw){
-        e.preventDefault();
-        var curEmail=ov.querySelector('[data-email]').value.trim(), curPass=ov.querySelector('[data-pass]').value;
-        ov.remove(); showAccount('', sw.getAttribute('data-switch'), {email:curEmail, pass:curPass});
-        return;
-      }
-      var authBtn=e.target.closest && e.target.closest('[data-auth]');
-      if(authBtn){
-        e.preventDefault();
-        var email=ov.querySelector('[data-email]').value.trim(), pass=ov.querySelector('[data-pass]').value;
-        var signup=authBtn.getAttribute('data-auth')==='signup';
-        if(!email || pass.length<8){ ov.remove(); showAccount('Informe email e senha com pelo menos 8 caracteres.', signup?'signup':'login', {email:email, pass:pass}); return; }
-        authBtn.disabled=true; authBtn.textContent=signup?'Criando...':'Entrando...';
-        var path=signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
-        cloudFetch(path,{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(function(res){
-          var auth=normalizeAuth(res);
-          if(signup && (!auth || !auth.access_token)) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(normalizeAuth);
-          return auth;
-        }).then(function(res){
-          if(signup && res && res.user && !res.access_token){
-            ov.remove();
-            showAccount('Conta criada. Confira seu email para confirmar a conta e depois entre.', 'login', {email:email});
-            return false;
-          }
-          if(!res || !res.access_token || !res.user) throw new Error('auth');
-          writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
-          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); }).catch(function(){ return null; }).then(function(){ return true; });
-        }).then(function(ok){ if(ok){ ov.remove(); location.reload(); } }).catch(function(){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.', signup?'signup':'login', {email:email}); });
-      }
-    });
-    document.body.appendChild(ov);
-    var emailInput=ov.querySelector('[data-email]'); if(emailInput) emailInput.focus();
-  }
-  function makeAccountButton(){
-    if(!cloudReady() || document.querySelector('[data-account]')) return;
-    var tools=document.querySelector('.reader-tools') || document.body;
-    var b=document.createElement('button'); b.type='button'; b.className='rt'; b.setAttribute('data-account',''); b.title='Entrar ou criar conta'; b.textContent='Entrar';
-    b.onclick=function(){ showAccount(); };
-    tools.appendChild(b);
-    ensureFreshSession().then(function(s){ if(s){ writeSession(s); pullCloud().then(function(row){ if(applyRemote(row)) scheduleCloudSync(); }); } else updateAccountButton(); });
-  }
-  function clearAll(){ ['notes','vhl','whl','favorites'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); render(); scheduleCloudSync(); }
-  function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'),f=load('favorites'); return exportText(allRefs(n,v,w,f),n,v,w,f); }
+  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); if(window.BEC_SYNC) window.BEC_SYNC.markDirty(); render(); }
+  function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return exportText(allRefs(n,v,w),n,v,w); }
   function makeToolsMenu(){
     if(document.querySelector('.tools-fab')) return;
     var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
@@ -479,82 +168,12 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     document.body.appendChild(fab); document.body.appendChild(panel);
   }
 
-  var activeStudy=null;
-  function getStudyBar(){
-    var bar=document.querySelector('.study-context');
-    if(bar) return bar;
-    bar=document.createElement('div'); bar.className='study-context'; bar.hidden=true;
-    bar.setAttribute('aria-label','Ferramentas do versículo selecionado');
-    bar.innerHTML='<button type="button" data-act="vhl" aria-label="Grifar versículo" title="Grifar versículo">🖍</button>'+
-      '<button type="button" data-act="note" aria-label="Anotar" title="Anotar">🗒</button>'+
-      '<button type="button" data-act="copy" aria-label="Copiar versículo" title="Copiar versículo">⧉</button>'+
-      '<button type="button" data-act="share" aria-label="Compartilhar" title="Compartilhar">↗</button>';
-    bar.innerHTML='<button type="button" data-act="fav" aria-label="Favoritar" title="Favoritar">★</button>'+bar.innerHTML;
-    document.body.appendChild(bar);
-    return bar;
-  }
-  function refreshStudyBar(){
-    var bar=getStudyBar();
-    if(!activeStudy){ bar.hidden=true; return; }
-    var ref=activeStudy.getAttribute('data-ref'), vhl=load('vhl');
-    bar.hidden=false;
-    bar.setAttribute('data-ref', ref||'');
-    var h=bar.querySelector('[data-act="vhl"]');
-    if(h) h.classList.toggle('on', !!vhl[ref]);
-    var f=bar.querySelector('[data-act="fav"]');
-    if(f) f.classList.toggle('on', !!load('favorites')[ref]);
-    var n=bar.querySelector('[data-act="note"]');
-    if(n){
-      var noteIsOpen=!!(activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden);
-      n.classList.toggle('on', noteIsOpen);
-      n.setAttribute('aria-expanded', noteIsOpen?'true':'false');
-    }
-  }
-  function findStudyByRef(ref){
-    if(!ref) return null;
-    var items=document.querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]');
-    for(var i=0;i<items.length;i++){ if(items[i].getAttribute('data-ref')===ref) return items[i]; }
-    return null;
-  }
-  function activateStudy(cont){
-    if(!cont || !cont.getAttribute('data-ref')) return;
-    if(activeStudy && activeStudy!==cont) activeStudy.classList.remove('study-active');
-    activeStudy=cont;
-    activeStudy.classList.add('study-active');
-    refreshStudyBar();
-  }
-  function closeStudyBar(){
-    if(activeStudy) activeStudy.classList.remove('study-active');
-    activeStudy=null;
-    refreshStudyBar();
-  }
-  function noteOpen(){
-    return !!(activeStudy && activeStudy.querySelector('.note-box') && !activeStudy.querySelector('.note-box').hidden);
-  }
-  function setNoteOpen(cont, open){
-    if(!cont) return;
-    activateStudy(cont);
-    var nb=cont.querySelector('.note-box');
-    if(!nb) return;
-    nb.hidden=!open;
-    cont.classList.toggle('note-open', !!open);
-    refreshStudyBar();
-    if(open){
-      var ta=nb.querySelector('textarea');
-      setTimeout(function(){
-        try{ nb.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){ nb.scrollIntoView(); }
-        if(ta) ta.focus();
-      }, 0);
-    }
-  }
-
   function apply(cont, ref){
-    if(load('vhl')[ref]) cont.classList.add('v-hl');
-    if(load('favorites')[ref]) cont.classList.add('fav');
+    if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
     var notes=load('notes');
     if(notes[ref]){
       var ta=cont.querySelector('.note-box textarea');
-      if(ta) ta.value=notes[ref];
+      if(ta){ ta.value=notes[ref]; ta.closest('.note-box').hidden=false; }
       cont.classList.add('has-note');
     }
     var rec=load('whl')[ref]||{};
@@ -584,51 +203,24 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     if(all[ref]){ delete all[ref]; cont.classList.remove('v-hl'); if(btn) btn.classList.remove('on'); }
     else { all[ref]=1; cont.classList.add('v-hl'); if(btn) btn.classList.add('on'); }
     save('vhl', all);
-    refreshStudyBar();
-  }
-
-  function toggleFavorite(cont, ref, btn){
-    var all=load('favorites');
-    if(all[ref]){ delete all[ref]; cont.classList.remove('fav'); if(btn) btn.classList.remove('on'); }
-    else { all[ref]=1; cont.classList.add('fav'); if(btn) btn.classList.add('on'); }
-    save('favorites', all);
-    refreshStudyBar();
   }
 
   document.addEventListener('click', function(e){
-    var action=e.target.closest && e.target.closest('.study-context button, .note-actions button');
-    if(action){
-      var bar=action.closest && action.closest('.study-context');
-      var cont=bar ? findStudyByRef(bar.getAttribute('data-ref')) : action.closest('[data-ref]');
-      if(!cont && activeStudy && !(activeStudy.classList && activeStudy.classList.contains('study-context'))) cont=activeStudy;
-      if(!cont) return;
-      var ref=cont.getAttribute('data-ref'), act=action.dataset.act;
-      activateStudy(cont);
-      if(act==='fav') toggleFavorite(cont, ref, action);
-      else if(act==='vhl') toggleVerse(cont, ref, action);
-      else if(act==='note'){ var nb=cont.querySelector('.note-box'); setNoteOpen(cont, !(nb && !nb.hidden)); }
-      else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), action);
-      else if(act==='share') shareVerse(cont, ref, action);
-      return;
-    }
-    if(e.target.closest && e.target.closest('.tools-fab,.tools-panel,.pen-toggle,.pen-colors,.sel-bar,.note-box,.translit-toggle,.original-toggle,.study-open,.study-dialog,a,button,select,input,textarea')) return;
     var w=e.target.closest && e.target.closest('.w');
-    if(w && w.closest('[data-ref]')){ if(penOn) return; activateStudy(w.closest('[data-ref]')); return; }
-    var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
-    if(cont) activateStudy(cont);
-    else if(!noteOpen()) closeStudyBar();
-  });
-  document.addEventListener('keydown', function(e){
-    if(e.key!=='Enter' && e.key!==' ') return;
-    var cont=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
-    if(!cont || e.target.closest('button,a,select,input,textarea')) return;
-    e.preventDefault();
-    activateStudy(cont);
+    if(w && w.closest('[data-ref]')){ if(penOn) return; toggleWord(w); return; }
+    var btn=e.target.closest && e.target.closest('.study button, .note-actions button');
+    if(btn){
+      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
+      if(act==='vhl') toggleVerse(cont, ref, btn);
+      else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
+      else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
+      else if(act==='share') shareVerse(cont, ref, btn);
+    }
   });
 
   // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
-  var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null, lastPenTap=null;
-  var COLORS=['x','y','g','b','p'], CNAMES={x:'Desmarcar',y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
+  var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
+  var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
   function setPen(on){
     penOn=on; document.body.classList.toggle('hl-mode', on);
     var b=document.querySelector('.pen-toggle');
@@ -642,48 +234,20 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     save('pencolor', {c:c});
   }
   function wordAtPoint(x,y){ var el=document.elementFromPoint(x,y); return el && el.closest ? el.closest('.w') : null; }
-  function wordKey(w){
-    var cont=w && w.closest('[data-ref]'); if(!cont) return '';
-    return cont.getAttribute('data-ref')+'|'+w.dataset.f+'|'+w.dataset.i;
-  }
-  function removeWordMark(w, all){
-    var cont=w && w.closest('[data-ref]'); if(!cont || !all) return false;
-    var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
-    var recd=all[ref], arr=recd && recd[f], pos=-1;
-    if(arr){ for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ pos=n; break; } } }
-    if(pos<0) return false;
-    arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c');
-    if(!arr.length) delete recd[f];
-    if(!Object.keys(recd).length) delete all[ref];
-    return true;
-  }
-  function isRepeatTap(w){
-    var now=Date.now(), key=wordKey(w);
-    return !!(lastPenTap && lastPenTap.key===key && now-lastPenTap.t<520);
-  }
   function paintWord(w){
     if(!w) return; var cont=w.closest('[data-ref]'); if(!cont) return;
     var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
     var recd=pendingWhl[ref]||(pendingWhl[ref]={}); var arr=recd[f]||(recd[f]=[]);
-    var found=null, pos=-1; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; pos=n; break; } }
-    if(penColor==='x'){
-      if(found) removeWordMark(w, pendingWhl);
-      return;
-    }
+    var found=null; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; break; } }
     if(found){ if(found.c!==penColor){ found.c=penColor; w.setAttribute('data-c', penColor); } }
     else { arr.push({i:i,t:w.textContent,c:penColor}); w.classList.add('w-hl'); w.setAttribute('data-c', penColor); bumpMark(); }
   }
   function startPaint(e){
     if(!penOn) return;
     var w=(e.target.closest && e.target.closest('.w')); if(!w || !w.closest('[data-ref]')) return;
-    e.preventDefault(); pendingWhl=load('whl');
-    if(isRepeatTap(w) && removeWordMark(w, pendingWhl)){
-      save('whl', pendingWhl); lastPenTap=null; painting=false; activePointerId=null; return;
-    }
-    painting=true; activePointerId=e.pointerId; paintWord(w);
-    lastPenTap={key:wordKey(w), t:Date.now()};
+    e.preventDefault(); painting=true; activePointerId=e.pointerId; pendingWhl=load('whl'); paintWord(w);
   }
-  function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); var w=wordAtPoint(e.clientX, e.clientY); if(w && wordKey(w)!==(lastPenTap && lastPenTap.key)) lastPenTap=null; paintWord(w); }
+  function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); paintWord(wordAtPoint(e.clientX, e.clientY)); }
   function endPaint(){ if(!painting) return; painting=false; activePointerId=null; save('whl', pendingWhl); }
   document.addEventListener('pointerdown', startPaint);
   document.addEventListener('pointermove', movePaint);
@@ -697,9 +261,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     btn.onclick=function(){ setPen(!penOn); };
     document.body.appendChild(btn);
     var pal=document.createElement('div'); pal.className='pen-colors';
-    pal.innerHTML=COLORS.map(function(c){
-      return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'" title="'+CNAMES[c]+'">'+(c==='x'?'x':'')+'</button>';
-    }).join('');
+    pal.innerHTML=COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'"></button>'; }).join('');
     pal.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) setColor(b.getAttribute('data-c')); });
     document.body.appendChild(pal);
     setColor((load('pencolor').c)||'y');
@@ -763,15 +325,34 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   });
 
   function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
+  function setupAdded(root){
+    if(!root || root.nodeType!==1) return;
+    if(root.matches && root.matches('.verse-cont[data-ref], .ch-verse[data-ref]')) setup(root);
+    setupAll(root);
+    makePenTools();
+  }
   setupAll();
-  makeAccountButton();
   makePenTools();
   makeToolsMenu();
+  document.addEventListener('bec:content-added', function(e){
+    setupAdded(e.detail && e.detail.root);
+  });
+  document.addEventListener('bec:study-sync', function(){
+    document.querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(function(cont){
+      var ref=cont.getAttribute('data-ref');
+      cont.classList.remove('v-hl','has-note');
+      cont.querySelectorAll('.w-hl').forEach(function(w){ w.classList.remove('w-hl'); w.removeAttribute('data-c'); });
+      var nb=cont.querySelector('.note-box');
+      if(nb){ var ta=nb.querySelector('textarea'); if(ta) ta.value=''; nb.hidden=true; }
+      apply(cont, ref);
+    });
+    render();
+  });
   // versículos carregados por rolagem infinita também recebem as ferramentas
   if(window.MutationObserver){
     new MutationObserver(function(muts){
       muts.forEach(function(m){ Array.prototype.forEach.call(m.addedNodes, function(n){
-        if(n.nodeType===1){ if(n.matches && n.matches('.verse-cont[data-ref]')) setup(n); setupAll(n); }
+        setupAdded(n);
       }); });
     }).observe(document.body, {childList:true, subtree:true});
   }
@@ -782,15 +363,14 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
     return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
   }
-  function allRefs(notes, vhl, whl, fav){
-    var s={}; [notes,vhl,whl,fav].forEach(function(o){ Object.keys(o||{}).forEach(function(r){ s[r]=1; }); });
+  function allRefs(notes, vhl, whl){
+    var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
     return Object.keys(s).sort();
   }
-  function exportText(keys, notes, vhl, whl, fav){
+  function exportText(keys, notes, vhl, whl){
     var out='Minhas anotações — Bíblia em Contexto\n\n';
     keys.forEach(function(ref){
       out+=ref+'\n';
-      if(fav && fav[ref]) out+='  [favorito]\n';
       if(vhl[ref]) out+='  [versículo grifado]\n';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -807,9 +387,8 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     a.click(); a.remove(); URL.revokeObjectURL(u);
   }
   function importData(obj){
-    var n=load('notes'), v=load('vhl'), w=load('whl'), f=load('favorites');
+    var n=load('notes'), v=load('vhl'), w=load('whl');
     if(obj.notes) Object.keys(obj.notes).forEach(function(r){ n[r]=obj.notes[r]; });
-    if(obj.favorites) Object.keys(obj.favorites).forEach(function(r){ f[r]=obj.favorites[r]; });
     if(obj.vhl) Object.keys(obj.vhl).forEach(function(r){ v[r]=obj.vhl[r]; });
     if(obj.whl) Object.keys(obj.whl).forEach(function(r){
       var rec=obj.whl[r]; w[r]=w[r]||{};
@@ -818,15 +397,14 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
         rec[f].forEach(function(o){ if(!have[o.i]) ex.push(o); }); w[r][f]=ex;
       });
     });
-    save('notes',n); save('vhl',v); save('whl',w); save('favorites',f);
+    save('notes',n); save('vhl',v); save('whl',w);
   }
   function render(){
     var box=document.getElementById('anotacoes'); if(!box) return;
-    var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), fav=load('favorites'), keys=allRefs(notes,vhl,whl,fav);
+    var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
     if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e use “Grifar” ou “Anotar”.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
       var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
-      if(fav[ref]) h+='<p class="anot-tag">★ favorito</p>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
       var rec=whl[ref];
       if(rec){ Object.keys(rec).forEach(function(f){
@@ -841,15 +419,15 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     render();
     var c=document.getElementById('anot-copy'), t=document.getElementById('anot-txt'),
         j=document.getElementById('anot-json'), x=document.getElementById('anot-clear');
-    function data(){ var n=load('notes'),v=load('vhl'),w=load('whl'),f=load('favorites'); return {keys:allRefs(n,v,w,f),notes:n,vhl:v,whl:w,favorites:f}; }
-    if(c) c.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl,d.favorites);
+    function data(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return {keys:allRefs(n,v,w),notes:n,vhl:v,whl:w}; }
+    if(c) c.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
       (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ c.textContent='Copiado!'; setTimeout(function(){c.textContent='Copiar tudo';},1500); })
       .catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
-    if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl,d.favorites), 'text/plain'); };
-    if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl'),favorites:load('favorites')}, null, 2), 'application/json'); };
-    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl','favorites'].forEach(function(k){localStorage.removeItem('bec.'+k);}); render(); scheduleCloudSync(); }); };
+    if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
+    if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
+    if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); if(window.BEC_SYNC) window.BEC_SYNC.markDirty(); render(); }); };
     var sh=document.getElementById('anot-share');
-    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl,d.favorites);
+    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
       if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }
       else (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ sh.textContent='Copiado!'; setTimeout(function(){sh.textContent='Compartilhar';},1500); }).catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     var imp=document.getElementById('anot-import'), impf=document.getElementById('anot-import-file');

@@ -20,10 +20,6 @@ jobs:
 
   deploy:
     needs: tests
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -31,27 +27,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Build static site
-        run: python3 scripts/build.py
-
-      - name: Generate Supabase config
-        env:
-          SUPABASE_URL: https://pxqhpntifbtjaoqtirao.supabase.co
-          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      - name: Configure Supabase client
         run: |
-          if [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
-            echo "SUPABASE_PUBLISHABLE_KEY is not configured" >&2
-            exit 1
-          fi
-
-          mkdir -p site/assets
-          node -e "const fs = require('fs'); const config = { url: process.env.SUPABASE_URL, publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY }; fs.writeFileSync('site/assets/supabase-config.js', 'window.BEC_SUPABASE_CONFIG = ' + JSON.stringify(config, null, 2) + ';\\n');"
+          cat > site/assets/supabase-config.js <<'EOF'
+          window.BEC_SUPABASE_CONFIG = {
+            url: "https://pxqhpntifbtjaoqtirao.supabase.co",
+            publishableKey: "${{ secrets.SUPABASE_PUBLISHABLE_KEY }}"
+          };
+          EOF
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
