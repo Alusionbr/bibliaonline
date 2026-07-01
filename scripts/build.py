@@ -2040,20 +2040,29 @@ def build_study_js():
       writeSession(ns); return ns;
     }).catch(function(){ writeSession(null); return null; });
   }
+  function loadPrefs(){ try{return JSON.parse(localStorage.getItem('bec.preferences')||'{}');}catch(e){return{};} }
+  function savePrefs(p){ try{localStorage.setItem('bec.preferences',JSON.stringify(p||{}));}catch(e){} scheduleCloudSync(); }
+  function accountPrefs(){
+    var p=loadPrefs();
+    p.profile=p.profile||{};
+    p.customStudies=Array.isArray(p.customStudies)?p.customStudies:[];
+    p.groups=Array.isArray(p.groups)?p.groups:[];
+    return p;
+  }
   function statePayload(){
+    var prefs=loadPrefs();
+    prefs.theme=localStorage.getItem('bec.theme')||'';
+    prefs.fontscale=localStorage.getItem('bec.fontscale')||'';
+    prefs.context=localStorage.getItem('bec.context')||'';
+    prefs.bookorder=localStorage.getItem('bec.bookorder')||'';
+    prefs.lastRead=(function(){try{return JSON.parse(localStorage.getItem('bec.lastRead')||'null');}catch(e){return null;}})();
     return {
       user_id:cloudSession && cloudSession.user && cloudSession.user.id,
       notes:load('notes'),
       verse_highlights:load('vhl'),
       word_highlights:load('whl'),
       favorites:load('favorites'),
-      preferences:{
-        theme:localStorage.getItem('bec.theme')||'',
-        fontscale:localStorage.getItem('bec.fontscale')||'',
-        context:localStorage.getItem('bec.context')||'',
-        bookorder:localStorage.getItem('bec.bookorder')||'',
-        lastRead:(function(){try{return JSON.parse(localStorage.getItem('bec.lastRead')||'null');}catch(e){return null;}})()
-      },
+      preferences:prefs,
       updated_at:new Date().toISOString()
     };
   }
@@ -2065,6 +2074,7 @@ def build_study_js():
     put('vhl', mergeObj(row.verse_highlights, load('vhl')));
     put('whl', mergeObj(row.word_highlights, load('whl')));
     put('favorites', mergeObj(row.favorites, load('favorites')));
+    try{localStorage.setItem('bec.preferences',JSON.stringify(mergeObj(row.preferences, loadPrefs())));}catch(e){}
     return true;
   }
   function pullCloud(){
@@ -2158,23 +2168,112 @@ def build_study_js():
     document.body.appendChild(ov);
     var emailInput=ov.querySelector('[data-email]'); if(emailInput) emailInput.focus();
   }
+  function escAttr(s){ return esc(s).replace(/"/g,'&quot;'); }
+  function prefId(prefix){ return prefix+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7); }
+  function accountItemHtml(kind, item){
+    var meta=[];
+    if(item.pace) meta.push(item.pace);
+    if(item.visibility) meta.push(item.visibility);
+    if(item.topic) meta.push(item.topic);
+    return '<div class="account-item">'+
+      '<div><b>'+esc(item.title||item.name||'Sem titulo')+'</b>'+
+      (meta.length?'<span>'+esc(meta.join(' · '))+'</span>':'')+
+      (item.focus?'<p>'+esc(item.focus)+'</p>':'')+
+      (item.refs?'<p>'+esc(item.refs)+'</p>':'')+
+      (item.description?'<p>'+esc(item.description)+'</p>':'')+
+      '</div><button type="button" class="btn ghost mini" data-del-'+kind+'="'+escAttr(item.id||'')+'">Remover</button></div>';
+  }
+  function accountPanelHtml(s, msg){
+    var p=accountPrefs(), profile=p.profile||{};
+    var studies=p.customStudies||[], groups=p.groups||[];
+    return '<div class="bec-modal-box auth-box account-box">'+
+      '<div class="account-head"><div><p><b>Sua conta</b></p><span>'+esc(s.user.email||'')+'</span></div><button type="button" class="btn ghost mini" data-close>Fechar</button></div>'+
+      (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
+      '<section class="account-section"><h3>Perfil</h3>'+
+      '<label>Nome<br><input type="text" data-profile-name autocomplete="name" value="'+escAttr(profile.name||'')+'"></label>'+
+      '<label>Sobre voce<br><textarea data-profile-bio rows="3">'+esc(profile.bio||'')+'</textarea></label>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn primary" data-save-profile>Salvar perfil</button></div></section>'+
+      '<section class="account-section"><h3>Estudos personalizados</h3>'+
+      '<div class="account-list">'+(studies.length?studies.map(function(x){return accountItemHtml('study',x);}).join(''):'<p class="empty small">Nenhum estudo criado.</p>')+'</div>'+
+      '<label>Titulo do estudo<br><input type="text" data-study-title value=""></label>'+
+      '<label>Objetivo<br><input type="text" data-study-focus value=""></label>'+
+      '<div class="account-grid"><label>Ritmo<br><select data-study-pace><option>Diario</option><option>Semanal</option><option>Livre</option></select></label>'+
+      '<label>Passagens<br><input type="text" data-study-refs value=""></label></div>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn primary" data-add-study>Criar estudo</button></div></section>'+
+      '<section class="account-section"><h3>Grupos</h3>'+
+      '<div class="account-list">'+(groups.length?groups.map(function(x){return accountItemHtml('group',x);}).join(''):'<p class="empty small">Nenhum grupo criado.</p>')+'</div>'+
+      '<label>Nome do grupo<br><input type="text" data-group-name value=""></label>'+
+      '<label>Descricao<br><input type="text" data-group-description value=""></label>'+
+      '<div class="account-grid"><label>Tema<br><input type="text" data-group-topic value=""></label>'+
+      '<label>Privacidade<br><select data-group-visibility><option>Privado</option><option>Convite</option><option>Publico</option></select></label></div>'+
+      '<div class="bec-modal-actions"><button type="button" class="btn primary" data-add-group>Criar grupo</button></div></section>'+
+      '<div class="bec-modal-actions account-bottom"><button type="button" class="btn danger" data-logout>Sair</button></div>'+
+      '</div>';
+  }
+  function persistAccountPrefs(p, ov, msg){
+    savePrefs(p);
+    pushCloud().catch(function(){}).then(function(){ ov.remove(); showAccount(msg); });
+  }
   function showAccount(msg, mode, vals){
     var s=cloudSession||readSession(), logged=!!(s&&s.user);
     mode=mode||'signup'; vals=vals||{};
     var signupMode=mode!=='login';
     var ov=document.createElement('div'); ov.className='bec-modal';
-    ov.innerHTML='<div class="bec-modal-box auth-box">'+
+    if(logged) ov.innerHTML=accountPanelHtml(s, msg);
+    else ov.innerHTML='<div class="bec-modal-box auth-box">'+
       '<p><b>'+(logged?'Sua conta':(signupMode?'Criar conta':'Entrar na conta'))+'</b></p>'+
       (msg?'<p class="empty">'+esc(msg)+'</p>':'')+
-      (logged?'<p>'+esc(s.user.email||'')+'</p><div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Fechar</button><button type="button" class="btn danger" data-logout>Sair</button></div>':
       '<p class="auth-help">'+(signupMode?'Digite seu email e crie uma senha com pelo menos 8 caracteres.':'Entre com o email e a senha que voce cadastrou.')+'</p>'+
       '<label>Email<br><input type="email" data-email autocomplete="email" value="'+esc(vals.email||'')+'"></label><br>'+
       '<label>Senha<br><input type="password" data-pass autocomplete="'+(signupMode?'new-password':'current-password')+'" value="'+esc(vals.pass||'')+'"></label>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-switch="'+(signupMode?'login':'signup')+'">'+(signupMode?'Ja tenho conta':'Criar conta')+'</button><button type="button" class="btn primary" data-auth="'+(signupMode?'signup':'login')+'">'+(signupMode?'Criar conta':'Entrar')+'</button></div>')+
+      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-close>Cancelar</button><button type="button" class="btn ghost" data-switch="'+(signupMode?'login':'signup')+'">'+(signupMode?'Ja tenho conta':'Criar conta')+'</button><button type="button" class="btn primary" data-auth="'+(signupMode?'signup':'login')+'">'+(signupMode?'Criar conta':'Entrar')+'</button></div>'+
       '</div>';
     ov.addEventListener('click', function(e){
       if(e.target===ov || (e.target.closest && e.target.closest('[data-close]'))) ov.remove();
       if(e.target.closest && e.target.closest('[data-logout]')){ cloudFetch('/auth/v1/logout',{method:'POST',token:s.access_token}).catch(function(){}); writeSession(null); ov.remove(); }
+      if(logged && e.target.closest){
+        if(e.target.closest('[data-save-profile]')){
+          e.preventDefault();
+          var p=accountPrefs();
+          p.profile={name:(ov.querySelector('[data-profile-name]').value||'').trim(), bio:(ov.querySelector('[data-profile-bio]').value||'').trim()};
+          persistAccountPrefs(p, ov, 'Perfil salvo.');
+          return;
+        }
+        if(e.target.closest('[data-add-study]')){
+          e.preventDefault();
+          var title=(ov.querySelector('[data-study-title]').value||'').trim();
+          if(!title){ ov.remove(); showAccount('Informe o titulo do estudo.'); return; }
+          var ps=accountPrefs();
+          ps.customStudies.push({id:prefId('study'), title:title, focus:(ov.querySelector('[data-study-focus]').value||'').trim(), pace:ov.querySelector('[data-study-pace]').value, refs:(ov.querySelector('[data-study-refs]').value||'').trim(), createdAt:new Date().toISOString()});
+          persistAccountPrefs(ps, ov, 'Estudo criado.');
+          return;
+        }
+        if(e.target.closest('[data-add-group]')){
+          e.preventDefault();
+          var name=(ov.querySelector('[data-group-name]').value||'').trim();
+          if(!name){ ov.remove(); showAccount('Informe o nome do grupo.'); return; }
+          var pg=accountPrefs();
+          pg.groups.push({id:prefId('group'), name:name, description:(ov.querySelector('[data-group-description]').value||'').trim(), topic:(ov.querySelector('[data-group-topic]').value||'').trim(), visibility:ov.querySelector('[data-group-visibility]').value, createdAt:new Date().toISOString()});
+          persistAccountPrefs(pg, ov, 'Grupo criado.');
+          return;
+        }
+        var ds=e.target.closest('[data-del-study]');
+        if(ds){
+          e.preventDefault();
+          var pds=accountPrefs(), id=ds.getAttribute('data-del-study');
+          pds.customStudies=pds.customStudies.filter(function(x){return x.id!==id;});
+          persistAccountPrefs(pds, ov, 'Estudo removido.');
+          return;
+        }
+        var dg=e.target.closest('[data-del-group]');
+        if(dg){
+          e.preventDefault();
+          var pdg=accountPrefs(), gid=dg.getAttribute('data-del-group');
+          pdg.groups=pdg.groups.filter(function(x){return x.id!==gid;});
+          persistAccountPrefs(pdg, ov, 'Grupo removido.');
+          return;
+        }
+      }
       var sw=e.target.closest && e.target.closest('[data-switch]');
       if(sw){
         e.preventDefault();
