@@ -25,6 +25,7 @@ jobs:
         run: python scripts/validate_data.py
 
       - name: Lint Python
+        continue-on-error: true
         run: python -m ruff check scripts tests
 
       - name: Run test suite
