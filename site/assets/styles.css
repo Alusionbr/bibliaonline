@@ -573,6 +573,13 @@ html.dark .order-toggle .ot.on{color:#1a1610}
 .era .book-card{padding:12px 14px}
 
 @media (max-width:420px){
+  .nav-in{gap:6px;padding:10px 10px}
+  .brand{gap:7px;min-width:0}
+  .brand-mark{width:30px;height:30px;border-radius:8px;font-size:18px;flex:0 0 auto}
+  .brand-name{font-size:.92rem;line-height:1.12}
+  .reader-tools{gap:3px;margin-right:2px}
+  .reader-tools .rt{min-width:34px;min-height:34px;padding:6px 8px;font-size:.8rem}
+  .menu-btn{width:34px;height:34px;border-radius:9px;font-size:1rem;flex:0 0 auto}
   .study-context{gap:4px;padding:5px;max-width:calc(100vw - 136px)}
   .study-context button{width:36px;height:36px;font-size:.95rem}
   .account-grid{grid-template-columns:1fr}
