@@ -2144,10 +2144,15 @@ def build_study_js():
           if(signup && (!auth || !auth.access_token)) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(normalizeAuth);
           return auth;
         }).then(function(res){
+          if(signup && res && res.user && !res.access_token){
+            ov.remove();
+            showAccount('Conta criada. Confira seu email para confirmar a conta e depois entre.', 'login', {email:email});
+            return false;
+          }
           if(!res || !res.access_token || !res.user) throw new Error('auth');
           writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
-          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); });
-        }).then(function(){ ov.remove(); location.reload(); }).catch(function(err){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.'); });
+          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); }).catch(function(){ return null; }).then(function(){ return true; });
+        }).then(function(ok){ if(ok){ ov.remove(); location.reload(); } }).catch(function(err){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.'); });
       }
     });
     document.body.appendChild(ov);
@@ -2190,10 +2195,15 @@ def build_study_js():
           if(signup && (!auth || !auth.access_token)) return cloudFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:email,password:pass})}).then(normalizeAuth);
           return auth;
         }).then(function(res){
+          if(signup && res && res.user && !res.access_token){
+            ov.remove();
+            showAccount('Conta criada. Confira seu email para confirmar a conta e depois entre.', 'login', {email:email});
+            return false;
+          }
           if(!res || !res.access_token || !res.user) throw new Error('auth');
           writeSession({access_token:res.access_token,refresh_token:res.refresh_token,expires_at:res.expires_at,user:res.user});
-          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); });
-        }).then(function(){ ov.remove(); location.reload(); }).catch(function(){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.', signup?'signup':'login', {email:email}); });
+          return pullCloud().then(function(row){ applyRemote(row); return pushCloud(); }).catch(function(){ return null; }).then(function(){ return true; });
+        }).then(function(ok){ if(ok){ ov.remove(); location.reload(); } }).catch(function(){ ov.remove(); showAccount(signup?'Nao foi possivel criar a conta. Tente outro email ou confira a senha.':'Nao foi possivel entrar. Confira email e senha.', signup?'signup':'login', {email:email}); });
       }
     });
     document.body.appendChild(ov);
