@@ -44,6 +44,7 @@ SOURCE_ASSETS = {
     "auth.asset.js": "auth.js",
     "app.asset.js": "app.js",
     "study.asset.js": "study.js",
+    "gamification.asset.js": "game.js",
 }
 
 
@@ -184,7 +185,12 @@ def head(title, description, canonical, prefix, jsonld=None):
 </head>
 <body>
 <script>(function(){{try{{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}}catch(e){{}}}})();</script>
-<a class="skip" href="#main">Pular para o conteúdo</a>"""
+<a class="skip" href="#main">Pular para o conteúdo</a>
+<div class="beta-banner" data-beta-banner hidden role="status">
+  <span class="beta-tag">Beta</span>
+  <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado; recursos da comunidade estão em construção.</span>
+  <button type="button" class="beta-dismiss" data-beta-dismiss aria-label="Ocultar aviso beta">×</button>
+</div>"""
 
 def nav(prefix):
     links = [
@@ -208,7 +214,10 @@ def nav(prefix):
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
     </div>
-    <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
+    <span class="account-wrap">
+      <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
+      <span class="account-badge" data-account-badge hidden></span>
+    </span>
     <button class="menu-btn" aria-label="Abrir menu" data-menu>☰</button>
     <div class="nav-links" data-links>
       {nav_links}
@@ -246,6 +255,7 @@ def footer(prefix):
 <script src="{prefix}assets/auth.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
 # ---------- componentes ----------
@@ -443,15 +453,32 @@ def build_workspace_page():
     <div class="study-card-grid">{cards}
     </div>
   </section>
+  <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
+    <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
+    <div class="progress-stats">
+      <div class="pstat"><b data-progress-streak>0</b><span>dias seguidos</span></div>
+      <div class="pstat"><b data-progress-level>1</b><span>nível</span></div>
+      <div class="pstat"><b data-progress-xp>0</b><span>pontos (XP)</span></div>
+      <div class="pstat"><b data-progress-medals>0</b><span>medalhas</span></div>
+    </div>
+    <div class="mission-block">
+      <h3>Missões de hoje</h3>
+      <div class="mission-list" data-mission-list></div>
+    </div>
+    <div class="medal-block">
+      <h3>Medalhas</h3>
+      <div class="medal-grid" data-medal-grid></div>
+    </div>
+  </section>
   <section class="hub-section profile-study" id="perfil">
     <div class="section-title"><h2>Perfil de estudo</h2><span>Sem seguidores ou ranking</span></div>
     <div class="profile-grid">
-      <div><b>Nome</b><span>Seu nome público</span></div>
-      <div><b>Bio curta</b><span>O que você estuda no momento</span></div>
-      <div><b>Dias estudando</b><span>12</span></div>
-      <div><b>Planos concluídos</b><span>3</span></div>
-      <div><b>Temas favoritos</b><span>Romanos, Salmos, oração</span></div>
-      <div><b>Contribuições</b><span>Perguntas, respostas e coleções públicas</span></div>
+      <div><b>Nome</b><span data-profile-name>Seu nome público</span></div>
+      <div><b>Conta</b><span data-profile-status>Visitante (estudo salvo neste navegador)</span></div>
+      <div><b>Dias seguidos</b><span data-profile-streak>0</span></div>
+      <div><b>Anotações</b><span data-profile-notes>0</span></div>
+      <div><b>Favoritos</b><span data-profile-favs>0</span></div>
+      <div><b>Grifos</b><span data-profile-highlights>0</span></div>
     </div>
   </section>
   <section class="hub-section" id="configuracoes">
@@ -1103,6 +1130,9 @@ def build_study_js():
     js = read_asset("study.asset.js")
     write_file(SITE / "assets" / "study.js", f"var BEC_BASE={json.dumps(BASE_URL)};\n" + js)
 
+def build_game_js():
+    write_asset("gamification.asset.js", "game.js")
+
 def build_annotations_page():
     prefix = "../"
     title = f"Minhas anotações | {SITE_NAME}"
@@ -1261,6 +1291,7 @@ def build_site(context):
     build_auth_js()
     build_app_js()
     build_study_js()
+    build_game_js()
     build_annotations_page()
     build_study_page()
     build_workspace_page()

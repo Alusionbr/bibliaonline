@@ -90,6 +90,25 @@ def test_conta_fica_simples(site):
         assert label not in auth
 
 
+def test_gamificacao_e_beta(site):
+    # Asset da gamificação é gerado e carregado nas páginas.
+    assert (site / "assets" / "game.js").exists()
+    game = (site / "assets" / "game.js").read_text("utf-8")
+    assert "BEC_GAME" in game
+    home = (site / "index.html").read_text("utf-8")
+    assert "assets/game.js" in home
+    # Selo Beta e banner de versão de testes presentes.
+    assert "data-beta-banner" in home
+    assert "data-account-badge" in home
+    # Painel de progresso (missões + medalhas) no Workspace.
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    for hook in ("data-progress-panel", "data-mission-list", "data-medal-grid"):
+        assert hook in ws
+    # A conta expõe a ponte usada por game.js.
+    auth = (site / "assets" / "auth.js").read_text("utf-8")
+    assert "BEC_ACCOUNT" in auth
+
+
 def test_sem_produto_de_ia_no_html_gerado(site):
     proibidos = ("IA Bíblica", "Bíblia com IA", "assistente IA")
     pages = [

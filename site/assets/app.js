@@ -1,4 +1,13 @@
-﻿// home: menu + busca local (índice embutido em window.__INDEX__)
+﻿// Sinaliza atividade para a gamificação (game.js). Se o game.js ainda não
+// carregou (ordem dos <script>), enfileira em window.BEC_ACT para ele drenar.
+function gameRecord(metric){
+  try{
+    if(window.BEC_GAME && window.BEC_GAME.record) window.BEC_GAME.record(metric);
+    else (window.BEC_ACT=window.BEC_ACT||[]).push(metric);
+  }catch(e){}
+}
+
+// home: menu + busca local (índice embutido em window.__INDEX__)
 document.addEventListener('click',function(e){
   if(e.target.closest('[data-menu]')){document.querySelector('[data-links]').classList.toggle('open');}
 });
@@ -134,6 +143,14 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   var reading=document.querySelector('.ch-verse[data-ref], .verse-cont[data-ref]');
   if(reading && h1){
     try{ localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()})); }catch(e){}
+    // missão "ler um capítulo": credita uma vez por dia por página
+    try{
+      var mark=new Date().toISOString().slice(0,10)+'|'+location.pathname;
+      if(localStorage.getItem('bec.game.readMark')!==mark){
+        localStorage.setItem('bec.game.readMark',mark);
+        gameRecord('read_chapters');
+      }
+    }catch(e){}
   }
   var cont=document.getElementById('continue-read');
   if(cont){
@@ -146,6 +163,7 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   if(rb){
     rb.addEventListener('click',function(){
       rb.disabled=true;
+      gameRecord('meditate');
       fetch('data/random.json').then(function(r){return r.json();}).then(function(list){
         if(list && list.length){ var s=list[Math.floor(Math.random()*list.length)]; location.href='versiculos/'+s+'/'; }
         else rb.disabled=false;

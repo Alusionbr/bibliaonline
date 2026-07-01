@@ -18,6 +18,22 @@ Date: 2026-06-29
 
 The SQL applied is recorded in [supabase-user-study-state.sql](supabase-user-study-state.sql).
 
+## Update 2026-07-01 — gamification + hardening
+
+- Added additive gamification/roles schema (see
+  [supabase-gamification.sql](supabase-gamification.sql) and
+  [gamification.md](gamification.md)): `badges`, `user_badges`,
+  `daily_missions`, `user_mission_progress`, `user_gamification`,
+  `profiles.platform_role`, `is_platform_mod()`. RLS enabled on all; catalogs
+  are public-read, per-user tables are owner-only.
+- Applied non-destructive hardening (see
+  [supabase-security-hardening.sql](supabase-security-hardening.sql)): revoked
+  `EXECUTE` from `anon` on write RPCs and from trigger/audit functions. RLS
+  helper functions kept `EXECUTE` (required by policies targeting `public`).
+- Result: `anon` SECURITY DEFINER advisor warnings dropped from ~22 to 4
+  (`is_staff`, `is_active_member`, `is_group_admin`, `is_group_mod` — used by
+  RLS, intentional). Leaked password protection still to enable in Auth panel.
+
 ## Remaining Security Findings
 
 Supabase advisors still report issues in the pre-existing collaborative schema:
