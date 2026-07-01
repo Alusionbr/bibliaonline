@@ -290,6 +290,13 @@
       renderPanel(s);
       if(!busy){busy=true; Promise.resolve().then(function(){return push(s);}).catch(function(){}).then(function(){busy=false;});}
     },
+    // Concede uma medalha especifica (ex.: 'comunidade' ao entrar numa sala).
+    grant:function(key){
+      var s=loadState(); rollover(s);
+      if(award(s,key)){ saveState(s); renderPanel(s);
+        if(!busy){busy=true; Promise.resolve().then(function(){return push(s);}).catch(function(){}).then(function(){busy=false;});}
+      }
+    },
     refresh:refresh
   };
 

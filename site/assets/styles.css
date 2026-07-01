@@ -639,3 +639,65 @@ html.dark .order-toggle .ot.on{color:#1a1610}
   .progresso .progress-stats{grid-template-columns:repeat(2,1fr)}
   .beta-banner .beta-text{display:none}
 }
+
+/* ---------- Comunidade: Salas de Estudo ---------- */
+.community-app{min-height:120px}
+.community-empty{text-align:center;background:var(--paper);border:1px solid var(--line);
+  border-radius:16px;padding:28px 20px;max-width:52ch;margin:0 auto}
+.community-empty h2{margin:0 0 .4rem}
+.community-empty p{color:var(--muted);margin:0 0 1rem}
+.community-alert{border-radius:12px;padding:9px 13px;font-size:.88rem;margin:0 0 .8rem}
+.community-alert.ok{background:var(--vellum-2);border:1px solid var(--gold);color:var(--gold-deep)}
+.community-alert.err{background:#fbe9e6;border:1px solid #d9a59c;color:#8a2e22}
+html.dark .community-alert.err{background:#3a201c;border-color:#7a3e34;color:#f0c3b8}
+.community-block{margin:0 0 1.4rem}
+.community-block h2,.community-block h3{margin:0 0 .7rem}
+.pending-count{font-size:.72rem;font-weight:700;color:#8a2e22;background:#fbe9e6;
+  border-radius:999px;padding:2px 8px;vertical-align:middle}
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.room-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:14px;cursor:pointer;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:6px}
+.room-card:hover{border-color:var(--gold);transform:translateY(-1px)}
+.room-card.pending{cursor:default;opacity:.75}
+.room-card.pending:hover{border-color:var(--line);transform:none}
+.room-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.room-card p{margin:0;color:var(--muted);font-size:.86rem}
+.room-card-foot{font-size:.78rem;color:var(--gold-deep);font-weight:600}
+.role-pill{font-family:"Inter",system-ui,sans-serif;font-size:.66rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.02em;border-radius:999px;padding:2px 8px;
+  background:var(--vellum-2);color:var(--muted);border:1px solid var(--line)}
+.role-pill.role-admin{background:#7a2e2e;color:#ffe9e2;border-color:#a54a44}
+.role-pill.role-moderator{background:#2e4a7a;color:#e2ecff;border-color:#44659c}
+.community-forms{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:.6rem}
+.community-form{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:16px;display:flex;flex-direction:column;gap:10px}
+.community-form h3{margin:0}
+.community-form label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.community-form input,.community-form textarea{font:inherit;padding:9px 11px;border-radius:10px;
+  border:1px solid var(--line);background:var(--vellum);color:var(--ink)}
+.community-head{margin:0 0 1.2rem}
+.community-head h2{margin:.3rem 0 0}
+.room-desc,.topic-body{color:var(--muted);margin:.3rem 0 0}
+.invite{margin:.5rem 0 0;font-size:.86rem}
+.invite code{background:var(--vellum-2);border:1px solid var(--line);border-radius:8px;
+  padding:2px 8px;font-weight:700;letter-spacing:.04em}
+.invite span{color:var(--muted);font-size:.8rem}
+.member-list{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.member-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);
+  border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.member-row.pending{border-style:dashed}
+.member-name{font-weight:600}
+.member-ctrls{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.btn.tiny{font-size:.74rem;padding:4px 10px;border-radius:999px}
+.topic-list{list-style:none;padding:0;margin:0 0 1rem;display:grid;gap:8px}
+.topic-item{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.topic-item:hover{border-color:var(--gold)}
+.topic-item b{font-size:.98rem}
+.topic-flag{font-size:.8rem;margin-right:4px}
+.topic-meta{font-size:.76rem;color:var(--muted)}
+.post-list{list-style:none;padding:0;margin:0 0 1rem;display:grid;gap:10px}
+.post-item{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.post-meta{font-size:.76rem;color:var(--muted);margin-bottom:4px}
+.post-body{line-height:1.5}
+@media (max-width:560px){ .community-forms{grid-template-columns:1fr} }

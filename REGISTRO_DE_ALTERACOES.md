@@ -4,6 +4,34 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Salas de Estudo reais (ligacao Comunidade) - 2026-07-01
+
+Intencao: ligar a pagina /comunidade/salas/ ao banco real (tabela `groups` e
+RPCs), saindo dos dados demonstrativos.
+
+Bug encontrado e corrigido (`docs/supabase-fix-join-group.sql`):
+
+- `join_group()` falhava sempre com "column reference group_id is ambiguous"
+  (coluna OUT colidia com a coluna no ON CONFLICT). Ninguem conseguia entrar
+  numa sala. Corrigido com `#variable_conflict use_column`, API preservada.
+
+Mudancas:
+
+- `scripts/community.asset.js` (novo → `assets/community.js`): app das Salas —
+  listar minhas salas, criar sala, entrar por codigo, ver participantes,
+  aprovar/recusar (admin), definir moderador, remover, criar discussoes e
+  responder. Tudo via cliente Supabase (`window.BEC_ACCOUNT`) com RLS.
+- `scripts/build.py`: `/comunidade/salas/` agora renderiza `[data-community-app]`
+  em vez de salas fixas; registra `community.js`.
+- `scripts/gamification.asset.js`: novo `BEC_GAME.grant()` para conceder a
+  medalha `comunidade` ao criar/entrar numa sala.
+- `site/assets/styles.css`: estilos das salas, membros, discussoes e posts.
+
+Teste ponta a ponta no banco (transacao revertida, nada persistido):
+criar sala → topico → post → entrar por codigo (pendente, RLS bloqueia
+topicos) → admin aprova → membro ativo ve topicos e responde. Passou.
+`pytest` 84 testes (novo `test_salas_de_estudo_reais`). `git diff --check` OK.
+
 ## Gamificacao, selo Beta e revisao do banco - 2026-07-01
 
 Analise do banco (projeto Supabase `pxqhpntifbtjaoqtirao`):

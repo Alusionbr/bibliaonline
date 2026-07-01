@@ -45,6 +45,7 @@ SOURCE_ASSETS = {
     "app.asset.js": "app.js",
     "study.asset.js": "study.js",
     "gamification.asset.js": "game.js",
+    "community.asset.js": "community.js",
 }
 
 
@@ -256,6 +257,7 @@ def footer(prefix):
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/community.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
 # ---------- componentes ----------
@@ -534,22 +536,17 @@ def build_study_rooms_page():
     title = f"Salas de Estudo | {SITE_NAME}"
     desc = "Salas de Estudo com tema bíblico, plano vinculado, discussões, materiais e progresso coletivo."
     canonical = f"{BASE_URL}/comunidade/salas/"
-    rooms = mini_cards([
-        ("João", "Sala Evangelho de João", "Tema: João. Plano vinculado: 21 dias. Discussões por capítulo e materiais de apoio."),
-        ("Romanos", "Sala Romanos verso a verso", "Tema: Romanos. Plano vinculado: 30 dias. Progresso coletivo por seção."),
-        ("Salmos", "Sala Salmos para oração", "Tema: Salmos. Plano vinculado: 14 dias. Pedidos de oração e caderno comum."),
-        ("Família", "Sala Casais cristãos", "Tema: casamento. Plano vinculado: 21 dias. Perguntas e estudos públicos relacionados."),
-    ])
     body = f"""
 <main id="main" class="wrap hub-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Comunidade</a> · Salas de Estudo</p>
   <header class="hub-hero">
     <p class="eyebrow">Salas de Estudo</p>
     <h1>Salas de Estudo</h1>
-    <p>Cada sala nasce de um livro, capítulo, tema ou plano. Participantes, discussões, materiais e progresso ficam ligados ao conteúdo.</p>
+    <p>Cada sala nasce de um livro, capítulo, tema ou plano. Crie sua sala, convide pelo código e conduza discussões ligadas ao conteúdo bíblico.</p>
   </header>
   <section class="hub-section">
-    <div class="study-card-grid">{rooms}
+    <div class="community-app" data-community-app>
+      <p class="muted-line" data-community-fallback>Carregando salas…</p>
     </div>
   </section>
 </main>"""
@@ -1133,6 +1130,9 @@ def build_study_js():
 def build_game_js():
     write_asset("gamification.asset.js", "game.js")
 
+def build_community_js():
+    write_asset("community.asset.js", "community.js")
+
 def build_annotations_page():
     prefix = "../"
     title = f"Minhas anotações | {SITE_NAME}"
@@ -1292,6 +1292,7 @@ def build_site(context):
     build_app_js()
     build_study_js()
     build_game_js()
+    build_community_js()
     build_annotations_page()
     build_study_page()
     build_workspace_page()
