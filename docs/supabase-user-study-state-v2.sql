@@ -1,4 +1,4 @@
--- PENDENTE DE APLICACAO no projeto Supabase.
+-- Applied to project pxqhpntifbtjaoqtirao on 2026-07-02.
 -- Migracao v2 do user_study_state: colunas para planos de estudo,
 -- colecoes e cadernos criados pelas ferramentas pessoais do site.
 --
