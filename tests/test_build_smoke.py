@@ -116,6 +116,14 @@ def test_gamificacao_e_beta(site):
     assert "BEC_ACCOUNT" in auth
 
 
+def test_sincronizacao_ampliada(site):
+    # O sync cobre planos, coleções e cadernos, com fallback para o
+    # esquema v1 enquanto a migração não é aplicada.
+    auth = (site / "assets" / "auth.js").read_text("utf-8")
+    for token in ("study_plans", "collections", "notebooks", "legacyColumns", "bec.planProgress"):
+        assert token in auth
+
+
 def test_salas_de_estudo_reais(site):
     # O app de comunidade é gerado e a página de Salas o carrega.
     assert (site / "assets" / "community.js").exists()

@@ -5,9 +5,18 @@
     notes:'bec.notes',
     vhl:'bec.vhl',
     whl:'bec.whl',
-    favs:'bec.favs'
+    favs:'bec.favs',
+    plans:'bec.studyPlans',
+    collections:'bec.collections',
+    notebooks:'bec.notebooks'
   };
-  var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode'];
+  var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode','bec.lastRead','bec.history','bec.planProgress'];
+  // Colunas do user_study_state. Se a migracao v2 (docs/supabase-user-study-state-v2.sql)
+  // ainda nao foi aplicada, cai para o conjunto v1 sem derrubar a sincronizacao.
+  var COLS_V1='notes,verse_highlights,word_highlights,favorites,preferences,updated_at';
+  var COLS_V2='notes,verse_highlights,word_highlights,favorites,preferences,study_plans,collections,notebooks,updated_at';
+  var V2_FIELDS=['study_plans','collections','notebooks'];
+  var legacyColumns=false;
   var client=null, currentUser=null, currentProfile=null, syncing=false, dirty=false, syncTimer=null;
 
   // Ponte de conta para os demais scripts (ex.: game.js): cliente, usuario e
@@ -59,7 +68,7 @@
     return changed;
   }
   function localPayload(userId){
-    return {
+    var out={
       user_id:userId,
       notes:parse(KEYS.notes,{}),
       verse_highlights:parse(KEYS.vhl,{}),
@@ -68,6 +77,12 @@
       preferences:prefs(),
       updated_at:new Date().toISOString()
     };
+    if(!legacyColumns){
+      out.study_plans=parse(KEYS.plans,[]);
+      out.collections=parse(KEYS.collections,{});
+      out.notebooks=parse(KEYS.notebooks,{});
+    }
+    return out;
   }
   function storeChanged(k,v){
     var next=JSON.stringify(v);
@@ -86,13 +101,27 @@
     changed=storeChanged(KEYS.vhl,row.verse_highlights||{})||changed;
     changed=storeChanged(KEYS.whl,row.word_highlights||{})||changed;
     changed=storeChanged(KEYS.favs,row.favorites||{})||changed;
+    // Campos v2 so quando presentes: um payload legado nao pode zerar o local.
+    if('study_plans' in row) changed=storeChanged(KEYS.plans,row.study_plans||[])||changed;
+    if('collections' in row) changed=storeChanged(KEYS.collections,row.collections||{})||changed;
+    if('notebooks' in row) changed=storeChanged(KEYS.notebooks,row.notebooks||{})||changed;
     changed=applyPrefs(row.preferences||{})||changed;
     if(changed) document.dispatchEvent(new CustomEvent('bec:study-sync'));
+  }
+  function mergePlans(remote, local){
+    var seen={}, out=[];
+    (local||[]).concat(remote||[]).forEach(function(p){
+      var k=p&&p.createdAt;
+      if(!k||seen[k]) return;
+      seen[k]=1; out.push(p);
+    });
+    out.sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
+    return out.slice(0,12);
   }
   function mergedPayload(userId,row){
     var local=localPayload(userId);
     if(!row) return local;
-    return {
+    var out={
       user_id:userId,
       notes:shallowMerge(row.notes, local.notes),
       verse_highlights:shallowMerge(row.verse_highlights, local.verse_highlights),
@@ -101,6 +130,12 @@
       preferences:shallowMerge(row.preferences, local.preferences),
       updated_at:new Date().toISOString()
     };
+    if(!legacyColumns){
+      out.study_plans=mergePlans(row.study_plans, local.study_plans);
+      out.collections=shallowMerge(row.collections, local.collections);
+      out.notebooks=shallowMerge(row.notebooks, local.notebooks);
+    }
+    return out;
   }
   function setStatus(msg,type){
     var el=qs('[data-auth-status]');
@@ -120,6 +155,12 @@
     client=window.supabase.createClient(c.url, c.publishableKey);
     return client;
   }
+  function isMissingColumn(e){
+    if(!e) return false;
+    if(e.code==='42703'||e.code==='PGRST204') return true;
+    var msg=(e.message||'');
+    return /column/i.test(msg) && V2_FIELDS.some(function(f){return msg.indexOf(f)>-1;});
+  }
   async function syncNow(opts){
     var sb=ensureClient();
     if(!sb || !currentUser || syncing) return;
@@ -129,7 +170,7 @@
     syncing=true; dirty=false;
     try{
       setStatus('Sincronizando...', 'muted');
-      var res=await sb.from(TABLE).select('notes,verse_highlights,word_highlights,favorites,preferences,updated_at').eq('user_id', currentUser.id).maybeSingle();
+      var res=await sb.from(TABLE).select(legacyColumns?COLS_V1:COLS_V2).eq('user_id', currentUser.id).maybeSingle();
       if(res.error && res.error.code!=='PGRST116') throw res.error;
       var payload=mergedPayload(currentUser.id, res.data);
       if(push || !res.data){
@@ -139,6 +180,13 @@
       applyPayload(payload);
       setStatus('Sincronizado.', 'ok');
     }catch(e){
+      if(!legacyColumns && isMissingColumn(e)){
+        // Banco ainda sem a migracao v2: refaz uma vez com as colunas v1.
+        legacyColumns=true;
+        syncing=false;
+        if(push) dirty=true;
+        return syncNow(opts);
+      }
       if(push) dirty=true;
       setStatus((e&&e.message)||'Nao foi possivel sincronizar agora.', 'err');
     }finally{
