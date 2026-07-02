@@ -8,7 +8,28 @@
     favs:'bec.favs'
   };
   var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode'];
-  var client=null, currentUser=null, syncing=false, dirty=false, syncTimer=null;
+  var client=null, currentUser=null, currentProfile=null, syncing=false, dirty=false, syncTimer=null;
+
+  // Ponte de conta para os demais scripts (ex.: game.js): cliente, usuario e
+  // profile ficam em window.BEC_ACCOUNT e mudancas disparam 'bec:account'.
+  function publishAccount(){
+    window.BEC_ACCOUNT={client:client, user:currentUser, profile:currentProfile};
+    document.dispatchEvent(new CustomEvent('bec:account'));
+  }
+  async function loadProfile(){
+    if(!client || !currentUser){currentProfile=null; return;}
+    try{
+      var r=await client.from('profiles').select('id,name,is_beta,platform_role,account_type').eq('id',currentUser.id).maybeSingle();
+      currentProfile=(r&&r.data)||null;
+    }catch(e){currentProfile=null;}
+  }
+  async function setSession(user){
+    currentUser=user||null;
+    await loadProfile();
+    updateUi();
+    publishAccount();
+    if(currentUser) syncNow();
+  }
 
   function qs(s,root){return (root||document).querySelector(s);}
   function qsa(s,root){return Array.prototype.slice.call((root||document).querySelectorAll(s));}
@@ -175,7 +196,14 @@
     if(actions) actions.hidden=!logged;
     if(user){
       user.hidden=!logged;
-      user.innerHTML=logged?'Conectado como <b>'+esc(currentUser.email||'usuario')+'</b>':'';
+      var chip='';
+      if(logged){
+        var role=currentProfile&&currentProfile.platform_role;
+        if(role==='admin') chip=' <span class="beta-chip role-admin">Admin</span>';
+        else if(role==='moderator') chip=' <span class="beta-chip role-mod">Moderador</span>';
+        else if(!currentProfile||currentProfile.is_beta!==false) chip=' <span class="beta-chip">Beta teste</span>';
+      }
+      user.innerHTML=logged?'Conectado como <b>'+esc(currentUser.email||'usuario')+'</b>'+chip:'';
     }
     if(!config()) setStatus('Configure site/assets/supabase-config.js com a URL e a publishable key para ativar login.', 'err');
     else if(logged) setStatus(dirty?'Alteracoes locais aguardando sincronizacao.':'');
@@ -197,9 +225,7 @@
       }else{
         var si=await sb.auth.signInWithPassword({email:email,password:password});
         if(si.error) throw si.error;
-        currentUser=si.data.user;
-        updateUi();
-        await syncNow();
+        await setSession(si.data.user);
         closeModal();
       }
     }catch(err){
@@ -211,8 +237,9 @@
   async function signOut(){
     var sb=ensureClient(); if(!sb) return;
     await sb.auth.signOut();
-    currentUser=null;
+    currentUser=null; currentProfile=null;
     updateUi();
+    publishAccount();
   }
   function wire(){
     buildModal();
@@ -227,16 +254,9 @@
     setMode('login');
     var sb=ensureClient();
     if(sb){
-      sb.auth.getUser().then(function(r){
-        currentUser=r.data&&r.data.user;
-        updateUi();
-        if(currentUser) syncNow();
-      });
-      sb.auth.onAuthStateChange(function(_event,session){
-        currentUser=session&&session.user;
-        updateUi();
-        if(currentUser) syncNow();
-      });
+      publishAccount();
+      sb.auth.getUser().then(function(r){ setSession(r.data&&r.data.user); });
+      sb.auth.onAuthStateChange(function(_event,session){ setSession(session&&session.user); });
     }
     updateUi();
   }

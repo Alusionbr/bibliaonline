@@ -4,6 +4,79 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Salas de Estudo reais (ligacao Comunidade) - 2026-07-01
+
+Intencao: ligar a pagina /comunidade/salas/ ao banco real (tabela `groups` e
+RPCs), saindo dos dados demonstrativos.
+
+Bug encontrado e corrigido (`docs/supabase-fix-join-group.sql`):
+
+- `join_group()` falhava sempre com "column reference group_id is ambiguous"
+  (coluna OUT colidia com a coluna no ON CONFLICT). Ninguem conseguia entrar
+  numa sala. Corrigido com `#variable_conflict use_column`, API preservada.
+
+Mudancas:
+
+- `scripts/community.asset.js` (novo → `assets/community.js`): app das Salas —
+  listar minhas salas, criar sala, entrar por codigo, ver participantes,
+  aprovar/recusar (admin), definir moderador, remover, criar discussoes e
+  responder. Tudo via cliente Supabase (`window.BEC_ACCOUNT`) com RLS.
+- `scripts/build.py`: `/comunidade/salas/` agora renderiza `[data-community-app]`
+  em vez de salas fixas; registra `community.js`.
+- `scripts/gamification.asset.js`: novo `BEC_GAME.grant()` para conceder a
+  medalha `comunidade` ao criar/entrar numa sala.
+- `site/assets/styles.css`: estilos das salas, membros, discussoes e posts.
+
+Teste ponta a ponta no banco (transacao revertida, nada persistido):
+criar sala → topico → post → entrar por codigo (pendente, RLS bloqueia
+topicos) → admin aprova → membro ativo ve topicos e responde. Passou.
+`pytest` 84 testes (novo `test_salas_de_estudo_reais`). `git diff --check` OK.
+
+## Gamificacao, selo Beta e revisao do banco - 2026-07-01
+
+Analise do banco (projeto Supabase `pxqhpntifbtjaoqtirao`):
+
+- O backend colaborativo (grupos, membros com papeis, topicos, posts, notas,
+  comentarios, planos, feed, sugestoes, staff, audit_log, profiles,
+  user_study_state) ja existia e estava mais completo que o front. RLS ligada,
+  funcoes `SECURITY DEFINER` validando `auth.uid()` e rate-limit (`rl_guard`).
+- Causa dos "bugs quando logado": o front so fazia login + sincronizava
+  `user_study_state`. Nao lia/completava `profiles`, nao mostrava Beta e a
+  Comunidade era estatica (dados demonstrativos), sem ligacao com `groups`.
+- Faltava toda a gamificacao (missoes, medalhas, XP/streak) e um papel de
+  moderador de plataforma.
+
+Mudancas aplicadas:
+
+- Banco (aditivo, reversivel — `docs/supabase-gamification.sql`):
+  `badges`, `user_badges`, `daily_missions`, `user_mission_progress`,
+  `user_gamification`, `profiles.platform_role` e `is_platform_mod()`, com RLS,
+  grants e seed (11 medalhas, 5 missoes).
+- Seguranca (`docs/supabase-security-hardening.sql`): revogado `EXECUTE` de
+  `anon` nas RPCs de escrita e nas funcoes de trigger/auditoria, sem quebrar
+  RLS (helpers usados por politicas mantem `EXECUTE`). Avisos de funcao
+  executavel por `anon` cairam de ~22 para 4 (helpers de RLS, intencionais).
+- Front:
+  - `scripts/auth.asset.js`: carrega `profiles` apos login e expoe
+    `window.BEC_ACCOUNT` + evento `bec:account`; chip Beta/Moderador/Admin.
+  - `scripts/gamification.asset.js` (novo → `assets/game.js`): missoes,
+    medalhas, streak e XP; sync best-effort ao Supabase; funciona offline.
+  - `scripts/app.asset.js`: envia atividade (`read_chapters`, `meditate`).
+  - `scripts/build.py`: registra `game.js`, banner Beta global, selo da conta
+    e painel de Progresso no Workspace.
+  - `site/assets/styles.css`: estilos do banner, chips, missoes e medalhas.
+  - `docs/gamification.md`: documentacao da fundacao.
+
+Como testado:
+
+- `python scripts/build.py` (OK), `python -m pytest` (83 passam, novo teste
+  `test_gamificacao_e_beta`), `git diff --check`.
+- Supabase: migracao aplicada, seed confirmado (11 badges / 5 missions),
+  security advisor reexecutado.
+
+Pendente (proxima fase): ligar Comunidade/Salas reais a UI; ativar no painel
+Auth leaked password protection e senha minima >= 8.
+
 ## Plataforma de estudo biblico - 2026-07-01
 
 Intencao:
