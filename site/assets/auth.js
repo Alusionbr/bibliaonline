@@ -24,7 +24,11 @@
     }catch(e){currentProfile=null;}
   }
   async function setSession(user){
+    var prev=currentUser?currentUser.id:null;
+    var next=user?user.id:null;
     currentUser=user||null;
+    // Mesmo usuario (ex.: TOKEN_REFRESHED, INITIAL_SESSION repetido): nada a refazer.
+    if(next===prev) return;
     await loadProfile();
     updateUi();
     publishAccount();
@@ -35,7 +39,6 @@
   function qsa(s,root){return Array.prototype.slice.call((root||document).querySelectorAll(s));}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   function parse(k, fallback){try{return JSON.parse(localStorage.getItem(k)||'null')||fallback;}catch(e){return fallback;}}
-  function store(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
   function shallowMerge(a,b){var out={}, k; a=a||{}; b=b||{}; for(k in a) out[k]=a[k]; for(k in b) out[k]=b[k]; return out;}
   function prefs(){
     var out={};
@@ -46,10 +49,14 @@
     return out;
   }
   function applyPrefs(p){
-    if(!p) return;
+    if(!p) return false;
+    var changed=false;
     Object.keys(p).forEach(function(k){
-      try{localStorage.setItem('bec.'+k, p[k]);}catch(e){}
+      try{
+        if(localStorage.getItem('bec.'+k)!==p[k]){ localStorage.setItem('bec.'+k, p[k]); changed=true; }
+      }catch(e){}
     });
+    return changed;
   }
   function localPayload(userId){
     return {
@@ -62,14 +69,25 @@
       updated_at:new Date().toISOString()
     };
   }
+  function storeChanged(k,v){
+    var next=JSON.stringify(v);
+    var prev=null;
+    try{prev=localStorage.getItem(k);}catch(e){}
+    if(prev===next) return false;
+    try{localStorage.setItem(k,next);}catch(e){}
+    return true;
+  }
   function applyPayload(row){
     if(!row) return;
-    store(KEYS.notes,row.notes||{});
-    store(KEYS.vhl,row.verse_highlights||{});
-    store(KEYS.whl,row.word_highlights||{});
-    store(KEYS.favs,row.favorites||{});
-    applyPrefs(row.preferences||{});
-    document.dispatchEvent(new CustomEvent('bec:study-sync'));
+    // So avisa os outros scripts quando algo realmente mudou, para nao
+    // repintar versiculos/favoritos a cada carga de pagina.
+    var changed=false;
+    changed=storeChanged(KEYS.notes,row.notes||{})||changed;
+    changed=storeChanged(KEYS.vhl,row.verse_highlights||{})||changed;
+    changed=storeChanged(KEYS.whl,row.word_highlights||{})||changed;
+    changed=storeChanged(KEYS.favs,row.favorites||{})||changed;
+    changed=applyPrefs(row.preferences||{})||changed;
+    if(changed) document.dispatchEvent(new CustomEvent('bec:study-sync'));
   }
   function mergedPayload(userId,row){
     var local=localPayload(userId);
@@ -102,21 +120,26 @@
     client=window.supabase.createClient(c.url, c.publishableKey);
     return client;
   }
-  async function syncNow(){
+  async function syncNow(opts){
     var sb=ensureClient();
     if(!sb || !currentUser || syncing) return;
+    // Carga de pagina e somente leitura; so grava no banco quando ha
+    // alteracao local pendente (dirty), pedido explicito ou primeira linha.
+    var push=!!(opts&&opts.push)||dirty;
     syncing=true; dirty=false;
     try{
       setStatus('Sincronizando...', 'muted');
       var res=await sb.from(TABLE).select('notes,verse_highlights,word_highlights,favorites,preferences,updated_at').eq('user_id', currentUser.id).maybeSingle();
       if(res.error && res.error.code!=='PGRST116') throw res.error;
       var payload=mergedPayload(currentUser.id, res.data);
-      var up=await sb.from(TABLE).upsert(payload,{onConflict:'user_id'});
-      if(up.error) throw up.error;
+      if(push || !res.data){
+        var up=await sb.from(TABLE).upsert(payload,{onConflict:'user_id'});
+        if(up.error) throw up.error;
+      }
       applyPayload(payload);
       setStatus('Sincronizado.', 'ok');
     }catch(e){
-      dirty=true;
+      if(push) dirty=true;
       setStatus((e&&e.message)||'Nao foi possivel sincronizar agora.', 'err');
     }finally{
       syncing=false;
@@ -125,7 +148,7 @@
   function markDirty(){
     dirty=true;
     clearTimeout(syncTimer);
-    syncTimer=setTimeout(syncNow,900);
+    syncTimer=setTimeout(function(){syncNow({push:true});},900);
   }
   window.BEC_SYNC={markDirty:markDirty,syncNow:syncNow,isReady:function(){return !!currentUser;}};
 
@@ -246,7 +269,7 @@
     document.addEventListener('click',function(e){
       if(e.target.closest && e.target.closest('[data-auth-open]')) openModal();
       if(e.target.closest && e.target.closest('[data-auth-mode]')) setMode(e.target.closest('[data-auth-mode]').getAttribute('data-auth-mode'));
-      if(e.target.closest && e.target.closest('[data-auth-sync]')) syncNow();
+      if(e.target.closest && e.target.closest('[data-auth-sync]')) syncNow({push:true});
       if(e.target.closest && e.target.closest('[data-auth-signout]')) signOut();
     });
     var f=qs('[data-auth-form]');
@@ -255,8 +278,13 @@
     var sb=ensureClient();
     if(sb){
       publishAccount();
-      sb.auth.getUser().then(function(r){ setSession(r.data&&r.data.user); });
-      sb.auth.onAuthStateChange(function(_event,session){ setSession(session&&session.user); });
+      // O INITIAL_SESSION ja cobre a carga da pagina (dispensa getUser) e o
+      // trabalho sai do callback via setTimeout: consultar o Supabase dentro
+      // do callback de auth trava o lock interno do supabase-js (deadlock).
+      sb.auth.onAuthStateChange(function(_event,session){
+        var user=(session&&session.user)||null;
+        setTimeout(function(){ setSession(user); },0);
+      });
     }
     updateUi();
   }

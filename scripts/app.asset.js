@@ -251,7 +251,11 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   else { updateFavButtons(); renderFavHome(); }
   document.addEventListener('bec:study-sync', function(){ updateFavButtons(); renderFavHome(); });
   if(window.MutationObserver){
-    new MutationObserver(function(){ updateFavButtons(); }).observe(document.documentElement,{childList:true,subtree:true});
+    var favMoTimer=null;
+    new MutationObserver(function(){
+      if(favMoTimer) return;
+      favMoTimer=setTimeout(function(){ favMoTimer=null; updateFavButtons(); },150);
+    }).observe(document.documentElement,{childList:true,subtree:true});
   }
 })();
 
