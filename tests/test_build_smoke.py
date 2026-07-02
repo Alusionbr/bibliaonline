@@ -45,10 +45,17 @@ def site(tmp_path, build, monkeypatch):
     topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
 
+    plans = [{
+        "slug": "joao-2-dias", "titulo": "João em 2 dias",
+        "descricao": "Leitura curta de exemplo.",
+        "dias": [["João 1"], ["João 2", "Salmo desconhecido"]],
+    }]
+
     (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
+    (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -109,6 +116,14 @@ def test_gamificacao_e_beta(site):
     assert "BEC_ACCOUNT" in auth
 
 
+def test_sincronizacao_ampliada(site):
+    # O sync cobre planos, coleções e cadernos, com fallback para o
+    # esquema v1 enquanto a migração não é aplicada.
+    auth = (site / "assets" / "auth.js").read_text("utf-8")
+    for token in ("study_plans", "collections", "notebooks", "legacyColumns", "bec.planProgress"):
+        assert token in auth
+
+
 def test_salas_de_estudo_reais(site):
     # O app de comunidade é gerado e a página de Salas o carrega.
     assert (site / "assets" / "community.js").exists()
@@ -120,6 +135,67 @@ def test_salas_de_estudo_reais(site):
     assert "assets/community.js" in salas
     # As antigas salas de demonstração saíram.
     assert "Sala Evangelho de João" not in salas
+
+
+def test_sem_ancoras_mortas_nem_metricas_falsas(site):
+    # Cards não apontam para âncoras que nunca são geradas.
+    estudar = (site / "estudar" / "index.html").read_text("utf-8")
+    assert 'href="#planos"' not in estudar
+    assert "biblioteca/#grifos" not in estudar
+    comunidade = (site / "comunidade" / "index.html").read_text("utf-8")
+    for morta in ('href="#perguntas"', 'href="#oracao"', 'href="#testemunhos"', 'href="#estudos-publicos"'):
+        assert morta not in comunidade
+    # Números demonstrativos apresentados como dados reais saíram.
+    assert "pessoas lendo" not in comunidade
+    verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "pessoas lendo hoje" not in verso
+    assert "Dados demonstrativos" not in verso
+
+
+def test_ferramentas_pessoais_reais(site):
+    # Coleções e Cadernos deixam de ser cards de exemplo e viram apps locais.
+    colecoes = (site / "colecoes" / "index.html").read_text("utf-8")
+    assert "data-collections-app" in colecoes
+    assert "Exemplo" not in colecoes
+    cadernos = (site / "cadernos" / "index.html").read_text("utf-8")
+    assert "data-notebooks-app" in cadernos
+    assert "Caderno Romanos" not in cadernos
+    # Biblioteca tem a seção de favoritos; Workspace tem o histórico.
+    biblioteca = (site / "biblioteca" / "index.html").read_text("utf-8")
+    assert 'id="favoritos"' in biblioteca
+    assert "data-fav-full-list" in biblioteca
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert 'id="historico"' in ws
+    assert "data-history-list" in ws
+    # O asset da biblioteca é gerado e referenciado nas páginas.
+    library = (site / "assets" / "library.js").read_text("utf-8")
+    for key in ("bec.collections", "bec.notebooks"):
+        assert key in library
+    assert "assets/library.js" in colecoes
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.history" in app
+
+
+def test_planos_de_leitura_reais(site):
+    # Índice e página do plano são gerados com a navegação atual.
+    index = (site / "planos" / "index.html").read_text("utf-8")
+    assert "João em 2 dias" in index
+    assert "mobile-primary-nav" in index
+    plano = (site / "planos" / "joao-2-dias" / "index.html").read_text("utf-8")
+    # Dias com checkbox persistível e referência conhecida vira link de leitura.
+    assert 'data-plan="joao-2-dias"' in plano
+    assert 'data-day="1"' in plano
+    assert 'data-plan-reset="joao-2-dias"' in plano
+    assert 'href="../../ler/joao/1/"' in plano
+    # Referência desconhecida degrada para texto puro, sem link quebrado.
+    assert "Salmo desconhecido" in plano
+    assert 'ler/salmo-desconhecido' not in plano
+    # O app.js sabe guardar o progresso e o sitemap lista as páginas.
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.planProgress" in app
+    sitemap = (site / "sitemap.xml").read_text("utf-8")
+    assert "/planos/</loc>" in sitemap
+    assert "/planos/joao-2-dias/</loc>" in sitemap
 
 
 def test_sem_produto_de_ia_no_html_gerado(site):

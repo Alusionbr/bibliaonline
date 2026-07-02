@@ -180,13 +180,16 @@
   // ---- Catalogo real (quando ha cliente) ----------------------------------
   async function loadCatalog(){
     var sb=sbClient();
-    if(!sb) return;
+    if(!sb) return false;
     try{
       var m=await sb.from('daily_missions').select('*').eq('active',true).order('sort');
       var b=await sb.from('badges').select('*').order('sort');
-      if(m&&m.data&&m.data.length) catalog.missions=m.data;
-      if(b&&b.data&&b.data.length) catalog.badges=b.data;
-    }catch(e){/* mantem fallback */}
+      var changed=false;
+      if(m&&m.data&&m.data.length){ catalog.missions=m.data; changed=true; }
+      if(b&&b.data&&b.data.length){ catalog.badges=b.data; changed=true; }
+      return changed;
+    }catch(e){/* mantem fallback: offline-first, o site segue sem conta/rede */}
+    return false;
   }
 
   // ---- Renderizacao -------------------------------------------------------
@@ -321,6 +324,7 @@
     var q=window.BEC_ACT||[]; window.BEC_ACT=[];
     q.forEach(function(m){try{window.BEC_GAME.record(m);}catch(e){}});
   }
-  function start(){ drainQueue(); loadCatalog().then(refresh); refresh(); }
+  // Pinta ja com o catalogo local; repinta apenas se o catalogo real chegou.
+  function start(){ drainQueue(); refresh(); loadCatalog().then(function(changed){ if(changed) refresh(); }); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
