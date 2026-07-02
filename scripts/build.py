@@ -427,8 +427,8 @@ def build_workspace_page():
         ("Estudos", "Meus estudos", "Planos e estudos pessoais em andamento.", f"{prefix}estudar/#meus-estudos"),
         ("Biblioteca", "Minha biblioteca", "Notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
         ("Salas", "Minhas salas", "Salas de Estudo conectadas ao conteúdo bíblico.", f"{prefix}comunidade/salas/"),
-        ("Coleções", "Coleções", "Guarde versículos, capítulos, artigos, mapas, manuscritos e planos.", f"{prefix}colecoes/"),
-        ("Cadernos", "Cadernos", "Organize notas, perguntas, grifos, coleções e referências.", f"{prefix}cadernos/"),
+        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
+        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
         ("Progresso", "Progresso", "Dias estudando, planos concluídos e calendário.", "#progresso"),
         ("Perfil", "Perfil", "Seu perfil de estudo e contribuições.", "#perfil"),
         ("Configurações", "Configurações", "Preferências, privacidade e sincronização.", "#configuracoes"),
@@ -563,8 +563,8 @@ def build_library_page():
         ("Favoritos", "Favoritos", "Versículos salvos para revisão.", "#favoritos"),
         ("Planos", "Planos", "Leituras estruturadas e progresso.", f"{prefix}planos/"),
         ("Artigos", "Artigos", "Estudos contextuais e materiais de apoio.", f"{prefix}index.html#artigos"),
-        ("Coleções", "Coleções", "Conjuntos de versículos, capítulos, artigos, mapas e manuscritos.", f"{prefix}colecoes/"),
-        ("Cadernos", "Cadernos", "Notas, perguntas, grifos, coleções, planos e referências.", f"{prefix}cadernos/"),
+        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
+        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
     ])
     body = f"""
 <main id="main" class="wrap hub-page">

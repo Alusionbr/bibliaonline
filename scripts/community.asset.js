@@ -25,9 +25,32 @@
   function when(ts){try{return new Date(ts).toLocaleDateString('pt-BR');}catch(e){return '';}}
   function roleLabel(r){return r==='admin'?'Admin':r==='moderator'?'Moderador':'Membro';}
 
-  var state={view:'list', room:null, rooms:[], members:[], topics:[], topic:null, posts:[], busy:false, msg:'', err:''};
+  var state={view:'list', room:null, rooms:[], members:[], topics:[], topic:null, posts:[], busy:false, loading:false, msg:'', err:''};
+  var lastLoad=null; // ultima carga de leitura, para o botao "Tentar de novo"
 
   function flash(msg, isErr){state.msg=isErr?'':msg; state.err=isErr?msg:''; render();}
+  // Leituras nao podem falhar em silencio: sem isto, um erro de rede vira
+  // um falso "voce nao tem salas".
+  function need(r){
+    if(r&&r.error) throw r.error;
+    return (r&&r.data)||[];
+  }
+  function loadFailed(){
+    state.loading=false;
+    state.err='Não foi possível carregar agora. Verifique a conexão e tente de novo.';
+    render();
+  }
+  function copyCode(code, el){
+    (navigator.clipboard?navigator.clipboard.writeText(code):Promise.reject())
+      .then(function(){ if(el) el.textContent='Copiado!'; setTimeout(function(){ if(el) el.textContent='Copiar código'; },1400); })
+      .catch(function(){
+        try{
+          var t=document.createElement('textarea'); t.value=code; document.body.appendChild(t);
+          t.select(); document.execCommand('copy'); t.remove();
+          if(el) el.textContent='Copiado!'; setTimeout(function(){ if(el) el.textContent='Copiar código'; },1400);
+        }catch(e){}
+      });
+  }
 
   // ---- Camada de dados (leituras diretas com RLS) -------------------------
   function myRooms(){
@@ -57,25 +80,40 @@
 
   // ---- Navegacao ----------------------------------------------------------
   async function goList(){
-    state.view='list'; state.room=null; state.topic=null;
+    lastLoad=goList;
+    state.view='list'; state.room=null; state.topic=null; state.err='';
     if(loggedIn()){
-      var r=await myRooms();
-      state.rooms=(r&&r.data)||[];
+      state.loading=true;
+      render();
+      try{
+        state.rooms=need(await myRooms());
+      }catch(e){ loadFailed(); return; }
+      state.loading=false;
     }
     render();
   }
   async function openRoom(membership){
+    lastLoad=function(){ openRoom(membership); };
     state.view='room'; state.room=membership; state.topic=null; state.err='';
+    state.loading=true;
     render(); // mostra esqueleto enquanto carrega
     var gid=membership.group_id;
-    var m=await roomMembers(gid); state.members=(m&&m.data)||[];
-    var t=await roomTopics(gid); state.topics=(t&&t.data)||[];
+    try{
+      state.members=need(await roomMembers(gid));
+      state.topics=need(await roomTopics(gid));
+    }catch(e){ loadFailed(); return; }
+    state.loading=false;
     render();
   }
   async function openTopic(topic){
-    state.view='topic'; state.topic=topic;
+    lastLoad=function(){ openTopic(topic); };
+    state.view='topic'; state.topic=topic; state.err='';
+    state.loading=true;
     render();
-    var p=await topicPosts(topic.id); state.posts=(p&&p.data)||[];
+    try{
+      state.posts=need(await topicPosts(topic.id));
+    }catch(e){ loadFailed(); return; }
+    state.loading=false;
     render();
   }
 
@@ -149,10 +187,14 @@
   // ---- Renderizacao -------------------------------------------------------
   function banner(){
     var out='';
-    if(state.err) out+='<p class="community-alert err">'+esc(state.err)+'</p>';
+    if(state.err){
+      out+='<p class="community-alert err">'+esc(state.err)+
+        (lastLoad?' <button type="button" class="btn tiny" data-act="retry">Tentar de novo</button>':'')+'</p>';
+    }
     if(state.msg) out+='<p class="community-alert ok">'+esc(state.msg)+'</p>';
     return out;
   }
+  function loadingLine(msg){return '<p class="muted-line">'+esc(msg)+'</p>';}
 
   function viewSignedOut(){
     return '<div class="community-empty">'+
@@ -175,9 +217,11 @@
 
   function viewList(){
     var rooms=state.rooms||[];
-    var cards=rooms.length
-      ? '<div class="room-grid">'+rooms.map(roomCard).join('')+'</div>'
-      : '<p class="muted-line">Voce ainda nao participa de nenhuma sala. Crie a primeira ou entre por um codigo.</p>';
+    var cards=state.loading
+      ? loadingLine('Carregando suas salas…')
+      : rooms.length
+        ? '<div class="room-grid">'+rooms.map(roomCard).join('')+'</div>'
+        : '<p class="muted-line">Voce ainda nao participa de nenhuma sala. Crie a primeira ou entre por um codigo.</p>';
     return banner()+
       '<section class="community-block"><h2>Minhas salas</h2>'+cards+'</section>'+
       '<div class="community-forms">'+
@@ -191,6 +235,7 @@
           '<h3>Entrar por codigo</h3>'+
           '<label>Codigo de convite<input name="code" maxlength="12" required placeholder="Ex.: a1b2c3d4"></label>'+
           '<button type="submit" class="btn ghost"'+(state.busy?' disabled':'')+'>Entrar</button>'+
+          '<p class="muted-line">Peca o codigo a quem criou a sala. Voce entra como pendente ate um admin aprovar.</p>'+
         '</form>'+
       '</div>';
   }
@@ -235,8 +280,14 @@
       '<button type="button" class="btn tiny ghost" data-act="back">← Minhas salas</button>'+
       '<h2>'+esc(g.name||'Sala')+'</h2>'+
       (g.description?'<p class="room-desc">'+esc(g.description)+'</p>':'')+
-      (admin&&g.invite_code?'<p class="invite">Codigo de convite: <code>'+esc(g.invite_code)+'</code> <span>(compartilhe para convidar)</span></p>':'')+
+      (g.invite_code&&state.room.status==='active'
+        ? '<p class="invite">Codigo de convite: <code>'+esc(g.invite_code)+'</code> '+
+          '<button type="button" class="btn tiny ghost" data-act="copy-code" data-code="'+esc(g.invite_code)+'">Copiar código</button> '+
+          '<span>novos membros entram como pendentes ate um admin aprovar</span></p>'
+        : '')+
     '</div>';
+
+    if(state.loading) return banner()+head+loadingLine('Carregando participantes e discussoes…');
 
     var membersHtml='<section class="community-block"><h3>Participantes'+
       (admin&&pendings.length?' <span class="pending-count">'+pendings.length+' pendente(s)</span>':'')+
@@ -270,9 +321,11 @@
       '<h2>'+esc(t.title)+(t.locked?' 🔒':'')+'</h2>'+
       (t.body?'<p class="topic-body">'+esc(t.body).replace(/\n/g,'<br>')+'</p>':'')+
     '</div>';
-    var posts=(state.posts&&state.posts.length)
-      ? '<ul class="post-list">'+state.posts.map(postItem).join('')+'</ul>'
-      : '<p class="muted-line">Seja o primeiro a responder.</p>';
+    var posts=state.loading
+      ? loadingLine('Carregando respostas…')
+      : (state.posts&&state.posts.length)
+        ? '<ul class="post-list">'+state.posts.map(postItem).join('')+'</ul>'
+        : '<p class="muted-line">Seja o primeiro a responder.</p>';
     var form=locked
       ? '<p class="muted-line">Discussao trancada por um moderador.</p>'
       : '<form class="community-form" data-form="post">'+
@@ -300,6 +353,8 @@
       var t=(state.topics||[]).filter(function(x){return x.id===el.getAttribute('data-tid');})[0];
       if(t) openTopic(t);
     }else if(act==='back'){ goList(); }
+    else if(act==='retry'){ if(lastLoad) lastLoad(); }
+    else if(act==='copy-code'){ copyCode(el.getAttribute('data-code')||'', el); }
     else if(act==='back-room'){ state.view='room'; state.topic=null; render(); }
     else if(act==='approve'){ actDecide(el.getAttribute('data-mid'), true); }
     else if(act==='reject'){ actDecide(el.getAttribute('data-mid'), false); }

@@ -422,3 +422,18 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   document.addEventListener('bec:study-sync', render);
   render();
 })();
+
+// Destaca a seção atual na navegação (desktop e barra inferior mobile)
+(function(){
+  var path=location.pathname;
+  document.querySelectorAll('.nav-links a, .mobile-primary-nav a').forEach(function(a){
+    var href=a.getAttribute('href')||'';
+    var clean=href.replace(/index\.html$/,'');
+    var section=clean.replace(/^(\.\.\/)+|^\.\//g,'');
+    var on=false;
+    if(section==='' ){ on=/^\/(index\.html)?$/.test(path)||/\/bibliaonline\/(index\.html)?$/.test(path); }
+    else { on=path.indexOf('/'+section)>-1; }
+    if(section==='ler/') on=on||path.indexOf('/versiculos/')>-1;
+    if(on){ a.classList.add('active'); a.setAttribute('aria-current','page'); }
+  });
+})();
