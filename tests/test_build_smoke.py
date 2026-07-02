@@ -124,6 +124,18 @@ def test_sincronizacao_ampliada(site):
         assert token in auth
 
 
+def test_gamificacao_nao_inunda_o_banco(site):
+    # Regressão: a gamificação não pode escrever no banco a cada evento de
+    # página/sync (isso travava a leitura logado no Safari mobile).
+    # O catálogo é buscado uma vez e o envio é agendado só quando há progresso.
+    game = (site / "assets" / "game.js").read_text("utf-8")
+    assert "schedulePush" in game        # envio debounced/deduplicado
+    assert "catalogLoaded" in game       # catálogo carregado uma vez por sessão
+    # A restauração da caneta na carga não dispara sincronização.
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "setColor((load('pencolor').c)||'y', true)" in study
+
+
 def test_salas_de_estudo_reais(site):
     # O app de comunidade é gerado e a página de Salas o carrega.
     assert (site / "assets" / "community.js").exists()

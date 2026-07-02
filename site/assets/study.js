@@ -221,17 +221,17 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
   var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
   var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
-  function setPen(on){
+  function setPen(on, silent){
     penOn=on; document.body.classList.toggle('hl-mode', on);
     var b=document.querySelector('.pen-toggle');
     if(b){ b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false'); }
-    save('penmode', {on:on});
+    if(!silent) save('penmode', {on:on}); // silent: restauracao na carga nao sincroniza
   }
-  function setColor(c){
+  function setColor(c, silent){
     penColor=c;
     var sw=document.querySelectorAll('.pen-colors button');
     for(var i=0;i<sw.length;i++){ sw[i].classList.toggle('on', sw[i].getAttribute('data-c')===c); }
-    save('pencolor', {c:c});
+    if(!silent) save('pencolor', {c:c});
   }
   function wordAtPoint(x,y){ var el=document.elementFromPoint(x,y); return el && el.closest ? el.closest('.w') : null; }
   function paintWord(w){
@@ -264,8 +264,8 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     pal.innerHTML=COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'"></button>'; }).join('');
     pal.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) setColor(b.getAttribute('data-c')); });
     document.body.appendChild(pal);
-    setColor((load('pencolor').c)||'y');
-    if(load('penmode').on) setPen(true);
+    setColor((load('pencolor').c)||'y', true);
+    if(load('penmode').on) setPen(true, true);
   }
 
   // ---------- marca-texto por seleção: barra flutuante (Grifar / Copiar) ----------

@@ -142,6 +142,13 @@
   function sbClient(){var a=account();return a&&a.client?a.client:null;}
   function sbUser(){var a=account();return a&&a.user?a.user:null;}
 
+  // Assinatura do estado sincronizavel: so envia ao banco quando muda de fato.
+  function pushSig(s){
+    return JSON.stringify([s.xp||0, s.streak||0, s.longest||0, Object.keys(s.badges||{}).sort()]);
+  }
+  // Baseline do que o servidor ja tem; enquanto igual a isto, nao ha o que enviar.
+  var lastPushSig=null;
+
   async function pullOnce(s){
     var sb=sbClient(), u=sbUser();
     if(!sb||!u) return;
@@ -155,6 +162,8 @@
       }
       var b=await sb.from('user_badges').select('badge_key').eq('user_id',u.id);
       if(b&&b.data) b.data.forEach(function(row){s.badges[row.badge_key]=true;});
+      // Registra o que o servidor ja possui: push so ocorre se surgir algo novo.
+      lastPushSig=pushSig(s);
     }catch(e){/* offline/desconfigurado: segue local */}
   }
 
@@ -178,7 +187,9 @@
   }
 
   // ---- Catalogo real (quando ha cliente) ----------------------------------
+  var catalogLoaded=false;
   async function loadCatalog(){
+    if(catalogLoaded) return false;       // catalogo e imutavel na sessao: busca 1x
     var sb=sbClient();
     if(!sb) return false;
     try{
@@ -187,6 +198,7 @@
       var changed=false;
       if(m&&m.data&&m.data.length){ catalog.missions=m.data; changed=true; }
       if(b&&b.data&&b.data.length){ catalog.badges=b.data; changed=true; }
+      catalogLoaded=true;
       return changed;
     }catch(e){/* mantem fallback: offline-first, o site segue sem conta/rede */}
     return false;
@@ -266,7 +278,26 @@
   }
 
   // ---- Ciclo principal ----------------------------------------------------
-  var busy=false;
+  var busy=false, pushTimer=null;
+  // Envia ao banco apenas quando ha progresso novo (assinatura mudou), com
+  // debounce, para nao inundar o Supabase a cada evento de pagina/sync.
+  function schedulePush(){
+    if(!sbClient()||!sbUser()) return;          // sem conta: nada a enviar
+    var s=loadState();
+    if(lastPushSig!==null && pushSig(s)===lastPushSig) return; // igual ao servidor
+    clearTimeout(pushTimer);
+    pushTimer=setTimeout(function(){
+      if(busy){ schedulePush(); return; }
+      var st=loadState(), sig=pushSig(st);
+      if(lastPushSig!==null && sig===lastPushSig) return;
+      busy=true; lastPushSig=sig;
+      Promise.resolve().then(function(){return push(st);})
+        .catch(function(){ lastPushSig=null; })  // falhou: permite reenviar depois
+        .then(function(){ busy=false; });
+    }, 1500);
+  }
+  // Recalcula e repinta LOCALMENTE (sem tocar no banco). O envio fica a cargo
+  // de schedulePush, chamado so em acoes reais do usuario.
   function refresh(){
     var s=loadState();
     rollover(s);
@@ -275,7 +306,6 @@
     saveState(s);
     renderBetaChrome();
     renderPanel(s);
-    if(!busy){busy=true; Promise.resolve().then(function(){return push(s);}).catch(function(){}).then(function(){busy=false;});}
   }
 
   // API publica: outros scripts chamam BEC_GAME.record('read_chapters')
@@ -291,27 +321,27 @@
       evaluateBadges(s);
       saveState(s);
       renderPanel(s);
-      if(!busy){busy=true; Promise.resolve().then(function(){return push(s);}).catch(function(){}).then(function(){busy=false;});}
+      schedulePush();
     },
     // Concede uma medalha especifica (ex.: 'comunidade' ao entrar numa sala).
     grant:function(key){
       var s=loadState(); rollover(s);
-      if(award(s,key)){ saveState(s); renderPanel(s);
-        if(!busy){busy=true; Promise.resolve().then(function(){return push(s);}).catch(function(){}).then(function(){busy=false;});}
-      }
+      if(award(s,key)){ saveState(s); renderPanel(s); schedulePush(); }
     },
     refresh:refresh
   };
 
   // Quando a conta muda (login/logout), puxa do servidor e re-renderiza.
+  // O push so acontece depois do pull e apenas se houver progresso local novo.
   document.addEventListener('bec:account', function(){
     loadCatalog().then(function(){
       var s=loadState(); rollover(s);
-      pullOnce(s).then(function(){ evaluateBadges(s); saveState(s); refresh(); });
+      pullOnce(s).then(function(){ evaluateBadges(s); saveState(s); refresh(); schedulePush(); });
     });
   });
-  // Sincronizacao de estudo (favoritos/notas) mudou -> recredita missoes.
-  document.addEventListener('bec:study-sync', refresh);
+  // Sincronizacao de estudo (favoritos/notas) mudou -> recredita missoes
+  // localmente; o envio ao banco fica com schedulePush (so se algo mudou).
+  document.addEventListener('bec:study-sync', function(){ refresh(); schedulePush(); });
   // Aviso beta: fechar.
   document.addEventListener('click', function(e){
     if(e.target.closest && e.target.closest('[data-beta-dismiss]')){
