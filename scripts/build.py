@@ -241,6 +241,7 @@ def footer(prefix):
       <div>
         <a href="{prefix}ler/">Bíblia</a>
         <a href="{prefix}estudar/">Estudar</a>
+        <a href="{prefix}planos/">Planos</a>
         <a href="{prefix}workspace/">Workspace</a>
       </div>
       <div>
@@ -608,6 +609,89 @@ def build_notebooks_page():
 </main>"""
     out = SITE / "cadernos" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
+
+
+def load_reading_plans():
+    """Planos curados de site/data/reading-plans.json; tolera ausência do arquivo."""
+    path = DATA / "reading-plans.json"
+    if not path.exists():
+        return []
+    try:
+        plans = json.loads(path.read_text(encoding="utf-8"))
+    except ValueError:
+        return []
+    return [p for p in plans if p.get("slug") and p.get("titulo") and p.get("dias")]
+
+
+def plan_ref_link(ref, prefix):
+    """Transforma "João 3" em link para a leitura do capítulo; texto puro se não reconhecer."""
+    parts = str(ref).rsplit(" ", 1)
+    if len(parts) == 2 and parts[0] in BOOK_ORDER and parts[1].isdigit():
+        return f'<a href="{prefix}ler/{book_slug(parts[0])}/{int(parts[1])}/">{esc(ref)}</a>'
+    return esc(str(ref))
+
+
+def build_reading_plans_pages():
+    plans = load_reading_plans()
+    if not plans:
+        return []
+    prefix = "../"
+    cards = action_cards([
+        ("Plano", p["titulo"], f"{len(p['dias'])} dias. {p.get('descricao', '')}", f"{p['slug']}/")
+        for p in plans
+    ])
+    body = f"""
+<main id="main" class="wrap hub-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Planos de leitura</p>
+  <header class="hub-hero">
+    <p class="eyebrow">Planos de leitura</p>
+    <h1>Planos</h1>
+    <p>Leituras guiadas dia a dia. O progresso fica salvo neste navegador e sincroniza quando você entra na conta.</p>
+  </header>
+  <section class="hub-section"><div class="study-card-grid">{cards}</div></section>
+</main>"""
+    write_file(
+        SITE / "planos" / "index.html",
+        head(f"Planos de leitura | {SITE_NAME}", "Planos de leitura bíblica guiados dia a dia, com progresso salvo.",
+             f"{BASE_URL}/planos/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+    for p in plans:
+        build_reading_plan_page(p)
+    return [p["slug"] for p in plans]
+
+
+def build_reading_plan_page(plan):
+    prefix = "../../"
+    slug = plan["slug"]
+    dias = plan["dias"]
+    days_html = "".join(
+        f"""
+    <li class="plan-day">
+      <label class="plan-check"><input type="checkbox" data-plan="{esc(slug)}" data-day="{i}"><span>Dia {i + 1}</span></label>
+      <span class="plan-chapters">{" · ".join(plan_ref_link(ref, prefix) for ref in refs)}</span>
+    </li>"""
+        for i, refs in enumerate(dias)
+    )
+    body = f"""
+<main id="main" class="wrap hub-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Planos</a> · {esc(plan["titulo"])}</p>
+  <header class="hub-hero">
+    <p class="eyebrow">Plano de leitura</p>
+    <h1>{esc(plan["titulo"])}</h1>
+    <p>{esc(plan.get("descricao", ""))}</p>
+  </header>
+  <section class="hub-section">
+    <div class="section-title"><h2>Sua leitura</h2><span class="plan-progress" data-plan-progress data-plan-slug="{esc(slug)}">0 de {len(dias)} dias</span></div>
+    <ol class="plan-days">{days_html}
+    </ol>
+    <p class="map-actions"><button type="button" class="btn ghost" data-plan-reset="{esc(slug)}">Recomeçar plano</button></p>
+  </section>
+</main>"""
+    write_file(
+        SITE / "planos" / slug / "index.html",
+        head(f"{plan['titulo']} | {SITE_NAME}", plan.get("descricao", "Plano de leitura bíblica."),
+             f"{BASE_URL}/planos/{slug}/", prefix) + nav(prefix) + body + footer(prefix),
+    )
 
 
 def build_privacy_page():
@@ -1149,7 +1233,7 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_meta(verses, articles, order, struct):
+def build_meta(verses, articles, order, struct, plan_slugs=()):
     # sitemap
     urls = [
         BASE_URL + "/",
@@ -1164,6 +1248,9 @@ def build_meta(verses, articles, order, struct):
         f"{BASE_URL}/privacidade/",
         f"{BASE_URL}/linha-do-tempo/",
     ]
+    if plan_slugs:
+        urls.append(f"{BASE_URL}/planos/")
+        urls += [f"{BASE_URL}/planos/{slug}/" for slug in plan_slugs]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
@@ -1292,6 +1379,7 @@ def build_site(context):
     build_library_page()
     build_collections_page()
     build_notebooks_page()
+    plan_slugs = build_reading_plans_pages()
     build_privacy_page()
     n_idx = build_search_index(verses, inputs.articles, inputs.topics)
     build_random_pool(verses)
@@ -1315,7 +1403,7 @@ def build_site(context):
             build_chapter_page(livro, ch, chapters[ch], total_caps, order)
             n_chapters += 1
 
-    build_meta(verses, inputs.articles, order, struct)
+    build_meta(verses, inputs.articles, order, struct, plan_slugs)
     build_404()
     return BuildSummary(
         verses=len(verses),

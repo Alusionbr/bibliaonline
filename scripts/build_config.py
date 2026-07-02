@@ -104,5 +104,6 @@ GENERATED_DIRS = (
     "biblioteca",
     "colecoes",
     "cadernos",
+    "planos",
     "privacidade",
 )

@@ -318,3 +318,52 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
   render();
 })();
+
+// Planos de leitura: progresso por dia (bec.planProgress), com sincronização
+(function(){
+  var boxes=document.querySelectorAll('input[data-plan]');
+  if(!boxes.length) return;
+  var KEY='bec.planProgress';
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function save(all){try{localStorage.setItem(KEY,JSON.stringify(all));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
+  function paint(){
+    var all=load();
+    var done={};
+    boxes.forEach(function(b){
+      var slug=b.getAttribute('data-plan'), day=+b.getAttribute('data-day');
+      var days=all[slug]||[];
+      b.checked=days.indexOf(day)>-1;
+      var row=b.closest('.plan-day'); if(row) row.classList.toggle('done', b.checked);
+      done[slug]=(done[slug]||0)+(b.checked?1:0);
+    });
+    document.querySelectorAll('[data-plan-progress]').forEach(function(el){
+      var slug=el.getAttribute('data-plan-slug');
+      var total=document.querySelectorAll('input[data-plan="'+slug+'"]').length;
+      el.textContent=(done[slug]||0)+' de '+total+' dias';
+    });
+  }
+  document.addEventListener('change',function(e){
+    var b=e.target.closest && e.target.closest('input[data-plan]');
+    if(!b) return;
+    var slug=b.getAttribute('data-plan'), day=+b.getAttribute('data-day');
+    var all=load(), days=all[slug]||[];
+    var pos=days.indexOf(day);
+    if(b.checked && pos<0) days.push(day);
+    if(!b.checked && pos>-1) days.splice(pos,1);
+    if(days.length) all[slug]=days; else delete all[slug];
+    save(all);
+    paint();
+  });
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest && e.target.closest('[data-plan-reset]');
+    if(!btn) return;
+    var slug=btn.getAttribute('data-plan-reset');
+    var all=load();
+    if(!all[slug]) return;
+    delete all[slug];
+    save(all);
+    paint();
+  });
+  document.addEventListener('bec:study-sync', paint);
+  paint();
+})();

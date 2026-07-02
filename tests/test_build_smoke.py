@@ -45,10 +45,17 @@ def site(tmp_path, build, monkeypatch):
     topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
 
+    plans = [{
+        "slug": "joao-2-dias", "titulo": "João em 2 dias",
+        "descricao": "Leitura curta de exemplo.",
+        "dias": [["João 1"], ["João 2", "Salmo desconhecido"]],
+    }]
+
     (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
     (data_dir / "articles.json").write_text(json.dumps(articles, ensure_ascii=False), "utf-8")
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
+    (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -135,6 +142,28 @@ def test_sem_ancoras_mortas_nem_metricas_falsas(site):
     verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
     assert "pessoas lendo hoje" not in verso
     assert "Dados demonstrativos" not in verso
+
+
+def test_planos_de_leitura_reais(site):
+    # Índice e página do plano são gerados com a navegação atual.
+    index = (site / "planos" / "index.html").read_text("utf-8")
+    assert "João em 2 dias" in index
+    assert "mobile-primary-nav" in index
+    plano = (site / "planos" / "joao-2-dias" / "index.html").read_text("utf-8")
+    # Dias com checkbox persistível e referência conhecida vira link de leitura.
+    assert 'data-plan="joao-2-dias"' in plano
+    assert 'data-day="1"' in plano
+    assert 'data-plan-reset="joao-2-dias"' in plano
+    assert 'href="../../ler/joao/1/"' in plano
+    # Referência desconhecida degrada para texto puro, sem link quebrado.
+    assert "Salmo desconhecido" in plano
+    assert 'ler/salmo-desconhecido' not in plano
+    # O app.js sabe guardar o progresso e o sitemap lista as páginas.
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.planProgress" in app
+    sitemap = (site / "sitemap.xml").read_text("utf-8")
+    assert "/planos/</loc>" in sitemap
+    assert "/planos/joao-2-dias/</loc>" in sitemap
 
 
 def test_sem_produto_de_ia_no_html_gerado(site):

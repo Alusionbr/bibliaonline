@@ -701,3 +701,14 @@ html.dark .community-alert.err{background:#3a201c;border-color:#7a3e34;color:#f0
 .post-meta{font-size:.76rem;color:var(--muted);margin-bottom:4px}
 .post-body{line-height:1.5}
 @media (max-width:560px){ .community-forms{grid-template-columns:1fr} }
+
+/* planos de leitura */
+.plan-days{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.plan-day{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;background:var(--paper);
+  border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.plan-day.done{opacity:.72}
+.plan-day.done .plan-chapters a{text-decoration:line-through}
+.plan-check{display:inline-flex;align-items:center;gap:8px;font-weight:600;cursor:pointer;white-space:nowrap}
+.plan-check input{width:18px;height:18px;accent-color:var(--gold)}
+.plan-chapters{color:var(--muted);font-size:.94rem}
+.plan-progress{font-variant-numeric:tabular-nums}
