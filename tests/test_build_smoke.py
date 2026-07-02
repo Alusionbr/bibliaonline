@@ -122,6 +122,21 @@ def test_salas_de_estudo_reais(site):
     assert "Sala Evangelho de João" not in salas
 
 
+def test_sem_ancoras_mortas_nem_metricas_falsas(site):
+    # Cards não apontam para âncoras que nunca são geradas.
+    estudar = (site / "estudar" / "index.html").read_text("utf-8")
+    assert 'href="#planos"' not in estudar
+    assert "biblioteca/#grifos" not in estudar
+    comunidade = (site / "comunidade" / "index.html").read_text("utf-8")
+    for morta in ('href="#perguntas"', 'href="#oracao"', 'href="#testemunhos"', 'href="#estudos-publicos"'):
+        assert morta not in comunidade
+    # Números demonstrativos apresentados como dados reais saíram.
+    assert "pessoas lendo" not in comunidade
+    verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "pessoas lendo hoje" not in verso
+    assert "Dados demonstrativos" not in verso
+
+
 def test_sem_produto_de_ia_no_html_gerado(site):
     proibidos = ("IA Bíblica", "Bíblia com IA", "assistente IA")
     pages = [
