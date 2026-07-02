@@ -7,6 +7,16 @@ function gameRecord(metric){
   }catch(e){}
 }
 
+// Histórico de leitura: últimas páginas abertas (bec.history), mais recente primeiro
+function becTouchHistory(url,label){
+  try{
+    var list=JSON.parse(localStorage.getItem('bec.history')||'[]')||[];
+    list=list.filter(function(h){return h && h.url!==url;});
+    list.unshift({url:url,label:label,at:new Date().toISOString()});
+    localStorage.setItem('bec.history',JSON.stringify(list.slice(0,20)));
+  }catch(e){}
+}
+
 // home: menu + busca local (índice embutido em window.__INDEX__)
 document.addEventListener('click',function(e){
   if(e.target.closest('[data-menu]')){document.querySelector('[data-links]').classList.toggle('open');}
@@ -81,7 +91,10 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         if(slug){ try{ history.replaceState(null,'','../'+slug+'/'); }catch(e){} }
         try{
           var ref=en.target.getAttribute('data-ref')||'';
-          if(ref) localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:ref}));
+          if(ref){
+            localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:ref}));
+            becTouchHistory(location.pathname, ref);
+          }
         }catch(e){}
       }
     });
@@ -142,7 +155,10 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   var h1=document.querySelector('.verse-head h1');
   var reading=document.querySelector('.ch-verse[data-ref], .verse-cont[data-ref]');
   if(reading && h1){
-    try{ localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()})); }catch(e){}
+    try{
+      localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()}));
+      becTouchHistory(location.pathname, h1.textContent.trim());
+    }catch(e){}
     // missão "ler um capítulo": credita uma vez por dia por página
     try{
       var mark=new Date().toISOString().slice(0,10)+'|'+location.pathname;
@@ -199,6 +215,18 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       return '<a class="favorite-item" href="'+esc(item.url||'#')+'">'+esc(ref)+'</a>';
     }).join('');
   }
+  function renderFavFull(){
+    var box=document.querySelector('[data-fav-full-list]');
+    if(!box) return;
+    var favs=loadFavs();
+    var keys=Object.keys(favs).sort();
+    if(!keys.length){ box.innerHTML='<p class="muted-line">Nenhum versículo favoritado ainda. Toque em ☆ Favoritar durante a leitura.</p>'; return; }
+    box.innerHTML=keys.map(function(ref){
+      var item=favs[ref]||{};
+      return '<div class="fav-row"><a href="'+esc(item.url||'#')+'">'+esc(ref)+'</a>'+
+        '<button type="button" class="btn tiny ghost" data-fav-del="'+esc(ref)+'">Remover</button></div>';
+    }).join('');
+  }
   function speak(text, lang, btn){
     if(!('speechSynthesis' in window)){ if(btn){btn.textContent='Sem voz neste navegador';} return; }
     window.speechSynthesis.cancel();
@@ -236,6 +264,13 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       speak(text, sp.getAttribute('data-lang')||'pt-BR', sp);
       return;
     }
+    var del=e.target.closest && e.target.closest('[data-fav-del]');
+    if(del){
+      var dref=del.getAttribute('data-fav-del')||'';
+      var dfavs=loadFavs();
+      if(dref && dfavs[dref]){ delete dfavs[dref]; saveFavs(dfavs); updateFavButtons(); renderFavHome(); renderFavFull(); }
+      return;
+    }
     var fav=e.target.closest && e.target.closest('[data-fav]');
     if(fav){
       var ref=fav.getAttribute('data-ref')||'', url=fav.getAttribute('data-url')||location.pathname;
@@ -245,11 +280,12 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       saveFavs(favs);
       updateFavButtons();
       renderFavHome();
+      renderFavFull();
     }
   });
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){updateFavButtons();renderFavHome();});
-  else { updateFavButtons(); renderFavHome(); }
-  document.addEventListener('bec:study-sync', function(){ updateFavButtons(); renderFavHome(); });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){updateFavButtons();renderFavHome();renderFavFull();});
+  else { updateFavButtons(); renderFavHome(); renderFavFull(); }
+  document.addEventListener('bec:study-sync', function(){ updateFavButtons(); renderFavHome(); renderFavFull(); });
   if(window.MutationObserver){
     var favMoTimer=null;
     new MutationObserver(function(){
@@ -366,4 +402,23 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
   document.addEventListener('bec:study-sync', paint);
   paint();
+})();
+
+// Histórico de leitura no Workspace
+(function(){
+  var box=document.querySelector('[data-history-list]');
+  if(!box) return;
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function render(){
+    var list=[];
+    try{list=JSON.parse(localStorage.getItem('bec.history')||'[]')||[];}catch(e){}
+    if(!list.length){ box.innerHTML='<p class="muted-line">Nenhuma leitura recente neste navegador. Abra um capítulo na Bíblia para começar.</p>'; return; }
+    box.innerHTML=list.map(function(h){
+      var when='';
+      try{ when=new Date(h.at).toLocaleDateString('pt-BR'); }catch(e){}
+      return '<a class="history-row" href="'+esc(h.url)+'"><b>'+esc(h.label)+'</b><span>'+esc(when)+'</span></a>';
+    }).join('');
+  }
+  document.addEventListener('bec:study-sync', render);
+  render();
 })();

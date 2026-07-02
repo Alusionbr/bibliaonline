@@ -144,6 +144,30 @@ def test_sem_ancoras_mortas_nem_metricas_falsas(site):
     assert "Dados demonstrativos" not in verso
 
 
+def test_ferramentas_pessoais_reais(site):
+    # Coleções e Cadernos deixam de ser cards de exemplo e viram apps locais.
+    colecoes = (site / "colecoes" / "index.html").read_text("utf-8")
+    assert "data-collections-app" in colecoes
+    assert "Exemplo" not in colecoes
+    cadernos = (site / "cadernos" / "index.html").read_text("utf-8")
+    assert "data-notebooks-app" in cadernos
+    assert "Caderno Romanos" not in cadernos
+    # Biblioteca tem a seção de favoritos; Workspace tem o histórico.
+    biblioteca = (site / "biblioteca" / "index.html").read_text("utf-8")
+    assert 'id="favoritos"' in biblioteca
+    assert "data-fav-full-list" in biblioteca
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert 'id="historico"' in ws
+    assert "data-history-list" in ws
+    # O asset da biblioteca é gerado e referenciado nas páginas.
+    library = (site / "assets" / "library.js").read_text("utf-8")
+    for key in ("bec.collections", "bec.notebooks"):
+        assert key in library
+    assert "assets/library.js" in colecoes
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.history" in app
+
+
 def test_planos_de_leitura_reais(site):
     # Índice e página do plano são gerados com a navegação atual.
     index = (site / "planos" / "index.html").read_text("utf-8")

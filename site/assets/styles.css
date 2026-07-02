@@ -712,3 +712,24 @@ html.dark .community-alert.err{background:#3a201c;border-color:#7a3e34;color:#f0
 .plan-check input{width:18px;height:18px;accent-color:var(--gold)}
 .plan-chapters{color:var(--muted);font-size:.94rem}
 .plan-progress{font-variant-numeric:tabular-nums}
+
+/* biblioteca pessoal: coleções, cadernos, favoritos e histórico */
+.library-form{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:14px 16px;display:grid;gap:10px;margin-bottom:16px;max-width:520px}
+.library-form label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.library-form input{font:inherit;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.library-form .btn{justify-self:start}
+.library-card{text-align:left;font:inherit;cursor:pointer;width:100%}
+.library-rows{display:grid;gap:8px}
+.fav-row,.history-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);
+  border:1px solid var(--line);border-radius:12px;padding:9px 13px}
+.fav-row a,.history-row b{font-weight:600}
+.fav-row .btn,.fav-row button{margin-left:auto}
+.history-row{justify-content:space-between;text-decoration:none;color:var(--ink)}
+.history-row:hover{border-color:var(--gold)}
+.history-row span{color:var(--muted);font-size:.82rem}
+.nb-editor{width:100%;min-height:320px;font:inherit;line-height:1.6;padding:14px;border-radius:14px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);resize:vertical}
+.nb-status{color:var(--muted);font-size:.82rem}
+.btn.danger.ghost{background:transparent;color:#b3261e;border:1px solid #b3261e}
+.btn.danger.ghost:hover{background:#b3261e;color:#fff}

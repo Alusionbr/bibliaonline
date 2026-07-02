@@ -46,6 +46,7 @@ SOURCE_ASSETS = {
     "study.asset.js": "study.js",
     "gamification.asset.js": "game.js",
     "community.asset.js": "community.js",
+    "library.asset.js": "library.js",
 }
 
 
@@ -259,6 +260,7 @@ def footer(prefix):
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/community.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
 # ---------- componentes ----------
@@ -443,6 +445,10 @@ def build_workspace_page():
     <div class="study-card-grid">{cards}
     </div>
   </section>
+  <section class="hub-section" id="historico">
+    <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
+    <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
+  </section>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
     <div class="progress-stats">
@@ -565,6 +571,10 @@ def build_library_page():
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Biblioteca</p>
   <header class="hub-hero"><p class="eyebrow">Biblioteca</p><h1>Biblioteca</h1><p>Guarde e organize tudo que nasce do estudo bíblico.</p></header>
   <section class="hub-section"><div class="study-card-grid">{cards}</div></section>
+  <section class="hub-section" id="favoritos">
+    <div class="section-title"><h2>Favoritos</h2><span>Versículos salvos para revisão</span></div>
+    <div class="library-rows" data-fav-full-list><p class="muted-line">Carregando favoritos…</p></div>
+  </section>
 </main>"""
     out = SITE / "biblioteca" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
@@ -575,16 +585,13 @@ def build_collections_page():
     title = f"Coleções | {SITE_NAME}"
     desc = "Coleções para guardar versículos, capítulos, artigos, mapas, manuscritos, planos e discussões."
     canonical = f"{BASE_URL}/colecoes/"
-    cards = mini_cards([
-        ("Exemplo", "Versículos sobre oração", "Versículos, capítulos e perguntas reunidos para revisão."),
-        ("Exemplo", "Mapas de viagens de Paulo", "Mapas, lugares, artigos e referências cruzadas."),
-        ("Exemplo", "Manuscritos do Novo Testamento", "Artigos, fac-símiles e notas de transmissão textual."),
-    ])
     body = f"""
 <main id="main" class="wrap hub-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Coleções</p>
-  <header class="hub-hero"><p class="eyebrow">Coleções</p><h1>Coleções</h1><p>Coleções podem guardar versículos, capítulos, artigos, mapas, lugares, manuscritos, planos, perguntas e discussões.</p></header>
-  <section class="hub-section"><div class="study-card-grid">{cards}</div></section>
+  <header class="hub-hero"><p class="eyebrow">Coleções</p><h1>Coleções</h1><p>Reúna versículos favoritos em coleções por tema. Tudo fica salvo neste navegador e sincroniza quando você entra na conta.</p></header>
+  <section class="hub-section">
+    <div class="library-app" data-collections-app><p class="muted-line">Carregando coleções…</p></div>
+  </section>
 </main>"""
     out = SITE / "colecoes" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
@@ -595,17 +602,13 @@ def build_notebooks_page():
     title = f"Cadernos | {SITE_NAME}"
     desc = "Cadernos para organizar notas, perguntas, grifos, coleções, planos e referências."
     canonical = f"{BASE_URL}/cadernos/"
-    cards = mini_cards([
-        ("Caderno", "Caderno Romanos", "Notas, perguntas e referências para leitura verso a verso."),
-        ("Caderno", "Caderno Casamento", "Planos, coleções e perguntas para estudo do tema."),
-        ("Caderno", "Caderno Profecias", "Referências cruzadas, mapas e manuscritos."),
-        ("Caderno", "Caderno Salmos", "Orações, grifos e coleções para meditação."),
-    ])
     body = f"""
 <main id="main" class="wrap hub-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Cadernos</p>
-  <header class="hub-hero"><p class="eyebrow">Cadernos</p><h1>Cadernos</h1><p>Cada caderno reúne notas, perguntas, grifos, coleções, planos e referências.</p></header>
-  <section class="hub-section"><div class="study-card-grid">{cards}</div></section>
+  <header class="hub-hero"><p class="eyebrow">Cadernos</p><h1>Cadernos</h1><p>Escreva estudos em texto livre: notas, perguntas e referências. Tudo fica salvo neste navegador e sincroniza quando você entra na conta.</p></header>
+  <section class="hub-section">
+    <div class="library-app" data-notebooks-app><p class="muted-line">Carregando cadernos…</p></div>
+  </section>
 </main>"""
     out = SITE / "cadernos" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
@@ -1208,6 +1211,9 @@ def build_game_js():
 def build_community_js():
     write_asset("community.asset.js", "community.js")
 
+def build_library_js():
+    write_asset("library.asset.js", "library.js")
+
 def build_annotations_page():
     prefix = "../"
     title = f"Minhas anotações | {SITE_NAME}"
@@ -1371,6 +1377,7 @@ def build_site(context):
     build_study_js()
     build_game_js()
     build_community_js()
+    build_library_js()
     build_annotations_page()
     build_study_page()
     build_workspace_page()
