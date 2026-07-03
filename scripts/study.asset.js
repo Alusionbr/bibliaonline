@@ -1,13 +1,12 @@
-﻿// Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
+// Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
 // Tudo salvo no localStorage deste navegador. Nada vai para servidor.
 (function(){
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
   function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  // referência "Livro c:v" → slug e URL absoluta do versículo (BEC_BASE injetado no build)
   function refToSlug(ref){
     var m=(ref||'').match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '';
-    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+    var b=m[1].normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
     return b+'-'+m[2]+'-'+m[3];
   }
   function refToUrl(ref){ var s=refToSlug(ref); return s? BEC_BASE+'/versiculos/'+s+'/' : BEC_BASE; }
@@ -16,7 +15,6 @@
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u);
   }
 
-  // envolve cada palavra de um parágrafo em <span class="w"> para grifo por palavra
   function wrapWords(el, field){
     if(!el || el.dataset.wrapped) return;
     var parts=el.textContent.split(/(\s+)/), i=0;
@@ -50,7 +48,7 @@
     apply(cont, ref);
   }
 
-  function flash(btn, txt){ var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1400); }
+  function flash(btn, txt){ if(!btn) return; var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1400); }
   function copyText(str, btn){
     (navigator.clipboard?navigator.clipboard.writeText(str):Promise.reject())
       .then(function(){ if(btn) flash(btn,'Copiado!'); })
@@ -65,7 +63,7 @@
     if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:str}).catch(function(){}); }
     else copyText(str, btn);
   }
-  // contador de palavras grifadas → cartão de doação a cada N (protótipo, sem backend)
+
   var DONATE_EVERY=500, DONATE_URL='https://www.buymeacoffee.com/';
   function bumpMark(){
     var n=(parseInt(localStorage.getItem('bec.markCount'),10)||0)+1;
@@ -84,15 +82,10 @@
     document.body.appendChild(d);
   }
 
-  // ---------- compartilhar cartão-imagem do versículo (+ link) ----------
   function wrapCanvas(ctx, text, maxW){
     var words=(text||'').split(/\s+/), lines=[], cur='';
-    words.forEach(function(w){
-      var t=cur?cur+' '+w:w;
-      if(ctx.measureText(t).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t;
-    });
-    if(cur) lines.push(cur);
-    return lines;
+    words.forEach(function(w){ var t=cur?cur+' '+w:w; if(ctx.measureText(t).width>maxW && cur){ lines.push(cur); cur=w; } else cur=t; });
+    if(cur) lines.push(cur); return lines;
   }
   function makeVerseCard(ref, pt){
     return new Promise(function(resolve, reject){
@@ -107,8 +100,7 @@
         var size=66, maxW=W-180, lines=wrapCanvas(ctx, pt, maxW);
         ctx.font=size+'px Georgia, serif'; lines=wrapCanvas(ctx, pt, maxW);
         while(lines.length*size*1.35 > H-440 && size>30){ size-=4; ctx.font=size+'px Georgia, serif'; lines=wrapCanvas(ctx, pt, maxW); }
-        var y=250, lh=size*1.35;
-        lines.forEach(function(ln){ ctx.fillText(ln, 90, y); y+=lh; });
+        var y=250, lh=size*1.35; lines.forEach(function(ln){ ctx.fillText(ln, 90, y); y+=lh; });
         ctx.fillStyle='#6f6453'; ctx.font='500 36px Georgia, serif'; ctx.fillText('Bíblia em Contexto', 90, H-150);
         ctx.fillStyle='#8a6726'; ctx.font='30px Georgia, serif'; ctx.fillText(BEC_BASE.replace(/^https?:\/\//,''), 90, H-100);
         if(cv.toBlob) cv.toBlob(function(b){ b?resolve(b):reject(); }, 'image/png'); else reject();
@@ -122,16 +114,11 @@
       var file; try{ file=new File([blob],'versiculo.png',{type:'image/png'}); }catch(e){ file=null; }
       if(file && navigator.canShare && navigator.canShare({files:[file]})){
         navigator.share({files:[file], text:ref+'\n'+url, title:'Bíblia em Contexto'}).catch(function(){});
-      } else if(navigator.share){
-        navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){});
-      } else { copyText(text, btn); downloadBlob('versiculo.png', blob); }
-    }).catch(function(){
-      if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); }
-      else copyText(text, btn);
-    });
+      } else if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); }
+      else { copyText(text, btn); downloadBlob('versiculo.png', blob); }
+    }).catch(function(){ if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); } else copyText(text, btn); });
   }
 
-  // ---------- modal de confirmação (evita apagar por toque acidental) ----------
   function confirmModal(msg, onYes){
     var ov=document.createElement('div'); ov.className='bec-modal';
     ov.innerHTML='<div class="bec-modal-box"><p>'+esc(msg)+'</p>'+
@@ -144,44 +131,112 @@
     document.body.appendChild(ov);
   }
 
-  // ---------- seta de ferramentas ocultas (salvar/compartilhar, anotações, apagar) ----------
-  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); if(window.BEC_SYNC) window.BEC_SYNC.markDirty(); render(); }
+  function clearAll(){ ['notes','vhl','whl','studyRanges','lastRead','rangeStart'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); if(window.BEC_SYNC) window.BEC_SYNC.markDirty(); render(); renderStudyRanges(); }
   function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return exportText(allRefs(n,v,w),n,v,w); }
+
+  var activeCont=null;
+  function allStudyContainers(){ return Array.prototype.slice.call(document.querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]')); }
+  function refParts(ref){ var m=(ref||'').match(/^(.*?)\s+(\d+):(\d+)$/); return m?{book:m[1],chapter:m[2],verse:parseInt(m[3],10),chapterRef:m[1]+' '+m[2]}:null; }
+  function activeOrFirst(){
+    if(activeCont && document.body.contains(activeCont)) return activeCont;
+    var saved=load('lastRead'), list=allStudyContainers();
+    if(saved.ref){ for(var i=0;i<list.length;i++){ if(list[i].getAttribute('data-ref')===saved.ref){ return setActiveCont(list[i], false); } } }
+    return list[0] ? setActiveCont(list[0], false) : null;
+  }
+  function setActiveCont(cont, announce){
+    if(!cont) return null;
+    if(activeCont) activeCont.classList.remove('study-active');
+    activeCont=cont; activeCont.classList.add('study-active');
+    var ref=cont.getAttribute('data-ref'); save('lastRead',{ref:ref,url:location.href.split('#')[0]+'#'+(cont.id||'')});
+    updateToolsStatus(); renderStudyRanges();
+    if(announce) toast(ref+' marcado como leitura atual.');
+    return cont;
+  }
+  function toast(msg){
+    var t=document.querySelector('.bec-toast');
+    if(!t){ t=document.createElement('div'); t.className='bec-toast'; document.body.appendChild(t); }
+    t.textContent=msg; t.classList.add('show'); clearTimeout(t._timer); t._timer=setTimeout(function(){t.classList.remove('show');},1700);
+  }
+  function currentRef(){ var c=activeOrFirst(); return c?c.getAttribute('data-ref'):''; }
+  function currentVerseText(){ var c=activeOrFirst(); return c?verseText(c, c.getAttribute('data-ref')):''; }
+  function scrollToActive(){ var c=activeOrFirst(); if(c && c.scrollIntoView) c.scrollIntoView({behavior:'smooth', block:'center'}); }
+  function toggleReadMode(){ document.documentElement.classList.toggle('bec-reading-mode'); scrollToActive(); }
+  function toggleFocus(){ document.documentElement.classList.toggle('bec-focus-on'); }
+  function openNote(){ var c=activeOrFirst(); if(!c) return; var nb=c.querySelector('.note-box'); if(nb){ nb.hidden=false; var ta=nb.querySelector('textarea'); if(ta) ta.focus(); scrollToActive(); } }
+  function startRange(){ var ref=currentRef(), p=refParts(ref); if(!p) return; save('rangeStart',{ref:ref,chapterRef:p.chapterRef,verse:p.verse}); renderStudyRanges(); toast('Início do trecho em '+ref+'.'); }
+  function finishRange(){
+    var ref=currentRef(), end=refParts(ref), start=load('rangeStart');
+    if(!end || !start.ref){ toast('Toque em “Início” antes de finalizar o trecho.'); return; }
+    if(start.chapterRef!==end.chapterRef){ toast('Finalize o trecho no mesmo capítulo.'); return; }
+    var a=Math.min(start.verse,end.verse), b=Math.max(start.verse,end.verse), ranges=load('studyRanges'), key=end.chapterRef;
+    ranges[key]=ranges[key]||[]; ranges[key].push({start:a,end:b,at:Date.now()}); save('studyRanges', ranges); localStorage.removeItem('bec.rangeStart'); renderStudyRanges(); toast('Trecho '+key+':'+a+'–'+b+' salvo.');
+  }
+  function renderStudyRanges(){
+    var list=allStudyContainers(), ranges=load('studyRanges'), start=load('rangeStart'), current=currentRef(), cur=refParts(current), key=cur&&cur.chapterRef;
+    list.forEach(function(c){ c.classList.remove('study-done','study-in-range','study-range-start'); });
+    var chapterRanges=key && ranges[key] ? ranges[key] : [];
+    chapterRanges.forEach(function(r){ for(var i=r.start;i<=r.end;i++){ var el=document.querySelector('[data-ref="'+key+':'+i+'"]'); if(el) el.classList.add('study-done'); } });
+    if(start.ref && key===start.chapterRef && cur){
+      var a=Math.min(start.verse,cur.verse), b=Math.max(start.verse,cur.verse);
+      for(var j=a;j<=b;j++){ var el2=document.querySelector('[data-ref="'+key+':'+j+'"]'); if(el2) el2.classList.add(j===start.verse?'study-range-start':'study-in-range'); }
+    }
+    updateRangePanel(key, chapterRanges, list);
+  }
+  function updateRangePanel(key, chapterRanges, list){
+    var panel=document.querySelector('.tools-panel'); if(!panel) return;
+    var line=panel.querySelector('[data-range-line]'), txt=panel.querySelector('[data-range-text]'), rows=panel.querySelector('[data-range-list]');
+    if(!line || !txt || !rows) return;
+    var total=list.filter(function(c){ var p=refParts(c.getAttribute('data-ref')); return key && p && p.chapterRef===key; }).length || list.length || 1;
+    var covered={}; chapterRanges.forEach(function(r){ for(var i=r.start;i<=r.end;i++) covered[i]=1; });
+    var pct=Math.round(Object.keys(covered).length/total*100); txt.textContent=key ? ('Trechos salvos: '+pct+'%') : 'Sem capítulo ativo';
+    line.innerHTML=''; chapterRanges.forEach(function(r){ var seg=document.createElement('span'); seg.style.left=((r.start-1)/total*100)+'%'; seg.style.width=(Math.max(3,(r.end-r.start+1)/total*100))+'%'; line.appendChild(seg); });
+    rows.innerHTML=chapterRanges.length ? chapterRanges.slice(-3).reverse().map(function(r){return '<small>'+esc(key)+':'+r.start+'–'+r.end+'</small>';}).join('') : '<small>Nenhum trecho salvo.</small>';
+  }
+  function updateToolsStatus(){ var s=document.querySelector('.tools-status'); if(s) s.textContent=currentRef() || 'Nenhum versículo ativo'; }
+  function injectToolsCss(){
+    if(document.getElementById('bec-tools-css')) return;
+    var css=document.createElement('style'); css.id='bec-tools-css'; css.textContent='html{scroll-padding-bottom:160px}body{padding-bottom:96px}.ch-verse,.verse-cont{scroll-margin-top:92px}.study-active{background:rgba(231,214,171,.22);box-shadow:inset 4px 0 0 var(--gold);border-radius:10px}.study-done{background:rgba(84,139,90,.13);box-shadow:inset 4px 0 0 #548b5a;border-radius:10px}.study-in-range{background:rgba(177,135,60,.14)}.study-range-start{outline:2px solid #548b5a;outline-offset:2px}.tools-fab{position:fixed;right:16px;left:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);z-index:120;width:54px;height:54px;border-radius:999px;border:1px solid rgba(231,214,171,.45);background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#1a1610;font-size:1.25rem;box-shadow:0 18px 48px rgba(0,0,0,.28);display:grid;place-items:center}.tools-panel{position:fixed;right:16px;left:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 146px);z-index:119;width:min(360px,calc(100vw - 32px));max-height:min(620px,60vh);overflow:auto;display:grid;gap:10px;background:rgba(26,22,16,.94);color:#f6efe0;border:1px solid rgba(231,214,171,.28);border-radius:22px;padding:12px;box-shadow:0 18px 60px rgba(0,0,0,.35);backdrop-filter:blur(14px)}.tools-panel[hidden]{display:none}.tools-panel button,.tools-panel a{font-family:Inter,system-ui,sans-serif;font-size:.78rem;font-weight:700;text-align:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#f6efe0;padding:9px 8px;border-radius:14px;cursor:pointer;text-decoration:none;white-space:normal;min-height:48px}.tools-panel button:hover,.tools-panel a:hover{background:rgba(231,214,171,.18);color:#fff}.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tools-status{font-family:Inter,system-ui,sans-serif;font-size:.78rem;color:var(--gold-soft);padding:0 2px}.tools-range{display:grid;gap:5px}.tools-range b{font-family:Inter,system-ui,sans-serif;font-size:.76rem;color:var(--gold-soft)}.tools-range-line{height:12px;border-radius:999px;background:rgba(255,255,255,.12);position:relative;overflow:hidden}.tools-range-line span{position:absolute;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#548b5a,var(--gold-soft))}.tools-range-list{display:grid;gap:3px;color:rgba(246,239,224,.72);font-family:Inter,system-ui,sans-serif}.bec-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 142px);z-index:130;transform:translateX(-50%) translateY(14px);opacity:0;pointer-events:none;background:#1a1610;color:#f6efe0;border:1px solid rgba(231,214,171,.35);border-radius:999px;padding:10px 13px;box-shadow:0 12px 34px rgba(0,0,0,.25);font-family:Inter,system-ui,sans-serif;font-size:.82rem;font-weight:700;transition:.18s}.bec-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.bec-focus{position:fixed;left:0;right:0;top:50%;height:86px;transform:translateY(-50%);z-index:20;pointer-events:none;background:linear-gradient(to bottom,rgba(177,135,60,0),rgba(177,135,60,.14),rgba(177,135,60,0));border-top:1px solid rgba(177,135,60,.25);border-bottom:1px solid rgba(177,135,60,.25);display:none}html.bec-focus-on .bec-focus{display:block}html.bec-reading-mode .nav,html.bec-reading-mode .footer,html.bec-reading-mode .study-map,html.bec-reading-mode .study-desk,html.bec-reading-mode .pager,html.bec-reading-mode .backline,html.bec-reading-mode .crumb,html.bec-reading-mode .book-jump-wrap{display:none!important}html.bec-reading-mode .verse-page{padding-top:28px}html.bec-reading-mode .chapter{padding-bottom:220px}@media(max-width:759px){body{padding-bottom:150px}.tools-fab{right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 78px)}.tools-panel{left:10px;right:10px;width:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 140px);max-height:56vh}.tools-grid{grid-template-columns:repeat(3,1fr)}.pen-toggle{right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 142px)}}';
+    document.head.appendChild(css);
+    if(!document.querySelector('.bec-focus')){ var f=document.createElement('div'); f.className='bec-focus'; document.body.appendChild(f); }
+  }
   function makeToolsMenu(){
     if(document.querySelector('.tools-fab')) return;
-    var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
-    fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='↥';
+    if(!document.querySelector('.verse-cont[data-ref], .ch-verse[data-ref], #anotacoes')) return;
+    injectToolsCss();
+    var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab'; fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='⚙';
     var panel=document.createElement('div'); panel.className='tools-panel'; panel.hidden=true;
-    panel.innerHTML='<button type="button" data-t="share">📝 Salvar nas Notas / Compartilhar</button>'+
-      '<button type="button" data-t="txt">📄 Baixar .txt</button>'+
-      '<a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒 Minhas anotações</a>'+
-      '<button type="button" data-t="clear">🗑 Apagar tudo</button>';
-    fab.onclick=function(){ var open=panel.hidden; panel.hidden=!open; fab.setAttribute('aria-expanded', open?'true':'false'); fab.textContent=open?'✕':'↥'; };
+    panel.innerHTML='<button type="button" data-t="close" style="justify-self:end;min-height:38px;width:42px;padding:0">×</button><div class="tools-status">Nenhum versículo ativo</div><div class="tools-grid">'+
+      '<button type="button" data-t="range-start">⇢<br>Início</button><button type="button" data-t="range-end">✓<br>Fim</button><button type="button" data-t="current">◎<br>Atual</button>'+
+      '<button type="button" data-t="vhl">★<br>Salvar</button><button type="button" data-t="copy">⧉<br>Copiar</button><button type="button" data-t="note">✎<br>Nota</button>'+
+      '<button type="button" data-t="focus">▤<br>Foco</button><button type="button" data-t="read">⛶<br>Ler</button><button type="button" data-t="theme">◐<br>Tema</button>'+
+      '<button type="button" data-t="txt">TXT<br>Baixar</button><a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒<br>Notas</a><button type="button" data-t="clear">🗑<br>Limpar</button></div>'+
+      '<div class="tools-range"><b data-range-text>Trechos salvos: 0%</b><div class="tools-range-line" data-range-line></div><div class="tools-range-list" data-range-list><small>Nenhum trecho salvo.</small></div></div>';
+    fab.onclick=function(){ var open=panel.hidden; panel.hidden=!open; fab.setAttribute('aria-expanded', open?'true':'false'); fab.textContent=open?'×':'⚙'; if(open){ activeOrFirst(); updateToolsStatus(); renderStudyRanges(); } };
     panel.addEventListener('click', function(e){
       var b=e.target.closest && e.target.closest('[data-t]'); if(!b) return;
-      var t=b.getAttribute('data-t');
-      if(t==='share') shareText(studyText(), b);                       // iOS: folha de compartilhamento → Notas
+      var t=b.getAttribute('data-t'), c=activeOrFirst(), ref=c&&c.getAttribute('data-ref');
+      if(t==='close'){ panel.hidden=true; fab.setAttribute('aria-expanded','false'); fab.textContent='⚙'; }
+      else if(t==='range-start') startRange();
+      else if(t==='range-end') finishRange();
+      else if(t==='current') scrollToActive();
+      else if(t==='vhl' && c) toggleVerse(c, ref, b);
+      else if(t==='copy' && c) copyText(currentVerseText(), b);
+      else if(t==='note') openNote();
+      else if(t==='focus') toggleFocus();
+      else if(t==='read') toggleReadMode();
+      else if(t==='theme'){ var rt=document.querySelector('[data-rt="theme"]'); if(rt) rt.click(); }
       else if(t==='txt') download('meu-estudo.txt', studyText(), 'text/plain');
-      else if(t==='clear') confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', clearAll);
+      else if(t==='clear') confirmModal('Apagar TODAS as marcações, trechos e anotações deste navegador? Esta ação não pode ser desfeita.', clearAll);
     });
-    document.body.appendChild(fab); document.body.appendChild(panel);
+    document.body.appendChild(fab); document.body.appendChild(panel); activeOrFirst(); renderStudyRanges();
   }
 
   function apply(cont, ref){
     if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
     var notes=load('notes');
-    if(notes[ref]){
-      var ta=cont.querySelector('.note-box textarea');
-      if(ta){ ta.value=notes[ref]; ta.closest('.note-box').hidden=false; }
-      cont.classList.add('has-note');
-    }
+    if(notes[ref]){ var ta=cont.querySelector('.note-box textarea'); if(ta){ ta.value=notes[ref]; ta.closest('.note-box').hidden=false; } cont.classList.add('has-note'); }
     var rec=load('whl')[ref]||{};
-    Object.keys(rec).forEach(function(f){
-      rec[f].forEach(function(o){
-        var w=cont.querySelector('.w[data-f="'+f+'"][data-i="'+o.i+'"]');
-        if(w){ w.classList.add('w-hl'); w.setAttribute('data-c', o.c||'y'); }
-      });
-    });
+    Object.keys(rec).forEach(function(f){ rec[f].forEach(function(o){ var w=cont.querySelector('.w[data-f="'+f+'"][data-i="'+o.i+'"]'); if(w){ w.classList.add('w-hl'); w.setAttribute('data-c', o.c||'y'); } }); });
   }
 
   function toggleWord(w){
@@ -191,25 +246,24 @@
     var pos=-1; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ pos=n; break; } }
     if(pos>-1){ arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c'); }
     else { arr.push({i:i,t:w.textContent,c:'y'}); w.classList.add('w-hl'); w.setAttribute('data-c','y'); }
-    if(arr.length) recd[f]=arr; else delete recd[f];
-    if(Object.keys(recd).length) all[ref]=recd; else delete all[ref];
-    save('whl', all);
-    bumpMark();
+    if(arr.length) recd[f]=arr; else delete recd[f]; if(Object.keys(recd).length) all[ref]=recd; else delete all[ref]; save('whl', all); bumpMark();
   }
 
   function toggleVerse(cont, ref, btn){
     var all=load('vhl');
     if(all[ref]){ delete all[ref]; cont.classList.remove('v-hl'); if(btn) btn.classList.remove('on'); }
     else { all[ref]=1; cont.classList.add('v-hl'); if(btn) btn.classList.add('on'); }
-    save('vhl', all);
+    save('vhl', all); renderStudyRanges();
   }
 
   document.addEventListener('click', function(e){
+    var studyContainer=e.target.closest && e.target.closest('.verse-cont[data-ref], .ch-verse[data-ref]');
+    if(studyContainer && !(e.target.closest && e.target.closest('a,button,textarea,input,select,.tools-panel,.tools-fab'))) setActiveCont(studyContainer, false);
     var w=e.target.closest && e.target.closest('.w');
     if(w && w.closest('[data-ref]')){ if(penOn) return; toggleWord(w); return; }
     var btn=e.target.closest && e.target.closest('.study button, .note-actions button');
     if(btn){
-      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
+      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act; setActiveCont(cont, false);
       if(act==='vhl') toggleVerse(cont, ref, btn);
       else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
       else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
@@ -217,21 +271,10 @@
     }
   });
 
-  // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
   var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
   var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
-  function setPen(on, silent){
-    penOn=on; document.body.classList.toggle('hl-mode', on);
-    var b=document.querySelector('.pen-toggle');
-    if(b){ b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false'); }
-    if(!silent) save('penmode', {on:on}); // silent: restauracao na carga nao sincroniza
-  }
-  function setColor(c, silent){
-    penColor=c;
-    var sw=document.querySelectorAll('.pen-colors button');
-    for(var i=0;i<sw.length;i++){ sw[i].classList.toggle('on', sw[i].getAttribute('data-c')===c); }
-    if(!silent) save('pencolor', {c:c});
-  }
+  function setPen(on, silent){ penOn=on; document.body.classList.toggle('hl-mode', on); var b=document.querySelector('.pen-toggle'); if(b){ b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false'); } if(!silent) save('penmode', {on:on}); }
+  function setColor(c, silent){ penColor=c; var sw=document.querySelectorAll('.pen-colors button'); for(var i=0;i<sw.length;i++){ sw[i].classList.toggle('on', sw[i].getAttribute('data-c')===c); } if(!silent) save('pencolor', {c:c}); }
   function wordAtPoint(x,y){ var el=document.elementFromPoint(x,y); return el && el.closest ? el.closest('.w') : null; }
   function paintWord(w){
     if(!w) return; var cont=w.closest('[data-ref]'); if(!cont) return;
@@ -241,11 +284,7 @@
     if(found){ if(found.c!==penColor){ found.c=penColor; w.setAttribute('data-c', penColor); } }
     else { arr.push({i:i,t:w.textContent,c:penColor}); w.classList.add('w-hl'); w.setAttribute('data-c', penColor); bumpMark(); }
   }
-  function startPaint(e){
-    if(!penOn) return;
-    var w=(e.target.closest && e.target.closest('.w')); if(!w || !w.closest('[data-ref]')) return;
-    e.preventDefault(); painting=true; activePointerId=e.pointerId; pendingWhl=load('whl'); paintWord(w);
-  }
+  function startPaint(e){ if(!penOn) return; var w=(e.target.closest && e.target.closest('.w')); if(!w || !w.closest('[data-ref]')) return; e.preventDefault(); painting=true; activePointerId=e.pointerId; pendingWhl=load('whl'); paintWord(w); }
   function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); paintWord(wordAtPoint(e.clientX, e.clientY)); }
   function endPaint(){ if(!painting) return; painting=false; activePointerId=null; save('whl', pendingWhl); }
   document.addEventListener('pointerdown', startPaint);
@@ -255,147 +294,70 @@
   function makePenTools(){
     if(!document.querySelector('.verse-cont[data-ref], .ch-verse[data-ref]')) return;
     if(document.querySelector('.pen-toggle')) return;
-    var btn=document.createElement('button'); btn.type='button'; btn.className='pen-toggle';
-    btn.setAttribute('aria-pressed','false'); btn.title='Marca-texto (caneta)'; btn.textContent='🖍';
-    btn.onclick=function(){ setPen(!penOn); };
+    var btn=document.createElement('button'); btn.type='button'; btn.className='pen-toggle'; btn.setAttribute('aria-pressed','false'); btn.title='Marca-texto (caneta)'; btn.textContent='🖍'; btn.onclick=function(){ setPen(!penOn); };
     document.body.appendChild(btn);
     var pal=document.createElement('div'); pal.className='pen-colors';
     pal.innerHTML=COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'"></button>'; }).join('');
     pal.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) setColor(b.getAttribute('data-c')); });
-    document.body.appendChild(pal);
-    setColor((load('pencolor').c)||'y', true);
-    if(load('penmode').on) setPen(true, true);
+    document.body.appendChild(pal); setColor((load('pencolor').c)||'y', true); if(load('penmode').on) setPen(true, true);
   }
 
-  // ---------- marca-texto por seleção: barra flutuante (Grifar / Copiar) ----------
   var selBar=null, selT=null;
   function getSelBar(){
     if(selBar) return selBar;
-    selBar=document.createElement('div'); selBar.className='sel-bar'; selBar.hidden=true;
-    selBar.innerHTML='<button type="button" data-sel="copy">⧉ Copiar seleção</button>';
-    document.body.appendChild(selBar);
-    selBar.addEventListener('mousedown', function(e){ e.preventDefault(); });  // preserva a seleção
-    selBar.addEventListener('click', function(e){
-      var b=e.target.closest('button'); if(b) copySelection(b);
-    });
-    return selBar;
+    selBar=document.createElement('div'); selBar.className='sel-bar'; selBar.hidden=true; selBar.innerHTML='<button type="button" data-sel="copy">⧉ Copiar seleção</button>'; document.body.appendChild(selBar);
+    selBar.addEventListener('mousedown', function(e){ e.preventDefault(); }); selBar.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) copySelection(b); }); return selBar;
   }
   function hideSelBar(){ if(selBar) selBar.hidden=true; }
   function selInfo(){
-    var sel=window.getSelection();
-    if(!sel || sel.isCollapsed || !sel.rangeCount) return null;
-    var r=sel.getRangeAt(0), node=r.commonAncestorContainer;
-    var el=node.nodeType===1?node:node.parentNode;
-    var cont=el && el.closest ? el.closest('[data-ref]') : null;
-    if(!cont) return null;
-    var text=sel.toString().trim(); if(!text) return null;
-    return {sel:sel, range:r, cont:cont, text:text};
+    var sel=window.getSelection(); if(!sel || sel.isCollapsed || !sel.rangeCount) return null;
+    var r=sel.getRangeAt(0), node=r.commonAncestorContainer, el=node.nodeType===1?node:node.parentNode, cont=el && el.closest ? el.closest('[data-ref]') : null;
+    if(!cont) return null; var text=sel.toString().trim(); if(!text) return null; return {sel:sel, range:r, cont:cont, text:text};
   }
   function showSelBar(){
     var info=selInfo(); if(!info){ hideSelBar(); return; }
     var bar=getSelBar(); bar.hidden=false;
-    try{
-      var rect=info.range.getBoundingClientRect();
-      var top=window.scrollY + rect.top - bar.offsetHeight - 8;
-      if(top < window.scrollY+4) top = window.scrollY + rect.bottom + 8;
-      var left=window.scrollX + rect.left + rect.width/2 - bar.offsetWidth/2;
-      bar.style.top=Math.max(4,top)+'px';
-      bar.style.left=Math.max(4,left)+'px';
-    }catch(e){}
+    try{ var rect=info.range.getBoundingClientRect(); var top=window.scrollY + rect.top - bar.offsetHeight - 8; if(top < window.scrollY+4) top = window.scrollY + rect.bottom + 8; var left=window.scrollX + rect.left + rect.width/2 - bar.offsetWidth/2; bar.style.top=Math.max(4,top)+'px'; bar.style.left=Math.max(4,left)+'px'; }catch(e){}
   }
   function copySelection(btn){ var info=selInfo(); if(info) copyText(info.text, btn); }
   function scheduleSelBar(){ clearTimeout(selT); selT=setTimeout(showSelBar, 10); }
   document.addEventListener('mouseup', scheduleSelBar);
   document.addEventListener('touchend', scheduleSelBar);
-  document.addEventListener('selectionchange', function(){
-    var s=window.getSelection(); if(!s || s.isCollapsed) hideSelBar();
-  });
-  document.addEventListener('mousedown', function(e){
-    if(selBar && !selBar.hidden && !(e.target.closest && e.target.closest('.sel-bar'))) hideSelBar();
-  });
+  document.addEventListener('selectionchange', function(){ var s=window.getSelection(); if(!s || s.isCollapsed) hideSelBar(); });
+  document.addEventListener('mousedown', function(e){ if(selBar && !selBar.hidden && !(e.target.closest && e.target.closest('.sel-bar'))) hideSelBar(); });
   window.addEventListener('scroll', hideSelBar, {passive:true});
   document.addEventListener('input', function(e){
     if(e.target.matches && e.target.matches('.note-box textarea')){
-      var cont=e.target.closest('[data-ref]'), ref=cont.getAttribute('data-ref');
-      var notes=load('notes'), val=e.target.value.trim();
-      if(val){ notes[ref]=val; cont.classList.add('has-note'); } else { delete notes[ref]; cont.classList.remove('has-note'); }
-      save('notes', notes);
+      var cont=e.target.closest('[data-ref]'), ref=cont.getAttribute('data-ref'); var notes=load('notes'), val=e.target.value.trim();
+      if(val){ notes[ref]=val; cont.classList.add('has-note'); } else { delete notes[ref]; cont.classList.remove('has-note'); } save('notes', notes);
     }
   });
 
   function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
-  function setupAdded(root){
-    if(!root || root.nodeType!==1) return;
-    if(root.matches && root.matches('.verse-cont[data-ref], .ch-verse[data-ref]')) setup(root);
-    setupAll(root);
-    makePenTools();
-  }
-  setupAll();
-  makePenTools();
-  makeToolsMenu();
-  document.addEventListener('bec:content-added', function(e){
-    setupAdded(e.detail && e.detail.root);
-  });
+  function setupAdded(root){ if(!root || root.nodeType!==1) return; if(root.matches && root.matches('.verse-cont[data-ref], .ch-verse[data-ref]')) setup(root); setupAll(root); makePenTools(); makeToolsMenu(); renderStudyRanges(); }
+  setupAll(); makePenTools(); makeToolsMenu();
+  document.addEventListener('bec:content-added', function(e){ setupAdded(e.detail && e.detail.root); });
   document.addEventListener('bec:study-sync', function(){
     document.querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(function(cont){
-      var ref=cont.getAttribute('data-ref');
-      cont.classList.remove('v-hl','has-note');
-      cont.querySelectorAll('.w-hl').forEach(function(w){ w.classList.remove('w-hl'); w.removeAttribute('data-c'); });
-      var nb=cont.querySelector('.note-box');
-      if(nb){ var ta=nb.querySelector('textarea'); if(ta) ta.value=''; nb.hidden=true; }
-      apply(cont, ref);
-    });
-    render();
+      var ref=cont.getAttribute('data-ref'); cont.classList.remove('v-hl','has-note'); cont.querySelectorAll('.w-hl').forEach(function(w){ w.classList.remove('w-hl'); w.removeAttribute('data-c'); });
+      var nb=cont.querySelector('.note-box'); if(nb){ var ta=nb.querySelector('textarea'); if(ta) ta.value=''; nb.hidden=true; } apply(cont, ref);
+    }); render(); renderStudyRanges();
   });
-  // versículos carregados por rolagem infinita também recebem as ferramentas
-  if(window.MutationObserver){
-    new MutationObserver(function(muts){
-      muts.forEach(function(m){ Array.prototype.forEach.call(m.addedNodes, function(n){
-        setupAdded(n);
-      }); });
-    }).observe(document.body, {childList:true, subtree:true});
-  }
+  if(window.MutationObserver){ new MutationObserver(function(muts){ muts.forEach(function(m){ Array.prototype.forEach.call(m.addedNodes, function(n){ setupAdded(n); }); }); }).observe(document.body, {childList:true, subtree:true}); }
 
-  // ---------- página de Anotações: listar, copiar, baixar, limpar ----------
-  function slugFromRef(ref){
-    var m=ref.match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '#';
-    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
-  }
-  function allRefs(notes, vhl, whl){
-    var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
-    return Object.keys(s).sort();
-  }
+  function slugFromRef(ref){ var m=ref.match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '#'; var b=m[1].normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/'; }
+  function allRefs(notes, vhl, whl){ var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); }); return Object.keys(s).sort(); }
   function exportText(keys, notes, vhl, whl){
     var out='Minhas anotações — Bíblia em Contexto\n\n';
-    keys.forEach(function(ref){
-      out+=ref+'\n';
-      if(vhl[ref]) out+='  [versículo grifado]\n';
-      var rec=whl[ref];
-      if(rec){ Object.keys(rec).forEach(function(f){
-        out+='  palavras grifadas ('+f+'): '+rec[f].map(function(o){return o.t;}).join(' · ')+'\n';
-      }); }
-      if(notes[ref]) out+='  Nota: '+notes[ref]+'\n';
-      out+='\n';
-    });
+    keys.forEach(function(ref){ out+=ref+'\n'; if(vhl[ref]) out+='  [versículo grifado]\n'; var rec=whl[ref]; if(rec){ Object.keys(rec).forEach(function(f){ out+='  palavras grifadas ('+f+'): '+rec[f].map(function(o){return o.t;}).join(' · ')+'\n'; }); } if(notes[ref]) out+='  Nota: '+notes[ref]+'\n'; out+='\n'; });
     return out;
   }
-  function download(name, text, type){
-    var b=new Blob([text], {type:type}), u=URL.createObjectURL(b);
-    var a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a);
-    a.click(); a.remove(); URL.revokeObjectURL(u);
-  }
+  function download(name, text, type){ var b=new Blob([text], {type:type}), u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); }
   function importData(obj){
     var n=load('notes'), v=load('vhl'), w=load('whl');
     if(obj.notes) Object.keys(obj.notes).forEach(function(r){ n[r]=obj.notes[r]; });
     if(obj.vhl) Object.keys(obj.vhl).forEach(function(r){ v[r]=obj.vhl[r]; });
-    if(obj.whl) Object.keys(obj.whl).forEach(function(r){
-      var rec=obj.whl[r]; w[r]=w[r]||{};
-      Object.keys(rec).forEach(function(f){
-        var ex=w[r][f]||[], have={}; ex.forEach(function(o){ have[o.i]=1; });
-        rec[f].forEach(function(o){ if(!have[o.i]) ex.push(o); }); w[r][f]=ex;
-      });
-    });
+    if(obj.whl) Object.keys(obj.whl).forEach(function(r){ var rec=obj.whl[r]; w[r]=w[r]||{}; Object.keys(rec).forEach(function(f){ var ex=w[r][f]||[], have={}; ex.forEach(function(o){ have[o.i]=1; }); rec[f].forEach(function(o){ if(!have[o.i]) ex.push(o); }); w[r][f]=ex; }); });
     save('notes',n); save('vhl',v); save('whl',w);
   }
   function render(){
@@ -405,40 +367,23 @@
     box.innerHTML=keys.map(function(ref){
       var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
-      var rec=whl[ref];
-      if(rec){ Object.keys(rec).forEach(function(f){
-        h+='<p class="anot-tag">palavras: '+rec[f].map(function(o){return esc(o.t);}).join(' · ')+'</p>';
-      }); }
-      if(notes[ref]) h+='<p class="anot-note">'+esc(notes[ref])+'</p>';
-      return h+'</div>';
+      var rec=whl[ref]; if(rec){ Object.keys(rec).forEach(function(f){ h+='<p class="anot-tag">palavras: '+rec[f].map(function(o){return esc(o.t);}).join(' · ')+'</p>'; }); }
+      if(notes[ref]) h+='<p class="anot-note">'+esc(notes[ref])+'</p>'; return h+'</div>';
     }).join('');
   }
   function wire(){
     var box=document.getElementById('anotacoes'); if(!box) return;
     render();
-    var c=document.getElementById('anot-copy'), t=document.getElementById('anot-txt'),
-        j=document.getElementById('anot-json'), x=document.getElementById('anot-clear');
+    var c=document.getElementById('anot-copy'), t=document.getElementById('anot-txt'), j=document.getElementById('anot-json'), x=document.getElementById('anot-clear');
     function data(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return {keys:allRefs(n,v,w),notes:n,vhl:v,whl:w}; }
-    if(c) c.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
-      (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ c.textContent='Copiado!'; setTimeout(function(){c.textContent='Copiar tudo';},1500); })
-      .catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
+    if(c) c.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl); (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ c.textContent='Copiado!'; setTimeout(function(){c.textContent='Copiar tudo';},1500); }).catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     if(t) t.onclick=function(){ var d=data(); download('anotacoes.txt', exportText(d.keys,d.notes,d.vhl,d.whl), 'text/plain'); };
     if(j) j.onclick=function(){ download('anotacoes.json', JSON.stringify({notes:load('notes'),vhl:load('vhl'),whl:load('whl')}, null, 2), 'application/json'); };
     if(x) x.onclick=function(){ confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){ ['notes','vhl','whl'].forEach(function(k){localStorage.removeItem('bec.'+k);}); if(window.BEC_SYNC) window.BEC_SYNC.markDirty(); render(); }); };
     var sh=document.getElementById('anot-share');
-    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl);
-      if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); }
-      else (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ sh.textContent='Copiado!'; setTimeout(function(){sh.textContent='Compartilhar';},1500); }).catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
+    if(sh) sh.onclick=function(){ var d=data(); var txt=exportText(d.keys,d.notes,d.vhl,d.whl); if(navigator.share){ navigator.share({title:'Minhas anotações — Bíblia em Contexto', text:txt}).catch(function(){}); } else (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){ sh.textContent='Copiado!'; setTimeout(function(){sh.textContent='Compartilhar';},1500); }).catch(function(){ download('anotacoes.txt',txt,'text/plain'); }); };
     var imp=document.getElementById('anot-import'), impf=document.getElementById('anot-import-file');
-    if(imp && impf){
-      imp.onclick=function(){ impf.click(); };
-      impf.onchange=function(){
-        var f=impf.files[0]; if(!f) return;
-        var rd=new FileReader();
-        rd.onload=function(){ try{ importData(JSON.parse(rd.result)); render(); imp.textContent='Importado!'; }catch(e){ imp.textContent='Arquivo inválido'; } setTimeout(function(){imp.textContent='Importar backup';},1800); };
-        rd.readAsText(f); impf.value='';
-      };
-    }
+    if(imp && impf){ imp.onclick=function(){ impf.click(); }; impf.onchange=function(){ var f=impf.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ try{ importData(JSON.parse(rd.result)); render(); imp.textContent='Importado!'; }catch(e){ imp.textContent='Arquivo inválido'; } setTimeout(function(){imp.textContent='Importar backup';},1800); }; rd.readAsText(f); impf.value=''; }; }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
 })();
