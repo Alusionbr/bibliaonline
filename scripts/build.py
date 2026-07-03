@@ -47,6 +47,7 @@ SOURCE_ASSETS = {
     "gamification.asset.js": "game.js",
     "community.asset.js": "community.js",
     "library.asset.js": "library.js",
+    "report.asset.js": "report.js",
 }
 
 
@@ -261,6 +262,7 @@ def footer(prefix):
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/community.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/report.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
 # ---------- componentes ----------
@@ -480,6 +482,10 @@ def build_workspace_page():
   <section class="hub-section" id="configuracoes">
     <div class="section-title"><h2>Configurações e sincronização</h2><a href="{prefix}privacidade/">Privacidade</a></div>
     <p class="muted-line">A conta fica restrita a perfil, configurações, privacidade, sincronização e sair. Ferramentas de estudo permanecem no Workspace e em Estudar.</p>
+  </section>
+  <section class="hub-section" id="reportes" data-admin-reports hidden>
+    <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
+    <div class="library-rows" data-admin-reports-list><p class="muted-line">Carregando reportes…</p></div>
   </section>
 </main>"""
     out = SITE / "workspace" / "index.html"
@@ -1214,6 +1220,9 @@ def build_community_js():
 def build_library_js():
     write_asset("library.asset.js", "library.js")
 
+def build_report_js():
+    write_asset("report.asset.js", "report.js")
+
 def build_annotations_page():
     prefix = "../"
     title = f"Minhas anotações | {SITE_NAME}"
@@ -1378,6 +1387,7 @@ def build_site(context):
     build_game_js()
     build_community_js()
     build_library_js()
+    build_report_js()
     build_annotations_page()
     build_study_page()
     build_workspace_page()

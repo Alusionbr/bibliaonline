@@ -739,3 +739,27 @@ html.dark .community-alert.err{background:#3a201c;border-color:#7a3e34;color:#f0
 html.dark .nav-links a.active{background:rgba(255,255,255,.12);color:#f6efe2}
 .mobile-primary-nav a.active{color:var(--ink);box-shadow:inset 0 -3px 0 var(--gold)}
 html.dark .mobile-primary-nav a.active{color:#f6efe2}
+
+/* Reportar bug: botão flutuante + modal + linhas de admin */
+.report-fab{position:fixed;right:14px;bottom:78px;z-index:60;display:inline-flex;align-items:center;gap:6px;
+  background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px;
+  padding:8px 13px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;
+  box-shadow:0 3px 12px rgba(20,16,8,.16)}
+.report-fab:hover{border-color:var(--gold);color:var(--gold-deep)}
+html.dark .report-fab{background:#211c13;color:#efe7d8}
+@media (min-width:760px){ .report-fab{bottom:20px} }
+.report-box{max-width:460px;text-align:left}
+.report-box form{display:grid;gap:11px;margin-top:6px}
+.report-box label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.report-box select,.report-box input,.report-box textarea{font:inherit;padding:9px 11px;border-radius:10px;
+  border:1px solid var(--line);background:var(--vellum);color:var(--ink);resize:vertical}
+.report-box .btn{justify-self:start}
+.report-row{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 14px;display:grid;gap:6px}
+.report-row.done{opacity:.6}
+.report-meta{font-size:.8rem;color:var(--muted)}
+.report-status{text-transform:uppercase;font-size:.7rem;letter-spacing:.03em}
+.report-body{line-height:1.5}
+.report-link{font-size:.82rem}
+.report-actions{display:flex;gap:8px;flex-wrap:wrap}
+.report-box [data-report-signedout]{display:grid;gap:10px;margin-top:6px}
+.report-box [hidden]{display:none!important}

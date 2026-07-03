@@ -136,6 +136,21 @@ def test_gamificacao_nao_inunda_o_banco(site):
     assert "setColor((load('pencolor').c)||'y', true)" in study
 
 
+def test_reportar_bug(site):
+    # O asset de reporte é gerado e carregado nas páginas.
+    assert (site / "assets" / "report.js").exists()
+    report = (site / "assets" / "report.js").read_text("utf-8")
+    # Reusa os RPCs existentes; não faz insert direto na tabela.
+    assert "submit_suggestion" in report
+    assert "review_suggestion" in report
+    assert ".from('suggestions').insert" not in report
+    home = (site / "index.html").read_text("utf-8")
+    assert "assets/report.js" in home
+    # O Workspace tem o bloco de administração (oculto por padrão).
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert "data-admin-reports" in ws
+
+
 def test_salas_de_estudo_reais(site):
     # O app de comunidade é gerado e a página de Salas o carrega.
     assert (site / "assets" / "community.js").exists()
