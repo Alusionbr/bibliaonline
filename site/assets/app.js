@@ -135,15 +135,47 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 // ferramentas de leitura: tamanho da fonte, modo noturno, continuar lendo, versículo para meditar
 (function(){
   var d=document.documentElement;
+  var THEMES=['light','sepia','dark'];
   function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
   function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
-  function setTheme(dark){ d.classList.toggle('dark',dark); try{localStorage.setItem('bec.theme',dark?'dark':'light');}catch(e){} }
+  function curTheme(){ var t=localStorage.getItem('bec.theme'); return THEMES.indexOf(t)>-1?t:'light'; }
+  function applyTheme(t){
+    d.classList.remove('sepia','dark');
+    if(t==='dark') d.classList.add('dark'); else if(t==='sepia') d.classList.add('sepia');
+    try{localStorage.setItem('bec.theme',t);}catch(e){}
+    if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+  }
+  function origOn(){ return localStorage.getItem('bec.origmode')==='1'; }
+  function syncOrigBtns(){
+    var on=d.classList.contains('orig-on');
+    document.querySelectorAll('[data-rt="orig"]').forEach(function(b){
+      b.setAttribute('aria-pressed', on?'true':'false');
+      b.classList.toggle('on', on);
+    });
+  }
+  function applyOrig(on){
+    d.classList.toggle('orig-on', on);
+    try{localStorage.setItem('bec.origmode', on?'1':'0');}catch(e){}
+    if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+    syncOrigBtns();
+  }
   document.addEventListener('click',function(e){
     var b=e.target.closest && e.target.closest('[data-rt]'); if(!b) return;
     var rt=b.getAttribute('data-rt');
     if(rt==='font-inc') applyFont(Math.min(3,curFont()+1));
     else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
-    else if(rt==='theme') setTheme(!d.classList.contains('dark'));
+    else if(rt==='theme'){ var i=THEMES.indexOf(curTheme()); applyTheme(THEMES[(i+1)%THEMES.length]); }
+    else if(rt==='orig') applyOrig(!d.classList.contains('orig-on'));
+  });
+  syncOrigBtns();
+  // reaplica preferências quando a sincronização traz mudanças de outro aparelho
+  document.addEventListener('bec:study-sync',function(){
+    var t=curTheme();
+    d.classList.toggle('dark', t==='dark');
+    d.classList.toggle('sepia', t==='sepia');
+    d.classList.toggle('orig-on', origOn());
+    d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+curFont());
+    syncOrigBtns();
   });
   // seletor "Ir para livro": navega ao escolher outro livro
   document.addEventListener('change',function(e){
@@ -435,5 +467,196 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     else { on=path.indexOf('/'+section)>-1; }
     if(section==='ler/') on=on||path.indexOf('/versiculos/')>-1;
     if(on){ a.classList.add('active'); a.setAttribute('aria-current','page'); }
+  });
+})();
+
+// Progresso por trecho estudado no capítulo (bec.readingRanges), com sincronização.
+// Marca do versículo X ao Y sem exigir o capítulo inteiro.
+(function(){
+  var panel=document.querySelector('[data-study-frac]');
+  if(!panel) return;
+  var KEY='bec.readingRanges';
+  var chapterRef=panel.getAttribute('data-chapter-ref')||'';
+  var total=parseInt(panel.getAttribute('data-total'),10)||0;
+  var startSel=panel.querySelector('[data-sf-start]');
+  var endSel=panel.querySelector('[data-sf-end]');
+  var saveBtn=panel.querySelector('[data-sf-save]');
+  var bar=panel.querySelector('[data-sf-bar]');
+  var pctEl=panel.querySelector('[data-sf-pct]');
+  var listEl=panel.querySelector('[data-sf-list]');
+  var rangeEl=panel.querySelector('[data-sf-range]');
+  var markHint=panel.querySelector('[data-sf-mark-hint]');
+  var markBtns=Array.prototype.slice.call(panel.querySelectorAll('[data-sf-mark]'));
+  var chapterBox=document.querySelector('.chapter');
+  if(!startSel||!endSel||!saveBtn||!bar||!listEl||!total) return;
+
+  var markMode=null; // 'start' | 'end' | null
+
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function curStart(){var n=parseInt(startSel.value,10);return isNaN(n)?null:n;}
+  function curEnd(){var n=parseInt(endSel.value,10);return isNaN(n)?null:n;}
+  function updateRangeLabel(){
+    if(!rangeEl) return;
+    var s=curStart(), e=curEnd();
+    rangeEl.textContent='Início: '+(s!=null?s:'—')+' · Fim: '+(e!=null?e:'—');
+  }
+  function clearPreview(){
+    if(!chapterBox) return;
+    chapterBox.querySelectorAll('.sf-preview,.sf-mark-start,.sf-mark-end').forEach(function(v){
+      v.classList.remove('sf-preview','sf-mark-start','sf-mark-end');
+    });
+  }
+  function preview(){
+    clearPreview();
+    if(!chapterBox) return;
+    var s=curStart(), e=curEnd();
+    if(s==null||e==null) return;
+    var lo=Math.min(s,e), hi=Math.max(s,e);
+    for(var i=lo;i<=hi;i++){ var v=document.getElementById('v'+i); if(v) v.classList.add('sf-preview'); }
+    var vs=document.getElementById('v'+s); if(vs) vs.classList.add('sf-mark-start');
+    var ve=document.getElementById('v'+e); if(ve) ve.classList.add('sf-mark-end');
+  }
+  function setMarkMode(mode){
+    markMode=mode;
+    markBtns.forEach(function(b){
+      var on=b.getAttribute('data-sf-mark')===mode;
+      b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false');
+    });
+    if(markHint){
+      if(mode){ markHint.hidden=false; markHint.textContent = mode==='start' ? 'Toque no versículo onde começou a leitura.' : 'Toque no versículo onde parou a leitura.'; }
+      else markHint.hidden=true;
+    }
+    document.body.classList.toggle('sf-marking', !!mode);
+  }
+  function loadAll(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function saveAll(all){try{localStorage.setItem(KEY,JSON.stringify(all));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
+  function getRanges(){var r=loadAll()[chapterRef];return Array.isArray(r)?r:[];}
+  function setRanges(r){var all=loadAll(); if(r.length) all[chapterRef]=r; else delete all[chapterRef]; saveAll(all);}
+
+  // ordena e funde trechos que se tocam ou se sobrepõem
+  function normalize(r){
+    var arr=(r||[]).map(function(x){
+      var a=parseInt(x.s,10), b=parseInt(x.e,10);
+      return {s:Math.min(a,b), e:Math.max(a,b)};
+    }).filter(function(x){return !isNaN(x.s)&&!isNaN(x.e);})
+      .sort(function(a,b){return a.s-b.s;});
+    var out=[];
+    arr.forEach(function(x){
+      var last=out[out.length-1];
+      if(last && x.s<=last.e+1) last.e=Math.max(last.e,x.e);
+      else out.push({s:x.s,e:x.e});
+    });
+    return out;
+  }
+  function coverage(r){
+    var n=0; r.forEach(function(x){ n+=(x.e-x.s+1); });
+    return total ? Math.min(100, Math.round((n/total)*100)) : 0;
+  }
+  function paint(){
+    var r=normalize(getRanges());
+    bar.innerHTML='';
+    r.forEach(function(x){
+      var seg=document.createElement('span');
+      seg.className='sf-segment';
+      seg.style.left=(((x.s-1)/total)*100)+'%';
+      seg.style.width=Math.max(((x.e-x.s+1)/total)*100, 2)+'%';
+      bar.appendChild(seg);
+    });
+    if(pctEl) pctEl.textContent=coverage(r)+'%';
+    document.querySelectorAll('.ch-verse.studied').forEach(function(v){v.classList.remove('studied');});
+    r.forEach(function(x){
+      for(var i=x.s;i<=x.e;i++){ var v=document.getElementById('v'+i); if(v) v.classList.add('studied'); }
+    });
+    if(!r.length){
+      listEl.innerHTML='<li class="sf-empty">Nenhum trecho salvo ainda. Marque o início e o fim da leitura e toque em “Salvar trecho”.</li>';
+    } else {
+      listEl.innerHTML=r.map(function(x,idx){
+        var label=x.s===x.e ? ('versículo '+x.s) : ('versículos '+x.s+'–'+x.e);
+        return '<li class="sf-item"><span>'+esc(chapterRef)+' · '+label+'</span>'+
+          '<button type="button" class="btn tiny ghost" data-sf-del="'+idx+'" aria-label="Remover trecho">Remover</button></li>';
+      }).join('');
+    }
+    updateRangeLabel();
+  }
+
+  // botões "Marcar início" / "Marcar fim": armam o modo de toque no versículo
+  markBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      var m=b.getAttribute('data-sf-mark');
+      setMarkMode(markMode===m ? null : m);
+    });
+  });
+
+  // no modo marcação, tocar num versículo define início/fim (sem navegar)
+  if(chapterBox){
+    chapterBox.addEventListener('click',function(ev){
+      if(!markMode) return;
+      if(ev.target.closest && ev.target.closest('.verse-tools')) return; // ferramentas continuam funcionando
+      var v=ev.target.closest && ev.target.closest('.ch-verse'); if(!v) return;
+      var n=parseInt((v.id||'').replace(/^v/,''),10); if(isNaN(n)) return;
+      ev.preventDefault();
+      var wasStart=(markMode==='start');
+      if(wasStart) startSel.value=String(n); else endSel.value=String(n);
+      updateRangeLabel(); preview();
+      // após marcar o início, pede o fim automaticamente (fluxo de dois toques)
+      if(wasStart) setMarkMode('end'); else setMarkMode(null);
+    });
+  }
+
+  startSel.addEventListener('change',function(){ updateRangeLabel(); preview(); });
+  endSel.addEventListener('change',function(){ updateRangeLabel(); preview(); });
+
+  saveBtn.addEventListener('click',function(){
+    var s=curStart(), e=curEnd();
+    if(s==null||e==null) return;
+    var r=getRanges(); r.push({s:s,e:e});
+    setRanges(normalize(r));
+    setMarkMode(null); clearPreview();
+    paint();
+    var old=saveBtn.textContent;
+    saveBtn.textContent='Salvo ✓';
+    setTimeout(function(){ saveBtn.textContent=old; }, 1400);
+  });
+
+  listEl.addEventListener('click',function(ev){
+    var del=ev.target.closest && ev.target.closest('[data-sf-del]');
+    if(!del) return;
+    var idx=parseInt(del.getAttribute('data-sf-del'),10);
+    var r=normalize(getRanges());
+    if(idx>=0 && idx<r.length){ r.splice(idx,1); setRanges(r); paint(); }
+  });
+
+  if(endSel.options.length) endSel.selectedIndex=endSel.options.length-1;
+  document.addEventListener('bec:study-sync', paint);
+  paint();
+})();
+
+// FAB de ferramentas de leitura (celular): abre um painel com fonte, original,
+// tema, marcar início/fim/salvar e reportar. Fonte/original/tema/reportar
+// reaproveitam os gatilhos delegados (data-rt, data-report-open); marcar e
+// salvar acionam os botões reais do painel de progresso.
+(function(){
+  var fab=document.querySelector('[data-reader-fab]'); if(!fab) return;
+  var toggle=fab.querySelector('[data-reader-fab-toggle]');
+  var panel=fab.querySelector('[data-reader-fab-panel]');
+  if(!toggle||!panel) return;
+  function setOpen(open){
+    panel.hidden=!open;
+    toggle.setAttribute('aria-expanded', open?'true':'false');
+    toggle.textContent=open?'✕':'⚙';
+  }
+  toggle.addEventListener('click',function(){ setOpen(panel.hidden); });
+  panel.addEventListener('click',function(ev){
+    var mk=ev.target.closest && ev.target.closest('[data-fab-mark]');
+    if(mk){ var b=document.querySelector('[data-study-frac] [data-sf-mark="'+mk.getAttribute('data-fab-mark')+'"]'); if(b) b.click(); setOpen(false); return; }
+    var sv=ev.target.closest && ev.target.closest('[data-fab-save]');
+    if(sv){ var s=document.querySelector('[data-study-frac] [data-sf-save]'); if(s) s.click(); setOpen(false); return; }
+    // reportar fecha o painel (o modal assume); fonte/original/tema mantêm aberto
+    if(ev.target.closest && ev.target.closest('[data-report-open]')) setOpen(false);
+  });
+  document.addEventListener('click',function(ev){
+    if(panel.hidden) return;
+    if(ev.target.closest && ev.target.closest('[data-reader-fab]')) return;
+    setOpen(false);
   });
 })();

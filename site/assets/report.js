@@ -112,8 +112,10 @@
     }).then(function(){ if(btn) btn.disabled=false; });
   }
 
-  // Botao flutuante discreto, presente em todas as paginas.
+  // O acionador vive no conjunto de ferramentas do topo (nav). So cria o botao
+  // flutuante de fallback se, por algum motivo, a nav nao tiver o gatilho.
   function mountButton(){
+    if(document.querySelector('[data-report-open]')) return;
     if(document.querySelector('.report-fab')) return;
     var b=document.createElement('button');
     b.type='button'; b.className='report-fab'; b.setAttribute('data-report-open','');

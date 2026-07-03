@@ -32,13 +32,10 @@
   function setup(cont){
     if(!cont || cont.dataset.studyReady) return;
     var ref=cont.getAttribute('data-ref'); if(!ref) return;
-    wrapWords(cont.querySelector('.pt'),'pt');
-    wrapWords(cont.querySelector('.orig'),'orig');
     var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
     var bar=document.createElement('div'); bar.className='study';
-    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">use a caneta 🖍 para grifar; selecione para copiar</span>' : '';
-    bar.innerHTML='<button type="button" data-act="vhl">🖍 Grifar versículo</button>'+
-      '<button type="button" data-act="note">🗒 Anotar</button>'+
+    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">selecione o texto para copiar</span>' : '';
+    bar.innerHTML='<button type="button" data-act="note">🗒 Anotar</button>'+
       '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+
       '<button type="button" data-act="share">↗ Compartilhar</button>'+hint;
     anchor.appendChild(bar);
@@ -168,20 +165,12 @@
   }
 
   function apply(cont, ref){
-    if(load('vhl')[ref]){ cont.classList.add('v-hl'); var b=cont.querySelector('.study button[data-act="vhl"]'); if(b) b.classList.add('on'); }
     var notes=load('notes');
     if(notes[ref]){
       var ta=cont.querySelector('.note-box textarea');
       if(ta){ ta.value=notes[ref]; ta.closest('.note-box').hidden=false; }
       cont.classList.add('has-note');
     }
-    var rec=load('whl')[ref]||{};
-    Object.keys(rec).forEach(function(f){
-      rec[f].forEach(function(o){
-        var w=cont.querySelector('.w[data-f="'+f+'"][data-i="'+o.i+'"]');
-        if(w){ w.classList.add('w-hl'); w.setAttribute('data-c', o.c||'y'); }
-      });
-    });
   }
 
   function toggleWord(w){
@@ -253,6 +242,8 @@
   document.addEventListener('pointerup', endPaint);
   document.addEventListener('pointercancel', endPaint);
   function makePenTools(){
+    return; // marca-texto (caneta) removido do leitor
+    /* eslint-disable no-unreachable */
     if(!document.querySelector('.verse-cont[data-ref], .ch-verse[data-ref]')) return;
     if(document.querySelector('.pen-toggle')) return;
     var btn=document.createElement('button'); btn.type='button'; btn.className='pen-toggle';
