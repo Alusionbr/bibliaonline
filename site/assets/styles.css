@@ -4,23 +4,26 @@
    própria fonte: hebraico/aramaico em Frank Ruhl Libre, grego em Gentium. */
 
 :root{
-  --ink:#16120c;
+  --ink:#20180d;
   --ink-soft:#3a3128;
   --muted:#6f6453;
-  --vellum:#f4eee2;
-  --vellum-2:#efe7d8;
-  --paper:#fcf8f0;
-  --dark:#1a1610;
-  --dark-2:#241e16;
-  --gold:#b1873c;
-  --gold-deep:#8a6726;
-  --gold-soft:#e7d6ab;
-  --line:rgba(28,22,12,.14);
+  --vellum:#efe4d0;
+  --vellum-2:#f4e7cf;
+  --paper:#fff7e6;
+  --dark:#071a34;
+  --dark-2:#12355f;
+  --gold:#c89536;
+  --gold-deep:#9a6b1e;
+  --gold-soft:#efd08a;
+  --navy:#071a34;
+  --navy-2:#12355f;
+  --green:#2f8f5b;
+  --line:rgba(31,26,13,.14);
   --line-2:rgba(255,255,255,.14);
   --he:#9a7322;     /* hebraico/aramaico */
   --gr:#465a93;     /* grego */
   --ar:#a4663a;     /* aramaico */
-  --shadow:0 18px 50px rgba(30,22,10,.14);
+  --shadow:0 18px 50px rgba(42,31,18,.16);
   --radius:18px;
   --max:1080px;
   --read:680px;
@@ -197,6 +200,39 @@ section{padding:52px 0}
 .metric-grid span,.profile-grid span{display:block;color:var(--muted);font-size:.86rem}
 .study-map,.study-desk{max-width:var(--read);margin:30px auto 0;border:1px solid var(--line);border-radius:8px;
   background:rgba(252,248,240,.72);padding:18px}
+/* Progresso por trecho estudado */
+.study-frac{max-width:var(--read);margin:18px auto 0;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--paper);padding:18px 20px;box-shadow:var(--shadow)}
+.sf-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.sf-head h2{font-size:1.2rem;margin:0 0 6px}
+.sf-hint{margin:0;color:var(--muted);font-size:.9rem;max-width:52ch}
+.sf-meter{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;line-height:1}
+.sf-pct{font-size:1.7rem;font-weight:700;color:var(--gold-deep)}
+.sf-pct-lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.sf-bar{position:relative;height:12px;margin:14px 0;border-radius:999px;overflow:hidden;
+  background:rgba(28,22,12,.1)}
+.sf-segment{position:absolute;top:0;bottom:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-soft))}
+.sf-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sf-field{display:inline-flex;gap:6px;align-items:center;color:var(--ink-soft);font-size:.92rem}
+.sf-field select{border:1px solid var(--line);border-radius:10px;background:var(--vellum);color:var(--ink);
+  padding:7px 9px;font:inherit}
+.sf-save{white-space:nowrap}
+.sf-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.sf-empty{color:var(--muted);font-size:.9rem}
+.sf-item{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:var(--vellum);font-size:.92rem}
+.btn.tiny{padding:5px 10px;font-size:.8rem;border-radius:999px}
+.ch-verse.studied{background:rgba(177,135,60,.1);box-shadow:inset 3px 0 0 var(--gold)}
+html.dark .study-frac,html.dark .sf-field select,html.dark .sf-item{background:var(--paper)}
+html.dark .sf-bar{background:rgba(255,255,255,.1)}
+html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
+@media (max-width:560px){
+  .sf-meter{flex-direction:row;align-items:baseline;gap:6px;order:-1}
+  .sf-controls{flex-direction:column;align-items:stretch}
+  .sf-field{justify-content:space-between}
+  .sf-save{width:100%}
+}
 .study-map-head h2,.study-desk h2{font-size:1.35rem;margin:0 0 6px}
 .study-map-head p,.study-desk p{margin:0;color:var(--muted)}
 .map-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
@@ -354,7 +390,7 @@ section{padding:52px 0}
     color:var(--ink-soft);font-family:"Inter",system-ui,sans-serif;font-size:.72rem;font-weight:700;padding:6px 2px
   }
   .mobile-primary-nav a:hover{background:var(--vellum-2);color:var(--ink)}
-  html.dark .mobile-primary-nav{background:rgba(20,17,11,.96)}
+  html.dark .mobile-primary-nav{background:rgba(7,17,31,.96)}
 }
 
 /* movimento */
@@ -409,6 +445,17 @@ section{padding:52px 0}
 .ch-body .translit{margin:0 0 4px;color:var(--muted)}
 .ch-body .pt{margin:0}
 .ch-body .pt-missing{color:var(--muted)}
+/* leitor de capítulo: por padrão só a tradução; original+transliteração ligam
+   pelo botão "א/A" (html.orig-on), preferência lembrada e sincronizada */
+.chapter .ch-body .orig,
+.chapter .ch-body .translit,
+.chapter .verse-tools .listen[data-lang="he-IL"],
+.chapter .verse-tools .listen[data-lang="el-GR"]{display:none}
+html.orig-on .chapter .ch-body .orig,
+html.orig-on .chapter .ch-body .translit{display:block}
+html.orig-on .chapter .verse-tools .listen[data-lang="he-IL"],
+html.orig-on .chapter .verse-tools .listen[data-lang="el-GR"]{display:inline-flex}
+.reader-tools .rt.on{background:var(--gold);color:#20170a;border-color:var(--gold)}
 
 /* ferramentas de estudo: grifo de palavra/versículo, anotações */
 /* marca-texto na palavra: faixa amarela estilo caneta marca-texto */
@@ -523,16 +570,22 @@ html.fs-0 body{font-size:16px}
 html.fs-2 body{font-size:20.5px}
 html.fs-3 body{font-size:23px}
 
-/* modo noturno */
-html.dark{--ink:#ece3d2;--ink-soft:#d3c7b1;--muted:#9b8e76;--vellum:#14110b;--vellum-2:#1b1610;
-  --paper:#221c14;--line:rgba(231,214,171,.16);--gold-deep:#d9b878;--gold-soft:#e7d6ab}
+/* tema sépia (novo) */
+html.sepia{--ink:#402d1b;--ink-soft:#5a4327;--muted:#7d6042;--vellum:#d6c09b;--vellum-2:#ead4ad;
+  --paper:#fae9ca;--line:rgba(64,45,27,.18);--gold-soft:#e8cf9a}
+html.sepia body{background:var(--vellum);color:var(--ink)}
+
+/* modo noturno (novo tema navy) */
+html.dark{--ink:#f6ecd6;--ink-soft:#d6cbb2;--muted:#a7b0c2;--vellum:#07111f;--vellum-2:#0c1728;
+  --paper:#101d31;--line:rgba(255,255,255,.13);--gold-deep:#e3bf7e;--gold-soft:#efd08a;
+  --dark:#0c1728;--dark-2:#12355f}
 html.dark body{background:var(--vellum);color:var(--ink)}
 html.dark a:hover{color:var(--gold-soft)}
 html.dark .pen-toggle{background:var(--paper);color:var(--gold-soft)}
 html.dark .w-hl{color:#2a2206}
 /* fix: a barra de navegação tem fundo claro fixo — escurecer no modo noturno
    para os botões A−/A+ (texto) não sumirem em claro-sobre-claro */
-html.dark .nav{background:rgba(20,17,11,.92)}
+html.dark .nav{background:rgba(7,17,31,.92)}
 html.dark .searchbox{background:var(--paper);border-color:var(--line)}
 html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 

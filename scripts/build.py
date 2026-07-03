@@ -175,7 +175,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <meta name="description" content="{esc(description)}">
 <meta name="robots" content="index, follow, noai, noimageai">
 <link rel="canonical" href="{esc(canonical)}">
-<meta name="theme-color" content="#1a1610">
+<meta name="theme-color" content="#071a34">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(description)}">
@@ -187,7 +187,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body>
-<script>(function(){{try{{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}}catch(e){{}}}})();</script>
+<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
@@ -215,7 +215,8 @@ def nav(prefix):
     <div class="reader-tools">
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Modo noturno" title="Modo noturno">🌙</button>
+      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -358,6 +359,36 @@ def study_desk_module(prefix, livro, ch=None):
       <a href="{prefix}linha-do-tempo/">Mapa</a>
       <a href="{prefix}estudar/">Plano</a>
     </div>
+  </section>"""
+
+
+def study_fraction_module(prefix, livro, ch, vnums):
+    """Progresso por trecho: marcar do versiculo X ao Y sem exigir o capitulo
+    inteiro. Persistido em bec.readingRanges e sincronizado como preferencia."""
+    if not vnums:
+        return ""
+    ref = f"{livro} {ch}"
+    opts = "".join(f'<option value="{n}">{n}</option>' for n in vnums)
+    return f"""
+  <section class="study-frac" data-study-frac data-chapter-ref="{esc(ref)}" data-total="{len(vnums)}">
+    <div class="sf-head">
+      <div>
+        <p class="eyebrow">Progresso por trecho</p>
+        <h2>Marque o que já estudou</h2>
+        <p class="sf-hint">Salve o trecho estudado, do versículo inicial ao final, sem precisar concluir o capítulo inteiro. Fica salvo neste navegador e sincroniza quando você entra na conta.</p>
+      </div>
+      <div class="sf-meter" aria-hidden="true">
+        <span class="sf-pct" data-sf-pct>0%</span>
+        <span class="sf-pct-lbl">estudado</span>
+      </div>
+    </div>
+    <div class="sf-bar" data-sf-bar role="img" aria-label="Trechos estudados neste capítulo"></div>
+    <div class="sf-controls">
+      <span class="sf-field">Do versículo <select data-sf-start aria-label="Versículo inicial do trecho">{opts}</select></span>
+      <span class="sf-field">até <select data-sf-end aria-label="Versículo final do trecho">{opts}</select></span>
+      <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho estudado</button>
+    </div>
+    <ul class="sf-list" data-sf-list aria-live="polite"></ul>
   </section>"""
 
 
@@ -973,9 +1004,11 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     canonical = f"{BASE_URL}/ler/{bslug}/{ch}/"
     idioma = verses[0].get("idioma","hebraico") if verses else "hebraico"
     sc = script_class(idioma, verses[0].get("dir","ltr") if verses else "ltr")
+    vnums = []
     rows = ""
     for v in verses:
         _, vs = ref_chvs(v["referencia"])
+        vnums.append(vs)
         dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
         pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
         rows += f"""
@@ -1000,6 +1033,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <h1>{esc(livro)} {ch}</h1>
   </header>
   {book_jump(prefix, order, livro)}
+  {study_fraction_module(prefix, livro, ch, vnums)}
   <div class="chapter">{rows}
   </div>
   {study_map_module(prefix, livro, ch)}

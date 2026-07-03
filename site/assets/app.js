@@ -135,15 +135,47 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 // ferramentas de leitura: tamanho da fonte, modo noturno, continuar lendo, versículo para meditar
 (function(){
   var d=document.documentElement;
+  var THEMES=['light','sepia','dark'];
   function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
   function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
-  function setTheme(dark){ d.classList.toggle('dark',dark); try{localStorage.setItem('bec.theme',dark?'dark':'light');}catch(e){} }
+  function curTheme(){ var t=localStorage.getItem('bec.theme'); return THEMES.indexOf(t)>-1?t:'light'; }
+  function applyTheme(t){
+    d.classList.remove('sepia','dark');
+    if(t==='dark') d.classList.add('dark'); else if(t==='sepia') d.classList.add('sepia');
+    try{localStorage.setItem('bec.theme',t);}catch(e){}
+    if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+  }
+  function origOn(){ return localStorage.getItem('bec.origmode')==='1'; }
+  function syncOrigBtns(){
+    var on=d.classList.contains('orig-on');
+    document.querySelectorAll('[data-rt="orig"]').forEach(function(b){
+      b.setAttribute('aria-pressed', on?'true':'false');
+      b.classList.toggle('on', on);
+    });
+  }
+  function applyOrig(on){
+    d.classList.toggle('orig-on', on);
+    try{localStorage.setItem('bec.origmode', on?'1':'0');}catch(e){}
+    if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+    syncOrigBtns();
+  }
   document.addEventListener('click',function(e){
     var b=e.target.closest && e.target.closest('[data-rt]'); if(!b) return;
     var rt=b.getAttribute('data-rt');
     if(rt==='font-inc') applyFont(Math.min(3,curFont()+1));
     else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
-    else if(rt==='theme') setTheme(!d.classList.contains('dark'));
+    else if(rt==='theme'){ var i=THEMES.indexOf(curTheme()); applyTheme(THEMES[(i+1)%THEMES.length]); }
+    else if(rt==='orig') applyOrig(!d.classList.contains('orig-on'));
+  });
+  syncOrigBtns();
+  // reaplica preferências quando a sincronização traz mudanças de outro aparelho
+  document.addEventListener('bec:study-sync',function(){
+    var t=curTheme();
+    d.classList.toggle('dark', t==='dark');
+    d.classList.toggle('sepia', t==='sepia');
+    d.classList.toggle('orig-on', origOn());
+    d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+curFont());
+    syncOrigBtns();
   });
   // seletor "Ir para livro": navega ao escolher outro livro
   document.addEventListener('change',function(e){
@@ -436,4 +468,95 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     if(section==='ler/') on=on||path.indexOf('/versiculos/')>-1;
     if(on){ a.classList.add('active'); a.setAttribute('aria-current','page'); }
   });
+})();
+
+// Progresso por trecho estudado no capítulo (bec.readingRanges), com sincronização.
+// Marca do versículo X ao Y sem exigir o capítulo inteiro.
+(function(){
+  var panel=document.querySelector('[data-study-frac]');
+  if(!panel) return;
+  var KEY='bec.readingRanges';
+  var chapterRef=panel.getAttribute('data-chapter-ref')||'';
+  var total=parseInt(panel.getAttribute('data-total'),10)||0;
+  var startSel=panel.querySelector('[data-sf-start]');
+  var endSel=panel.querySelector('[data-sf-end]');
+  var saveBtn=panel.querySelector('[data-sf-save]');
+  var bar=panel.querySelector('[data-sf-bar]');
+  var pctEl=panel.querySelector('[data-sf-pct]');
+  var listEl=panel.querySelector('[data-sf-list]');
+  if(!startSel||!endSel||!saveBtn||!bar||!listEl||!total) return;
+
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function loadAll(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function saveAll(all){try{localStorage.setItem(KEY,JSON.stringify(all));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
+  function getRanges(){var r=loadAll()[chapterRef];return Array.isArray(r)?r:[];}
+  function setRanges(r){var all=loadAll(); if(r.length) all[chapterRef]=r; else delete all[chapterRef]; saveAll(all);}
+
+  // ordena e funde trechos que se tocam ou se sobrepõem
+  function normalize(r){
+    var arr=(r||[]).map(function(x){
+      var a=parseInt(x.s,10), b=parseInt(x.e,10);
+      return {s:Math.min(a,b), e:Math.max(a,b)};
+    }).filter(function(x){return !isNaN(x.s)&&!isNaN(x.e);})
+      .sort(function(a,b){return a.s-b.s;});
+    var out=[];
+    arr.forEach(function(x){
+      var last=out[out.length-1];
+      if(last && x.s<=last.e+1) last.e=Math.max(last.e,x.e);
+      else out.push({s:x.s,e:x.e});
+    });
+    return out;
+  }
+  function coverage(r){
+    var n=0; r.forEach(function(x){ n+=(x.e-x.s+1); });
+    return total ? Math.min(100, Math.round((n/total)*100)) : 0;
+  }
+  function paint(){
+    var r=normalize(getRanges());
+    bar.innerHTML='';
+    r.forEach(function(x){
+      var seg=document.createElement('span');
+      seg.className='sf-segment';
+      seg.style.left=(((x.s-1)/total)*100)+'%';
+      seg.style.width=Math.max(((x.e-x.s+1)/total)*100, 2)+'%';
+      bar.appendChild(seg);
+    });
+    if(pctEl) pctEl.textContent=coverage(r)+'%';
+    document.querySelectorAll('.ch-verse.studied').forEach(function(v){v.classList.remove('studied');});
+    r.forEach(function(x){
+      for(var i=x.s;i<=x.e;i++){ var v=document.getElementById('v'+i); if(v) v.classList.add('studied'); }
+    });
+    if(!r.length){
+      listEl.innerHTML='<li class="sf-empty">Nenhum trecho salvo ainda. Escolha do versículo inicial ao final e toque em “Salvar trecho estudado”.</li>';
+    } else {
+      listEl.innerHTML=r.map(function(x,idx){
+        var label=x.s===x.e ? ('versículo '+x.s) : ('versículos '+x.s+'–'+x.e);
+        return '<li class="sf-item"><span>'+esc(chapterRef)+' · '+label+'</span>'+
+          '<button type="button" class="btn tiny ghost" data-sf-del="'+idx+'" aria-label="Remover trecho">Remover</button></li>';
+      }).join('');
+    }
+  }
+
+  saveBtn.addEventListener('click',function(){
+    var s=parseInt(startSel.value,10), e=parseInt(endSel.value,10);
+    if(isNaN(s)||isNaN(e)) return;
+    var r=getRanges(); r.push({s:s,e:e});
+    setRanges(normalize(r));
+    paint();
+    var old=saveBtn.textContent;
+    saveBtn.textContent='Trecho salvo ✓';
+    setTimeout(function(){ saveBtn.textContent=old; }, 1400);
+  });
+
+  listEl.addEventListener('click',function(ev){
+    var del=ev.target.closest && ev.target.closest('[data-sf-del]');
+    if(!del) return;
+    var idx=parseInt(del.getAttribute('data-sf-del'),10);
+    var r=normalize(getRanges());
+    if(idx>=0 && idx<r.length){ r.splice(idx,1); setRanges(r); paint(); }
+  });
+
+  if(endSel.options.length) endSel.selectedIndex=endSel.options.length-1;
+  document.addEventListener('bec:study-sync', paint);
+  paint();
 })();
