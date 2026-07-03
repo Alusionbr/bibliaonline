@@ -630,3 +630,33 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   document.addEventListener('bec:study-sync', paint);
   paint();
 })();
+
+// FAB de ferramentas de leitura (celular): abre um painel com fonte, original,
+// tema, marcar início/fim/salvar e reportar. Fonte/original/tema/reportar
+// reaproveitam os gatilhos delegados (data-rt, data-report-open); marcar e
+// salvar acionam os botões reais do painel de progresso.
+(function(){
+  var fab=document.querySelector('[data-reader-fab]'); if(!fab) return;
+  var toggle=fab.querySelector('[data-reader-fab-toggle]');
+  var panel=fab.querySelector('[data-reader-fab-panel]');
+  if(!toggle||!panel) return;
+  function setOpen(open){
+    panel.hidden=!open;
+    toggle.setAttribute('aria-expanded', open?'true':'false');
+    toggle.textContent=open?'✕':'⚙';
+  }
+  toggle.addEventListener('click',function(){ setOpen(panel.hidden); });
+  panel.addEventListener('click',function(ev){
+    var mk=ev.target.closest && ev.target.closest('[data-fab-mark]');
+    if(mk){ var b=document.querySelector('[data-study-frac] [data-sf-mark="'+mk.getAttribute('data-fab-mark')+'"]'); if(b) b.click(); setOpen(false); return; }
+    var sv=ev.target.closest && ev.target.closest('[data-fab-save]');
+    if(sv){ var s=document.querySelector('[data-study-frac] [data-sf-save]'); if(s) s.click(); setOpen(false); return; }
+    // reportar fecha o painel (o modal assume); fonte/original/tema mantêm aberto
+    if(ev.target.closest && ev.target.closest('[data-report-open]')) setOpen(false);
+  });
+  document.addEventListener('click',function(ev){
+    if(panel.hidden) return;
+    if(ev.target.closest && ev.target.closest('[data-reader-fab]')) return;
+    setOpen(false);
+  });
+})();

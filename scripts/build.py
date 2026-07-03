@@ -399,6 +399,30 @@ def study_fraction_module(prefix, livro, ch, vnums):
   </section>"""
 
 
+def reader_fab(has_fraction=True):
+    """FAB de ferramentas de leitura no celular (canto inferior direito).
+    Reaproveita os gatilhos existentes (data-rt, data-report-open) e aciona
+    o painel de progresso (marcar inicio/fim/salvar)."""
+    mark = ""
+    if has_fraction:
+        mark = (
+            '<button type="button" class="rfb" data-fab-mark="start">⇢<span>Início</span></button>'
+            '<button type="button" class="rfb" data-fab-mark="end">✓<span>Fim</span></button>'
+            '<button type="button" class="rfb" data-fab-save>★<span>Salvar</span></button>'
+        )
+    return f"""
+<div class="reader-fab" data-reader-fab>
+  <div class="reader-fab-panel" data-reader-fab-panel hidden>
+    <button type="button" class="rfb" data-rt="font-dec">A−<span>Fonte</span></button>
+    <button type="button" class="rfb" data-rt="font-inc">A+<span>Fonte</span></button>
+    <button type="button" class="rfb" data-rt="orig">א/A<span>Original</span></button>
+    <button type="button" class="rfb" data-rt="theme">🌙<span>Tema</span></button>
+    {mark}<button type="button" class="rfb" data-report-open>🐞<span>Reportar</span></button>
+  </div>
+  <button type="button" class="reader-fab-btn" data-reader-fab-toggle aria-label="Ferramentas de leitura" aria-expanded="false">⚙</button>
+</div>"""
+
+
 def build_study_page():
     prefix = "../"
     title = f"Estudar | {SITE_NAME}"
@@ -1047,7 +1071,8 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   {study_desk_module(prefix, livro, ch)}
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
   <p class="backline"><a href="../">← Todos os capítulos de {esc(livro)}</a></p>
-</main>"""
+</main>
+{reader_fab(has_fraction=bool(vnums))}"""
     out = SITE / "ler" / bslug / str(ch) / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))

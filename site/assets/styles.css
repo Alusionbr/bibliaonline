@@ -245,6 +245,26 @@ html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
   .sf-field{justify-content:space-between}
   .sf-save{width:100%}
 }
+/* FAB de ferramentas de leitura (celular) — canto inferior direito */
+.reader-fab{display:none}
+.reader-fab-btn{width:52px;height:52px;border-radius:50%;border:0;font-size:1.35rem;
+  background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#20170a;
+  box-shadow:0 12px 30px rgba(30,22,10,.32);display:grid;place-items:center;margin-left:auto}
+.reader-fab-panel{margin:0 0 10px;padding:10px;border-radius:18px;border:1px solid var(--line);
+  background:var(--paper);box-shadow:var(--shadow);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(84vw,320px)}
+.reader-fab-panel[hidden]{display:none}
+.reader-fab .rfb{min-height:56px;border:1px solid var(--line);border-radius:14px;background:var(--vellum);
+  color:var(--ink);display:grid;place-items:center;gap:2px;font-size:1.05rem;font-weight:700;
+  font-family:"Inter",system-ui,sans-serif;cursor:pointer;padding:4px}
+.reader-fab .rfb span{font-size:.62rem;font-weight:600;color:var(--muted)}
+.reader-fab .rfb:hover,.reader-fab .rfb.on{background:rgba(200,149,54,.16)}
+@media (max-width:760px){
+  /* acima da barra de navegação inferior (min-height 58px, z-index 70) */
+  .reader-fab{display:block;position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);z-index:71}
+  body:has(.reader-fab) .nav .reader-tools{display:none}
+}
+html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .study-map-head h2,.study-desk h2{font-size:1.35rem;margin:0 0 6px}
 .study-map-head p,.study-desk p{margin:0;color:var(--muted)}
 .map-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
