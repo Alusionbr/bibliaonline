@@ -218,6 +218,18 @@ section{padding:52px 0}
 .sf-field select{border:1px solid var(--line);border-radius:10px;background:var(--vellum);color:var(--ink);
   padding:7px 9px;font:inherit}
 .sf-save{white-space:nowrap}
+.sf-mark.on{background:var(--gold);color:#20170a;border-color:var(--gold)}
+.sf-range{font-size:.9rem;color:var(--ink-soft);font-weight:600}
+.sf-mark-hint{margin:8px 0 0;color:var(--gold-deep);font-size:.88rem;font-weight:600}
+.sf-precise{margin-top:10px;font-size:.86rem}
+.sf-precise .sf-field{color:var(--muted)}
+/* estado de marcação: versículos ficam "tocáveis" */
+body.sf-marking .chapter .ch-verse{cursor:pointer;border-radius:10px}
+body.sf-marking .chapter .ch-verse:hover{background:rgba(177,135,60,.1)}
+.chapter .ch-verse.sf-preview{background:rgba(47,143,91,.1)}
+.chapter .ch-verse.sf-mark-start{box-shadow:inset 3px 0 0 var(--green)}
+.chapter .ch-verse.sf-mark-end{box-shadow:inset -3px 0 0 var(--green)}
+html.dark .chapter .ch-verse.sf-preview{background:rgba(47,143,91,.16)}
 .sf-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 .sf-empty{color:var(--muted);font-size:.9rem}
 .sf-item{display:flex;justify-content:space-between;align-items:center;gap:12px;
@@ -611,6 +623,7 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 
 /* modal de confirmação */
 .bec-modal{position:fixed;inset:0;z-index:80;background:rgba(20,16,8,.55);display:grid;place-items:center;padding:20px}
+.bec-modal[hidden]{display:none}  /* o atributo hidden precisa vencer o display:grid acima */
 .bec-modal-box{background:var(--paper);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;
   box-shadow:var(--shadow);font-family:"Inter",system-ui,sans-serif}
 .bec-modal-box p{margin:0 0 16px}

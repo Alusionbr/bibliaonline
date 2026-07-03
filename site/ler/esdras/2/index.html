@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=edcfb166">
+<link rel="stylesheet" href="../../../assets/styles.css?v=2b90d298">
 </head>
 <body>
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}catch(e){}})();</script>
@@ -37,6 +37,7 @@
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
+      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -88,9 +89,15 @@
     </div>
     <div class="sf-bar" data-sf-bar role="img" aria-label="Trechos estudados neste capítulo"></div>
     <div class="sf-controls">
-      <span class="sf-field">Do versículo <select data-sf-start aria-label="Versículo inicial do trecho"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option></select></span>
+      <button type="button" class="btn quiet sf-mark" data-sf-mark="start" aria-pressed="false">Marcar início</button>
+      <button type="button" class="btn quiet sf-mark" data-sf-mark="end" aria-pressed="false">Marcar fim</button>
+      <span class="sf-range" data-sf-range aria-live="polite">Início: — · Fim: —</span>
+      <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho</button>
+    </div>
+    <p class="sf-hint sf-mark-hint" data-sf-mark-hint hidden>Toque no versículo onde começou a leitura.</p>
+    <div class="sf-controls sf-precise">
+      <span class="sf-field">Ajuste fino: do versículo <select data-sf-start aria-label="Versículo inicial do trecho"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option></select></span>
       <span class="sf-field">até <select data-sf-end aria-label="Versículo final do trecho"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option><option value="46">46</option><option value="47">47</option><option value="48">48</option><option value="49">49</option><option value="50">50</option><option value="51">51</option><option value="52">52</option><option value="53">53</option><option value="54">54</option><option value="55">55</option><option value="56">56</option><option value="57">57</option><option value="58">58</option><option value="59">59</option><option value="60">60</option><option value="61">61</option><option value="62">62</option><option value="63">63</option><option value="64">64</option><option value="65">65</option><option value="66">66</option><option value="67">67</option><option value="68">68</option><option value="69">69</option><option value="70">70</option></select></span>
-      <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho estudado</button>
     </div>
     <ul class="sf-list" data-sf-list aria-live="polite"></ul>
   </section>
@@ -776,13 +783,13 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/supabase-config.js?v=edcfb166" defer></script>
+<script src="../../../assets/supabase-config.js?v=2b90d298" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=edcfb166" defer></script>
-<script src="../../../assets/app.js?v=edcfb166"></script>
-<script src="../../../assets/study.js?v=edcfb166" defer></script>
-<script src="../../../assets/game.js?v=edcfb166" defer></script>
-<script src="../../../assets/community.js?v=edcfb166" defer></script>
-<script src="../../../assets/library.js?v=edcfb166" defer></script>
-<script src="../../../assets/report.js?v=edcfb166" defer></script>
+<script src="../../../assets/auth.js?v=2b90d298" defer></script>
+<script src="../../../assets/app.js?v=2b90d298"></script>
+<script src="../../../assets/study.js?v=2b90d298" defer></script>
+<script src="../../../assets/game.js?v=2b90d298" defer></script>
+<script src="../../../assets/community.js?v=2b90d298" defer></script>
+<script src="../../../assets/library.js?v=2b90d298" defer></script>
+<script src="../../../assets/report.js?v=2b90d298" defer></script>
 </body></html>

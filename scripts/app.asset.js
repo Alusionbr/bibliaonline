@@ -484,9 +484,50 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   var bar=panel.querySelector('[data-sf-bar]');
   var pctEl=panel.querySelector('[data-sf-pct]');
   var listEl=panel.querySelector('[data-sf-list]');
+  var rangeEl=panel.querySelector('[data-sf-range]');
+  var markHint=panel.querySelector('[data-sf-mark-hint]');
+  var markBtns=Array.prototype.slice.call(panel.querySelectorAll('[data-sf-mark]'));
+  var chapterBox=document.querySelector('.chapter');
   if(!startSel||!endSel||!saveBtn||!bar||!listEl||!total) return;
 
+  var markMode=null; // 'start' | 'end' | null
+
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function curStart(){var n=parseInt(startSel.value,10);return isNaN(n)?null:n;}
+  function curEnd(){var n=parseInt(endSel.value,10);return isNaN(n)?null:n;}
+  function updateRangeLabel(){
+    if(!rangeEl) return;
+    var s=curStart(), e=curEnd();
+    rangeEl.textContent='Início: '+(s!=null?s:'—')+' · Fim: '+(e!=null?e:'—');
+  }
+  function clearPreview(){
+    if(!chapterBox) return;
+    chapterBox.querySelectorAll('.sf-preview,.sf-mark-start,.sf-mark-end').forEach(function(v){
+      v.classList.remove('sf-preview','sf-mark-start','sf-mark-end');
+    });
+  }
+  function preview(){
+    clearPreview();
+    if(!chapterBox) return;
+    var s=curStart(), e=curEnd();
+    if(s==null||e==null) return;
+    var lo=Math.min(s,e), hi=Math.max(s,e);
+    for(var i=lo;i<=hi;i++){ var v=document.getElementById('v'+i); if(v) v.classList.add('sf-preview'); }
+    var vs=document.getElementById('v'+s); if(vs) vs.classList.add('sf-mark-start');
+    var ve=document.getElementById('v'+e); if(ve) ve.classList.add('sf-mark-end');
+  }
+  function setMarkMode(mode){
+    markMode=mode;
+    markBtns.forEach(function(b){
+      var on=b.getAttribute('data-sf-mark')===mode;
+      b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false');
+    });
+    if(markHint){
+      if(mode){ markHint.hidden=false; markHint.textContent = mode==='start' ? 'Toque no versículo onde começou a leitura.' : 'Toque no versículo onde parou a leitura.'; }
+      else markHint.hidden=true;
+    }
+    document.body.classList.toggle('sf-marking', !!mode);
+  }
   function loadAll(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
   function saveAll(all){try{localStorage.setItem(KEY,JSON.stringify(all));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
   function getRanges(){var r=loadAll()[chapterRef];return Array.isArray(r)?r:[];}
@@ -527,7 +568,7 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       for(var i=x.s;i<=x.e;i++){ var v=document.getElementById('v'+i); if(v) v.classList.add('studied'); }
     });
     if(!r.length){
-      listEl.innerHTML='<li class="sf-empty">Nenhum trecho salvo ainda. Escolha do versículo inicial ao final e toque em “Salvar trecho estudado”.</li>';
+      listEl.innerHTML='<li class="sf-empty">Nenhum trecho salvo ainda. Marque o início e o fim da leitura e toque em “Salvar trecho”.</li>';
     } else {
       listEl.innerHTML=r.map(function(x,idx){
         var label=x.s===x.e ? ('versículo '+x.s) : ('versículos '+x.s+'–'+x.e);
@@ -535,16 +576,45 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
           '<button type="button" class="btn tiny ghost" data-sf-del="'+idx+'" aria-label="Remover trecho">Remover</button></li>';
       }).join('');
     }
+    updateRangeLabel();
   }
 
+  // botões "Marcar início" / "Marcar fim": armam o modo de toque no versículo
+  markBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      var m=b.getAttribute('data-sf-mark');
+      setMarkMode(markMode===m ? null : m);
+    });
+  });
+
+  // no modo marcação, tocar num versículo define início/fim (sem navegar)
+  if(chapterBox){
+    chapterBox.addEventListener('click',function(ev){
+      if(!markMode) return;
+      if(ev.target.closest && ev.target.closest('.verse-tools')) return; // ferramentas continuam funcionando
+      var v=ev.target.closest && ev.target.closest('.ch-verse'); if(!v) return;
+      var n=parseInt((v.id||'').replace(/^v/,''),10); if(isNaN(n)) return;
+      ev.preventDefault();
+      var wasStart=(markMode==='start');
+      if(wasStart) startSel.value=String(n); else endSel.value=String(n);
+      updateRangeLabel(); preview();
+      // após marcar o início, pede o fim automaticamente (fluxo de dois toques)
+      if(wasStart) setMarkMode('end'); else setMarkMode(null);
+    });
+  }
+
+  startSel.addEventListener('change',function(){ updateRangeLabel(); preview(); });
+  endSel.addEventListener('change',function(){ updateRangeLabel(); preview(); });
+
   saveBtn.addEventListener('click',function(){
-    var s=parseInt(startSel.value,10), e=parseInt(endSel.value,10);
-    if(isNaN(s)||isNaN(e)) return;
+    var s=curStart(), e=curEnd();
+    if(s==null||e==null) return;
     var r=getRanges(); r.push({s:s,e:e});
     setRanges(normalize(r));
+    setMarkMode(null); clearPreview();
     paint();
     var old=saveBtn.textContent;
-    saveBtn.textContent='Trecho salvo ✓';
+    saveBtn.textContent='Salvo ✓';
     setTimeout(function(){ saveBtn.textContent=old; }, 1400);
   });
 

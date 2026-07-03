@@ -18,8 +18,7 @@
       {key:'ler_capitulo', title:'Leia um capitulo',    description:'Abra e leia ao menos um capitulo hoje.',        icon:'📖', goal:1, metric:'read_chapters', points:10, sort:1},
       {key:'meditar',      title:'Medite no versiculo',  description:'Abra o versiculo para meditar hoje.',           icon:'🕊️', goal:1, metric:'meditate',      points:10, sort:2},
       {key:'anotar',       title:'Faca uma anotacao',    description:'Registre um aprendizado em uma anotacao.',      icon:'✍️', goal:1, metric:'notes',         points:10, sort:3},
-      {key:'favoritar',    title:'Guarde um versiculo',  description:'Marque um versiculo como favorito.',            icon:'⭐', goal:1, metric:'favorites',     points:10, sort:4},
-      {key:'grifar',       title:'Grife uma passagem',   description:'Destaque uma passagem com o marca-texto.',      icon:'🖍️', goal:1, metric:'highlights',    points:10, sort:5}
+      {key:'favoritar',    title:'Guarde um versiculo',  description:'Marque um versiculo como favorito.',            icon:'⭐', goal:1, metric:'favorites',     points:10, sort:4}
     ],
     badges: [
       {key:'primeiro_passo',   title:'Primeiro Passo', description:'Comecou a jornada de estudo.',        icon:'🌱', tier:'bronze', points:10, sort:1},
@@ -196,7 +195,7 @@
       var m=await sb.from('daily_missions').select('*').eq('active',true).order('sort');
       var b=await sb.from('badges').select('*').order('sort');
       var changed=false;
-      if(m&&m.data&&m.data.length){ catalog.missions=m.data; changed=true; }
+      if(m&&m.data&&m.data.length){ catalog.missions=m.data.filter(function(x){return x.metric!=='highlights';}); changed=true; }
       if(b&&b.data&&b.data.length){ catalog.badges=b.data; changed=true; }
       catalogLoaded=true;
       return changed;

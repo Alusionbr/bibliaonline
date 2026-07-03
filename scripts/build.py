@@ -217,6 +217,7 @@ def nav(prefix):
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
       <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
+      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -384,9 +385,15 @@ def study_fraction_module(prefix, livro, ch, vnums):
     </div>
     <div class="sf-bar" data-sf-bar role="img" aria-label="Trechos estudados neste capítulo"></div>
     <div class="sf-controls">
-      <span class="sf-field">Do versículo <select data-sf-start aria-label="Versículo inicial do trecho">{opts}</select></span>
+      <button type="button" class="btn quiet sf-mark" data-sf-mark="start" aria-pressed="false">Marcar início</button>
+      <button type="button" class="btn quiet sf-mark" data-sf-mark="end" aria-pressed="false">Marcar fim</button>
+      <span class="sf-range" data-sf-range aria-live="polite">Início: — · Fim: —</span>
+      <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho</button>
+    </div>
+    <p class="sf-hint sf-mark-hint" data-sf-mark-hint hidden>Toque no versículo onde começou a leitura.</p>
+    <div class="sf-controls sf-precise">
+      <span class="sf-field">Ajuste fino: do versículo <select data-sf-start aria-label="Versículo inicial do trecho">{opts}</select></span>
       <span class="sf-field">até <select data-sf-end aria-label="Versículo final do trecho">{opts}</select></span>
-      <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho estudado</button>
     </div>
     <ul class="sf-list" data-sf-list aria-live="polite"></ul>
   </section>"""
