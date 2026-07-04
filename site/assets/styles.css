@@ -261,6 +261,18 @@ html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
   font-family:"Inter",system-ui,sans-serif;cursor:pointer;padding:4px}
 .reader-fab .rfb span{font-size:.62rem;font-weight:600;color:var(--muted)}
 .reader-fab .rfb:hover,.reader-fab .rfb.on{background:rgba(200,149,54,.16)}
+.reader-fab .rfb[hidden]{display:none}
+.reader-fab-btn{touch-action:none} /* permite arrastar sem rolar a página */
+.reader-fab-config-btn{grid-column:1/-1;border:1px dashed var(--line);border-radius:12px;
+  background:transparent;color:var(--muted);font-family:"Inter",system-ui,sans-serif;
+  font-size:.78rem;font-weight:600;padding:8px;cursor:pointer;margin-top:2px}
+.reader-fab-config-btn:hover{background:rgba(200,149,54,.1);color:var(--ink)}
+.reader-fab-config{grid-column:1/-1;display:grid;gap:4px;margin-top:2px}
+.reader-fab-config[hidden]{display:none}
+.fab-cfg-row{display:flex;align-items:center;gap:8px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.82rem;color:var(--ink);padding:5px 6px;border-radius:8px;cursor:pointer}
+.fab-cfg-row:hover{background:rgba(200,149,54,.1)}
+.fab-cfg-row input{width:16px;height:16px;accent-color:var(--gold);flex:none}
 @media (max-width:760px){
   /* acima da barra de navegação inferior (min-height 58px, z-index 70) */
   .reader-fab{display:block;position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);z-index:71}

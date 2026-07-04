@@ -315,6 +315,12 @@ def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
     # pool aleatório gerado
     pool = json.loads((site / "data" / "random.json").read_text("utf-8"))
     assert len(pool) >= 1 and all(isinstance(s, str) for s in pool)
+    # FAB do leitor: ferramentas configuráveis + posição arrastável salva.
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    for hook in ('data-reader-fab-config', 'data-reader-fab-config-panel', 'data-tool="theme"'):
+        assert hook in cap, hook
+    for token in ("bec.readerTools", "bec.fabPos", "pointerdown", "setPointerCapture"):
+        assert token in app, token
 
 
 def test_audio_e_favoritos(site):

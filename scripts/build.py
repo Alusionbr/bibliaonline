@@ -406,20 +406,22 @@ def reader_fab(has_fraction=True):
     mark = ""
     if has_fraction:
         mark = (
-            '<button type="button" class="rfb" data-fab-mark="start">⇢<span>Início</span></button>'
-            '<button type="button" class="rfb" data-fab-mark="end">✓<span>Fim</span></button>'
-            '<button type="button" class="rfb" data-fab-save>★<span>Salvar</span></button>'
+            '<button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button>'
+            '<button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button>'
+            '<button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button>'
         )
     return f"""
 <div class="reader-fab" data-reader-fab>
   <div class="reader-fab-panel" data-reader-fab-panel hidden>
-    <button type="button" class="rfb" data-rt="font-dec">A−<span>Fonte</span></button>
-    <button type="button" class="rfb" data-rt="font-inc">A+<span>Fonte</span></button>
-    <button type="button" class="rfb" data-rt="orig">א/A<span>Original</span></button>
-    <button type="button" class="rfb" data-rt="theme">🌙<span>Tema</span></button>
-    {mark}<button type="button" class="rfb" data-report-open>🐞<span>Reportar</span></button>
+    <button type="button" class="rfb" data-tool="font-dec" data-rt="font-dec">A−<span>Fonte</span></button>
+    <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
+    <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
+    <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
+    {mark}<button type="button" class="rfb" data-tool="report" data-report-open>🐞<span>Reportar</span></button>
+    <button type="button" class="reader-fab-config-btn" data-reader-fab-config aria-expanded="false" aria-label="Personalizar ferramentas">⚙ Personalizar</button>
+    <div class="reader-fab-config" data-reader-fab-config-panel hidden></div>
   </div>
-  <button type="button" class="reader-fab-btn" data-reader-fab-toggle aria-label="Ferramentas de leitura" aria-expanded="false">⚙</button>
+  <button type="button" class="reader-fab-btn" data-reader-fab-toggle aria-label="Ferramentas de leitura (arraste para reposicionar)" aria-expanded="false">⚙</button>
 </div>"""
 
 
