@@ -51,7 +51,20 @@
       highlights: countKeys('bec.vhl') + countKeys('bec.whl')
     };
   }
-  function levelFromXp(xp){return 1 + Math.floor((xp||0)/100);} // 100 XP por nivel
+  var LEVEL_XP=100; // XP por nivel (mantido igual ao servidor: level = 1 + xp/100)
+  function levelFromXp(xp){return 1 + Math.floor((xp||0)/LEVEL_XP);}
+  function xpIntoLevel(xp){return (xp||0)%LEVEL_XP;}          // XP acumulado dentro do nivel atual
+  function xpToNext(xp){return LEVEL_XP - xpIntoLevel(xp);}    // XP que falta para o proximo nivel
+  function levelPct(xp){return Math.round(100*xpIntoLevel(xp)/LEVEL_XP);}
+  // Nome da faixa por nivel, ecoando a familia de medalhas (Semente..Devoto).
+  function tierFromLevel(level){
+    if(level>=17) return 'Devoto';
+    if(level>=12) return 'Peregrino';
+    if(level>=8)  return 'Escriba';
+    if(level>=5)  return 'Estudioso';
+    if(level>=3)  return 'Leitor';
+    return 'Semente';
+  }
 
   // ---- Estado local -------------------------------------------------------
   var STATE_KEY='bec.game';
@@ -227,13 +240,29 @@
     }
   }
 
+  // Resumo compacto de gamificacao (usado na Inicio). Le o mesmo estado local.
+  function renderHomeSummary(s){
+    var block=qs('[data-home-progress]');
+    if(!block) return;
+    var set=function(sel,val){qsa(sel).forEach(function(el){el.textContent=val;});};
+    var level=levelFromXp(s.xp);
+    var missions=catalog.missions||[];
+    var done=missions.filter(function(m){var mp=s.missions[m.key]; return mp&&mp.done;}).length;
+    set('[data-home-streak]', s.streak||0);
+    set('[data-home-level]', level);
+    set('[data-home-tier]', tierFromLevel(level));
+    set('[data-home-missions]', done+'/'+missions.length);
+    var bar=qs('[data-home-xp-bar]'); if(bar) bar.style.width=levelPct(s.xp)+'%';
+  }
+
   function renderPanel(s){
     var panel=qs('[data-progress-panel]');
     var acc=account(), logged=!!(acc&&acc.user);
     var c=counts();
 
-    // Perfil (existe mesmo sem o painel de progresso)
-    var set=function(sel,val){var el=qs(sel); if(el) el.textContent=val;};
+    // Perfil (existe mesmo sem o painel de progresso). Atualiza todos os hooks
+    // com o mesmo seletor (ex.: nivel aparece no cartao e na estatistica).
+    var set=function(sel,val){qsa(sel).forEach(function(el){el.textContent=val;});};
     set('[data-profile-name]', (acc&&acc.profile&&acc.profile.name)||(logged?(acc.user.email||'Membro'):'Visitante'));
     set('[data-profile-status]', logged?'Conta ativa · sincronizado':'Visitante (estudo salvo neste navegador)');
     set('[data-profile-streak]', s.streak||0);
@@ -241,14 +270,24 @@
     set('[data-profile-favs]', c.favorites);
     set('[data-profile-highlights]', c.highlights);
 
+    renderHomeSummary(s);
+
     if(!panel) return;
     panel.hidden=false;
+    var level=levelFromXp(s.xp);
     set('[data-progress-streak]', s.streak||0);
-    set('[data-progress-level]', levelFromXp(s.xp));
+    set('[data-progress-level]', level);
     set('[data-progress-xp]', s.xp||0);
     set('[data-progress-medals]', Object.keys(s.badges||{}).length);
     var note=qs('[data-progress-note]');
     if(note) note.textContent=logged?'Sincronizado com sua conta':'Entre na conta para salvar entre aparelhos';
+
+    // Cartao de nivel: faixa + barra de XP ate o proximo nivel
+    set('[data-progress-tier]', tierFromLevel(level));
+    set('[data-progress-xpinto]', xpIntoLevel(s.xp));
+    set('[data-progress-xpneed]', LEVEL_XP);
+    set('[data-progress-xptonext]', xpToNext(s.xp));
+    var xpbar=qs('[data-xp-bar]'); if(xpbar) xpbar.style.width=levelPct(s.xp)+'%';
 
     var mlist=qs('[data-mission-list]');
     if(mlist){

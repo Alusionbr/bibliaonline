@@ -111,6 +111,16 @@ def test_gamificacao_e_beta(site):
     ws = (site / "workspace" / "index.html").read_text("utf-8")
     for hook in ("data-progress-panel", "data-mission-list", "data-medal-grid"):
         assert hook in ws
+    # Cartão de nível com barra de XP até o próximo nível.
+    for hook in ("level-card", "data-progress-tier", "data-progress-xptonext", "data-xp-bar"):
+        assert hook in ws
+    # Resumo "Seu dia" na Início, alimentado pelo mesmo estado local.
+    for hook in ("data-home-progress", "data-home-streak", "data-home-level",
+                 "data-home-tier", "data-home-missions", "data-home-xp-bar"):
+        assert hook in home
+    # O motor expõe os cálculos de nível/faixa reutilizados nesses hooks.
+    for fn in ("tierFromLevel", "xpToNext", "renderHomeSummary"):
+        assert fn in game
     # A conta expõe a ponte usada por game.js.
     auth = (site / "assets" / "auth.js").read_text("utf-8")
     assert "BEC_ACCOUNT" in auth

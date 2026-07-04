@@ -515,6 +515,14 @@ def build_workspace_page():
   </section>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
+    <div class="level-card">
+      <div class="level-badge"><span class="level-num" data-progress-level>1</span><span class="level-word">nível</span></div>
+      <div class="level-body">
+        <div class="level-head"><b data-progress-tier>Semente</b><span><span data-progress-xptonext>100</span> XP para o próximo nível</span></div>
+        <div class="xp-bar"><i data-xp-bar style="width:0%"></i></div>
+        <p class="level-foot"><span data-progress-xpinto>0</span>/<span data-progress-xpneed>100</span> XP neste nível</p>
+      </div>
+    </div>
     <div class="progress-stats">
       <div class="pstat"><b data-progress-streak>0</b><span>dias seguidos</span></div>
       <div class="pstat"><b data-progress-level>1</b><span>nível</span></div>
@@ -1173,6 +1181,17 @@ def build_home(topics, verses, articles, sources, order, struct):
     </div>
     <div id="results" class="search-results"></div>
     <div class="home-panel wrap">
+      <article class="home-block home-today" data-home-progress>
+        <span>Seu dia</span>
+        <h3>Progresso de estudo</h3>
+        <div class="home-today-stats">
+          <div><b data-home-streak>0</b><small>dias seguidos</small></div>
+          <div><b data-home-level>1</b><small>nível · <span data-home-tier>Semente</span></small></div>
+          <div><b data-home-missions>0/0</b><small>missões de hoje</small></div>
+        </div>
+        <div class="xp-bar"><i data-home-xp-bar style="width:0%"></i></div>
+        <a href="workspace/#progresso">Ver progresso completo</a>
+      </article>
       <article class="home-block continue-block">
         <span>Leitura</span>
         <h3>Continuar leitura</h3>
