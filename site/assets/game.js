@@ -239,6 +239,41 @@
     }catch(e){/* ignora falhas de rede */}
   }
 
+  // ---- Escrita autoritativa (dual-write) ----------------------------------
+  // O XP/missoes/medalhas passam a ser DERIVADOS no servidor a partir de eventos
+  // validados (RPC record_event). O motor local segue calculando para a UI
+  // instantanea e para visitante/offline; quando logado, emitimos o evento real
+  // e adotamos os valores autoritativos que a RPC devolve. Best-effort: qualquer
+  // falha de rede cai no caminho local sem quebrar nada.
+  async function recordEvent(metric, dedupKey, payload){
+    var sb=sbClient(), u=sbUser(); if(!sb||!u) return;
+    try{
+      var r=await sb.rpc('record_event', {p_metric:metric, p_dedup_key:dedupKey||null, p_payload:payload||{}});
+      var d=r&&r.data; if(!d) return;
+      var s=loadState();                 // adota o autoritativo sem regredir
+      if(typeof d.xp==='number') s.xp=Math.max(s.xp||0, d.xp);
+      if(typeof d.streak==='number') s.streak=Math.max(s.streak||0, d.streak);
+      if(typeof d.longest_streak==='number') s.longest=Math.max(s.longest||0, d.longest_streak);
+      saveState(s); renderPanel(s);
+    }catch(e){/* offline/erro: segue local */}
+  }
+  // Emite um evento por item novo de nota/favorito/grifo (dedup pela chave do
+  // item), para o servidor derivar missoes de contagem sem confiar no total.
+  var COUNT_SOURCES={notes:['bec.notes'], favorites:['bec.favs'], highlights:['bec.vhl','bec.whl']};
+  function emitCountEvents(s){
+    if(!sbClient()||!sbUser()) return;
+    s.emitted=s.emitted||{};
+    Object.keys(COUNT_SOURCES).forEach(function(metric){
+      var keys=[]; COUNT_SOURCES[metric].forEach(function(lk){
+        try{var o=JSON.parse(localStorage.getItem(lk)||'{}'); if(o&&typeof o==='object') Object.keys(o).forEach(function(k){keys.push(lk+':'+k);});}catch(e){}
+      });
+      var seen=s.emitted[metric]||{};
+      keys.forEach(function(k){ if(!seen[k]){ seen[k]=1; recordEvent(metric, metric+'|'+k, {}); } });
+      s.emitted[metric]=seen;
+    });
+    saveState(s);
+  }
+
   // ---- Catalogo real (quando ha cliente) ----------------------------------
   var catalogLoaded=false;
   async function loadCatalog(){
@@ -390,8 +425,16 @@
     creditFromSnapshot(s);
     evaluateBadges(s);
     saveState(s);
+    emitCountEvents(s);   // dual-write: emite notas/favoritos/grifos novos
     renderBetaChrome();
     renderPanel(s);
+  }
+
+  // Chave de deduplicacao por acao real (idempotente no servidor).
+  function eventDedup(metric){
+    if(metric==='read_chapters'){ try{return localStorage.getItem('bec.game.readMark')||today();}catch(e){return today();} }
+    if(metric==='meditate') return 'meditate|'+today();
+    return null;
   }
 
   // API publica: outros scripts chamam BEC_GAME.record('read_chapters')
@@ -412,11 +455,14 @@
       saveState(s);
       renderPanel(s);
       schedulePush();
+      recordEvent(metric, eventDedup(metric), {});  // dual-write autoritativo
     },
     // Concede uma medalha especifica (ex.: 'comunidade' ao entrar numa sala).
     grant:function(key){
       var s=loadState(); rollover(s);
       if(award(s,key)){ saveState(s); renderPanel(s); schedulePush(); }
+      // A medalha 'comunidade' e derivada de um evento real de sala no servidor.
+      if(key==='comunidade') recordEvent('room_joined', 'joined', {});
     },
     refresh:refresh
   };

@@ -114,6 +114,9 @@ def test_gamificacao_e_beta(site):
     # O motor conhece o catálogo semanal e credita por evento real de leitura.
     for token in ("FALLBACK", "weekly", "weeklyByMetric", "renderMissions"):
         assert token in game
+    # Dual-write autoritativo: emite eventos validados via RPC record_event.
+    for token in ("record_event", "recordEvent", "emitCountEvents"):
+        assert token in game
     app = (site / "assets" / "app.js").read_text("utf-8")
     # Marcar um trecho (não abrir o capítulo) é o que credita a leitura.
     assert "read_chapters" in app and "readingRanges" in app

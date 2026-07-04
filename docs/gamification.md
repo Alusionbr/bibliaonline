@@ -63,6 +63,24 @@ Papeis por grupo continuam em `group_members.role` (`admin`/`moderator`/`member`
 Tudo e best-effort e envolto em try/catch: sem login ou sem rede, o site
 continua funcionando e o progresso fica salvo localmente.
 
+## Fonte da verdade autoritativa (servidor)
+
+Para o usuario logado, XP/missoes/medalhas passam a ser **derivados no servidor**
+a partir de eventos validados, evitando que o front forje progresso pelo
+devtools. Ver `docs/supabase-gamification-authoritative.sql`:
+
+- `public.user_events` — log append-only, escrito **so** pela RPC.
+- `public.record_event(metric, dedup_key, payload)` (SECURITY DEFINER) — valida
+  a metrica, registra o evento (idempotente por `dedup_key`) e recomputa.
+- `public.recompute_gamification(uid)` — deriva progresso diario/semanal, streak,
+  medalhas e o XP (= pontos de missoes concluidas + medalhas, com piso `legacy_xp`).
+
+O cliente faz **dual-write**: mantem o motor local para a UI instantanea e para
+visitante/offline, e emite o evento real via `record_event` quando logado,
+adotando os valores autoritativos devolvidos. A fase final (revogar a escrita
+direta nas tabelas) e uma decisao humana, aplicada so depois de validar a RPC em
+producao.
+
 ## Selo Beta
 
 `profiles.is_beta` (padrao `true`) marca contas em teste. O front mostra:
