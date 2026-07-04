@@ -10,7 +10,7 @@
     collections:'bec.collections',
     notebooks:'bec.notebooks'
   };
-  var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode','bec.lastRead','bec.history','bec.planProgress','bec.readingRanges','bec.origmode'];
+  var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode','bec.lastRead','bec.history','bec.planProgress','bec.readingRanges','bec.origmode','bec.readerTools','bec.fabPos'];
   // Colunas do user_study_state. Se a migracao v2 (docs/supabase-user-study-state-v2.sql)
   // ainda nao foi aplicada, cai para o conjunto v1 sem derrubar a sincronizacao.
   var COLS_V1='notes,verse_highlights,word_highlights,favorites,preferences,updated_at';

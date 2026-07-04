@@ -107,10 +107,29 @@ def test_gamificacao_e_beta(site):
     # Selo Beta e banner de versão de testes presentes.
     assert "data-beta-banner" in home
     assert "data-account-badge" in home
-    # Painel de progresso (missões + medalhas) no Workspace.
+    # Painel de progresso (missões diárias, semanais e medalhas) no Workspace.
     ws = (site / "workspace" / "index.html").read_text("utf-8")
-    for hook in ("data-progress-panel", "data-mission-list", "data-medal-grid"):
+    for hook in ("data-progress-panel", "data-mission-list", "data-weekly-list", "data-medal-grid"):
         assert hook in ws
+    # O motor conhece o catálogo semanal e credita por evento real de leitura.
+    for token in ("FALLBACK", "weekly", "weeklyByMetric", "renderMissions"):
+        assert token in game
+    # Dual-write autoritativo: emite eventos validados via RPC record_event.
+    for token in ("record_event", "recordEvent", "emitCountEvents"):
+        assert token in game
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    # Marcar um trecho (não abrir o capítulo) é o que credita a leitura.
+    assert "read_chapters" in app and "readingRanges" in app
+    # Cartão de nível com barra de XP até o próximo nível.
+    for hook in ("level-card", "data-progress-tier", "data-progress-xptonext", "data-xp-bar"):
+        assert hook in ws
+    # Resumo "Seu dia" na Início, alimentado pelo mesmo estado local.
+    for hook in ("data-home-progress", "data-home-streak", "data-home-level",
+                 "data-home-tier", "data-home-missions", "data-home-xp-bar"):
+        assert hook in home
+    # O motor expõe os cálculos de nível/faixa reutilizados nesses hooks.
+    for fn in ("tierFromLevel", "xpToNext", "renderHomeSummary"):
+        assert fn in game
     # A conta expõe a ponte usada por game.js.
     auth = (site / "assets" / "auth.js").read_text("utf-8")
     assert "BEC_ACCOUNT" in auth
@@ -299,6 +318,12 @@ def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
     # pool aleatório gerado
     pool = json.loads((site / "data" / "random.json").read_text("utf-8"))
     assert len(pool) >= 1 and all(isinstance(s, str) for s in pool)
+    # FAB do leitor: ferramentas configuráveis + posição arrastável salva.
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    for hook in ('data-reader-fab-config', 'data-reader-fab-config-panel', 'data-tool="theme"'):
+        assert hook in cap, hook
+    for token in ("bec.readerTools", "bec.fabPos", "pointerdown", "setPointerCapture"):
+        assert token in app, token
 
 
 def test_audio_e_favoritos(site):

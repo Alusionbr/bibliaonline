@@ -191,14 +191,8 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()}));
       becTouchHistory(location.pathname, h1.textContent.trim());
     }catch(e){}
-    // missão "ler um capítulo": credita uma vez por dia por página
-    try{
-      var mark=new Date().toISOString().slice(0,10)+'|'+location.pathname;
-      if(localStorage.getItem('bec.game.readMark')!==mark){
-        localStorage.setItem('bec.game.readMark',mark);
-        gameRecord('read_chapters');
-      }
-    }catch(e){}
+    // Abrir o capítulo NÃO conta como leitura: o progresso e a missão de leitura
+    // só avançam quando o usuário marca um trecho como lido (ver bec.readingRanges).
   }
   var cont=document.getElementById('continue-read');
   if(cont){
@@ -613,6 +607,15 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     setRanges(normalize(r));
     setMarkMode(null); clearPreview();
     paint();
+    // Evento real de leitura: marcar um trecho credita a missão de leitura,
+    // uma vez por capítulo por dia (abrir o capítulo, por si só, não conta).
+    try{
+      var mark=new Date().toISOString().slice(0,10)+'|'+chapterRef;
+      if(localStorage.getItem('bec.game.readMark')!==mark){
+        localStorage.setItem('bec.game.readMark',mark);
+        gameRecord('read_chapters');
+      }
+    }catch(err){}
     var old=saveBtn.textContent;
     saveBtn.textContent='Salvo ✓';
     setTimeout(function(){ saveBtn.textContent=old; }, 1400);
@@ -639,13 +642,63 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   var fab=document.querySelector('[data-reader-fab]'); if(!fab) return;
   var toggle=fab.querySelector('[data-reader-fab-toggle]');
   var panel=fab.querySelector('[data-reader-fab-panel]');
+  var configBtn=fab.querySelector('[data-reader-fab-config]');
+  var configPanel=fab.querySelector('[data-reader-fab-config-panel]');
   if(!toggle||!panel) return;
+
+  var TOOLS_KEY='bec.readerTools', POS_KEY='bec.fabPos';
+  var LABELS={'font-dec':'Diminuir fonte','font-inc':'Aumentar fonte','orig':'Idioma original',
+    'theme':'Tema','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar'};
+
+  function toolButtons(){return Array.prototype.slice.call(panel.querySelectorAll('.rfb[data-tool]'));}
+  function allTools(){return toolButtons().map(function(b){return b.getAttribute('data-tool');});}
+  function loadEnabled(){
+    try{var v=JSON.parse(localStorage.getItem(TOOLS_KEY)||'null'); if(Array.isArray(v)) return v;}catch(e){}
+    return allTools(); // padrão: todas as ferramentas visíveis
+  }
+  function saveEnabled(list){
+    try{localStorage.setItem(TOOLS_KEY, JSON.stringify(list));}catch(e){}
+    if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+  }
+  function applyEnabled(){
+    var en=loadEnabled();
+    toolButtons().forEach(function(b){ b.hidden = en.indexOf(b.getAttribute('data-tool'))<0; });
+  }
+
   function setOpen(open){
     panel.hidden=!open;
     toggle.setAttribute('aria-expanded', open?'true':'false');
     toggle.textContent=open?'✕':'⚙';
+    if(!open && configPanel){ configPanel.hidden=true; if(configBtn) configBtn.setAttribute('aria-expanded','false'); }
   }
-  toggle.addEventListener('click',function(){ setOpen(panel.hidden); });
+
+  // --- Personalizar quais ferramentas aparecem -----------------------------
+  function buildConfig(){
+    if(!configPanel) return;
+    var en=loadEnabled();
+    configPanel.innerHTML=allTools().map(function(t){
+      var on=en.indexOf(t)>=0;
+      return '<label class="fab-cfg-row"><input type="checkbox" data-tool-cfg="'+t+'"'+(on?' checked':'')+'>'+
+        '<span>'+(LABELS[t]||t)+'</span></label>';
+    }).join('');
+  }
+  if(configBtn && configPanel){
+    configBtn.addEventListener('click',function(){
+      var open=configPanel.hidden;
+      if(open) buildConfig();
+      configPanel.hidden=!open;
+      configBtn.setAttribute('aria-expanded', open?'true':'false');
+    });
+    configPanel.addEventListener('change',function(ev){
+      var cb=ev.target.closest && ev.target.closest('[data-tool-cfg]'); if(!cb) return;
+      var en=loadEnabled(), t=cb.getAttribute('data-tool-cfg'), i=en.indexOf(t);
+      if(cb.checked && i<0) en.push(t);
+      else if(!cb.checked && i>=0) en.splice(i,1);
+      saveEnabled(en); applyEnabled();
+    });
+  }
+
+  // --- Acões das ferramentas de progresso (marcar/salvar) ------------------
   panel.addEventListener('click',function(ev){
     var mk=ev.target.closest && ev.target.closest('[data-fab-mark]');
     if(mk){ var b=document.querySelector('[data-study-frac] [data-sf-mark="'+mk.getAttribute('data-fab-mark')+'"]'); if(b) b.click(); setOpen(false); return; }
@@ -659,4 +712,47 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     if(ev.target.closest && ev.target.closest('[data-reader-fab]')) return;
     setOpen(false);
   });
+
+  // --- Posição arrastável do FAB (salva por usuário) -----------------------
+  function applyPos(){
+    try{var p=JSON.parse(localStorage.getItem(POS_KEY)||'null');
+      if(p&&isFinite(p.right)&&isFinite(p.bottom)){ fab.style.right=p.right+'px'; fab.style.bottom=p.bottom+'px'; }
+    }catch(e){}
+  }
+  applyPos();
+
+  var drag=null, suppressClick=false;
+  toggle.addEventListener('pointerdown',function(ev){
+    var r=fab.getBoundingClientRect();
+    drag={x:ev.clientX,y:ev.clientY,moved:false,
+      right:window.innerWidth-r.right, bottom:window.innerHeight-r.bottom, curR:null, curB:null};
+    try{toggle.setPointerCapture(ev.pointerId);}catch(e){}
+  });
+  toggle.addEventListener('pointermove',function(ev){
+    if(!drag) return;
+    var dx=ev.clientX-drag.x, dy=ev.clientY-drag.y;
+    if(!drag.moved && Math.abs(dx)+Math.abs(dy)>6) drag.moved=true;
+    if(drag.moved){
+      var right=Math.max(6, Math.min(window.innerWidth-58, drag.right-dx));
+      var bottom=Math.max(6, Math.min(window.innerHeight-58, drag.bottom-dy));
+      fab.style.right=right+'px'; fab.style.bottom=bottom+'px';
+      drag.curR=right; drag.curB=bottom;
+    }
+  });
+  toggle.addEventListener('pointerup',function(){
+    if(!drag) return;
+    if(drag.moved && drag.curR!=null){
+      suppressClick=true; // não abrir/fechar logo após arrastar
+      try{localStorage.setItem(POS_KEY, JSON.stringify({right:Math.round(drag.curR),bottom:Math.round(drag.curB)}));}catch(e){}
+      if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+    }
+    drag=null;
+  });
+  toggle.addEventListener('click',function(){
+    if(suppressClick){ suppressClick=false; return; } // clique fantasma após arrastar
+    setOpen(panel.hidden);
+  });
+
+  applyEnabled();
+  document.addEventListener('bec:study-sync', function(){ applyEnabled(); applyPos(); });
 })();
