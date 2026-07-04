@@ -506,15 +506,11 @@ def build_workspace_page():
     <p class="eyebrow">Espaço pessoal</p>
     <h1>Workspace</h1>
     <p>Sua mesa pessoal para ler, estudar, guardar materiais e acompanhar progresso.</p>
-  </header>
-  <section class="hub-section">
-    <div class="study-card-grid">{cards}
+    <div class="hub-cta">
+      <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
+      <a class="btn green" href="#progresso">Ver progresso</a>
     </div>
-  </section>
-  <section class="hub-section" id="historico">
-    <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
-    <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
-  </section>
+  </header>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
     <div class="level-card">
@@ -543,6 +539,15 @@ def build_workspace_page():
       <h3>Medalhas</h3>
       <div class="medal-grid" data-medal-grid></div>
     </div>
+  </section>
+  <section class="hub-section" id="ferramentas">
+    <div class="section-title"><h2>Suas ferramentas</h2><span>Leitura, planos, biblioteca e comunidade</span></div>
+    <div class="study-card-grid">{cards}
+    </div>
+  </section>
+  <section class="hub-section" id="historico">
+    <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
+    <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
   </section>
   <section class="hub-section profile-study" id="perfil">
     <div class="section-title"><h2>Perfil de estudo</h2><span>Sem seguidores ou ranking</span></div>
