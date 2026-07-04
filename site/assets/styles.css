@@ -188,6 +188,31 @@ section{padding:52px 0}
 .section-title a{font-family:"Inter",system-ui,sans-serif;font-size:.9rem;font-weight:700;text-decoration:none}
 .study-card-grid{display:grid;gap:12px}
 .study-card.link-card:hover{border-color:var(--gold);color:var(--ink)}
+
+/* ---------- Repaginação dos hubs (estilo painel de estudo) ---------- */
+/* brilho dourado quente atrás do conteúdo pessoal */
+.hub-page{position:relative}
+.hub-page::before{content:"";position:absolute;left:0;right:0;top:0;height:460px;pointer-events:none;z-index:0;
+  background:radial-gradient(120% 70% at 12% -10%,rgba(200,149,54,.15),rgba(200,149,54,0) 55%)}
+.hub-page > *{position:relative;z-index:1}
+/* hero vira cartão de destaque */
+.hub-hero{max-width:var(--max);background:linear-gradient(160deg,var(--paper),var(--vellum-2));
+  border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 24px;box-shadow:var(--shadow)}
+.hub-hero h1{font-size:clamp(1.9rem,6vw,2.6rem);letter-spacing:-.02em}
+.hub-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+/* cards mais arredondados, com leve elevação e brilho no hover */
+.hub-page .study-card,.hub-page .plan-form,.hub-page .community-form{border-radius:var(--radius-lg);
+  box-shadow:0 8px 26px rgba(44,29,12,.05);transition:transform .15s,border-color .15s,box-shadow .15s}
+.hub-page .study-card.link-card:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(44,29,12,.10)}
+/* botões cheios com gradiente dentro do hub */
+.hub-page .btn.primary{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#20170a;border:0}
+.hub-page .btn.primary:hover{filter:brightness(1.04);color:#20170a}
+.hub-page .btn.green{background:linear-gradient(135deg,var(--green),#6cc38a);color:#06190f;border:0}
+.hub-page .btn.green:hover{filter:brightness(1.04);color:#06190f}
+/* progresso mais destacado */
+.progresso .pstat{border-radius:18px;padding:16px 12px}
+.progresso .pstat b{font-size:1.9rem}
+.hub-page .mission,.hub-page .medal{border-radius:18px}
 .plan-form{display:grid;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px}
 .plan-form label{display:grid;gap:6px;font-family:"Inter",system-ui,sans-serif;font-size:.86rem;color:var(--muted)}
 .plan-form input,.plan-form select{min-height:42px;border:1px solid var(--line);border-radius:8px;background:var(--vellum-2);
@@ -419,6 +444,10 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 @media(max-width:759px){
   body{padding-bottom:68px}
   .auth-trigger{max-width:82px;padding-inline:10px}
+  /* No celular as ferramentas de leitura ficam no FAB; no topo fica só o tema,
+     evitando que a barra estoure a largura e o site "corra pros lados". */
+  .nav .reader-tools .rt:not([data-rt="theme"]){display:none}
+  .nav-in{gap:8px}
   .nav-links{
     display:none;position:absolute;right:14px;top:62px;flex-direction:column;
     background:var(--dark);border:1px solid var(--line-2);border-radius:14px;padding:8px;min-width:200px;gap:2px
@@ -437,6 +466,10 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
   }
   .mobile-primary-nav a:hover{background:var(--vellum-2);color:var(--ink)}
   html.dark .mobile-primary-nav{background:rgba(7,17,31,.96)}
+}
+@media(max-width:430px){
+  /* telas bem estreitas: mantém só o selo da marca (ב) para a barra caber */
+  .brand-name{display:none}
 }
 
 /* movimento */
