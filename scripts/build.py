@@ -533,6 +533,10 @@ def build_workspace_page():
       <h3>Missões de hoje</h3>
       <div class="mission-list" data-mission-list></div>
     </div>
+    <div class="mission-block">
+      <h3>Missões da semana</h3>
+      <div class="mission-list" data-weekly-list></div>
+    </div>
     <div class="medal-block">
       <h3>Medalhas</h3>
       <div class="medal-grid" data-medal-grid></div>

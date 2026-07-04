@@ -15,10 +15,20 @@ o catalogo do banco quando ha conexao e cai para um espelho embutido em
 `scripts/gamification.asset.js` (constante `FALLBACK`) quando offline. Mantenha
 os dois em sincronia; o SQL de seed esta em `docs/supabase-gamification.sql`.
 
+## Missoes semanais
+
+Alem das diarias, ha um catalogo de missoes semanais em `public.weekly_missions`
+(mesmo padrao de RLS: leitura publica, escrita por staff). O fallback embutido
+fica em `scripts/gamification.asset.js` (`FALLBACK.weekly`) e o SQL em
+`docs/supabase-gamification-weekly.sql`. Elas reiniciam a cada semana ISO
+(`YYYY-Www`) e acumulam progresso ao longo da semana, com baseline proprio
+(`weekBase`), separado do baseline diario.
+
 ## Dados por usuario (privados, RLS por dono)
 
 - `public.user_gamification` — XP, nivel, streak, ultimo dia ativo.
-- `public.user_mission_progress` — progresso por missao e por dia.
+- `public.user_mission_progress` — progresso por missao diaria e por dia.
+- `public.user_weekly_mission_progress` — progresso por missao semanal e por semana.
 - `public.user_badges` — medalhas conquistadas.
 
 Todas seguem o mesmo padrao de RLS de `user_study_state`: o dono le/escreve
@@ -41,8 +51,11 @@ Papeis por grupo continuam em `group_members.role` (`admin`/`moderator`/`member`
   um dia pulado reinicia. Guardado em `bec.game` (localStorage) e sincronizado.
 - **Missoes de nota/favorito/grifo**: creditadas comparando as contagens do
   localStorage com o baseline do inicio do dia (so conta atividade nova de hoje).
-- **Missoes de leitura/meditacao**: creditadas por eventos explicitos que o
-  `app.asset.js` envia via `gameRecord('read_chapters' | 'meditate')`.
+- **Missao de leitura**: creditada por evento real — abrir o capitulo nao conta;
+  a missao avanca quando o usuario marca um trecho como lido (`bec.readingRanges`,
+  uma vez por capitulo por dia via `gameRecord('read_chapters')`).
+- **Missao de meditacao**: creditada quando o usuario abre um versiculo aleatorio
+  para meditar (`gameRecord('meditate')`).
 - **Medalhas**: avaliadas a partir de contagens de vida, streak e missoes
   concluidas. Ao logar, o modulo puxa do servidor e mantem o maior valor, para
   nao perder progresso entre aparelhos.

@@ -107,10 +107,16 @@ def test_gamificacao_e_beta(site):
     # Selo Beta e banner de versão de testes presentes.
     assert "data-beta-banner" in home
     assert "data-account-badge" in home
-    # Painel de progresso (missões + medalhas) no Workspace.
+    # Painel de progresso (missões diárias, semanais e medalhas) no Workspace.
     ws = (site / "workspace" / "index.html").read_text("utf-8")
-    for hook in ("data-progress-panel", "data-mission-list", "data-medal-grid"):
+    for hook in ("data-progress-panel", "data-mission-list", "data-weekly-list", "data-medal-grid"):
         assert hook in ws
+    # O motor conhece o catálogo semanal e credita por evento real de leitura.
+    for token in ("FALLBACK", "weekly", "weeklyByMetric", "renderMissions"):
+        assert token in game
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    # Marcar um trecho (não abrir o capítulo) é o que credita a leitura.
+    assert "read_chapters" in app and "readingRanges" in app
     # Cartão de nível com barra de XP até o próximo nível.
     for hook in ("level-card", "data-progress-tier", "data-progress-xptonext", "data-xp-bar"):
         assert hook in ws

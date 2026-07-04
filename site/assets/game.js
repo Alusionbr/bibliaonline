@@ -15,10 +15,15 @@
   // ---- Catalogo de reserva (espelha o seed do banco) ----------------------
   var FALLBACK = {
     missions: [
-      {key:'ler_capitulo', title:'Leia um capitulo',    description:'Abra e leia ao menos um capitulo hoje.',        icon:'📖', goal:1, metric:'read_chapters', points:10, sort:1},
+      {key:'ler_capitulo', title:'Leia um capitulo',    description:'Marque um trecho de leitura como lido hoje.',   icon:'📖', goal:1, metric:'read_chapters', points:10, sort:1},
       {key:'meditar',      title:'Medite no versiculo',  description:'Abra o versiculo para meditar hoje.',           icon:'🕊️', goal:1, metric:'meditate',      points:10, sort:2},
       {key:'anotar',       title:'Faca uma anotacao',    description:'Registre um aprendizado em uma anotacao.',      icon:'✍️', goal:1, metric:'notes',         points:10, sort:3},
       {key:'favoritar',    title:'Guarde um versiculo',  description:'Marque um versiculo como favorito.',            icon:'⭐', goal:1, metric:'favorites',     points:10, sort:4}
+    ],
+    weekly: [
+      {key:'semana_leitura',   title:'Ritmo de leitura',       description:'Marque trechos de leitura em 4 dias desta semana.', icon:'📖', goal:4, metric:'read_chapters', points:40, sort:1},
+      {key:'semana_anotacoes', title:'Semana de anotacoes',    description:'Faca 3 anotacoes nesta semana.',                    icon:'✍️', goal:3, metric:'notes',         points:40, sort:2},
+      {key:'semana_favoritos', title:'Colecionador da semana', description:'Guarde 5 versiculos favoritos nesta semana.',       icon:'⭐', goal:5, metric:'favorites',     points:40, sort:3}
     ],
     badges: [
       {key:'primeiro_passo',   title:'Primeiro Passo', description:'Comecou a jornada de estudo.',        icon:'🌱', tier:'bronze', points:10, sort:1},
@@ -42,6 +47,15 @@
   function today(){return new Date().toISOString().slice(0,10);}
   function daysBetween(a,b){ // b - a em dias inteiros (datas YYYY-MM-DD)
     try{return Math.round((Date.parse(b)-Date.parse(a))/86400000);}catch(e){return 99;}
+  }
+  // Semana ISO 'YYYY-Www' (segunda a domingo), usada como chave das missoes semanais.
+  function weekKey(dt){
+    var d=new Date(dt||Date.now());
+    d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+    var day=d.getUTCDay()||7; d.setUTCDate(d.getUTCDate()+4-day);
+    var yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    var wk=Math.ceil((((d-yearStart)/86400000)+1)/7);
+    return d.getUTCFullYear()+'-W'+(wk<10?'0'+wk:wk);
   }
   function countKeys(k){try{var o=JSON.parse(localStorage.getItem(k)||'{}');return o&&typeof o==='object'?Object.keys(o).length:0;}catch(e){return 0;}}
   function counts(){
@@ -74,6 +88,7 @@
     if(!s||typeof s!=='object') s={};
     s.streak=s.streak||0; s.longest=s.longest||0; s.xp=s.xp||0;
     s.missions=s.missions||{}; s.badges=s.badges||{};
+    s.weekly=s.weekly||{};   // progresso das missoes semanais (reinicia por semana ISO)
     s.missionsDoneTotal=s.missionsDoneTotal||0; s.chaptersReadTotal=s.chaptersReadTotal||0;
     return s;
   }
@@ -101,28 +116,41 @@
       s.missions={};        // missoes reiniciam a cada dia
     }
     if(!s.base) s.base=counts();
+    // Semana ISO: missoes semanais reiniciam a cada semana, com baseline proprio.
+    var wk=weekKey();
+    if(s.week!==wk){ s.week=wk; s.weekBase=counts(); s.weekly={}; }
+    if(!s.weekBase) s.weekBase=counts();
     return s;
   }
 
   function missionByMetric(metric){return catalog.missions.filter(function(m){return m.metric===metric;});}
+  function weeklyByMetric(metric){return (catalog.weekly||[]).filter(function(m){return m.metric===metric;});}
 
-  function setMissionProgress(s, mission, value){
-    var cur=s.missions[mission.key]||{p:0,done:false};
+  // Aplica progresso a uma missao num mapa ('missions' diario ou 'weekly').
+  // countTotal so vale para as diarias (medalha 'missoes_7' conta missoes diarias).
+  function applyMission(s, mapKey, mission, value, countTotal){
+    var map=s[mapKey]||(s[mapKey]={});
+    var cur=map[mission.key]||{p:0,done:false};
     var p=Math.max(cur.p||0, Math.min(value, mission.goal));
     var justDone=(!cur.done && p>=mission.goal);
-    s.missions[mission.key]={p:p, done:cur.done||p>=mission.goal};
+    map[mission.key]={p:p, done:cur.done||p>=mission.goal};
     if(justDone){
       s.xp=(s.xp||0)+(mission.points||10);
-      s.missionsDoneTotal=(s.missionsDoneTotal||0)+1;
+      if(countTotal) s.missionsDoneTotal=(s.missionsDoneTotal||0)+1;
     }
   }
+  function setMissionProgress(s, mission, value){ applyMission(s,'missions',mission,value,true); }
+  function setWeeklyProgress(s, mission, value){ applyMission(s,'weekly',mission,value,false); }
 
-  // Credita missoes de notes/favorites/highlights comparando com o baseline do dia
+  // Credita missoes de contagem (notes/favorites/highlights) comparando com o
+  // baseline: do dia para as diarias, da semana para as semanais.
   function creditFromSnapshot(s){
-    var c=counts(), base=s.base||{};
+    var c=counts(), base=s.base||{}, wbase=s.weekBase||{};
     ['notes','favorites','highlights'].forEach(function(metric){
       var delta=(c[metric]||0)-(base[metric]||0);
       if(delta>0) missionByMetric(metric).forEach(function(m){setMissionProgress(s,m,delta);});
+      var wdelta=(c[metric]||0)-(wbase[metric]||0);
+      if(wdelta>0) weeklyByMetric(metric).forEach(function(m){setWeeklyProgress(s,m,wdelta);});
     });
   }
 
@@ -156,7 +184,8 @@
 
   // Assinatura do estado sincronizavel: so envia ao banco quando muda de fato.
   function pushSig(s){
-    return JSON.stringify([s.xp||0, s.streak||0, s.longest||0, Object.keys(s.badges||{}).sort()]);
+    var weekly=Object.keys(s.weekly||{}).map(function(k){var m=s.weekly[k];return k+':'+(m.p||0);}).sort();
+    return JSON.stringify([s.xp||0, s.streak||0, s.longest||0, Object.keys(s.badges||{}).sort(), weekly]);
   }
   // Baseline do que o servidor ja tem; enquanto igual a isto, nao ha o que enviar.
   var lastPushSig=null;
@@ -174,6 +203,13 @@
       }
       var b=await sb.from('user_badges').select('badge_key').eq('user_id',u.id);
       if(b&&b.data) b.data.forEach(function(row){s.badges[row.badge_key]=true;});
+      // Progresso semanal da semana corrente: servidor mantem o maior valor.
+      var wk=weekKey();
+      var w=await sb.from('user_weekly_mission_progress').select('mission_key,progress,completed').eq('user_id',u.id).eq('week',wk);
+      if(w&&w.data) w.data.forEach(function(row){
+        var cur=s.weekly[row.mission_key]||{p:0,done:false};
+        s.weekly[row.mission_key]={p:Math.max(cur.p||0,row.progress||0), done:cur.done||!!row.completed};
+      });
       // Registra o que o servidor ja possui: push so ocorre se surgir algo novo.
       lastPushSig=pushSig(s);
     }catch(e){/* offline/desconfigurado: segue local */}
@@ -193,6 +229,11 @@
         return {user_id:u.id, mission_key:k, day:s.day||today(), progress:m.p||0, completed:!!m.done, updated_at:new Date().toISOString()};
       });
       if(rows.length) await sb.from('user_mission_progress').upsert(rows,{onConflict:'user_id,mission_key,day'});
+      var wrows=Object.keys(s.weekly||{}).map(function(k){
+        var m=s.weekly[k];
+        return {user_id:u.id, mission_key:k, week:s.week||weekKey(), progress:m.p||0, completed:!!m.done, updated_at:new Date().toISOString()};
+      });
+      if(wrows.length) await sb.from('user_weekly_mission_progress').upsert(wrows,{onConflict:'user_id,mission_key,week'});
       var badges=Object.keys(s.badges||{}).map(function(k){return {user_id:u.id, badge_key:k};});
       if(badges.length) await sb.from('user_badges').upsert(badges,{onConflict:'user_id,badge_key',ignoreDuplicates:true});
     }catch(e){/* ignora falhas de rede */}
@@ -207,9 +248,11 @@
     try{
       var m=await sb.from('daily_missions').select('*').eq('active',true).order('sort');
       var b=await sb.from('badges').select('*').order('sort');
+      var w=await sb.from('weekly_missions').select('*').eq('active',true).order('sort');
       var changed=false;
       if(m&&m.data&&m.data.length){ catalog.missions=m.data.filter(function(x){return x.metric!=='highlights';}); changed=true; }
       if(b&&b.data&&b.data.length){ catalog.badges=b.data; changed=true; }
+      if(w&&w.data&&w.data.length){ catalog.weekly=w.data; changed=true; }
       catalogLoaded=true;
       return changed;
     }catch(e){/* mantem fallback: offline-first, o site segue sem conta/rede */}
@@ -238,6 +281,22 @@
       var dismissed=false; try{dismissed=localStorage.getItem('bec.betaDismiss')==='1';}catch(e){}
       banner.hidden=dismissed;
     }
+  }
+
+  // Pinta uma lista de missoes (diarias ou semanais) com barra de progresso.
+  function renderMissions(el, list, progressMap){
+    if(!el) return;
+    list=list||[]; progressMap=progressMap||{};
+    el.innerHTML=list.map(function(m){
+      var mp=progressMap[m.key]||{p:0,done:false};
+      var pct=Math.min(100, Math.round(100*(mp.p||0)/(m.goal||1)));
+      return '<article class="mission'+(mp.done?' done':'')+'">'+
+        '<span class="mission-ic">'+esc(m.icon||'📖')+'</span>'+
+        '<div class="mission-body"><b>'+esc(m.title)+'</b><span>'+esc(m.description)+'</span>'+
+        '<div class="mbar"><i style="width:'+pct+'%"></i></div></div>'+
+        '<span class="mission-flag">'+(mp.done?'✓ +'+(m.points||10)+' XP':(mp.p||0)+'/'+m.goal)+'</span>'+
+      '</article>';
+    }).join('');
   }
 
   // Resumo compacto de gamificacao (usado na Inicio). Le o mesmo estado local.
@@ -289,19 +348,8 @@
     set('[data-progress-xptonext]', xpToNext(s.xp));
     var xpbar=qs('[data-xp-bar]'); if(xpbar) xpbar.style.width=levelPct(s.xp)+'%';
 
-    var mlist=qs('[data-mission-list]');
-    if(mlist){
-      mlist.innerHTML=catalog.missions.map(function(m){
-        var mp=s.missions[m.key]||{p:0,done:false};
-        var pct=Math.min(100, Math.round(100*(mp.p||0)/(m.goal||1)));
-        return '<article class="mission'+(mp.done?' done':'')+'">'+
-          '<span class="mission-ic">'+esc(m.icon||'📖')+'</span>'+
-          '<div class="mission-body"><b>'+esc(m.title)+'</b><span>'+esc(m.description)+'</span>'+
-          '<div class="mbar"><i style="width:'+pct+'%"></i></div></div>'+
-          '<span class="mission-flag">'+(mp.done?'✓ +'+(m.points||10)+' XP':'')+'</span>'+
-        '</article>';
-      }).join('');
-    }
+    renderMissions(qs('[data-mission-list]'), catalog.missions, s.missions);
+    renderMissions(qs('[data-weekly-list]'), catalog.weekly, s.weekly);
     var grid=qs('[data-medal-grid]');
     if(grid){
       grid.innerHTML=catalog.badges.map(function(b){
@@ -355,6 +403,10 @@
       missionByMetric(metric).forEach(function(m){
         var cur=(s.missions[m.key]&&s.missions[m.key].p)||0;
         setMissionProgress(s,m,cur+n);
+      });
+      weeklyByMetric(metric).forEach(function(m){
+        var cur=(s.weekly[m.key]&&s.weekly[m.key].p)||0;
+        setWeeklyProgress(s,m,cur+n);
       });
       evaluateBadges(s);
       saveState(s);

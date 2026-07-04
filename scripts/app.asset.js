@@ -191,14 +191,8 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       localStorage.setItem('bec.lastRead', JSON.stringify({url:location.pathname, label:h1.textContent.trim()}));
       becTouchHistory(location.pathname, h1.textContent.trim());
     }catch(e){}
-    // missão "ler um capítulo": credita uma vez por dia por página
-    try{
-      var mark=new Date().toISOString().slice(0,10)+'|'+location.pathname;
-      if(localStorage.getItem('bec.game.readMark')!==mark){
-        localStorage.setItem('bec.game.readMark',mark);
-        gameRecord('read_chapters');
-      }
-    }catch(e){}
+    // Abrir o capítulo NÃO conta como leitura: o progresso e a missão de leitura
+    // só avançam quando o usuário marca um trecho como lido (ver bec.readingRanges).
   }
   var cont=document.getElementById('continue-read');
   if(cont){
@@ -613,6 +607,15 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     setRanges(normalize(r));
     setMarkMode(null); clearPreview();
     paint();
+    // Evento real de leitura: marcar um trecho credita a missão de leitura,
+    // uma vez por capítulo por dia (abrir o capítulo, por si só, não conta).
+    try{
+      var mark=new Date().toISOString().slice(0,10)+'|'+chapterRef;
+      if(localStorage.getItem('bec.game.readMark')!==mark){
+        localStorage.setItem('bec.game.readMark',mark);
+        gameRecord('read_chapters');
+      }
+    }catch(err){}
     var old=saveBtn.textContent;
     saveBtn.textContent='Salvo ✓';
     setTimeout(function(){ saveBtn.textContent=old; }, 1400);

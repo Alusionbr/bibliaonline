@@ -177,7 +177,7 @@ on conflict (key) do update set
   tier = excluded.tier, points = excluded.points, sort = excluded.sort;
 
 insert into public.daily_missions (key, title, description, icon, goal, metric, points, sort) values
-  ('ler_capitulo', 'Leia um capitulo',        'Abra e leia ao menos um capitulo hoje.',        '📖', 1, 'read_chapters', 10, 1),
+  ('ler_capitulo', 'Leia um capitulo',        'Marque um trecho de leitura como lido hoje.',   '📖', 1, 'read_chapters', 10, 1),
   ('meditar',      'Medite no versiculo',     'Abra o versiculo para meditar hoje.',           '🕊️', 1, 'meditate',      10, 2),
   ('anotar',       'Faca uma anotacao',       'Registre um aprendizado em uma anotacao.',      '✍️', 1, 'notes',         10, 3),
   ('favoritar',    'Guarde um versiculo',     'Marque um versiculo como favorito.',            '⭐', 1, 'favorites',     10, 4),
