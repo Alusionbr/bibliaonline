@@ -385,6 +385,11 @@
 
     renderMissions(qs('[data-mission-list]'), catalog.missions, s.missions);
     renderMissions(qs('[data-weekly-list]'), catalog.weekly, s.weekly);
+    // Contadores dos blocos retráteis (missões/medalhas ficam recolhidas).
+    var doneOf=function(list,map){list=list||[];map=map||{};return list.filter(function(m){var mp=map[m.key];return mp&&mp.done;}).length;};
+    set('[data-mission-count]', doneOf(catalog.missions, s.missions)+'/'+(catalog.missions||[]).length);
+    set('[data-weekly-count]', doneOf(catalog.weekly, s.weekly)+'/'+(catalog.weekly||[]).length);
+    set('[data-medal-count]', Object.keys(s.badges||{}).length+'/'+(catalog.badges||[]).length);
     var grid=qs('[data-medal-grid]');
     if(grid){
       grid.innerHTML=catalog.badges.map(function(b){
@@ -464,6 +469,10 @@
       // A medalha 'comunidade' e derivada de um evento real de sala no servidor.
       if(key==='comunidade') recordEvent('room_joined', 'joined', {});
     },
+    // Nivel atual (UI de recursos travados por nivel, ex.: criar salas).
+    // A trava real fica no servidor (create_group exige nivel 3).
+    level:function(){try{return levelFromXp(loadState().xp);}catch(e){return 1;}},
+    xpToNext:function(){try{return xpToNext(loadState().xp);}catch(e){return LEVEL_XP;}},
     refresh:refresh
   };
 

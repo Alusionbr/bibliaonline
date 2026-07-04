@@ -196,11 +196,12 @@ def head(title, description, canonical, prefix, jsonld=None):
 </div>"""
 
 def nav(prefix):
+    # Navegação enxuta: Estudar e Comunidade viveram como páginas próprias e
+    # foram fundidos no Workspace (seções #estudar e #comunidade); os endereços
+    # antigos redirecionam para lá.
     links = [
         ("Início", f"{prefix}index.html"),
         ("Bíblia", f"{prefix}ler/"),
-        ("Estudar", f"{prefix}estudar/"),
-        ("Comunidade", f"{prefix}comunidade/"),
         ("Workspace", f"{prefix}workspace/"),
     ]
     nav_links = "\n      ".join(f'<a href="{url}">{label}</a>' for label, url in links)
@@ -244,12 +245,12 @@ def footer(prefix):
     <div class="cols">
       <div>
         <a href="{prefix}ler/">Bíblia</a>
-        <a href="{prefix}estudar/">Estudar</a>
+        <a href="{prefix}workspace/#estudar">Estudar</a>
         <a href="{prefix}planos/">Planos</a>
         <a href="{prefix}workspace/">Workspace</a>
       </div>
       <div>
-        <a href="{prefix}comunidade/">Comunidade</a>
+        <a href="{prefix}workspace/#comunidade">Comunidade</a>
         <a href="{prefix}biblioteca/">Biblioteca</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
       </div>
@@ -338,7 +339,7 @@ def study_map_module(prefix, livro, ch=None, vs=None):
       <h2>{esc(place)}</h2>
       <p>Crie uma Sala de Estudo sobre este trecho e convide pelo código, ou continue com suas ferramentas pessoais.</p>
     </div>
-    <p class="map-actions"><a class="btn primary" href="{prefix}comunidade/salas/">Ver Salas de Estudo</a><a class="btn quiet" href="{prefix}estudar/">Abrir ferramentas de estudo</a></p>
+    <p class="map-actions"><a class="btn primary" href="{prefix}workspace/#comunidade">Ver Salas de Estudo</a><a class="btn quiet" href="{prefix}workspace/#estudar">Abrir ferramentas de estudo</a></p>
   </section>"""
 
 
@@ -355,10 +356,10 @@ def study_desk_module(prefix, livro, ch=None):
       <a href="{prefix}ler/">Bíblia</a>
       <a href="{prefix}anotacoes/">Minhas notas</a>
       <a href="{prefix}colecoes/">Coleções</a>
-      <a href="{prefix}comunidade/">Pessoas estudando</a>
-      <a href="{prefix}comunidade/">Perguntas</a>
+      <a href="{prefix}workspace/#comunidade">Pessoas estudando</a>
+      <a href="{prefix}workspace/#comunidade">Perguntas</a>
       <a href="{prefix}linha-do-tempo/">Mapa</a>
-      <a href="{prefix}estudar/">Plano</a>
+      <a href="{prefix}workspace/#criar-plano">Plano</a>
     </div>
   </section>"""
 
@@ -417,40 +418,105 @@ def reader_fab(has_fraction=True):
     <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
+    <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     {mark}<button type="button" class="rfb" data-tool="report" data-report-open>🐞<span>Reportar</span></button>
     <button type="button" class="reader-fab-config-btn" data-reader-fab-config aria-expanded="false" aria-label="Personalizar ferramentas">⚙ Personalizar</button>
     <div class="reader-fab-config" data-reader-fab-config-panel hidden></div>
   </div>
   <button type="button" class="reader-fab-btn" data-reader-fab-toggle aria-label="Ferramentas de leitura (arraste para reposicionar)" aria-expanded="false">⚙</button>
-</div>"""
+</div>
+<button type="button" class="focus-exit" data-focus-toggle>Sair do modo leitura</button>"""
 
 
-def build_study_page():
+def build_redirect_page(out_path, prefix, target, title):
+    """Página-ponte: o endereço antigo continua existindo, mas leva direto ao
+    novo lugar (Estudar e Comunidade foram fundidos no Workspace). Mantém os
+    links espalhados por rodapés, capítulos e favoritos de usuários vivos."""
+    url = f"{prefix}{target}"
+    html = f"""<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(title)} | {SITE_NAME}</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="{BASE_URL}/workspace/">
+<meta http-equiv="refresh" content="0; url={url}">
+<script>location.replace('{url}');</script>
+</head><body>
+<p>Esta área agora vive no Workspace. <a href="{url}">Continuar para o Workspace</a>.</p>
+</body></html>"""
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    write_file(out_path, html)
+
+
+def build_merged_redirects():
+    build_redirect_page(SITE / "estudar" / "index.html", "../", "workspace/#estudar", "Estudar")
+    build_redirect_page(SITE / "comunidade" / "index.html", "../", "workspace/#comunidade", "Comunidade")
+    build_redirect_page(SITE / "comunidade" / "salas" / "index.html", "../../", "workspace/#comunidade", "Salas de Estudo")
+
+
+def build_workspace_page():
     prefix = "../"
-    title = f"Estudar | {SITE_NAME}"
-    desc = "Ferramentas de estudo bíblico: planos, biblioteca, favoritos, anotações, marcações, histórico e exploração por temas."
-    canonical = f"{BASE_URL}/estudar/"
-    tool_cards = action_cards([
-        ("Estudos", "Meus estudos", "Organize estudos em andamento e retome pelo último trecho.", "#meus-estudos"),
-        ("Planos", "Planos", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
-        ("Biblioteca", "Biblioteca", "Notas, grifos, favoritos, artigos, coleções e cadernos.", f"{prefix}biblioteca/"),
+    title = f"Workspace | {SITE_NAME}"
+    desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca, anotações e Salas de Estudo em um só lugar."
+    canonical = f"{BASE_URL}/workspace/"
+    cards = action_cards([
+        ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/"),
+        ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
+        ("Biblioteca", "Minha biblioteca", "Notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
         ("Favoritos", "Favoritos", "Versículos salvos para voltar depois.", f"{prefix}biblioteca/#favoritos"),
         ("Anotações", "Anotações", "Notas salvas neste navegador e sincronizáveis quando houver conta.", f"{prefix}anotacoes/"),
         ("Marcações", "Marcações", "Grifos por palavra e por versículo.", f"{prefix}anotacoes/"),
-        ("Histórico", "Histórico", "Continue a leitura recente.", f"{prefix}workspace/#historico"),
-        ("Explorar", "Explorar", "Temas, livros, manuscritos e linha do tempo.", f"{prefix}index.html#temas"),
+        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
+        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
+        ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
+        ("Histórico", "Histórico", "Continue a leitura recente.", "#historico"),
     ])
     body = f"""
 <main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Estudar</p>
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Workspace</p>
   <header class="hub-hero">
-    <p class="eyebrow">Área de estudo</p>
-    <h1>Estudar</h1>
-    <p>Reúna planos, biblioteca, favoritos, anotações, marcações e histórico sem tirar a Bíblia do centro.</p>
+    <p class="eyebrow">Seu espaço de estudo</p>
+    <h1>Workspace</h1>
+    <p>Leitura, progresso, ferramentas de estudo e comunidade — tudo ao redor do texto, em um só lugar.</p>
+    <div class="hub-cta">
+      <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
+      <a class="btn green" href="#progresso">Ver progresso</a>
+      <a class="btn quiet" href="#comunidade">Salas de Estudo</a>
+    </div>
   </header>
-  <section class="hub-section" id="meus-estudos">
-    <div class="section-title"><h2>Ferramentas</h2><a href="#criar-plano">Criar plano</a></div>
-    <div class="study-card-grid">{tool_cards}
+  <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
+    <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
+    <div class="level-card">
+      <div class="level-badge"><span class="level-num" data-progress-level>1</span><span class="level-word">nível</span></div>
+      <div class="level-body">
+        <div class="level-head"><b data-progress-tier>Semente</b><span><span data-progress-xptonext>100</span> XP para o próximo nível</span></div>
+        <div class="xp-bar"><i data-xp-bar style="width:0%"></i></div>
+        <p class="level-foot"><span data-progress-xpinto>0</span>/<span data-progress-xpneed>100</span> XP neste nível</p>
+      </div>
+    </div>
+    <div class="progress-stats">
+      <div class="pstat"><b data-progress-streak>0</b><span>dias seguidos</span></div>
+      <div class="pstat"><b data-progress-level>1</b><span>nível</span></div>
+      <div class="pstat"><b data-progress-xp>0</b><span>pontos (XP)</span></div>
+      <div class="pstat"><b data-progress-medals>0</b><span>medalhas</span></div>
+    </div>
+    <details class="collap mission-block">
+      <summary><span class="collap-title">Missões de hoje</span><span class="collap-count" data-mission-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
+      <div class="mission-list" data-mission-list></div>
+    </details>
+    <details class="collap mission-block">
+      <summary><span class="collap-title">Missões da semana</span><span class="collap-count" data-weekly-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
+      <div class="mission-list" data-weekly-list></div>
+    </details>
+    <details class="collap medal-block">
+      <summary><span class="collap-title">Medalhas</span><span class="collap-count" data-medal-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
+      <div class="medal-grid" data-medal-grid></div>
+    </details>
+  </section>
+  <section class="hub-section" id="estudar">
+    <div class="section-title"><h2>Estudar</h2><a href="#criar-plano">Criar plano</a></div>
+    <div class="study-card-grid">{cards}
     </div>
   </section>
   <section class="hub-section plan-builder" id="criar-plano">
@@ -477,72 +543,11 @@ def build_study_page():
     </form>
     <div class="saved-plans" data-plan-list></div>
   </section>
-</main>"""
-    out = SITE / "estudar" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
-
-
-def build_workspace_page():
-    prefix = "../"
-    title = f"Workspace | {SITE_NAME}"
-    desc = "Espaço pessoal para continuar leitura, acompanhar planos, biblioteca, salas, coleções, cadernos e progresso."
-    canonical = f"{BASE_URL}/workspace/"
-    cards = action_cards([
-        ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/"),
-        ("Hoje", "Plano de hoje", "Veja o trecho reservado para o dia.", f"{prefix}planos/"),
-        ("Estudos", "Meus estudos", "Planos e estudos pessoais em andamento.", f"{prefix}estudar/#meus-estudos"),
-        ("Biblioteca", "Minha biblioteca", "Notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
-        ("Salas", "Minhas salas", "Salas de Estudo conectadas ao conteúdo bíblico.", f"{prefix}comunidade/salas/"),
-        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
-        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
-        ("Progresso", "Progresso", "Dias estudando, planos concluídos e calendário.", "#progresso"),
-        ("Perfil", "Perfil", "Seu perfil de estudo e contribuições.", "#perfil"),
-        ("Configurações", "Configurações", "Preferências, privacidade e sincronização.", "#configuracoes"),
-    ])
-    body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Workspace</p>
-  <header class="hub-hero">
-    <p class="eyebrow">Espaço pessoal</p>
-    <h1>Workspace</h1>
-    <p>Sua mesa pessoal para ler, estudar, guardar materiais e acompanhar progresso.</p>
-    <div class="hub-cta">
-      <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
-      <a class="btn green" href="#progresso">Ver progresso</a>
-    </div>
-  </header>
-  <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
-    <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
-    <div class="level-card">
-      <div class="level-badge"><span class="level-num" data-progress-level>1</span><span class="level-word">nível</span></div>
-      <div class="level-body">
-        <div class="level-head"><b data-progress-tier>Semente</b><span><span data-progress-xptonext>100</span> XP para o próximo nível</span></div>
-        <div class="xp-bar"><i data-xp-bar style="width:0%"></i></div>
-        <p class="level-foot"><span data-progress-xpinto>0</span>/<span data-progress-xpneed>100</span> XP neste nível</p>
-      </div>
-    </div>
-    <div class="progress-stats">
-      <div class="pstat"><b data-progress-streak>0</b><span>dias seguidos</span></div>
-      <div class="pstat"><b data-progress-level>1</b><span>nível</span></div>
-      <div class="pstat"><b data-progress-xp>0</b><span>pontos (XP)</span></div>
-      <div class="pstat"><b data-progress-medals>0</b><span>medalhas</span></div>
-    </div>
-    <div class="mission-block">
-      <h3>Missões de hoje</h3>
-      <div class="mission-list" data-mission-list></div>
-    </div>
-    <div class="mission-block">
-      <h3>Missões da semana</h3>
-      <div class="mission-list" data-weekly-list></div>
-    </div>
-    <div class="medal-block">
-      <h3>Medalhas</h3>
-      <div class="medal-grid" data-medal-grid></div>
-    </div>
-  </section>
-  <section class="hub-section" id="ferramentas">
-    <div class="section-title"><h2>Suas ferramentas</h2><span>Leitura, planos, biblioteca e comunidade</span></div>
-    <div class="study-card-grid">{cards}
+  <section class="hub-section comunidade" id="comunidade">
+    <div class="section-title"><h2>Comunidade</h2><span>Salas de Estudo por livro, capítulo, tema ou plano</span></div>
+    <p class="muted-line">Cada sala nasce de um conteúdo bíblico: crie a sua (a partir do nível 3), convide pelo código e conduza discussões ligadas ao texto. Sem feed genérico.</p>
+    <div class="community-app" data-community-app>
+      <p class="muted-line" data-community-fallback>Carregando salas…</p>
     </div>
   </section>
   <section class="hub-section" id="historico">
@@ -562,7 +567,7 @@ def build_workspace_page():
   </section>
   <section class="hub-section" id="configuracoes">
     <div class="section-title"><h2>Configurações e sincronização</h2><a href="{prefix}privacidade/">Privacidade</a></div>
-    <p class="muted-line">A conta fica restrita a perfil, configurações, privacidade, sincronização e sair. Ferramentas de estudo permanecem no Workspace e em Estudar.</p>
+    <p class="muted-line">A conta fica restrita a perfil, configurações, privacidade, sincronização e sair. Ferramentas de estudo e comunidade vivem aqui no Workspace.</p>
   </section>
   <section class="hub-section" id="reportes" data-admin-reports hidden>
     <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
@@ -570,72 +575,6 @@ def build_workspace_page():
   </section>
 </main>"""
     out = SITE / "workspace" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
-
-
-def build_community_page():
-    prefix = "../"
-    title = f"Comunidade | {SITE_NAME}"
-    desc = "Comunidade organizada por estudo bíblico: Salas de Estudo com discussões por livro, capítulo, tema ou plano."
-    canonical = f"{BASE_URL}/comunidade/"
-    cards = action_cards([
-        ("Salas de Estudo", "Salas de Estudo", "Estude um livro, capítulo ou tema com plano vinculado.", f"{prefix}comunidade/salas/"),
-        ("Discussões", "Por livro e capítulo", "Converse dentro de uma Sala de Estudo ao redor do conteúdo bíblico.", f"{prefix}comunidade/salas/"),
-        ("Leitura", "Ler em grupo", "Escolha um livro e combine a leitura com sua sala.", f"{prefix}ler/"),
-    ])
-    upcoming = mini_cards([
-        ("Em construção", "Perguntas por trecho", "Dúvidas conectadas a livro, capítulo e versículo."),
-        ("Em construção", "Pedidos de oração", "Pedidos organizados com discrição e contexto."),
-        ("Em construção", "Testemunhos", "Relatos ligados ao estudo e à caminhada."),
-        ("Em construção", "Estudos públicos", "Planos, notas e coleções compartilhadas."),
-    ])
-    body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Comunidade</p>
-  <header class="hub-hero">
-    <p class="eyebrow">Comunidade por conteúdo</p>
-    <h1>Comunidade</h1>
-    <p>Encontre pessoas pelo livro, capítulo, tema ou plano que estão estudando. Sem feed genérico.</p>
-  </header>
-  <section class="hub-section">
-    <div class="study-card-grid">{cards}
-    </div>
-  </section>
-  <section class="hub-section">
-    <div class="section-title"><h2>Salas de Estudo já funcionam</h2><span>Beta</span></div>
-    <p class="muted-line">Crie a sua sala, convide pelo código e conduza tópicos e mensagens com o grupo.</p>
-    <p class="map-actions"><a class="btn primary" href="{prefix}comunidade/salas/">Criar ou entrar em uma sala</a></p>
-  </section>
-  <section class="hub-section">
-    <div class="section-title"><h2>Em breve</h2><span>Em construção</span></div>
-    <div class="study-card-grid">{upcoming}
-    </div>
-  </section>
-</main>"""
-    out = SITE / "comunidade" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
-
-
-def build_study_rooms_page():
-    prefix = "../../"
-    title = f"Salas de Estudo | {SITE_NAME}"
-    desc = "Salas de Estudo com tema bíblico, plano vinculado, discussões, materiais e progresso coletivo."
-    canonical = f"{BASE_URL}/comunidade/salas/"
-    body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Comunidade</a> · Salas de Estudo</p>
-  <header class="hub-hero">
-    <p class="eyebrow">Salas de Estudo</p>
-    <h1>Salas de Estudo</h1>
-    <p>Cada sala nasce de um livro, capítulo, tema ou plano. Crie sua sala, convide pelo código e conduza discussões ligadas ao conteúdo bíblico.</p>
-  </header>
-  <section class="hub-section">
-    <div class="community-app" data-community-app>
-      <p class="muted-line" data-community-fallback>Carregando salas…</p>
-    </div>
-  </section>
-</main>"""
-    out = SITE / "comunidade" / "salas" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 
@@ -885,7 +824,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     body = f"""
 <main id="main" class="wrap verse-page" data-next="{next_url}">
   <article class="verse-cont" data-slug="{esc(v['slug'])}" data-ref="{esc(v['referencia'])}" data-title="{esc(title)}">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}index.html#versiculos">Versículos</a> · {esc(v['referencia'])}</p>
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · {esc(v['referencia'])}</p>
   <header class="verse-head">
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
     <h1>{esc(v['referencia'])}</h1>
@@ -909,7 +848,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </article>
   <div class="vs-sentinel" aria-hidden="true"></div>
   <p class="vs-loading" aria-live="polite"></p>
-  <p class="backline"><a href="{prefix}index.html#versiculos">← Todos os versículos</a></p>
+  <p class="backline"><a href="{prefix}ler/">← Todos os livros</a></p>
 </main>"""
     out = SITE / "versiculos" / v["slug"] / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1081,6 +1020,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   <header class="verse-head">
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
+    <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
   </header>
   {book_jump(prefix, order, livro)}
   {study_fraction_module(prefix, livro, ch, vnums)}
@@ -1109,7 +1049,7 @@ def build_search_index(verses, articles, topics):
                       "url":f"artigos/{a['slug']}/","k":(a["titulo"]+" "+a.get("resumo","")+" "+a.get("versiculo","")).lower()})
     for t in topics:
         index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
-                      "url":"#versiculos","k":(t["titulo"]+" "+t.get("descricao","")).lower()})
+                      "url":"ler/","k":(t["titulo"]+" "+t.get("descricao","")).lower()})
     write_file(DATA / "search-index.json", json.dumps(index, ensure_ascii=False))
     return len(index)
 
@@ -1122,21 +1062,13 @@ def build_home(topics, verses, articles, sources, order, struct):
     featured = next(v for v in verses if v["slug"]=="genesis-1-1")
     fsc = script_class(featured["idioma"], featured.get("dir","ltr"))
 
-    # temas
+    # temas (os livros saíram da home e vivem na seção própria em /ler/)
     chips = "".join(
-        f'<a class="chip" href="#versiculos"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
+        f'<a class="chip" href="ler/"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
         for t in topics)
 
-    # navegação por livro (substitui o despejo de 23k cartões na home)
-    bcards = ""
-    for livro in order:
-        n_caps = len(struct[livro])
-        idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
-        bcards += f"""
-    <a class="card book-card" href="ler/{book_slug(livro)}/"{book_data_attrs(livro)}>
-      <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
-      <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
-    </a>"""
+    n_books = len(order)
+    n_chapters = sum(len(struct[livro]) for livro in order)
 
     # artigos
     acards = ""
@@ -1161,24 +1093,15 @@ def build_home(topics, verses, articles, sources, order, struct):
     </div>"""
 
     body = f"""
-<header class="hero" id="topo">
+<header class="hero home-top" id="topo">
   <div class="hero-in">
     <div>
-      <p class="eyebrow on-dark">Idiomas originais · manuscritos · fontes rastreáveis</p>
-      <h1>Leia o versículo na língua em que foi escrito.</h1>
-      <p class="lead">Para cada texto: o original em hebraico, grego ou aramaico, uma tradução de domínio público, a foto do manuscrito quando existe e o comentário rabínico ou a explicação da origem. Sem poluição, feito para ler no celular.</p>
+      <p class="eyebrow on-dark">Bíblia · estudo · progresso</p>
+      <h1>Sua jornada nas Escrituras começa aqui.</h1>
+      <p class="lead">Leia a Bíblia com o texto original ao lado, guarde notas e favoritos, complete missões de estudo e acompanhe seu progresso no Workspace.</p>
       <div class="hero-cta">
-        <a class="btn primary" href="#versiculos">Explorar versículos</a>
-        <a class="btn ghost" href="#fontes">Ver fontes e licenças</a>
-      </div>
-    </div>
-    <div class="specimen-card reveal">
-      <div class="ref-row"><span>{esc(featured['referencia'])}</span><span class="lang-tag lang-{esc(featured['idioma'])}">{lang_label(featured['idioma'])}</span></div>
-      <div class="verse-stack">
-        <p class="orig {fsc}" dir="rtl">{esc(featured['original'])}</p>
-        <p class="translit">{esc(featured['transliteracao'])}</p>
-        <p class="pt">{esc(featured['texto_pt'])}</p>
-        <p class="pt-src">{esc(featured['texto_pt_fonte'])}</p>
+        <a class="btn primary" href="ler/">Ler a Bíblia</a>
+        <a class="btn ghost" href="workspace/">Abrir o Workspace</a>
       </div>
     </div>
   </div>
@@ -1213,7 +1136,7 @@ def build_home(topics, verses, articles, sources, order, struct):
         <span>Hoje</span>
         <h3>Plano de hoje</h3>
         <p>Romanos 1 · leitura leve com notas e grifos.</p>
-        <a href="estudar/#criar-plano">Criar plano</a>
+        <a href="workspace/#criar-plano">Criar plano</a>
       </article>
       <article class="home-block">
         <span>Caderno</span>
@@ -1235,20 +1158,21 @@ def build_home(topics, verses, articles, sources, order, struct):
       <article class="home-block">
         <span>Salas</span>
         <h3>Relacionadas ao estudo</h3>
-        <p>Sala Evangelho de João, Romanos verso a verso e Salmos para oração.</p>
-        <a href="comunidade/salas/">Ver Salas de Estudo</a>
+        <p>Estude um livro, capítulo ou tema junto com um grupo.</p>
+        <a href="workspace/#comunidade">Ver Salas de Estudo</a>
       </article>
     </div>
   </section>
 
-  <section id="versiculos">
+  <section id="biblia">
     <div class="sec-head">
       <p class="eyebrow">Leia a Bíblia inteira</p>
-      <h2>Livros</h2>
-      <p>Escolha um livro e leia capítulo por capítulo no idioma original. Cada versículo abre a página completa com manuscrito e contexto.</p>
+      <h2>Livros da Bíblia</h2>
+      <p>Os livros ganharam uma seção própria: {n_books} livros e {n_chapters} capítulos, por ordem alfabética ou cronológica, cada um no idioma original com tradução e transliteração.</p>
     </div>
-    {order_toggle("")}
-    <div class="cards verses wrap" data-booklist>{bcards}
+    <div class="wrap home-books-cta">
+      <a class="btn primary" href="ler/">Abrir os livros</a>
+      <a class="btn ghost" href="linha-do-tempo/">Ver a linha do tempo</a>
     </div>
   </section>
 
@@ -1269,6 +1193,29 @@ def build_home(topics, verses, articles, sources, order, struct):
       <p>Estudos originais sobre palavras, traduções e história do texto.</p>
     </div>
     <div class="cards articles wrap">{acards}
+    </div>
+  </section>
+
+  <section class="hero apresentacao" id="apresentacao">
+    <div class="hero-in">
+      <div>
+        <p class="eyebrow on-dark">Idiomas originais · manuscritos · fontes rastreáveis</p>
+        <h2>Leia o versículo na língua em que foi escrito.</h2>
+        <p class="lead">Para cada texto: o original em hebraico, grego ou aramaico, uma tradução de domínio público, a foto do manuscrito quando existe e o comentário rabínico ou a explicação da origem. Sem poluição, feito para ler no celular.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="ler/">Explorar os livros</a>
+          <a class="btn ghost" href="#fontes">Ver fontes e licenças</a>
+        </div>
+      </div>
+      <div class="specimen-card reveal">
+        <div class="ref-row"><span>{esc(featured['referencia'])}</span><span class="lang-tag lang-{esc(featured['idioma'])}">{lang_label(featured['idioma'])}</span></div>
+        <div class="verse-stack">
+          <p class="orig {fsc}" dir="rtl">{esc(featured['original'])}</p>
+          <p class="translit">{esc(featured['transliteracao'])}</p>
+          <p class="pt">{esc(featured['texto_pt'])}</p>
+          <p class="pt-src">{esc(featured['texto_pt_fonte'])}</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1346,13 +1293,12 @@ def build_annotations_page():
 
 def build_meta(verses, articles, order, struct, plan_slugs=()):
     # sitemap
+    # /estudar/ e /comunidade/ viraram redirects (noindex) para o Workspace e
+    # por isso ficam fora do sitemap.
     urls = [
         BASE_URL + "/",
         f"{BASE_URL}/ler/",
-        f"{BASE_URL}/estudar/",
         f"{BASE_URL}/workspace/",
-        f"{BASE_URL}/comunidade/",
-        f"{BASE_URL}/comunidade/salas/",
         f"{BASE_URL}/biblioteca/",
         f"{BASE_URL}/colecoes/",
         f"{BASE_URL}/cadernos/",
@@ -1485,10 +1431,8 @@ def build_site(context):
     build_library_js()
     build_report_js()
     build_annotations_page()
-    build_study_page()
     build_workspace_page()
-    build_community_page()
-    build_study_rooms_page()
+    build_merged_redirects()
     build_library_page()
     build_collections_page()
     build_notebooks_page()

@@ -80,13 +80,25 @@ def test_gera_paginas_principais(site):
 
 
 def test_nova_navegacao_principal(site):
+    # Navegação enxuta: Estudar e Comunidade foram fundidos no Workspace.
     home = (site / "index.html").read_text("utf-8")
-    for label in ("Início", "Bíblia", "Estudar", "Comunidade", "Workspace"):
+    for label in ("Início", "Bíblia", "Workspace"):
         assert label in home
     assert 'class="mobile-primary-nav"' in home
-    assert 'href="estudar/"' in home
-    assert 'href="comunidade/"' in home
     assert 'href="workspace/"' in home
+    assert 'href="ler/"' in home
+    # O Workspace carrega as seções fundidas.
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert 'id="estudar"' in ws and 'id="comunidade"' in ws and 'id="criar-plano"' in ws
+    # Os endereços antigos seguem vivos como redirects (noindex).
+    estudar = (site / "estudar" / "index.html").read_text("utf-8")
+    comunidade = (site / "comunidade" / "index.html").read_text("utf-8")
+    salas = (site / "comunidade" / "salas" / "index.html").read_text("utf-8")
+    assert "url=../workspace/#estudar" in estudar
+    assert "url=../workspace/#comunidade" in comunidade
+    assert "url=../../workspace/#comunidade" in salas
+    for page in (estudar, comunidade, salas):
+        assert "noindex" in page
 
 
 def test_conta_fica_simples(site):
@@ -123,6 +135,11 @@ def test_gamificacao_e_beta(site):
     # Cartão de nível com barra de XP até o próximo nível.
     for hook in ("level-card", "data-progress-tier", "data-progress-xptonext", "data-xp-bar"):
         assert hook in ws
+    # Missões e medalhas ficam recolhidas (expande/retrai) com contadores no título.
+    for hook in ('details class="collap', "data-mission-count", "data-weekly-count", "data-medal-count"):
+        assert hook in ws
+    # O motor expõe o nível para travas de recurso (ex.: criar sala no nível 3).
+    assert "level:function" in game
     # Resumo "Seu dia" na Início, alimentado pelo mesmo estado local.
     for hook in ("data-home-progress", "data-home-streak", "data-home-level",
                  "data-home-tier", "data-home-missions", "data-home-xp-bar"):
@@ -171,16 +188,19 @@ def test_reportar_bug(site):
 
 
 def test_salas_de_estudo_reais(site):
-    # O app de comunidade é gerado e a página de Salas o carrega.
+    # O app de comunidade é gerado e vive na seção Comunidade do Workspace.
     assert (site / "assets" / "community.js").exists()
     community = (site / "assets" / "community.js").read_text("utf-8")
     for rpc in ("create_group", "join_group", "create_topic", "add_post"):
         assert rpc in community
-    salas = (site / "comunidade" / "salas" / "index.html").read_text("utf-8")
-    assert "data-community-app" in salas
-    assert "assets/community.js" in salas
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert "data-community-app" in ws
+    assert "assets/community.js" in ws
     # As antigas salas de demonstração saíram.
-    assert "Sala Evangelho de João" not in salas
+    assert "Sala Evangelho de João" not in ws
+    # Criar sala exige nível 3: a UI espelha a trava real da RPC create_group.
+    for token in ("CREATE_LEVEL", "createRoomForm", "room-locked"):
+        assert token in community
 
 
 def test_sem_ancoras_mortas_nem_metricas_falsas(site):
@@ -406,15 +426,15 @@ def test_sitemap_lista_todas_as_urls(site):
     assert "/versiculos/joao-1-1/" in sitemap
     assert "/artigos/meu-artigo/" in sitemap
     for path in (
-        "/estudar/",
         "/workspace/",
-        "/comunidade/",
-        "/comunidade/salas/",
         "/biblioteca/",
         "/colecoes/",
         "/cadernos/",
     ):
         assert path in sitemap
+    # Redirects (noindex) ficam fora do sitemap.
+    for path in ("/estudar/</loc>", "/comunidade/</loc>", "/comunidade/salas/</loc>"):
+        assert path not in sitemap
 
 
 def test_ajustes_ios_notas(site):
@@ -437,15 +457,49 @@ def test_painel_ferramentas_minimiza():
 
 
 def test_lote4_ordenacao_dos_livros(site):
-    # toggle de ordenação + atributos de ordenação nos cartões, no /ler/ e na home
-    for page in (site / "ler" / "index.html", site / "index.html"):
-        html = page.read_text("utf-8")
-        assert 'data-sort="alpha"' in html and 'data-sort="chron"' in html
-        assert "data-booklist" in html
-        assert "data-chron=" in html and "data-pos=" in html and "data-name=" in html
+    # toggle de ordenação + atributos de ordenação nos cartões, na seção própria /ler/
+    html = (site / "ler" / "index.html").read_text("utf-8")
+    assert 'data-sort="alpha"' in html and 'data-sort="chron"' in html
+    assert "data-booklist" in html
+    assert "data-chron=" in html and "data-pos=" in html and "data-name=" in html
+    # a home não despeja mais os livros: aponta para a seção própria
+    home = (site / "index.html").read_text("utf-8")
+    assert "data-booklist" not in home
+    assert 'id="biblia"' in home
     # wiring + persistência no app.js
     app = (site / "assets" / "app.js").read_text("utf-8")
     assert "bec.bookorder" in app and "data-booklist" in app
+
+
+def test_home_reorganizada(site):
+    # Apresentação (idiomas/manuscritos) foi para o final, entre artigos e fontes;
+    # os livros saíram da home e viraram uma seção própria (/ler/).
+    home = (site / "index.html").read_text("utf-8")
+    ordem = [home.index(a) for a in ('id="biblia"', 'id="temas"', 'id="artigos"',
+                                     'id="apresentacao"', 'id="fontes"', 'id="metodologia"')]
+    assert ordem == sorted(ordem)
+    # O topo convida direto para a leitura e o Workspace.
+    assert home.index('href="ler/"') < home.index('id="biblia"')
+    assert "Abrir o Workspace" in home
+    # A apresentação mantém o versículo-assinatura (specimen).
+    apres = home[home.index('id="apresentacao"'):home.index('id="fontes"')]
+    assert "specimen-card" in apres and "Ver fontes e licenças" in apres
+
+
+def test_modo_leitura_foco(site):
+    # O modo leitura esconde tudo menos o texto; entra pelo FAB ou pelo botão
+    # no cabeçalho do capítulo, e tem botão fixo para sair.
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-focus-toggle" in cap
+    assert "focus-exit" in cap
+    assert 'data-tool="focus"' in cap
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.focusRead" in app and "focus-read" in app
+    from pathlib import Path
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert "html.focus-read" in css
+    # Páginas sem texto corrido não ativam o modo (guarda pela presença de .chapter).
+    assert "isChapter" in app
 
 
 def test_lote4_linha_do_tempo(site):

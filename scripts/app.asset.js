@@ -634,6 +634,23 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   paint();
 })();
 
+// Modo leitura (foco): esconde menus, módulos e ferramentas, deixando só o
+// texto do capítulo em uma coluna confortável. Persistido para reaplicar ao
+// abrir o próximo capítulo; nunca vaza para páginas sem texto corrido.
+(function(){
+  var KEY='bec.focusRead';
+  function isChapter(){return !!document.querySelector('.chapter');}
+  function apply(on){document.documentElement.classList.toggle('focus-read', !!on && isChapter());}
+  try{ if(localStorage.getItem(KEY)==='1') apply(true); }catch(e){}
+  document.addEventListener('click', function(ev){
+    var b=ev.target.closest && ev.target.closest('[data-focus-toggle]');
+    if(!b || !isChapter()) return;
+    var on=!document.documentElement.classList.contains('focus-read');
+    apply(on);
+    try{localStorage.setItem(KEY, on?'1':'0');}catch(e){}
+  });
+})();
+
 // FAB de ferramentas de leitura (celular): abre um painel com fonte, original,
 // tema, marcar início/fim/salvar e reportar. Fonte/original/tema/reportar
 // reaproveitam os gatilhos delegados (data-rt, data-report-open); marcar e
@@ -648,7 +665,7 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 
   var TOOLS_KEY='bec.readerTools', POS_KEY='bec.fabPos';
   var LABELS={'font-dec':'Diminuir fonte','font-inc':'Aumentar fonte','orig':'Idioma original',
-    'theme':'Tema','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar'};
+    'theme':'Tema','focus':'Modo leitura','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar'};
 
   function toolButtons(){return Array.prototype.slice.call(panel.querySelectorAll('.rfb[data-tool]'));}
   function allTools(){return toolButtons().map(function(b){return b.getAttribute('data-tool');});}

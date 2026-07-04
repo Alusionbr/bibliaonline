@@ -1,11 +1,11 @@
 // Comunidade: Salas de Estudo reais (tabela `groups` + RPCs do Supabase).
 //
-// Roda apenas na pagina /comunidade/salas/ (procura [data-community-app]).
+// Roda na secao Comunidade do Workspace (procura [data-community-app]).
 // Usa o cliente/usuario expostos por auth.js em window.BEC_ACCOUNT. Sem login
 // ou sem Supabase, mostra um convite para entrar — nunca quebra a pagina.
 //
 // Permissoes (espelham as RPCs no banco, ver docs/gamification.md e o schema):
-//  - criar sala: qualquer usuario logado (limite de 3 por conta, exceto staff)
+//  - criar sala: nivel 3 de gamificacao + limite de 3 por conta (staff isento)
 //  - entrar: por codigo de convite (fica "pendente" ate aprovacao do admin)
 //  - criar topico / responder: qualquer membro ativo
 //  - aprovar/recusar, definir papel, remover: admin da sala (ou staff)
@@ -215,6 +215,29 @@
     '</article>';
   }
 
+  // Criar sala exige nivel 3 (a trava real e do servidor: create_group).
+  // Aqui so mostramos o estado com clareza, com o caminho para subir de nivel.
+  function myLevel(){try{return (window.BEC_GAME&&window.BEC_GAME.level&&window.BEC_GAME.level())||1;}catch(e){return 1;}}
+  var CREATE_LEVEL=3;
+
+  function createRoomForm(){
+    var lvl=myLevel();
+    if(lvl<CREATE_LEVEL){
+      return '<div class="community-form room-locked">'+
+        '<h3>Criar uma sala</h3>'+
+        '<p class="lock-line">🔒 Liberado no <b>nível '+CREATE_LEVEL+'</b> — voce esta no nível '+lvl+'.</p>'+
+        '<p class="muted-line">Complete missões de leitura, notas e favoritos para ganhar XP e subir de nível.</p>'+
+        '<a class="btn ghost" href="#progresso">Ver minhas missões</a>'+
+      '</div>';
+    }
+    return '<form class="community-form" data-form="create">'+
+      '<h3>Criar uma sala</h3>'+
+      '<label>Nome da sala<input name="name" maxlength="80" required placeholder="Ex.: Evangelho de Joao"></label>'+
+      '<label>Descricao (opcional)<textarea name="desc" maxlength="500" rows="2" placeholder="Tema, plano ou objetivo do grupo"></textarea></label>'+
+      '<button type="submit" class="btn primary"'+(state.busy?' disabled':'')+'>Criar sala</button>'+
+    '</form>';
+  }
+
   function viewList(){
     var rooms=state.rooms||[];
     var cards=state.loading
@@ -225,12 +248,7 @@
     return banner()+
       '<section class="community-block"><h2>Minhas salas</h2>'+cards+'</section>'+
       '<div class="community-forms">'+
-        '<form class="community-form" data-form="create">'+
-          '<h3>Criar uma sala</h3>'+
-          '<label>Nome da sala<input name="name" maxlength="80" required placeholder="Ex.: Evangelho de Joao"></label>'+
-          '<label>Descricao (opcional)<textarea name="desc" maxlength="500" rows="2" placeholder="Tema, plano ou objetivo do grupo"></textarea></label>'+
-          '<button type="submit" class="btn primary"'+(state.busy?' disabled':'')+'>Criar sala</button>'+
-        '</form>'+
+        createRoomForm()+
         '<form class="community-form" data-form="join">'+
           '<h3>Entrar por codigo</h3>'+
           '<label>Codigo de convite<input name="code" maxlength="12" required placeholder="Ex.: a1b2c3d4"></label>'+
