@@ -922,3 +922,58 @@ html.dark .report-fab{background:#211c13;color:#efe7d8}
 .report-actions{display:flex;gap:8px;flex-wrap:wrap}
 .report-box [data-report-signedout]{display:grid;gap:10px;margin-top:6px}
 .report-box [hidden]{display:none!important}
+
+/* ---------- home reorganizada: topo enxuto + apresentação no final ---------- */
+.hero.home-top .hero-in{padding:44px 20px 50px}
+.hero.home-top h1{max-width:18ch}
+.hero.apresentacao{border-radius:0}
+.hero.apresentacao .hero-in{display:grid;gap:28px;align-items:center;grid-template-columns:1fr}
+@media(min-width:900px){.hero.apresentacao .hero-in{grid-template-columns:1.05fr .95fr}}
+.hero.apresentacao h2{font-size:clamp(1.9rem,6vw,2.9rem);max-width:16ch;margin:.4rem 0 1rem}
+.home-books-cta{display:flex;gap:12px;flex-wrap:wrap}
+.home-books-cta .btn.primary{background:var(--gold);color:#20170a}
+.home-books-cta .btn.ghost{border-color:var(--line);color:var(--ink);background:var(--paper)}
+.home-books-cta .btn.ghost:hover{border-color:var(--gold);color:var(--gold-deep);background:var(--vellum-2)}
+
+/* ---------- blocos retráteis (missões e medalhas recolhidas) ---------- */
+details.collap{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-lg);
+  padding:0;margin-top:1rem;overflow:hidden}
+details.collap summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;
+  padding:14px 18px;user-select:none}
+details.collap summary::-webkit-details-marker{display:none}
+details.collap summary:hover{background:var(--vellum-2)}
+.collap-title{font-family:"Inter",system-ui,sans-serif;font-size:.8rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.collap-count{margin-left:auto;font-family:"Inter",system-ui,sans-serif;font-size:.78rem;
+  font-weight:700;color:var(--gold-deep);background:var(--vellum-2);
+  border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.collap-chev{flex:none;color:var(--muted);transition:transform .2s ease}
+details.collap[open] .collap-chev{transform:rotate(180deg)}
+details.collap>.mission-list,details.collap>.medal-grid{padding:4px 14px 14px}
+html.dark details.collap{background:#211c13}
+html.dark details.collap summary:hover{background:#2a2418}
+html.dark .collap-count{background:#2a2418;color:#e2c26a}
+
+/* ---------- modo leitura (foco nas Escrituras) ---------- */
+.focus-btn{margin-top:10px}
+.focus-exit{display:none}
+html.focus-read .nav,html.focus-read .mobile-primary-nav,html.focus-read .footer,
+html.focus-read .crumb,html.focus-read .book-jump-wrap,html.focus-read .study-frac,
+html.focus-read .study-map,html.focus-read .study-desk,html.focus-read .backline,
+html.focus-read [data-beta-banner],html.focus-read .report-fab,html.focus-read .verse-tools,
+html.focus-read .focus-btn,html.focus-read .tools-fab,html.focus-read .study,
+html.focus-read .note-box{display:none!important}
+html.focus-read .chapter{max-width:66ch;margin:0 auto;font-size:1.05em;line-height:1.85}
+html.focus-read .verse-head{text-align:center;margin-top:18px}
+html.focus-read .ch-num{opacity:.45}
+html.focus-read .focus-exit{display:inline-flex;position:fixed;top:12px;right:12px;z-index:80;
+  align-items:center;background:var(--paper);color:var(--ink);border:1px solid var(--line);
+  border-radius:999px;padding:8px 14px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;
+  box-shadow:0 3px 12px rgba(20,16,8,.16)}
+html.focus-read .focus-exit:hover{border-color:var(--gold);color:var(--gold-deep)}
+html.dark.focus-read .focus-exit{background:#211c13;color:#efe7d8}
+
+/* ---------- criar sala travada por nível ---------- */
+.room-locked{opacity:.92}
+.room-locked .lock-line{margin:.4rem 0;color:var(--ink)}
+.room-locked .btn{margin-top:6px}

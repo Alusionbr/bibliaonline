@@ -81,6 +81,15 @@ adotando os valores autoritativos devolvidos. A fase final (revogar a escrita
 direta nas tabelas) e uma decisao humana, aplicada so depois de validar a RPC em
 producao.
 
+## Recursos travados por nivel
+
+- **Criar Sala de Estudo: nivel 3.** A trava real e do servidor — a RPC
+  `create_group` le `user_gamification.level` e rejeita abaixo de 3 (staff
+  isento, mesmo padrao do limite de 3 salas por conta; migration
+  `create_group_requires_level_3`). O front (`scripts/community.asset.js`)
+  espelha a regra: abaixo do nivel 3 o formulario vira um cartao explicando
+  como subir de nivel, usando `window.BEC_GAME.level()`.
+
 ## Selo Beta
 
 `profiles.is_beta` (padrao `true`) marca contas em teste. O front mostra:
