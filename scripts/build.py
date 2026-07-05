@@ -339,6 +339,11 @@ def study_map_module(prefix, livro, ch=None, vs=None):
       <h2>{esc(place)}</h2>
       <p>Crie uma Sala de Estudo sobre este trecho e convide pelo código, ou continue com suas ferramentas pessoais.</p>
     </div>
+    <div class="room-suggest" data-room-suggest data-room-ref="{esc(place)}" hidden>
+      <p class="eyebrow">Salas abertas estudando este livro</p>
+      <div class="room-suggest-list" data-room-suggest-list></div>
+      <a class="room-suggest-more" href="{prefix}workspace/#comunidade">Pedir para entrar na Comunidade →</a>
+    </div>
     <p class="map-actions"><a class="btn primary" href="{prefix}workspace/#comunidade">Ver Salas de Estudo</a><a class="btn quiet" href="{prefix}workspace/#estudar">Abrir ferramentas de estudo</a></p>
   </section>"""
 
@@ -425,7 +430,11 @@ def reader_fab(has_fraction=True):
   </div>
   <button type="button" class="reader-fab-btn" data-reader-fab-toggle aria-label="Ferramentas de leitura (arraste para reposicionar)" aria-expanded="false">⚙</button>
 </div>
-<button type="button" class="focus-exit" data-focus-toggle>Sair do modo leitura</button>"""
+<button type="button" class="focus-exit" data-focus-toggle>Sair do modo leitura</button>
+{('<div class="focus-progress" data-focus-progress>'
+  '<span data-focus-remaining>Boa leitura</span>'
+  '<button type="button" class="fp-mark" data-focus-mark hidden>Marcar capítulo como lido</button>'
+  '</div>') if has_fraction else ''}"""
 
 
 def build_redirect_page(out_path, prefix, target, title):

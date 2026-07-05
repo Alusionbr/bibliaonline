@@ -201,6 +201,13 @@ def test_salas_de_estudo_reais(site):
     # Criar sala exige nível 3: a UI espelha a trava real da RPC create_group.
     for token in ("CREATE_LEVEL", "createRoomForm", "room-locked"):
         assert token in community
+    # Salas com referência bíblica + descoberta: vitrine, pedido sem código e
+    # sugestões na página do capítulo (view listed_rooms, sem invite_code).
+    for token in ("p_reference", "p_listed", "listed_rooms", "join_listed_group",
+                  "data-room-suggest", "ask-join"):
+        assert token in community, token
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-room-suggest" in cap and 'data-room-ref="Gênesis 1"' in cap
 
 
 def test_sem_ancoras_mortas_nem_metricas_falsas(site):
@@ -500,6 +507,12 @@ def test_modo_leitura_foco(site):
     assert "html.focus-read" in css
     # Páginas sem texto corrido não ativam o modo (guarda pela presença de .chapter).
     assert "isChapter" in app
+    # Foco progressivo: versículo atual em destaque + contador "faltam N" +
+    # "Marcar capítulo como lido" reusa o fluxo real que credita a missão.
+    assert "data-focus-remaining" in cap and "data-focus-mark" in cap
+    for token in ("fr-current", "requestAnimationFrame", "data-focus-mark"):
+        assert token in app, token
+    assert "fr-current" in css
 
 
 def test_lote4_linha_do_tempo(site):

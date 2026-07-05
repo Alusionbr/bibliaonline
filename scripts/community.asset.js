@@ -25,7 +25,7 @@
   function when(ts){try{return new Date(ts).toLocaleDateString('pt-BR');}catch(e){return '';}}
   function roleLabel(r){return r==='admin'?'Admin':r==='moderator'?'Moderador':'Membro';}
 
-  var state={view:'list', room:null, rooms:[], members:[], topics:[], topic:null, posts:[], busy:false, loading:false, msg:'', err:''};
+  var state={view:'list', room:null, rooms:[], listed:[], members:[], topics:[], topic:null, posts:[], busy:false, loading:false, msg:'', err:''};
   var lastLoad=null; // ultima carga de leitura, para o botao "Tentar de novo"
 
   function flash(msg, isErr){state.msg=isErr?'':msg; state.err=isErr?msg:''; render();}
@@ -55,8 +55,14 @@
   // ---- Camada de dados (leituras diretas com RLS) -------------------------
   function myRooms(){
     return sb().from('group_members')
-      .select('id,role,status,group_id,groups(name,description,invite_code,created_by)')
+      .select('id,role,status,group_id,groups(name,description,invite_code,created_by,reference,is_listed)')
       .eq('user_id', uid());
+  }
+  // Vitrine de salas listadas (view sem invite_code; entrar vira pedido pendente).
+  function listedRooms(){
+    return sb().from('listed_rooms')
+      .select('id,name,description,reference')
+      .order('created_at',{ascending:false}).limit(12);
   }
   function roomMembers(gid){
     return sb().from('group_members')
@@ -88,6 +94,8 @@
       try{
         state.rooms=need(await myRooms());
       }catch(e){ loadFailed(); return; }
+      // Vitrine é opcional: falha aqui não pode derrubar "Minhas salas".
+      try{ state.listed=need(await listedRooms()); }catch(e){ state.listed=[]; }
       state.loading=false;
     }
     render();
@@ -128,13 +136,22 @@
   }
   function award(key){try{if(window.BEC_GAME&&window.BEC_GAME.grant) window.BEC_GAME.grant(key);}catch(e){}}
 
-  async function actCreateRoom(name, desc){
+  async function actCreateRoom(name, desc, reference, listed){
     await withBusy(async function(){
-      var r=await rpc('create_group',{p_name:name, p_description:desc});
+      var r=await rpc('create_group',{p_name:name, p_description:desc,
+        p_reference:(reference||null), p_listed:!!listed});
       if(r.error) throw r.error;
       award('comunidade');
       await goList();
       flash('Sala criada. Compartilhe o codigo de convite com o grupo.');
+    });
+  }
+  async function actAskJoin(gid){
+    await withBusy(async function(){
+      var r=await rpc('join_listed_group',{p_group_id:gid});
+      if(r.error) throw r.error;
+      await goList();
+      flash('Pedido enviado. Aguarde a aprovacao do admin da sala.');
     });
   }
   async function actJoin(code){
@@ -210,6 +227,7 @@
     var name=g.name || (pending?'Sala (aguardando aprovacao)':'Sala');
     return '<article class="room-card'+(pending?' pending':'')+'" '+(pending?'':'data-act="open" data-mid="'+esc(mb.id)+'"')+'>'+
       '<div class="room-card-top"><b>'+esc(name)+'</b><span class="role-pill role-'+esc(mb.role)+'">'+roleLabel(mb.role)+'</span></div>'+
+      (g.reference?'<p class="room-card-ref">'+refChip(g.reference)+'</p>':'')+
       (g.description?'<p>'+esc(g.description)+'</p>':'')+
       '<span class="room-card-foot">'+(pending?'Pendente de aprovacao':'Abrir sala →')+'</span>'+
     '</article>';
@@ -233,9 +251,28 @@
     return '<form class="community-form" data-form="create">'+
       '<h3>Criar uma sala</h3>'+
       '<label>Nome da sala<input name="name" maxlength="80" required placeholder="Ex.: Evangelho de Joao"></label>'+
+      '<label>Referencia biblica (opcional)<input name="reference" maxlength="80" placeholder="Ex.: Joao 3, Romanos, oracao"></label>'+
       '<label>Descricao (opcional)<textarea name="desc" maxlength="500" rows="2" placeholder="Tema, plano ou objetivo do grupo"></textarea></label>'+
+      '<label class="check-line"><input type="checkbox" name="listed"> Sala aberta: quem estuda esse trecho pode pedir para entrar</label>'+
       '<button type="submit" class="btn primary"'+(state.busy?' disabled':'')+'>Criar sala</button>'+
     '</form>';
+  }
+
+  function refChip(ref){return ref?'<span class="room-ref">📖 '+esc(ref)+'</span>':'';}
+
+  function listedSection(){
+    var mine={}; (state.rooms||[]).forEach(function(r){mine[r.group_id]=true;});
+    var rooms=(state.listed||[]).filter(function(g){return !mine[g.id];});
+    if(!rooms.length) return '';
+    return '<section class="community-block"><h2>Salas abertas</h2>'+
+      '<p class="muted-line">Salas que se listaram para receber pedidos. Voce entra como pendente ate um admin aprovar.</p>'+
+      '<div class="room-grid">'+rooms.map(function(g){
+        return '<article class="room-card listed">'+
+          '<div class="room-card-top"><b>'+esc(g.name)+'</b>'+refChip(g.reference)+'</div>'+
+          (g.description?'<p>'+esc(g.description)+'</p>':'')+
+          '<button type="button" class="btn tiny ghost" data-act="ask-join" data-gid="'+esc(g.id)+'"'+(state.busy?' disabled':'')+'>Pedir para entrar</button>'+
+        '</article>';
+      }).join('')+'</div></section>';
   }
 
   function viewList(){
@@ -247,6 +284,7 @@
         : '<p class="muted-line">Voce ainda nao participa de nenhuma sala. Crie a primeira ou entre por um codigo.</p>';
     return banner()+
       '<section class="community-block"><h2>Minhas salas</h2>'+cards+'</section>'+
+      listedSection()+
       '<div class="community-forms">'+
         createRoomForm()+
         '<form class="community-form" data-form="join">'+
@@ -297,6 +335,7 @@
     var head='<div class="community-head">'+
       '<button type="button" class="btn tiny ghost" data-act="back">← Minhas salas</button>'+
       '<h2>'+esc(g.name||'Sala')+'</h2>'+
+      (g.reference?'<p class="room-card-ref">'+refChip(g.reference)+'</p>':'')+
       (g.description?'<p class="room-desc">'+esc(g.description)+'</p>':'')+
       (g.invite_code&&state.room.status==='active'
         ? '<p class="invite">Codigo de convite: <code>'+esc(g.invite_code)+'</code> '+
@@ -374,6 +413,7 @@
     else if(act==='retry'){ if(lastLoad) lastLoad(); }
     else if(act==='copy-code'){ copyCode(el.getAttribute('data-code')||'', el); }
     else if(act==='back-room'){ state.view='room'; state.topic=null; render(); }
+    else if(act==='ask-join'){ actAskJoin(el.getAttribute('data-gid')); }
     else if(act==='approve'){ actDecide(el.getAttribute('data-mid'), true); }
     else if(act==='reject'){ actDecide(el.getAttribute('data-mid'), false); }
     else if(act==='role'){ actSetRole(el.getAttribute('data-mid'), el.getAttribute('data-role')); }
@@ -385,7 +425,8 @@
     e.preventDefault();
     var kind=form.getAttribute('data-form');
     var d=new FormData(form);
-    if(kind==='create'){ actCreateRoom((d.get('name')||'').trim(), (d.get('desc')||'').trim()); }
+    if(kind==='create'){ actCreateRoom((d.get('name')||'').trim(), (d.get('desc')||'').trim(),
+      (d.get('reference')||'').trim(), !!d.get('listed')); }
     else if(kind==='join'){ actJoin((d.get('code')||'').trim().toLowerCase()); }
     else if(kind==='topic'){ actCreateTopic((d.get('title')||'').trim(), (d.get('body')||'').trim()); }
     else if(kind==='post'){ var b=(d.get('body')||'').trim(); if(b) actPost(b); }
@@ -396,4 +437,43 @@
 
   // Estado inicial.
   goList();
+})();
+
+// Sugestao de salas na pagina do capitulo: mostra ate 3 salas listadas cujo
+// campo de referencia comeca pelo livro em leitura. Independe do app principal
+// (roda em qualquer pagina com [data-room-suggest]); funciona ate sem login,
+// pois a view listed_rooms tem leitura publica e nao expoe o codigo de convite.
+(function(){
+  'use strict';
+  var box=document.querySelector('[data-room-suggest]');
+  if(!box) return;
+  var ref=box.getAttribute('data-room-ref')||'';
+  var book=ref.replace(/\s+\d+(:\d+)?$/,'').trim();
+  if(!book) return;
+  function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  var done=false;
+  function tryLoad(){
+    if(done) return;
+    var a=window.BEC_ACCOUNT, c=a&&a.client;
+    if(!c) return;
+    done=true;
+    c.from('listed_rooms').select('id,name,description,reference')
+      .ilike('reference', book+'%').limit(3)
+      .then(function(r){
+        var rows=(r&&r.data)||[];
+        if(!rows.length) return;
+        var list=box.querySelector('[data-room-suggest-list]');
+        if(!list) return;
+        list.innerHTML=rows.map(function(g){
+          return '<div class="room-suggest-card">'+
+            '<b>'+esc(g.name)+'</b>'+
+            (g.reference?'<span class="room-ref">📖 '+esc(g.reference)+'</span>':'')+
+            (g.description?'<p>'+esc(g.description)+'</p>':'')+
+          '</div>';
+        }).join('');
+        box.hidden=false;
+      });
+  }
+  document.addEventListener('bec:account', tryLoad);
+  tryLoad();
 })();

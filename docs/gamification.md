@@ -78,8 +78,19 @@ devtools. Ver `docs/supabase-gamification-authoritative.sql`:
 O cliente faz **dual-write**: mantem o motor local para a UI instantanea e para
 visitante/offline, e emite o evento real via `record_event` quando logado,
 adotando os valores autoritativos devolvidos. A fase final (revogar a escrita
-direta nas tabelas) e uma decisao humana, aplicada so depois de validar a RPC em
-producao.
+direta nas tabelas) foi **aplicada em 2026-07-04** (migration
+`gamification_lockdown`), depois de confirmar eventos reais em producao: para
+usuarios logados, XP/missoes/medalhas so mudam pela RPC — forjar progresso pelo
+devtools deixou de ser possivel.
+
+## Salas com referencia biblica e descoberta
+
+`groups.reference` guarda o trecho/tema da sala (ex.: "Joao 3") e
+`groups.is_listed` marca salas abertas a pedidos. A view `listed_rooms`
+(leitura publica, sem `invite_code`) alimenta a secao "Salas abertas" do
+Workspace e as sugestoes na pagina do capitulo; `join_listed_group` cria o
+pedido pendente sem codigo (aprovacao do admin continua obrigatoria).
+SQL em `docs/supabase-rooms-discovery.sql`.
 
 ## Recursos travados por nivel
 
