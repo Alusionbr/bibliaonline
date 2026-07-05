@@ -977,3 +977,40 @@ html.dark.focus-read .focus-exit{background:#211c13;color:#efe7d8}
 .room-locked{opacity:.92}
 .room-locked .lock-line{margin:.4rem 0;color:var(--ink)}
 .room-locked .btn{margin-top:6px}
+
+/* ---------- foco progressivo: só o versículo atual em destaque ---------- */
+html.focus-read .ch-verse{opacity:.42;transition:opacity .25s ease}
+html.focus-read .ch-verse.fr-current,html.focus-read .ch-verse:hover{opacity:1}
+
+/* ---------- meta de leitura no modo foco ---------- */
+.focus-progress{display:none}
+html.focus-read .focus-progress{display:flex;align-items:center;gap:10px;position:fixed;
+  left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:79;
+  background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:8px 14px;
+  box-shadow:0 3px 12px rgba(20,16,8,.16);white-space:nowrap;max-width:92vw}
+html.focus-read .focus-progress span{font-family:"Inter",system-ui,sans-serif;font-size:.8rem;color:var(--muted)}
+.focus-progress .fp-mark{border:0;background:var(--gold);color:#20170a;border-radius:999px;
+  padding:7px 13px;font-family:"Inter",system-ui,sans-serif;font-size:.8rem;font-weight:700;cursor:pointer}
+.focus-progress .fp-mark:hover{background:var(--gold-soft)}
+.focus-progress .fp-mark:disabled{background:var(--green);color:#fff;cursor:default}
+html.dark.focus-read .focus-progress{background:#211c13}
+
+/* ---------- salas com referência bíblica + descoberta ---------- */
+.room-ref{display:inline-flex;align-items:center;gap:4px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.72rem;font-weight:600;color:var(--gold-deep);background:var(--vellum-2);
+  border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+html.dark .room-ref{background:#2a2418;color:#e2c26a}
+.room-card-ref{margin:.15rem 0 .2rem}
+.room-card.listed .btn{justify-self:start;margin-top:4px}
+.check-line{display:flex;flex-direction:row!important;gap:8px;align-items:center;font-size:.85rem}
+.check-line input{width:auto}
+.room-suggest{margin-top:14px}
+.room-suggest-list{display:grid;gap:10px;margin-top:8px}
+@media(min-width:760px){.room-suggest-list{grid-template-columns:repeat(3,1fr)}}
+.room-suggest-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;display:grid;gap:5px;justify-items:start}
+.room-suggest-card b{font-size:.95rem}
+.room-suggest-card p{margin:0;font-size:.82rem;color:var(--muted)}
+.room-suggest-more{display:inline-block;margin-top:10px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.85rem;font-weight:600}
+html.dark .room-suggest-card{background:#211c13}

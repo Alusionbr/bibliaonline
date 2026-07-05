@@ -182,12 +182,15 @@ comment on function public.record_event(text,text,jsonb) is 'Registra um evento 
 --     perform public.recompute_gamification(r.user_id); end loop; end $$;
 
 -- ============================================================================
--- Fase FINAL -- lockdown (NAO aplicar ainda; decisao humana, porta quase sem volta)
+-- Fase FINAL -- lockdown (APLICADO em 2026-07-04, migration: gamification_lockdown)
 -- ============================================================================
--- Aplicar SO depois que o cliente novo (record_event) estiver no ar e verificado.
--- Reversivel com os grants de volta, mas exige que TODOS os writers usem a RPC.
---
--- revoke insert, update, delete on public.user_gamification            from authenticated;
--- revoke insert, update, delete on public.user_mission_progress        from authenticated;
--- revoke insert, update, delete on public.user_weekly_mission_progress from authenticated;
--- revoke insert, update, delete on public.user_badges                  from authenticated;
+-- Pre-condicao verificada em producao: user_events ja recebia eventos reais do
+-- cliente (read_chapters, notes, highlights, favorites). A partir daqui a
+-- escrita e exclusiva da RPC record_event; o select segue liberado para o pull
+-- e os upserts legados do cliente falham em silencio (best-effort).
+-- Reversivel devolvendo os grants, se um dia for necessario.
+
+revoke insert, update, delete on public.user_gamification            from authenticated;
+revoke insert, update, delete on public.user_mission_progress        from authenticated;
+revoke insert, update, delete on public.user_weekly_mission_progress from authenticated;
+revoke insert, update, delete on public.user_badges                  from authenticated;

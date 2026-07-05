@@ -637,12 +637,66 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 // Modo leitura (foco): esconde menus, módulos e ferramentas, deixando só o
 // texto do capítulo em uma coluna confortável. Persistido para reaplicar ao
 // abrir o próximo capítulo; nunca vaza para páginas sem texto corrido.
+// Foco progressivo: o versículo na linha de leitura fica pleno e os demais
+// esmaecem; um contador discreto mostra quantos versículos faltam e, no fim,
+// oferece "Marcar capítulo como lido" (reusa o fluxo real que credita missão).
 (function(){
   var KEY='bec.focusRead';
   function isChapter(){return !!document.querySelector('.chapter');}
-  function apply(on){document.documentElement.classList.toggle('focus-read', !!on && isChapter());}
+  function verses(){return Array.prototype.slice.call(document.querySelectorAll('.chapter .ch-verse'));}
+  var active=false, raf=null;
+
+  function updateCurrent(){
+    raf=null;
+    if(!active) return;
+    var vs=verses(); if(!vs.length) return;
+    var focal=window.innerHeight*0.38, cur=vs[0], best=Infinity;
+    vs.forEach(function(v){
+      var r=v.getBoundingClientRect();
+      var d=(r.top<=focal && r.bottom>=focal) ? 0 : Math.min(Math.abs(r.top-focal), Math.abs(r.bottom-focal));
+      if(d<best){ best=d; cur=v; }
+    });
+    // Fim do capítulo: quando o último versículo já está todo visível, ele é o
+    // atual mesmo sem cruzar a linha focal (senão o fim nunca chega em telas altas).
+    var lastR=vs[vs.length-1].getBoundingClientRect();
+    if(lastR.bottom<=window.innerHeight-4) cur=vs[vs.length-1];
+    vs.forEach(function(v){ v.classList.toggle('fr-current', v===cur); });
+    var left=vs.length-vs.indexOf(cur)-1;
+    var lbl=document.querySelector('[data-focus-remaining]');
+    if(lbl) lbl.textContent = left>0 ? ('Faltam '+left+' versículo'+(left>1?'s':'')) : 'Fim do capítulo';
+    var mk=document.querySelector('[data-focus-mark]');
+    if(mk && !mk.disabled) mk.hidden = left>0;
+  }
+  function onScroll(){ if(!raf) raf=requestAnimationFrame(updateCurrent); }
+
+  function apply(on){
+    active = !!on && isChapter();
+    document.documentElement.classList.toggle('focus-read', active);
+    if(active){ window.addEventListener('scroll', onScroll, {passive:true}); updateCurrent(); }
+    else{
+      window.removeEventListener('scroll', onScroll);
+      verses().forEach(function(v){ v.classList.remove('fr-current'); });
+    }
+  }
   try{ if(localStorage.getItem(KEY)==='1') apply(true); }catch(e){}
+
   document.addEventListener('click', function(ev){
+    var mk=ev.target.closest && ev.target.closest('[data-focus-mark]');
+    if(mk){
+      // Marca o capítulo inteiro pelo mesmo caminho do painel de progresso
+      // (persiste o trecho e credita a leitura uma vez por capítulo/dia).
+      var st=document.querySelector('[data-study-frac] [data-sf-start]');
+      var en=document.querySelector('[data-study-frac] [data-sf-end]');
+      var sv=document.querySelector('[data-study-frac] [data-sf-save]');
+      if(st&&en&&sv&&st.options.length){
+        st.value=st.options[0].value;
+        en.value=en.options[en.options.length-1].value;
+        sv.click();
+        mk.textContent='✓ Capítulo lido';
+        mk.disabled=true;
+      }
+      return;
+    }
     var b=ev.target.closest && ev.target.closest('[data-focus-toggle]');
     if(!b || !isChapter()) return;
     var on=!document.documentElement.classList.contains('focus-read');
