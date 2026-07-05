@@ -322,6 +322,10 @@ html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
   .reader-fab{display:block;position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);z-index:71}
   body:has(.reader-fab) .nav .reader-tools{display:none}
 }
+/* modo leitura no desktop: o painel de marcar início/fim (.study-frac) some,
+   então o FAB de ferramentas (que já existe no mobile) fica disponível aqui
+   também, preenchendo o espaço do progresso escondido. */
+html.focus-read .reader-fab{display:block;position:fixed;right:24px;bottom:24px;z-index:71}
 html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .study-map-head h2,.study-desk h2{font-size:1.35rem;margin:0 0 6px}
 .study-map-head p,.study-desk p{margin:0;color:var(--muted)}
@@ -569,6 +573,18 @@ html.orig-on .chapter .ch-body .translit{display:block}
 html.orig-on .chapter .verse-tools .listen[data-lang="he-IL"],
 html.orig-on .chapter .verse-tools .listen[data-lang="el-GR"]{display:inline-flex}
 .reader-tools .rt.on{background:var(--gold);color:#20170a;border-color:var(--gold)}
+/* menos poluição por versículo: Favoritar/Anotar/Copiar/Compartilhar só aparecem
+   ao focar o versículo (hover no desktop, toque -> .reading-now no mobile).
+   Ouvir original/PT continuam sempre visíveis. */
+.chapter .ch-verse .verse-tools .fav,
+.chapter .ch-verse .study,
+.chapter .ch-verse .note-box{display:none}
+.chapter .ch-verse:hover .verse-tools .fav,
+.chapter .ch-verse.reading-now .verse-tools .fav{display:inline-flex}
+.chapter .ch-verse:hover .study,
+.chapter .ch-verse.reading-now .study{display:flex}
+.chapter .ch-verse:hover .note-box:not([hidden]),
+.chapter .ch-verse.reading-now .note-box:not([hidden]){display:block}
 
 /* ferramentas de estudo: grifo de palavra/versículo, anotações */
 /* marca-texto na palavra: faixa amarela estilo caneta marca-texto */
