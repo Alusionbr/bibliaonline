@@ -424,12 +424,14 @@ def reader_fab(has_fraction=True):
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
+    <button type="button" class="rfb" data-tool="ruler" data-ruler-toggle aria-pressed="false">▤<span>Régua</span></button>
     {mark}<button type="button" class="rfb" data-tool="report" data-report-open>🐞<span>Reportar</span></button>
     <button type="button" class="reader-fab-config-btn" data-reader-fab-config aria-expanded="false" aria-label="Personalizar ferramentas">⚙ Personalizar</button>
     <div class="reader-fab-config" data-reader-fab-config-panel hidden></div>
   </div>
   <button type="button" class="reader-fab-btn" data-reader-fab-toggle aria-label="Ferramentas de leitura (arraste para reposicionar)" aria-expanded="false">⚙</button>
 </div>
+<div class="focus-ruler" data-focus-ruler aria-hidden="true"></div>
 <button type="button" class="focus-exit" data-focus-toggle>Sair do modo leitura</button>
 {('<div class="focus-progress" data-focus-progress>'
   '<span data-focus-remaining>Boa leitura</span>'
@@ -1030,6 +1032,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
     <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
+    <button type="button" class="btn quiet ruler-btn" data-ruler-toggle aria-pressed="false" title="Faixa horizontal que ajuda a acompanhar a linha durante a leitura">▤ Régua de foco</button>
   </header>
   {book_jump(prefix, order, livro)}
   {study_fraction_module(prefix, livro, ch, vnums)}

@@ -705,6 +705,75 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
 })();
 
+// Régua de foco: faixa horizontal fixa que ajuda a acompanhar a linha durante a
+// leitura. Alterna html.ruler-on, persiste em bec.ruler e só existe onde há texto
+// corrido (capítulo). Reaplica a preferência ao abrir o próximo capítulo.
+(function(){
+  var KEY='bec.ruler';
+  function isChapter(){return !!document.querySelector('.chapter');}
+  function syncBtns(on){
+    document.querySelectorAll('[data-ruler-toggle]').forEach(function(b){
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false');
+    });
+  }
+  function apply(on){
+    on = !!on && isChapter();
+    document.documentElement.classList.toggle('ruler-on', on);
+    syncBtns(on);
+  }
+  try{ if(localStorage.getItem(KEY)==='1') apply(true); }catch(e){}
+  document.addEventListener('click', function(ev){
+    var b=ev.target.closest && ev.target.closest('[data-ruler-toggle]');
+    if(!b || !isChapter()) return;
+    var on=!document.documentElement.classList.contains('ruler-on');
+    apply(on);
+    try{localStorage.setItem(KEY, on?'1':'0');}catch(e){}
+  });
+})();
+
+// Versículo atual: um toque no versículo marca o ponto de leitura atual
+// (.reading-now) e faz o "Continuar de onde parei" apontar direto para ele (#vN).
+// Reaproveita bec.lastRead; persiste o ponto por capítulo em bec.readingNow.
+(function(){
+  var chapter=document.querySelector('.chapter'); if(!chapter) return;
+  var h1=document.querySelector('.verse-head h1');
+  var baseLabel=h1?h1.textContent.trim():'';
+  var path=location.pathname;
+  var NOW='bec.readingNow';
+  function loadNow(){try{return JSON.parse(localStorage.getItem(NOW)||'{}')||{};}catch(e){return{};}}
+  function saveNow(map){try{localStorage.setItem(NOW,JSON.stringify(map));}catch(e){}}
+  function verseNum(v){var n=parseInt(((v&&v.id)||'').replace(/^v/,''),10);return isNaN(n)?null:n;}
+  function paint(n){
+    chapter.querySelectorAll('.ch-verse.reading-now').forEach(function(v){v.classList.remove('reading-now');});
+    if(n==null) return;
+    var v=document.getElementById('v'+n); if(v) v.classList.add('reading-now');
+  }
+  function setCurrent(n, scroll){
+    paint(n);
+    var map=loadNow(); if(n==null) delete map[path]; else map[path]=n; saveNow(map);
+    try{
+      var label=baseLabel + (n!=null?(' · v'+n):'');
+      localStorage.setItem('bec.lastRead', JSON.stringify({url: path + (n!=null?('#v'+n):''), label: label}));
+    }catch(e){}
+    if(scroll && n!=null){ var el=document.getElementById('v'+n); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  }
+  chapter.addEventListener('click', function(ev){
+    if(document.body.classList.contains('sf-marking')) return; // marcar início/fim tem prioridade
+    var t=ev.target;
+    // não interferir em links, ferramentas, botões de estudo ou grifo por seleção
+    if(t.closest && t.closest('.ch-num, a, button, input, textarea, select, .verse-tools, .study, .note-box, .sel-bar, .w')) return;
+    var sel=window.getSelection && window.getSelection();
+    if(sel && !sel.isCollapsed && String(sel).trim()) return; // usuário está selecionando texto
+    var v=t.closest && t.closest('.ch-verse'); if(!v) return;
+    var n=verseNum(v); if(n==null) return;
+    setCurrent(n, false);
+  });
+  // restaura ao abrir: âncora #vN da URL tem prioridade; senão, o último ponto salvo
+  var fromHash=(location.hash||'').match(/^#v(\d+)$/);
+  if(fromHash){ setCurrent(parseInt(fromHash[1],10), false); }
+  else { var saved=loadNow()[path]; if(saved!=null) setCurrent(saved, false); }
+})();
+
 // FAB de ferramentas de leitura (celular): abre um painel com fonte, original,
 // tema, marcar início/fim/salvar e reportar. Fonte/original/tema/reportar
 // reaproveitam os gatilhos delegados (data-rt, data-report-open); marcar e

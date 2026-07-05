@@ -515,6 +515,36 @@ def test_modo_leitura_foco(site):
     assert "fr-current" in css
 
 
+def test_regua_de_foco(site):
+    # Régua de foco: faixa horizontal opcional para acompanhar a linha durante a
+    # leitura. Toggle no FAB e no cabeçalho, elemento fixo e preferência salva.
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-ruler-toggle" in cap
+    assert 'class="focus-ruler"' in cap or "focus-ruler" in cap
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "bec.ruler" in app and "ruler-on" in app
+    from pathlib import Path
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".focus-ruler" in css and "html.ruler-on" in css
+
+
+def test_versiculo_atual_clicavel(site):
+    # Tocar num versículo o marca como ponto de leitura atual (.reading-now) e
+    # aponta o "Continuar de onde parei" direto para ele (#vN).
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for token in ("bec.readingNow", "reading-now", "bec.lastRead"):
+        assert token in app, token
+    from pathlib import Path
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert ".ch-verse.reading-now" in css
+
+
+def test_textura_de_papel(site):
+    from pathlib import Path
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert "body::before" in css
+
+
 def test_lote4_linha_do_tempo(site):
     tl = (site / "linha-do-tempo" / "index.html")
     assert tl.exists()

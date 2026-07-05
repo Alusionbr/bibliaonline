@@ -40,6 +40,20 @@ body{
   font-feature-settings:"liga" 1,"onum" 1;
   -webkit-font-smoothing:antialiased;
 }
+/* Trama de papel: pontos dourados sutis por cima do pergaminho, atrás do
+   conteúdo. Esmaece para baixo (mask) e é mais discreta no escuro. */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background-image:radial-gradient(circle, rgba(200,149,54,.30) 1px, transparent 1px);
+  background-size:34px 34px;opacity:.14;
+  -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,.85), transparent 78%);
+          mask-image:linear-gradient(to bottom, rgba(0,0,0,.85), transparent 78%);
+}
+html.sepia body::before{opacity:.12}
+html.dark body::before{
+  background-image:radial-gradient(circle, rgba(239,208,138,.20) 1px, transparent 1px);
+  opacity:.10;
+}
 img{max-width:100%;display:block}
 a{color:var(--gold-deep);text-decoration-thickness:1px;text-underline-offset:2px}
 a:hover{color:var(--ink)}
@@ -262,7 +276,12 @@ html.dark .chapter .ch-verse.sf-preview{background:rgba(47,143,91,.16)}
 .sf-item{display:flex;justify-content:space-between;align-items:center;gap:12px;
   border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:var(--vellum);font-size:.92rem}
 .btn.tiny{padding:5px 10px;font-size:.8rem;border-radius:999px}
-.ch-verse.studied{background:rgba(177,135,60,.1);box-shadow:inset 3px 0 0 var(--gold)}
+.ch-verse.studied{background:rgba(177,135,60,.12);box-shadow:inset 4px 0 0 var(--gold)}
+/* versículo atual: ponto de leitura escolhido com um toque (leva ao "continuar") */
+.ch-verse.reading-now{background:rgba(239,208,138,.34);box-shadow:inset 4px 0 0 var(--gold)}
+.ch-verse.reading-now.studied{box-shadow:inset 4px 0 0 var(--gold-deep)}
+html.dark .ch-verse.reading-now{background:rgba(239,208,138,.16)}
+html.sepia .ch-verse.reading-now{background:rgba(200,149,54,.24)}
 html.dark .study-frac,html.dark .sf-field select,html.dark .sf-item{background:var(--paper)}
 html.dark .sf-bar{background:rgba(255,255,255,.1)}
 html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
@@ -513,12 +532,27 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .book-card .pt-mini{color:var(--muted);margin-top:6px}
 .chapter-grid{gap:10px}
 .chapter-chip{min-width:48px;justify-content:center;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
-.chapter{max-width:var(--read);margin:0 auto}
-.ch-verse{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
-.ch-verse:last-child{border-bottom:0}
+/* cartão de papel do leitor: superfície arredondada com sombra suave,
+   como uma Bíblia física aberta (inspirado no protótipo "Bíblia em Mãos") */
+.chapter{max-width:var(--read);margin:0 auto;padding:22px 26px;border-radius:var(--radius-lg);
+  border:1px solid rgba(130,92,44,.16);box-shadow:var(--shadow);
+  background:linear-gradient(135deg,var(--paper),var(--vellum-2))}
+.ch-verse{display:flex;gap:14px;padding:12px 12px;border-radius:14px;scroll-margin-top:96px;
+  transition:background .18s ease,box-shadow .18s ease}
+.ch-verse + .ch-verse{margin-top:2px}
+.ch-verse:hover{background:rgba(200,149,54,.10)}
 .ch-num{flex:0 0 auto;min-width:1.8em;text-align:right;color:var(--gold-deep);font-weight:700;
   font-variant-numeric:tabular-nums;text-decoration:none;padding-top:2px}
 .ch-num:hover{text-decoration:underline}
+html.dark .chapter{background:linear-gradient(135deg,#141d2e,#0f1928);border-color:rgba(255,255,255,.08)}
+html.sepia .chapter{background:linear-gradient(135deg,var(--paper),var(--vellum-2))}
+/* no modo leitura o cartão some para dar lugar só ao texto */
+html.focus-read .chapter{padding:0;border:0;box-shadow:none;background:transparent}
+html.focus-read .ch-verse:hover{background:transparent}
+@media (max-width:560px){
+  .chapter{padding:14px 12px;border-radius:var(--radius)}
+  .ch-verse{padding:10px 8px;gap:10px}
+}
 .ch-body{flex:1 1 auto;min-width:0}
 .ch-body .orig{margin:0 0 4px}
 .ch-body .translit{margin:0 0 4px;color:var(--muted)}
@@ -622,7 +656,10 @@ body.hl-mode .pt,body.hl-mode .orig{-webkit-user-select:none;user-select:none;-w
   font-family:"Inter",system-ui,sans-serif}
 .auth-box h2{font-size:1.35rem;margin:0 0 14px}
 .auth-close{position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:50%;
-  border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;font-size:1.2rem}
+  border:1px solid var(--line);background:var(--vellum-2);color:var(--ink-soft);cursor:pointer;font-size:1.2rem;
+  display:grid;place-items:center;line-height:1;z-index:1}
+.auth-close:hover{border-color:var(--gold);color:var(--gold-deep)}
+html.dark .auth-close{background:#2a2418}
 .auth-tabs{display:flex;gap:6px;margin:0 0 14px}
 .auth-tabs button{flex:1;border:1px solid var(--line);background:transparent;color:var(--ink-soft);
   border-radius:999px;padding:9px 10px;cursor:pointer;font-family:inherit}
@@ -691,7 +728,7 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 /* modal de confirmação */
 .bec-modal{position:fixed;inset:0;z-index:80;background:rgba(20,16,8,.55);display:grid;place-items:center;padding:20px}
 .bec-modal[hidden]{display:none}  /* o atributo hidden precisa vencer o display:grid acima */
-.bec-modal-box{background:var(--paper);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;
+.bec-modal-box{position:relative;background:var(--paper);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;
   box-shadow:var(--shadow);font-family:"Inter",system-ui,sans-serif}
 .bec-modal-box p{margin:0 0 16px}
 .bec-modal-actions{display:flex;gap:10px;justify-content:flex-end}
@@ -956,6 +993,8 @@ html.dark .collap-count{background:#2a2418;color:#e2c26a}
 
 /* ---------- modo leitura (foco nas Escrituras) ---------- */
 .focus-btn{margin-top:10px}
+.ruler-btn{margin-top:10px;margin-left:8px}
+.ruler-btn.on,.reader-fab .rfb[data-ruler-toggle].on{background:var(--gold);color:#20170a;border-color:var(--gold)}
 .focus-exit{display:none}
 html.focus-read .nav,html.focus-read .mobile-primary-nav,html.focus-read .footer,
 html.focus-read .crumb,html.focus-read .book-jump-wrap,html.focus-read .study-frac,
@@ -981,6 +1020,16 @@ html.dark.focus-read .focus-exit{background:#211c13;color:#efe7d8}
 /* ---------- foco progressivo: só o versículo atual em destaque ---------- */
 html.focus-read .ch-verse{opacity:.42;transition:opacity .25s ease}
 html.focus-read .ch-verse.fr-current,html.focus-read .ch-verse:hover{opacity:1}
+
+/* ---------- régua de foco: faixa horizontal para acompanhar a linha ---------- */
+.focus-ruler{display:none;position:fixed;left:0;right:0;top:50%;height:78px;
+  transform:translateY(-50%);z-index:20;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(200,149,54,0),rgba(200,149,54,.12),rgba(200,149,54,0));
+  border-top:1px solid rgba(200,149,54,.28);border-bottom:1px solid rgba(200,149,54,.28)}
+html.ruler-on .focus-ruler{display:block}
+html.dark.ruler-on .focus-ruler{
+  background:linear-gradient(to bottom,rgba(239,208,138,0),rgba(239,208,138,.10),rgba(239,208,138,0));
+  border-color:rgba(239,208,138,.24)}
 
 /* ---------- meta de leitura no modo foco ---------- */
 .focus-progress{display:none}
