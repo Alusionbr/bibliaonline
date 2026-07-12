@@ -167,9 +167,11 @@ def test_gamificacao_nao_inunda_o_banco(site):
     game = (site / "assets" / "game.js").read_text("utf-8")
     assert "schedulePush" in game        # envio debounced/deduplicado
     assert "catalogLoaded" in game       # catálogo carregado uma vez por sessão
-    # A restauração da caneta na carga não dispara sincronização.
+    # Restaurar grifos/notas ao abrir a página (paintAll) não deve, por si só,
+    # marcar o estado como sujo para sincronizar — só a ação do usuário grava.
     study = (site / "assets" / "study.js").read_text("utf-8")
-    assert "setColor((load('pencolor').c)||'y', true)" in study
+    assert "function paintAll(" in study
+    assert "function setHlColor(" in study
 
 
 def test_reportar_bug(site):
@@ -314,16 +316,15 @@ def test_gera_ferramentas_de_estudo(site):
     assert 'data-ref="Gênesis 1:1"' in vp
 
 
-def test_caneta_marca_texto_e_doacao(site):
-    # marca-texto por caneta (arrastar) + cores + cartão de doação por engajamento
+def test_grifo_colorido_por_versiculo(site):
+    # A caneta morta (arrastar palavra a palavra) e o cartão de doação (link
+    # quebrado) saíram; grifo agora é por versículo, com paleta de 4 cores,
+    # acionado pela folha de ferramentas única.
     study = (site / "assets" / "study.js").read_text("utf-8")
-    for gancho in ("pen-toggle", "hl-mode", "pen-colors", "pointerdown",
-                   "pointercancel", "elementFromPoint", "DONATE_EVERY", "markCount"):
+    for gancho in ("vs-color", "setHlColor", "hlColor", "verse-sheet", "openSheet", 'data-vs-act="share"'):
         assert gancho in study, gancho
-    # a barra de seleção não tem mais o botão "Grifar" (agora é a caneta)
-    assert 'data-sel="hl"' not in study
-    # botão de compartilhar no verso
-    assert 'data-act="share"' in study
+    for morto in ("pen-toggle", "makePenTools", "DONATE_URL", "DONATE_EVERY"):
+        assert morto not in study, morto
 
 
 def test_anotacoes_importar_e_compartilhar(site):
@@ -354,26 +355,37 @@ def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
 
 
 def test_audio_e_favoritos(site):
+    # Os botões por versículo saíram do HTML: favoritar/ouvir agora vivem na
+    # folha de ferramentas única (study.js), acionada ao tocar no texto.
     app = (site / "assets" / "app.js").read_text("utf-8")
-    for gancho in ("speechSynthesis", "SpeechSynthesisUtterance", "data-speak",
-                   "data-lang", "bec.favs", "data-fav", "favorite-home"):
+    for gancho in ("speechSynthesis", "SpeechSynthesisUtterance", "BEC.speak",
+                   "bec.favs", "data-fav", "BEC.favs", "favorite-home"):
         assert gancho in app, gancho
     home = (site / "index.html").read_text("utf-8")
     assert 'id="favorite-home"' in home and 'id="favorite-list"' in home
     vp = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
-    assert "Ouvir original" in vp and "Ouvir PT" in vp and "Favoritar" in vp
-    assert 'data-lang="he-IL"' in vp and 'data-lang="pt-BR"' in vp
+    assert 'data-lang="he-IL"' in vp and "verse-tap" in vp
     cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
-    assert "Ouvir original" in cap and "Favoritar" in cap
+    assert 'data-lang="he-IL"' in cap and "verse-tap" in cap
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    for gancho in ('data-vs-act="fav"', 'data-vs-act="speak-orig"', 'data-vs-act="speak-pt"'):
+        assert gancho in study, gancho
 
 
 def test_lote2_cartao_ferramentas_modal(site):
     study = (site / "assets" / "study.js").read_text("utf-8")
-    # base do site injetada + cartão-imagem + compartilhar versículo + ferramentas + modal
+    # base do site injetada + cartão-imagem + compartilhar versículo + folha única
     assert study.startswith("var BEC_BASE=")
-    for gancho in ("makeVerseCard", "canShare", "toBlob", "shareVerse",
-                   "tools-fab", "tools-panel", "bec-modal", "confirmModal"):
+    for gancho in ("makeVerseCard", "canShare", "toBlob", "shareVerse", "verse-sheet", "confirmModal"):
         assert gancho in study, gancho
+    # confirmModal/bec-modal foram centralizados no core.js compartilhado
+    core = (site / "assets" / "core.js").read_text("utf-8")
+    assert "bec-modal" in core and "function confirmModal(" in core
+    # o antigo painel de ferramentas flutuante próprio saiu: foi absorvido
+    # pelo painel único de leitura (reader-fab)
+    assert "tools-fab" not in study and "tools-panel" not in study
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-study-export" in cap and "data-study-share" in cap and "data-study-clear" in cap
 
 
 def test_lote2_seletor_ir_para_livro(site):
@@ -445,11 +457,12 @@ def test_sitemap_lista_todas_as_urls(site):
 
 
 def test_ajustes_ios_notas(site):
-    # menu flutuante: salvar nas Notas (texto) + baixar .txt; .json saiu do menu
+    # painel de leitura: compartilhar estudo (folha nativa, "Salvar em Notas"
+    # no iOS) + baixar .txt; .json saiu do menu
     study = (site / "assets" / "study.js").read_text("utf-8")
     assert "Salvar tudo (.json)" not in study
-    assert 'data-t="txt"' in study
-    assert "Salvar nas Notas" in study
+    assert "function shareStudyText(" in study
+    assert "data-study-export" in study and "data-study-share" in study
     # página Anotações: .json vira "backup", importar vira "Importar backup" (ids preservados)
     anot = (site / "anotacoes" / "index.html").read_text("utf-8")
     assert "Backup .json" in anot and "Importar backup" in anot
@@ -460,7 +473,8 @@ def test_painel_ferramentas_minimiza():
     # o atributo hidden precisa vencer o display:flex, senão o painel fica sempre aberto
     from pathlib import Path
     css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
-    assert ".tools-panel[hidden]" in css
+    assert ".reader-fab-panel[hidden]" in css
+    assert ".verse-sheet[hidden]" in css
 
 
 def test_lote4_ordenacao_dos_livros(site):

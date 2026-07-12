@@ -4,6 +4,83 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Redesign profissional: folha de ferramentas unica, lexico, referencias cruzadas, plano gerado e busca global - 2026-07-12
+
+Intencao: a pagina de leitura acumulava controles em 4 lugares ao mesmo
+tempo (barra do header, 3 botoes repetidos sob cada versiculo, modulos
+empilhados e 3 botoes flutuantes concorrentes). Redesign para ficar
+profissional e funcional, agrupando as ferramentas de estudo e adicionando
+paridade de recursos, sem custo (sem IA, sem dependencia nova, sem servidor
+adicional).
+
+Fase A - leitor limpo:
+
+- `scripts/build.py`: remove `verse_tools()`/`audio_button()`/`fav_button()`
+  (botoes por versiculo saem do HTML gerado); `verse_map_module`+
+  `study_desk_module` viram um unico `study_continue_module` compacto;
+  `study_fraction_module` passa a `<details class="collap">` recolhido por
+  padrao; `reader_fab()` absorve os antigos `tools-fab`/`report-fab`.
+- `scripts/study.asset.js` (reescrito): folha de ferramentas unica por
+  versiculo (favoritar, grifar em 4 cores, nota, copiar, compartilhar,
+  salvar em colecao, referencias cruzadas), acionada ao tocar no texto
+  (`.verse-tap`). Remove a caneta de marca-texto morta (`makePenTools`
+  comecava com `return;`, nunca funcionou em producao) e o cartao de doacao
+  com link quebrado (`DONATE_URL` sem conta).
+
+Fase B - bugs e utilitarios:
+
+- Cartoes duplicados "Anotacoes"/"Marcacoes" no Workspace (ambos apontavam
+  para o mesmo lugar) viram um so.
+- `scripts/core.asset.js` (novo -> `assets/core.js`): esc/download/
+  confirmModal/copyText compartilhados, antes duplicados em ate 6 arquivos.
+- `scripts/gamification.asset.js`: para de descartar silenciosamente
+  missoes com metric "highlights" (grifar agora e uma ferramenta real).
+- Workspace `#configuracoes`: controles reais (tema, fonte, idioma
+  original, ordem dos livros, backup/apagar dados locais).
+
+Fase C - paridade de recursos:
+
+- `scripts/lexicon.asset.js` (novo -> `assets/lexicon.js`) + shards
+  `site/data/tokens/<livro>.json` (gerados por `build_lexicon_shards()` a
+  partir de `hebrew-tokens.json`, ja existente e sem uso ate agora): toca
+  numa palavra do hebraico/aramaico original e ve numero de Strong, glosa
+  e morfologia. Alinhamento palavra<->token validado em 100% das 23213
+  verses hebraicas/aramaicas antes de implementar.
+- Referencias cruzadas (`site/data/cross-references.json`, ja existente):
+  renderizadas na pagina do versiculo e na folha de ferramentas.
+- Gerador de plano de leitura real (por livro ou tema, com cronograma dia
+  a dia), substituindo o antigo formulario que so salvava metadados sem
+  gerar nada.
+- Dashboard de estatisticas no Workspace (`#progresso`).
+- Busca disponivel em qualquer pagina (overlay global, botao no nav e no
+  painel de leitura), nao so na home. Indice de busca (`search-index.json`)
+  ~37% menor: campo `k` deixou de duplicar referencia/traducao ja presentes
+  em `titulo`/`desc`.
+
+Fase D - polimento:
+
+- Suporte a `prefers-color-scheme` quando o usuario nao escolheu tema.
+- Folha de estilo de impressao; metadados `og:url`/`twitter:card`.
+- Estilo novo para os componentes acima (folha de ferramentas, painel
+  unico, popover do lexico, overlay de busca, dashboard, configuracoes).
+
+Cortado deliberadamente (nao bloqueia a publicacao, fica para depois):
+lexico interativo em grego (sem dado de tokenizacao disponivel), repintura
+completa das cores hardcoded do modo escuro, expansao do dataset de
+referencias cruzadas, e 2a traducao em portugues para comparacao lado a
+lado.
+
+Teste: suite completa (`pytest`, 108 testes, incluindo 5 reescritos e 1
+novo para refletir o novo comportamento) verde. Verificacao ponta a ponta
+num navegador real (Playwright, servidor estatico local): grifo colorido,
+nota, favorito, popover do lexico, referencias cruzadas, busca global,
+gerador de plano e alternancia de tema escuro, todos funcionando sem erros
+de console (fora recursos externos indisponiveis no sandbox, como CDN do
+Supabase e Google Fonts). `git diff --check` e `python
+scripts/validate_data.py` OK. HTML de capitulo de exemplo (Genesis 1)
+caiu de 67531 para 42047 bytes com a remocao dos botoes duplicados.
+Publicado no commit `b5890f1`.
+
 ## Salas de Estudo reais (ligacao Comunidade) - 2026-07-01
 
 Intencao: ligar a pagina /comunidade/salas/ ao banco real (tabela `groups` e

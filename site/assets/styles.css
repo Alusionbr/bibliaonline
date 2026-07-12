@@ -272,8 +272,10 @@ html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
   .sf-field{justify-content:space-between}
   .sf-save{width:100%}
 }
-/* FAB de ferramentas de leitura (celular) — canto inferior direito */
-.reader-fab{display:none}
+/* Painel único de ferramentas de leitura — canto inferior direito, em
+   qualquer tamanho de tela (substitui os antigos 3 botões flutuantes
+   concorrentes: ferramentas de leitura, ferramentas de estudo e reportar). */
+.reader-fab{display:block;position:fixed;right:20px;bottom:20px;z-index:71}
 .reader-fab-btn{width:52px;height:52px;border-radius:50%;border:0;font-size:1.35rem;
   background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#20170a;
   box-shadow:0 12px 30px rgba(30,22,10,.32);display:grid;place-items:center;margin-left:auto}
@@ -300,7 +302,8 @@ html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
 .fab-cfg-row input{width:16px;height:16px;accent-color:var(--gold);flex:none}
 @media (max-width:760px){
   /* acima da barra de navegação inferior (min-height 58px, z-index 70) */
-  .reader-fab{display:block;position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);z-index:71}
+  .reader-fab{right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 72px)}
+  /* no celular o painel já cobre fonte/original/tema: some com o duplicado do header */
   body:has(.reader-fab) .nav .reader-tools{display:none}
 }
 html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
@@ -527,13 +530,9 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 /* leitor de capítulo: por padrão só a tradução; original+transliteração ligam
    pelo botão "א/A" (html.orig-on), preferência lembrada e sincronizada */
 .chapter .ch-body .orig,
-.chapter .ch-body .translit,
-.chapter .verse-tools .listen[data-lang="he-IL"],
-.chapter .verse-tools .listen[data-lang="el-GR"]{display:none}
+.chapter .ch-body .translit{display:none}
 html.orig-on .chapter .ch-body .orig,
 html.orig-on .chapter .ch-body .translit{display:block}
-html.orig-on .chapter .verse-tools .listen[data-lang="he-IL"],
-html.orig-on .chapter .verse-tools .listen[data-lang="el-GR"]{display:inline-flex}
 .reader-tools .rt.on{background:var(--gold);color:#20170a;border-color:var(--gold)}
 
 /* ferramentas de estudo: grifo de palavra/versículo, anotações */
@@ -1014,3 +1013,155 @@ html.dark .room-ref{background:#2a2418;color:#e2c26a}
 .room-suggest-more{display:inline-block;margin-top:10px;font-family:"Inter",system-ui,sans-serif;
   font-size:.85rem;font-weight:600}
 html.dark .room-suggest-card{background:#211c13}
+
+/* ==========================================================================
+   Redesign profissional: folha única de ferramentas do versículo, busca
+   global, léxico interativo, painel de configurações e dashboard de
+   estatísticas. Reaproveita os tokens e padrões existentes acima. */
+
+/* ---------- folha de ferramentas do versículo (grifar/notar/favoritar/
+   ouvir/compartilhar/coleção/referências) — substitui os 3 botões por
+   versículo e a barra de estudo antiga ---------- */
+.verse-tap{cursor:pointer}
+.verse-tap-hint{max-width:var(--read);margin:6px auto 0;color:var(--muted);
+  font-size:.78rem;font-style:italic;text-align:center}
+.verse-sheet{position:fixed;inset:0;z-index:80}
+.verse-sheet[hidden]{display:none}
+body.sheet-open{overflow:hidden}
+.verse-sheet-backdrop{position:absolute;inset:0;background:rgba(15,10,4,.42);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);animation:vsFade .18s ease}
+.verse-sheet-box{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:min(560px,100%);max-height:min(78vh,640px);overflow-y:auto;background:var(--paper);
+  border:1px solid var(--line);border-radius:22px 22px 0 0;box-shadow:0 -20px 60px rgba(20,14,6,.35);
+  padding:18px 20px calc(env(safe-area-inset-bottom,0px) + 20px);
+  animation:vsSlideUp .22s cubic-bezier(.22,1,.36,1)}
+@media(min-width:760px){
+  .verse-sheet-box{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);
+    border-radius:22px;max-height:min(80vh,620px);animation:vsPop .16s cubic-bezier(.22,1,.36,1)}
+}
+@keyframes vsFade{from{opacity:0}to{opacity:1}}
+@keyframes vsSlideUp{from{transform:translate(-50%,26px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes vsPop{from{transform:translate(-50%,-50%) scale(.97);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@media (prefers-reduced-motion: reduce){
+  .verse-sheet-backdrop,.verse-sheet-box,.search-overlay-in{animation:none}
+}
+.verse-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.verse-sheet-head b{font-family:"Fraunces",serif;font-size:1.15rem}
+.vs-x{border:0;background:transparent;font-size:1.3rem;line-height:1;color:var(--muted);
+  cursor:pointer;padding:2px 8px;border-radius:8px}
+.vs-x:hover{background:var(--vellum-2);color:var(--ink)}
+.verse-sheet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.vs-act{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid var(--line);
+  border-radius:14px;background:var(--vellum);color:var(--ink);padding:10px 6px;font-size:1.15rem;
+  cursor:pointer;font-family:"Inter",system-ui,sans-serif}
+.vs-act span{font-size:.66rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.15}
+.vs-act:hover{background:rgba(200,149,54,.16)}
+.vs-act[aria-pressed="true"]{background:var(--gold);color:#20170a}
+.vs-act[aria-pressed="true"] span{color:#3a2a08}
+.verse-sheet-row{margin-bottom:14px}
+.verse-sheet-row>span,.verse-sheet-row>label{display:block;font-family:"Inter",system-ui,sans-serif;
+  font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px}
+.vs-colors{display:flex;gap:10px}
+.vs-color{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.vs-color[data-c="y"]{background:#ffe14d}
+.vs-color[data-c="g"]{background:#a8e06a}
+.vs-color[data-c="b"]{background:#8ecbff}
+.vs-color[data-c="p"]{background:#ffb3d1}
+.vs-color[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.vs-note{width:100%;min-height:74px;resize:vertical;font:inherit;font-size:.96rem;border:1px solid var(--line);
+  border-radius:12px;padding:10px 12px;background:var(--vellum);color:var(--ink)}
+.vs-xref-row[hidden],.vs-collection-row[hidden]{display:none}
+.vs-xref-list,.xref-list{display:flex;flex-wrap:wrap;gap:6px}
+.xref-chip{display:inline-block;font-family:"Inter",system-ui,sans-serif;font-size:.8rem;
+  text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:5px 11px;
+  background:var(--vellum);color:var(--gold-deep)}
+.xref-chip:hover{background:var(--vellum-2);color:var(--ink)}
+.vs-col-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.vs-col-new{display:flex;gap:6px}
+.vs-col-new input{flex:1;border:1px solid var(--line);border-radius:10px;padding:7px 10px;
+  font:inherit;background:var(--vellum);color:var(--ink)}
+.vs-done{color:var(--green);font-weight:600;margin:0}
+html.dark .verse-sheet-box{background:var(--paper)}
+html.dark .vs-act,html.dark .vs-note,html.dark .xref-chip,html.dark .vs-col-new input{
+  background:#211c13;border-color:var(--line)}
+html.dark .vs-act:hover{background:#2a2418}
+
+/* grifo por versículo com paleta de cores (substitui a caneta morta) */
+.v-hl[data-c="g"]{background:rgba(168,224,106,.28);border-left-color:#5fa832}
+.v-hl[data-c="b"]{background:rgba(142,203,255,.28);border-left-color:#4a90c4}
+.v-hl[data-c="p"]{background:rgba(255,179,209,.28);border-left-color:#d46a95}
+html.dark .v-hl{background:rgba(255,225,77,.14)}
+html.dark .v-hl[data-c="g"]{background:rgba(168,224,106,.16)}
+html.dark .v-hl[data-c="b"]{background:rgba(142,203,255,.16)}
+html.dark .v-hl[data-c="p"]{background:rgba(255,179,209,.16)}
+.verse-cont.has-note .verse-head h1::after{content:'🗒';margin-left:8px;font-size:.7em;opacity:.7}
+
+/* painel único de leitura: link do item "Anotações" não sublinha */
+.reader-fab a.rfb{text-decoration:none}
+
+/* bloco único "Continue estudando" (substitui os antigos módulos separados
+   "Estude em comunidade" e "Mesa de Estudo") */
+.study-continue{max-width:var(--read);margin:30px auto 0;border:1px solid var(--line);
+  border-radius:var(--radius-lg);background:var(--paper);padding:20px 22px;box-shadow:var(--shadow)}
+.study-continue-head h2{font-size:1.25rem;margin:2px 0 0}
+html.dark .study-continue{background:#211c13}
+
+/* léxico interativo do hebraico/aramaico (Strong + morfologia) */
+.lex-w{cursor:pointer;border-bottom:1px dotted var(--gold-deep);border-radius:2px}
+.lex-w:hover,.lex-w:focus-visible{background:rgba(200,149,54,.18)}
+.lex-pop{position:absolute;z-index:90;max-width:270px;background:var(--paper);border:1px solid var(--line);
+  border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;font-size:.88rem}
+.lex-pop[hidden]{display:none}
+.lex-pop-word{font-family:"Frank Ruhl Libre",serif;font-size:1.35rem;direction:rtl;margin-bottom:4px}
+.lex-pop-morph{color:var(--muted);font-size:.78rem;margin:0 0 8px;text-transform:capitalize}
+.lex-pop-entry{margin:0 0 4px}
+.lex-pop-entry b{color:var(--gold-deep);font-family:"Inter",system-ui,sans-serif}
+.lex-pop-prefix,.lex-pop-empty{margin:0 0 4px;color:var(--muted);font-size:.82rem}
+.lex-pop-close{position:absolute;top:6px;right:8px;border:0;background:transparent;
+  font-size:1.05rem;color:var(--muted);cursor:pointer;line-height:1}
+html.dark .lex-pop{background:#211c13}
+
+/* busca global (botão no nav, disponível em toda página) */
+.search-overlay{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-start;
+  justify-content:center;padding:min(12vh,90px) 16px 16px;background:rgba(15,10,4,.5);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.search-overlay[hidden]{display:none}
+.search-overlay-in{width:min(640px,100%);background:var(--paper);border:1px solid var(--line);
+  border-radius:20px;box-shadow:0 24px 70px rgba(20,14,6,.4);padding:18px;
+  max-height:min(70vh,560px);display:flex;flex-direction:column;gap:12px;animation:vsPop .16s ease}
+.search-overlay-head{display:flex;gap:8px}
+.search-overlay-head input{flex:1;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
+  font:inherit;font-size:1rem;background:var(--vellum);color:var(--ink)}
+.search-overlay-results{overflow-y:auto;display:grid;gap:8px}
+html.dark .search-overlay-in{background:#211c13}
+html.dark .search-overlay-head input{background:var(--paper)}
+body.search-open{overflow:hidden}
+
+/* dashboard de estatísticas do Workspace */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:10px;margin:16px 0}
+.stat-tile{background:var(--vellum);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat-tile b{display:block;font-family:"Fraunces",serif;font-size:1.5rem;color:var(--gold-deep);line-height:1.1}
+.stat-tile span{display:block;font-size:.72rem;color:var(--muted);margin-top:2px}
+.stats-heatmap{display:flex;gap:5px;margin:4px 0 18px;flex-wrap:wrap}
+.hm-cell{width:16px;height:16px;border-radius:4px;background:rgba(28,22,12,.08)}
+.hm-cell.on{background:var(--gold)}
+html.dark .stat-tile{background:#211c13}
+html.dark .hm-cell{background:rgba(255,255,255,.08)}
+html.dark .hm-cell.on{background:var(--gold-soft)}
+
+/* configurações e sincronização (tema/fonte/idioma original/ordem/backup) */
+.settings-grid{display:grid;gap:18px;margin-top:16px}
+.settings-row{display:grid;gap:8px}
+.settings-row>b{font-family:"Inter",system-ui,sans-serif;font-size:.86rem}
+.settings-opts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.settings-opt.on{background:var(--gold);color:#20170a;border-color:var(--gold)}
+.settings-toggle{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--ink-soft);cursor:pointer}
+.settings-note{display:block;font-size:.82rem;color:var(--muted);margin-top:4px}
+
+/* impressão: só o texto, sem chrome */
+@media print{
+  .nav,.mobile-primary-nav,.reader-fab,.verse-sheet,.search-overlay,.beta-banner,.footer,
+  .study-continue,.book-jump-wrap,.pager,.skip,.order-toggle,.focus-exit,.focus-progress{display:none!important}
+  body{background:#fff;color:#000}
+  .chapter,.verse-hero,.verse-page{max-width:100%}
+}

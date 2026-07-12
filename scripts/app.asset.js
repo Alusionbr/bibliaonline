@@ -21,23 +21,27 @@ function becTouchHistory(url,label){
 document.addEventListener('click',function(e){
   if(e.target.closest('[data-menu]')){document.querySelector('[data-links]').classList.toggle('open');}
 });
+// busca: indice local carregado sob demanda; a mesma logica atende tanto a
+// busca da home quanto o overlay global (nav), disponivel em toda pagina.
 (function(){
-  var q=document.getElementById('q'), out=document.getElementById('results');
-  if(!q||!out) return;
+  window.BEC = window.BEC || {};
+  var core=window.BEC.core;
+  var PREFIX=core?core.prefix:'';
   // busca sem acento: "genesis" encontra "Gênesis", "joao" encontra "João".
-  function fold(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+  function fold(s){return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'');}
   // índice carregado sob demanda (arquivo externo, não embutido na página)
   var idxPromise=null;
   function getIndex(){
     if(!idxPromise){
-      idxPromise=fetch('data/search-index.json').then(function(r){return r.json();}).then(function(data){
-        data.forEach(function(i){i.kf=fold(i.k);});  // chave sem acento (1x)
+      var p=core ? core.fetchData('data/search-index.json') : fetch('data/search-index.json').then(function(r){return r.json();});
+      idxPromise=p.then(function(data){
+        data.forEach(function(i){ i.kf=fold((i.titulo+' '+i.desc+' '+(i.k||'')).toLowerCase()); });
         return data;
       });
     }
     return idxPromise;
   }
-  function render(IDX, term){
+  function renderInto(out, IDX, term){
     out.innerHTML='';
     term=fold((term||'').trim().toLowerCase());
     if(!term) return;
@@ -53,18 +57,42 @@ document.addEventListener('click',function(e){
     res=res.slice(0,8);
     if(!res.length){out.innerHTML='<p class="empty">Nada encontrado. Tente “Salmo 23”, “shalom”, “logos” ou “aramaico”.</p>';return;}
     res.forEach(function(i){
-      var a=document.createElement('a');a.className='result';a.href=i.url;
+      var a=document.createElement('a');a.className='result';a.href=PREFIX+i.url;
       a.innerHTML='<span class="kind">'+i.t+'</span><h4>'+i.titulo+'</h4><p>'+i.desc+'</p>';
       out.appendChild(a);
     });
   }
-  q.addEventListener('input',function(e){
-    var val=e.target.value;
-    getIndex().then(function(IDX){
-      if(q.value!==val) return;  // ignora respostas obsoletas
-      render(IDX, val);
-    }).catch(function(){ out.innerHTML='<p class="empty">Não foi possível carregar a busca. Recarregue a página.</p>'; });
+  function wireSearch(input, out){
+    if(!input||!out) return;
+    input.addEventListener('input',function(e){
+      var val=e.target.value;
+      getIndex().then(function(IDX){
+        if(input.value!==val) return;  // ignora respostas obsoletas
+        renderInto(out, IDX, val);
+      }).catch(function(){ out.innerHTML='<p class="empty">Não foi possível carregar a busca. Recarregue a página.</p>'; });
+    });
+  }
+  window.BEC.search = {wire: wireSearch};
+  wireSearch(document.getElementById('q'), document.getElementById('results'));
+})();
+// overlay de busca global — o gatilho [data-search-open] existe no nav e,
+// nas páginas de capítulo (celular), também no painel único de leitura;
+// por isso a abertura é delegada, não presa a um único botão.
+(function(){
+  var overlay=document.querySelector('[data-search-overlay]');
+  if(!overlay) return;
+  var input=overlay.querySelector('[data-search-input]');
+  var out=overlay.querySelector('[data-search-results]');
+  if(window.BEC && window.BEC.search) window.BEC.search.wire(input, out);
+  function openOverlay(){ overlay.hidden=false; document.body.classList.add('search-open'); setTimeout(function(){ if(input) input.focus(); },30); }
+  function closeOverlay(){ overlay.hidden=true; document.body.classList.remove('search-open'); }
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-search-open]')) openOverlay();
   });
+  overlay.addEventListener('click', function(e){
+    if(e.target===overlay || (e.target.closest && e.target.closest('[data-search-close]'))) closeOverlay();
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !overlay.hidden) closeOverlay(); });
 })();
 // reveal
 if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -216,6 +244,7 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 
 // audio de leitura + favoritos (sem arquivos de audio hospedados)
 (function(){
+  window.BEC = window.BEC || {};
   function loadFavs(){try{return JSON.parse(localStorage.getItem('bec.favs')||'{}');}catch(e){return{};}}
   function saveFavs(v){try{localStorage.setItem('bec.favs',JSON.stringify(v));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
   function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -281,6 +310,19 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     box.innerHTML='<span>'+esc(label)+'</span><b>'+esc(transcript)+'</b>';
     box.hidden=false;
   }
+  // ponte usada pela folha de ferramentas do versículo (study.js): favoritar
+  // e ouvir sem duplicar a lógica de persistência/estado dos botões.
+  window.BEC.speak = speak;
+  window.BEC.favs = {
+    isFav: function(ref){ return !!loadFavs()[ref]; },
+    toggle: function(ref, url){
+      var favs=loadFavs();
+      if(favs[ref]) delete favs[ref]; else favs[ref]={url:url||location.pathname, savedAt:new Date().toISOString()};
+      saveFavs(favs);
+      updateFavButtons(); renderFavHome(); renderFavFull();
+      return !!favs[ref];
+    }
+  };
   document.addEventListener('click',function(e){
     var sp=e.target.closest && e.target.closest('[data-speak]');
     if(sp){
@@ -345,50 +387,137 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   if(saved!=='bib') apply(saved);
 })();
 
-// Criar Plano: primeira versão local, preparada para sincronização futura
+// Criar Plano: gera um cronograma real dia a dia (por livro ou por tema) e
+// alimenta o mesmo sistema de progresso (bec.planProgress) dos planos prontos.
 (function(){
   var form=document.querySelector('[data-plan-form]');
   var list=document.querySelector('[data-plan-list]');
   if(!form||!list) return;
+  window.BEC = window.BEC || {};
+  var core=window.BEC.core;
+  var PREFIX=core?core.prefix:'';
+  var BOOKS=window.BEC_BOOKS||[];
+  function esc(s){ return core?core.esc(s):(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
   function load(){try{return JSON.parse(localStorage.getItem('bec.studyPlans')||'[]');}catch(e){return[];}}
   function save(plans){try{localStorage.setItem('bec.studyPlans',JSON.stringify(plans));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
-  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function distribute(total, days){
+    days=Math.max(1, Math.min(days, total||1));
+    var base=Math.floor(total/days), extra=total%days, out=[], n=1;
+    for(var d=0; d<days; d++){
+      var count=base+(d<extra?1:0), refs=[];
+      for(var i=0;i<count;i++){ refs.push(n); n++; }
+      out.push(refs);
+    }
+    return out;
+  }
+
+  function bookPlan(bookName, days){
+    var book=BOOKS.filter(function(b){return b.nome===bookName;})[0];
+    if(!book) return null;
+    var dias=distribute(book.cap, days).map(function(chs){
+      return chs.map(function(c){ return {label:bookName+' '+c, href:PREFIX+'ler/'+book.slug+'/'+c+'/'}; });
+    });
+    return {titulo:bookName, descricao:'Leitura de '+bookName+' em '+dias.length+' dias.', dias:dias};
+  }
+
+  function topicPlan(term, days){
+    if(!core) return Promise.resolve(null);
+    return core.fetchData('data/search-index.json').then(function(idx){
+      function fold(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+      var t=fold(term);
+      var matches=idx.filter(function(i){ return i.t==='Versículo' && fold(i.titulo+' '+i.desc+' '+(i.k||'')).indexOf(t)>-1; });
+      if(!matches.length) return null;
+      var perDay=Math.max(1, Math.ceil(matches.length/days)), dias=[];
+      for(var d=0; d<days && d*perDay<matches.length; d++){
+        dias.push(matches.slice(d*perDay,(d+1)*perDay).map(function(m){ return {label:m.titulo, href:PREFIX+m.url}; }));
+      }
+      return {titulo:'Tema: '+term, descricao:'Versículos sobre "'+term+'" em '+dias.length+' dias.', dias:dias};
+    });
+  }
+
   function render(){
     var plans=load();
-    if(!plans.length){list.innerHTML='<p class="muted-line">Nenhum plano salvo neste navegador.</p>';return;}
-    list.innerHTML='<h3>Planos salvos</h3>'+plans.map(function(p){
-      return '<article class="saved-plan"><b>'+esc(p.conteudo)+'</b><span>'+esc(p.tipo)+' · '+esc(p.duracao)+' · '+esc(p.ritmo)+' · '+esc(p.visibilidade)+'</span></article>';
-    }).join('');
+    list.innerHTML = plans.length ? plans.map(function(p){
+      var daysHtml=p.dias.map(function(refs, i){
+        return '<li class="plan-day"><label class="plan-check"><input type="checkbox" data-plan="'+esc(p.id)+'" data-day="'+i+'"><span>Dia '+(i+1)+'</span></label>'+
+          '<span class="plan-chapters">'+refs.map(function(r){ return '<a href="'+esc(r.href)+'">'+esc(r.label)+'</a>'; }).join(' · ')+'</span></li>';
+      }).join('');
+      return '<article class="saved-plan">'+
+        '<div class="section-title"><h3>'+esc(p.titulo)+'</h3><span class="plan-progress" data-plan-progress data-plan-slug="'+esc(p.id)+'">0 de '+p.dias.length+' dias</span></div>'+
+        '<p class="muted-line">'+esc(p.descricao)+'</p>'+
+        '<ol class="plan-days">'+daysHtml+'</ol>'+
+        '<p class="map-actions"><button type="button" class="btn ghost" data-plan-remove="'+esc(p.id)+'">Remover plano</button></p>'+
+      '</article>';
+    }).join('') : '<p class="muted-line">Nenhum plano criado ainda.</p>';
+    if(window.BEC.plans) window.BEC.plans.repaint();
   }
-  form.addEventListener('submit',function(e){
+
+  form.addEventListener('submit', function(e){
     e.preventDefault();
     var data=new FormData(form);
-    var plan={
-      tipo:data.get('tipo')||'Livro',
-      conteudo:(data.get('conteudo')||'').toString().trim(),
-      duracao:data.get('duracao')||'7 dias',
-      ritmo:data.get('ritmo')||'Leve',
-      visibilidade:data.get('visibilidade')||'Privado',
-      createdAt:new Date().toISOString()
-    };
-    if(!plan.conteudo) return;
-    var plans=load();
-    plans.unshift(plan);
-    save(plans.slice(0,12));
-    form.reset();
+    var tipo=data.get('tipo')||'livro';
+    var duracao=parseInt(data.get('duracao'),10)||30;
+    var submitBtn=form.querySelector('button[type="submit"]');
+    var oldLabel=submitBtn?submitBtn.textContent:'';
+    if(submitBtn){ submitBtn.disabled=true; submitBtn.textContent='Gerando…'; }
+    function finish(base){
+      if(submitBtn){ submitBtn.disabled=false; submitBtn.textContent=oldLabel; }
+      if(!base || !base.dias || !base.dias.length){
+        if(submitBtn){ submitBtn.textContent='Nada encontrado — tente outro tema'; setTimeout(function(){submitBtn.textContent=oldLabel;},2200); }
+        return;
+      }
+      var plan={id:'p'+Date.now().toString(36), tipo:tipo, titulo:base.titulo, descricao:base.descricao,
+        dias:base.dias, createdAt:new Date().toISOString()};
+      var plans=load(); plans.unshift(plan); save(plans.slice(0,12));
+      render();
+    }
+    if(tipo==='tema'){
+      var term=(data.get('conteudo')||'').toString().trim();
+      if(!term){ if(submitBtn){ submitBtn.disabled=false; submitBtn.textContent=oldLabel; } return; }
+      topicPlan(term, duracao).then(finish).catch(function(){ finish(null); });
+    } else {
+      finish(bookPlan(data.get('livro')||'', duracao));
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    var rm=e.target.closest && e.target.closest('[data-plan-remove]');
+    if(!rm) return;
+    var id=rm.getAttribute('data-plan-remove');
+    save(load().filter(function(p){ return p.id!==id; }));
+    try{
+      var all=JSON.parse(localStorage.getItem('bec.planProgress')||'{}');
+      delete all[id];
+      localStorage.setItem('bec.planProgress', JSON.stringify(all));
+    }catch(err){}
     render();
   });
+
+  var bookSelect=form.querySelector('[data-plan-book-select]');
+  if(bookSelect) bookSelect.innerHTML=BOOKS.map(function(b){ return '<option value="'+esc(b.nome)+'">'+esc(b.nome)+' ('+b.cap+' cap.)</option>'; }).join('');
+
+  var tipoSelect=form.querySelector('[data-plan-tipo]');
+  if(tipoSelect) tipoSelect.addEventListener('change', function(){
+    form.querySelectorAll('[data-plan-field]').forEach(function(f){
+      f.hidden = f.getAttribute('data-plan-field')!==tipoSelect.value;
+    });
+  });
+
   render();
 })();
 
-// Planos de leitura: progresso por dia (bec.planProgress), com sincronização
+// Planos de leitura: progresso por dia (bec.planProgress), com sincronização.
+// Sem guarda de "sem checkbox no carregamento": planos criados depois (Criar
+// Plano) também precisam do listener delegado funcionando.
 (function(){
-  var boxes=document.querySelectorAll('input[data-plan]');
-  if(!boxes.length) return;
+  window.BEC = window.BEC || {};
   var KEY='bec.planProgress';
   function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
   function save(all){try{localStorage.setItem(KEY,JSON.stringify(all));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
   function paint(){
+    var boxes=document.querySelectorAll('input[data-plan]');
     var all=load();
     var done={};
     boxes.forEach(function(b){
@@ -404,6 +533,7 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       el.textContent=(done[slug]||0)+' de '+total+' dias';
     });
   }
+  window.BEC.plans = {repaint: paint};
   document.addEventListener('change',function(e){
     var b=e.target.closest && e.target.closest('input[data-plan]');
     if(!b) return;
@@ -719,7 +849,8 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 
   var TOOLS_KEY='bec.readerTools', POS_KEY='bec.fabPos';
   var LABELS={'font-dec':'Diminuir fonte','font-inc':'Aumentar fonte','orig':'Idioma original',
-    'theme':'Tema','focus':'Modo leitura','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar'};
+    'theme':'Tema','search':'Buscar','focus':'Modo leitura','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar',
+    'study-notes':'Minhas anotações','study-share':'Compartilhar estudo','study-export':'Baixar .txt','study-clear':'Apagar tudo'};
 
   function toolButtons(){return Array.prototype.slice.call(panel.querySelectorAll('.rfb[data-tool]'));}
   function allTools(){return toolButtons().map(function(b){return b.getAttribute('data-tool');});}
@@ -775,8 +906,9 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     if(mk){ var b=document.querySelector('[data-study-frac] [data-sf-mark="'+mk.getAttribute('data-fab-mark')+'"]'); if(b) b.click(); setOpen(false); return; }
     var sv=ev.target.closest && ev.target.closest('[data-fab-save]');
     if(sv){ var s=document.querySelector('[data-study-frac] [data-sf-save]'); if(s) s.click(); setOpen(false); return; }
-    // reportar fecha o painel (o modal assume); fonte/original/tema mantêm aberto
-    if(ev.target.closest && ev.target.closest('[data-report-open]')) setOpen(false);
+    // reportar, exportar e apagar fecham o painel (assumem modal/download próprios);
+    // fonte/original/tema/foco mantêm o painel aberto para vários toques seguidos
+    if(ev.target.closest && ev.target.closest('[data-report-open],[data-search-open],[data-study-export],[data-study-share],[data-study-clear]')) setOpen(false);
   });
   document.addEventListener('click',function(ev){
     if(panel.hidden) return;
@@ -826,4 +958,135 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
 
   applyEnabled();
   document.addEventListener('bec:study-sync', function(){ applyEnabled(); applyPos(); });
+})();
+
+// Configurações do Workspace: tema, fonte, idioma original, ordem dos livros
+// e gestão de dados locais (backup completo / apagar tudo).
+(function(){
+  var panel=document.querySelector('[data-settings-panel]');
+  if(!panel) return;
+  window.BEC = window.BEC || {};
+  var core=window.BEC.core;
+  var d=document.documentElement;
+  var THEMES=['light','sepia','dark'];
+
+  function markActive(sel, attr, current){
+    panel.querySelectorAll(sel).forEach(function(b){ b.classList.toggle('on', b.getAttribute(attr)===current); });
+  }
+  function syncUI(){
+    var theme=localStorage.getItem('bec.theme'); if(THEMES.indexOf(theme)<0) theme='light';
+    markActive('[data-set-theme]','data-set-theme', theme);
+    markActive('[data-set-font]','data-set-font', localStorage.getItem('bec.fontscale')||'1');
+    markActive('[data-set-order]','data-set-order', localStorage.getItem('bec.bookorder')||'bib');
+    var orig=panel.querySelector('[data-set-orig]');
+    if(orig) orig.checked = localStorage.getItem('bec.origmode')==='1';
+  }
+
+  panel.addEventListener('click', function(e){
+    var t=e.target.closest && e.target.closest('[data-set-theme]');
+    if(t){
+      var theme=t.getAttribute('data-set-theme');
+      d.classList.remove('sepia','dark');
+      if(theme==='dark') d.classList.add('dark'); else if(theme==='sepia') d.classList.add('sepia');
+      try{localStorage.setItem('bec.theme', theme);}catch(err){}
+      if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+      syncUI(); return;
+    }
+    var f=e.target.closest && e.target.closest('[data-set-font]');
+    if(f){
+      var scale=f.getAttribute('data-set-font');
+      d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+scale);
+      try{localStorage.setItem('bec.fontscale', scale);}catch(err){}
+      if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+      syncUI(); return;
+    }
+    var o=e.target.closest && e.target.closest('[data-set-order]');
+    if(o){
+      try{localStorage.setItem('bec.bookorder', o.getAttribute('data-set-order'));}catch(err){}
+      if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+      syncUI(); return;
+    }
+    var exp=e.target.closest && e.target.closest('[data-settings-export]');
+    if(exp){
+      var backup={};
+      ['notes','vhl','whl','favs','collections','notebooks','studyPlans','planProgress','readingRanges'].forEach(function(k){
+        try{ backup[k]=JSON.parse(localStorage.getItem('bec.'+k)||'null'); }catch(err){}
+      });
+      if(core) core.download('biblia-em-contexto-backup.json', JSON.stringify(backup,null,2), 'application/json');
+      return;
+    }
+    var imp=e.target.closest && e.target.closest('[data-settings-import]');
+    if(imp){ var file=panel.querySelector('[data-settings-import-file]'); if(file) file.click(); return; }
+    var clr=e.target.closest && e.target.closest('[data-settings-clear]');
+    if(clr && core){
+      core.confirmModal('Apagar TODOS os dados salvos neste navegador (notas, grifos, favoritos, coleções, cadernos, planos e progresso)? Esta ação não pode ser desfeita.', function(){
+        Object.keys(localStorage).filter(function(k){return k.indexOf('bec.')===0;}).forEach(function(k){ localStorage.removeItem(k); });
+        if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+        var status=panel.querySelector('[data-settings-status]');
+        if(status) status.textContent='Dados apagados. Recarregue a página.';
+      }, 'Apagar tudo');
+    }
+  });
+
+  var importFile=panel.querySelector('[data-settings-import-file]');
+  if(importFile) importFile.addEventListener('change', function(){
+    var f=importFile.files[0]; if(!f) return;
+    var rd=new FileReader();
+    rd.onload=function(){
+      var status=panel.querySelector('[data-settings-status]');
+      try{
+        var obj=JSON.parse(rd.result);
+        Object.keys(obj).forEach(function(k){ if(obj[k]!=null) localStorage.setItem('bec.'+k, JSON.stringify(obj[k])); });
+        if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+        if(status) status.textContent='Backup importado ✓ Recarregue a página.';
+      }catch(err){ if(status) status.textContent='Arquivo inválido.'; }
+    };
+    rd.readAsText(f); importFile.value='';
+  });
+
+  syncUI();
+  document.addEventListener('bec:study-sync', syncUI);
+})();
+
+// Dashboard de estatísticas do Workspace: números derivados dos dados já
+// salvos neste navegador (sem contagem no servidor).
+(function(){
+  var grid=document.querySelector('[data-stats-grid]');
+  if(!grid) return;
+  var BOOKS=window.BEC_BOOKS||[];
+  function loadJSON(k, fb){ try{ return JSON.parse(localStorage.getItem('bec.'+k)||'null')||fb; }catch(e){ return fb; } }
+  function setText(sel, val){ var el=grid.querySelector(sel); if(el) el.textContent=val; }
+
+  function render(){
+    var ranges=loadJSON('readingRanges',{});
+    var notes=loadJSON('notes',{});
+    var vhl=loadJSON('vhl',{});
+    var favs=loadJSON('favs',{});
+    var history=loadJSON('history',[]);
+
+    var chapters=Object.keys(ranges).length;
+    var totalChapters=BOOKS.reduce(function(s,b){return s+(b.cap||0);},0);
+    var pct=totalChapters ? Math.min(100, Math.round((chapters/totalChapters)*100)) : 0;
+
+    setText('[data-stat-chapters]', chapters);
+    setText('[data-stat-bible-pct]', pct+'%');
+    setText('[data-stat-notes]', Object.keys(notes).length);
+    setText('[data-stat-highlights]', Object.keys(vhl).length);
+    setText('[data-stat-favs]', Object.keys(favs).length);
+
+    var hm=document.querySelector('[data-stats-heatmap]');
+    if(hm){
+      var days={};
+      (history||[]).forEach(function(h){ if(h && h.at) days[h.at.slice(0,10)]=1; });
+      var today=new Date(), cells='';
+      for(var i=13;i>=0;i--){
+        var dt=new Date(today); dt.setDate(dt.getDate()-i);
+        var key=dt.toISOString().slice(0,10);
+        cells+='<span class="hm-cell'+(days[key]?' on':'')+'" title="'+key+'"></span>';
+      }
+      hm.innerHTML=cells;
+    }
+  }
+  render();
+  document.addEventListener('bec:study-sync', render);
 })();

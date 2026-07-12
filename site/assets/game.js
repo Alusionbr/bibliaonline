@@ -285,7 +285,9 @@
       var b=await sb.from('badges').select('*').order('sort');
       var w=await sb.from('weekly_missions').select('*').eq('active',true).order('sort');
       var changed=false;
-      if(m&&m.data&&m.data.length){ catalog.missions=m.data.filter(function(x){return x.metric!=='highlights';}); changed=true; }
+      // Grifar por versículo virou uma ferramenta real (folha de ferramentas
+      // do leitor), então missões com metric "highlights" voltam a valer.
+      if(m&&m.data&&m.data.length){ catalog.missions=m.data; changed=true; }
       if(b&&b.data&&b.data.length){ catalog.badges=b.data; changed=true; }
       if(w&&w.data&&w.data.length){ catalog.weekly=w.data; changed=true; }
       catalogLoaded=true;
