@@ -4,6 +4,76 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Leitor: audio de verdade pausa, marcador automatico opcional, leitura continua, contraste e identidade por era - 2026-07-12
+
+Intencao: corrigir um bug real de audio, adicionar controle sobre efeitos de
+leitura (com opcao de desligar), e dar mais cara de ferramenta de estudo aos
+livros e a linha do tempo.
+
+Descobertas antes de mudar:
+
+- Bug real: o botao "Pausar" do audio (folha de ferramentas do versiculo)
+  chamava `speak()` de novo ao ser clicado, que fazia `cancel()` e recomecava
+  a fala do zero — nunca pausava de verdade. Havia tambem um listener morto
+  em `app.asset.js` para `[data-speak]`, atributo que `build.py` nunca gera
+  (sobrou de uma versao anterior da folha de ferramentas).
+- Bug real (nao relacionado ao pedido original, mas no mesmo bloco): o
+  checkbox "Mostrar hebraico/grego e transliteracao" em Configuracoes nunca
+  teve um listener de fato — `syncUI()` refletia o estado salvo, mas marcar/
+  desmarcar a caixa nao chamava `applyOrig()`.
+- Contraste medido: no tema sepia, `--muted` (usado em bastante texto
+  secundario) tinha 3.28:1 de contraste contra o fundo — abaixo do minimo de
+  acessibilidade (4.5:1 para texto normal). Os outros dois temas estavam OK.
+- "Modo cronologico" ja existia como uma ordem alternativa de listar os
+  livros (`data-set-order=chron`), mas sem nenhuma identidade visual por
+  epoca; a listagem de livros (`/ler/`) era so nome + idioma + contagem de
+  capitulos, sem contexto de Antigo/Novo Testamento ou periodo historico.
+
+Mudancas:
+
+- `scripts/app.asset.js`: `BEC.speak()` reescrito para usar
+  `speechSynthesis.pause()/resume()` de verdade (Pausar ⇄ Continuar) em vez
+  de cancelar e reiniciar; remove o listener morto de `[data-speak]` e o
+  `showTranscript()` que dependia dele. Corrige o checkbox de idioma
+  original (`window.BEC.applyOrig` exposto + listener). Novo par de opcoes em
+  Configuracoes: "Marcar versiculos como lidos automaticamente ao rolar"
+  (estende `bec.readingRanges` via IntersectionObserver, reaproveitando
+  getRanges/setRanges/normalize/paint/creditRead do modulo de progresso por
+  trecho) e "Efeito de entrada suave no texto ao rolar" (liga/desliga
+  `html.no-reveal`, sempre respeitando `prefers-reduced-motion`). Nova
+  ferramenta "Ouvir capitulo" no leitor: le os versiculos em portugues em
+  sequencia, destacando o atual, parando quando qualquer outra fala comeca.
+- `scripts/build.py`: `.ch-verse` ganha `verse-reveal` (efeito de entrada
+  cresce+aparece ao rolar); nova opcao no `<head>` grava `no-reveal` cedo
+  (evita flash); novo botao "Ouvir capitulo" no leque de ferramentas do
+  leitor; `/ler/` (listagem de livros) ganha faixa lateral por Testamento
+  (AT/NT) e legenda com a era da linha do tempo por livro (reaproveita
+  `BOOK_ERA`, novo em `build_config.py`, sem duplicar `TIMELINE`); a linha do
+  tempo (`/linha-do-tempo/`) ganha um matiz proprio por era (varredura
+  dourado→violeta calculada no build, so decorativo) nas bordas e no selo do
+  periodo.
+- `site/assets/styles.css`: `--muted` do tema sepia escurecido (3.28:1 →
+  4.72:1); novas regras `.verse-reveal`, `.listen-current`, `.book-card.bt-*`,
+  `.book-era`, `--era-accent` na linha do tempo.
+
+Validacao realizada:
+
+- `python scripts/build.py`: passou (mesmos totais de sempre).
+- `python -m pytest`: 96 testes, todos passaram.
+- `node --check` em `app.js`/`study.js`: sem erro de sintaxe.
+- `git diff --check`: sem espacos em branco problematicos.
+- Playwright (servidor local, `speechSynthesis` mockado para determinismo):
+  pausar/retomar audio alterna Pausar⇄Continuar de verdade; trocar de
+  verso cancela e reseta o anterior; "Ouvir capitulo" toca os versiculos em
+  sequencia com destaque, termina sozinho no ultimo, e para no clique manual;
+  abrir a folha de um verso interrompe a leitura continua sem erro. Rolar um
+  capitulo com o marcador automatico ligado grava `bec.readingRanges`
+  corretamente e credita a missao de leitura. Checkbox de idioma original
+  agora aplica `orig-on` de verdade. Ordenacao biblica/alfabetica/cronologica
+  em `/ler/` continua funcionando com os cartoes novos. Capturas de tela nos
+  3 temas confirmam a varredura de cor por era na linha do tempo e o
+  contraste do sepia.
+
 ## Criar Plano embutido nas abas do Workspace - 2026-07-12
 
 Intencao: "Criar Plano" ja funcionava (gera cronograma, liga com leitor e

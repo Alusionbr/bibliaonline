@@ -23,10 +23,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=42366a7d">
+<link rel="stylesheet" href="../../../assets/styles.css?v=a9cc10e1">
 </head>
 <body data-prefix="../../../">
-<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
+<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
@@ -115,7 +115,7 @@
     </div>
   </details>
   <div class="chapter">
-    <div class="ch-verse" id="v1" data-ref="Ester 10:1">
+    <div class="ch-verse verse-reveal" id="v1" data-ref="Ester 10:1">
       <a class="ch-num" href="../../../versiculos/ester-10-1/" aria-label="Versículo 1">1</a>
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיָּשֶׂם הַמֶּלֶךְ אחשרש אֲחַשְׁוֵרוֹשׁ מַס עַל הָאָרֶץ וְאִיֵּי הַיָּֽם</p>
@@ -123,7 +123,7 @@
         <p class="pt">O rei Assuero impôs tributo à terra e às ilhas do mar.</p>
       </div>
     </div>
-    <div class="ch-verse" id="v2" data-ref="Ester 10:2">
+    <div class="ch-verse verse-reveal" id="v2" data-ref="Ester 10:2">
       <a class="ch-num" href="../../../versiculos/ester-10-2/" aria-label="Versículo 2">2</a>
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְכָל מַעֲשֵׂה תָקְפּוֹ וּגְבוּרָתוֹ וּפָרָשַׁת גְּדֻלַּת מָרְדֳּכַי אֲשֶׁר גִּדְּלוֹ הַמֶּלֶךְ הֲלוֹא הֵם כְּתוּבִים עַל סֵפֶר דִּבְרֵי הַיָּמִים לְמַלְכֵי מָדַי וּפָרָֽס</p>
@@ -131,7 +131,7 @@
         <p class="pt">Quanto a todos os atos do seu poder e do seu valor, e a narrativa completa da grandeza de Mordecai, com que o rei o exaltou, porventura não estão eles escritos no livro dos anais dos reis da Média e da Pérsia?</p>
       </div>
     </div>
-    <div class="ch-verse" id="v3" data-ref="Ester 10:3">
+    <div class="ch-verse verse-reveal" id="v3" data-ref="Ester 10:3">
       <a class="ch-num" href="../../../versiculos/ester-10-3/" aria-label="Versículo 3">3</a>
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">כִּי מָרְדֳּכַי הַיְּהוּדִי מִשְׁנֶה לַמֶּלֶךְ אֲחַשְׁוֵרוֹשׁ וְגָדוֹל לַיְּהוּדִים וְרָצוּי לְרֹב אֶחָיו דֹּרֵשׁ טוֹב לְעַמּוֹ וְדֹבֵר שָׁלוֹם לְכָל זַרְעֽוֹ</p>
@@ -168,6 +168,7 @@
     <button type="button" class="rfb" data-tool="font-dec" data-rt="font-dec">A−<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
+    <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
@@ -210,15 +211,15 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=42366a7d"></script>
-<script src="../../../assets/supabase-config.js?v=42366a7d" defer></script>
+<script src="../../../assets/core.js?v=a9cc10e1"></script>
+<script src="../../../assets/supabase-config.js?v=a9cc10e1" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=42366a7d" defer></script>
-<script src="../../../assets/app.js?v=42366a7d"></script>
-<script src="../../../assets/study.js?v=42366a7d" defer></script>
-<script src="../../../assets/lexicon.js?v=42366a7d" defer></script>
-<script src="../../../assets/game.js?v=42366a7d" defer></script>
-<script src="../../../assets/community.js?v=42366a7d" defer></script>
-<script src="../../../assets/library.js?v=42366a7d" defer></script>
-<script src="../../../assets/report.js?v=42366a7d" defer></script>
+<script src="../../../assets/auth.js?v=a9cc10e1" defer></script>
+<script src="../../../assets/app.js?v=a9cc10e1"></script>
+<script src="../../../assets/study.js?v=a9cc10e1" defer></script>
+<script src="../../../assets/lexicon.js?v=a9cc10e1" defer></script>
+<script src="../../../assets/game.js?v=a9cc10e1" defer></script>
+<script src="../../../assets/community.js?v=a9cc10e1" defer></script>
+<script src="../../../assets/library.js?v=a9cc10e1" defer></script>
+<script src="../../../assets/report.js?v=a9cc10e1" defer></script>
 </body></html>

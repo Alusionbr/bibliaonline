@@ -93,6 +93,15 @@ CHRON_INDEX = {
     for index, book in enumerate(book for era in TIMELINE for book in era["livros"])
 }
 
+# livro -> (indice da era em TIMELINE, era). Usado para dar contexto histórico
+# por livro na listagem (/ler/) e para o acento visual por era na linha do
+# tempo — sem duplicar a lista de eras.
+BOOK_ERA = {
+    book: (era_idx, era)
+    for era_idx, era in enumerate(TIMELINE)
+    for book in era["livros"]
+}
+
 GENERATED_DIRS = (
     "versiculos",
     "artigos",

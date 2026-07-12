@@ -19,6 +19,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 from build_config import (
     BASE_URL,
+    BOOK_ERA,
     BOOK_ORDER,
     CHRON_INDEX,
     DATA,
@@ -129,11 +130,16 @@ def original_html(v):
 def verse_url(prefix, slug):
     return f"{prefix}versiculos/{slug}/"
 
+def book_testament(livro):
+    pos = BOOK_ORDER.index(livro) if livro in BOOK_ORDER else 999
+    return "at" if pos < 39 else "nt"
+
 def book_data_attrs(livro):
     # atributos para reordenar os cartões no cliente (bíblica/alfabética/cronológica)
     pos = BOOK_ORDER.index(livro) if livro in BOOK_ORDER else 999
     nome = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
-    return f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
+    return (f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
+            f' data-testament="{book_testament(livro)}"')
 
 def order_toggle(prefix):
     # controle de ordenação no topo da grade de livros (cliente, persistido)
@@ -177,7 +183,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body data-prefix="{esc(prefix)}">
-<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){{d.classList.add('dark');t='dark';}}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}}catch(e){{}}}})();</script>
+<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){{d.classList.add('dark');t='dark';}}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
@@ -450,6 +456,7 @@ def reader_fab(prefix, has_fraction=True):
     <button type="button" class="rfb" data-tool="font-dec" data-rt="font-dec">A−<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
+    <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
@@ -663,6 +670,11 @@ def build_workspace_page():
       <div class="settings-row">
         <b>Idioma original</b>
         <label class="settings-toggle"><input type="checkbox" data-set-orig> Mostrar hebraico/grego e transliteração</label>
+      </div>
+      <div class="settings-row">
+        <b>Leitura</b>
+        <label class="settings-toggle"><input type="checkbox" data-set-autoread> Marcar versículos como lidos automaticamente ao rolar a página</label>
+        <label class="settings-toggle"><input type="checkbox" data-set-reveal checked> Efeito de entrada suave no texto ao rolar</label>
       </div>
       <div class="settings-row">
         <b>Ordem dos livros</b>
@@ -1040,20 +1052,26 @@ def build_books_index(order, struct):
     title = f"Livros da Bíblia | {SITE_NAME}"
     desc = "Navegue pela Bíblia livro a livro: escolha um livro e leia capítulo por capítulo no idioma original, com tradução e transliteração."
     canonical = f"{BASE_URL}/ler/"
+    n_at = sum(1 for b in order if book_testament(b) == "at")
+    n_nt = len(order) - n_at
     cards = ""
     for livro in order:
         n_caps = len(struct[livro])
         idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
+        testamento = book_testament(livro)
+        era = BOOK_ERA.get(livro)
+        era_tag = f'<span class="book-era">{esc(era[1]["nome"])}</span>' if era else ""
         cards += f"""
-    <a class="card book-card" href="{book_slug(livro)}/"{book_data_attrs(livro)}>
+    <a class="card book-card bt-{testamento}" href="{book_slug(livro)}/"{book_data_attrs(livro)}>
       <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
+      {era_tag}
     </a>"""
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Livros</p>
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
-  <p class="read" style="color:var(--muted)">Escolha um livro para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
+  <p class="read" style="color:var(--muted)">{n_at} livros do Antigo Testamento e {n_nt} do Novo — escolha um para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
   {order_toggle(prefix)}
   <div class="cards verses" data-booklist>{cards}
   </div>
@@ -1068,19 +1086,23 @@ def build_timeline_page(order, struct):
     desc = "A Bíblia em ordem histórica: os livros agrupados por períodos, de Gênesis ao Apocalipse (datas aproximadas)."
     canonical = f"{BASE_URL}/linha-do-tempo/"
     present = set(order)
+    n_eras = len(TIMELINE)
     eras_html = ""
-    for era in TIMELINE:
+    for era_idx, era in enumerate(TIMELINE):
+        # cada era ganha um matiz próprio (varre de dourado a violeta ao longo da
+        # linha do tempo) — só decorativo (borda/selo), não é usado em texto.
+        hue = round(30 + (era_idx / max(1, n_eras - 1)) * 300)
         livros = [b for b in era["livros"] if b in present]
         cards = ""
         for b in livros:
             idioma = struct[b][min(struct[b])][0].get("idioma","hebraico")
             cards += f"""
-      <a class="card book-card" href="{prefix}ler/{book_slug(b)}/">
+      <a class="card book-card bt-{book_testament(b)}" href="{prefix}ler/{book_slug(b)}/">
         <div class="ref-row"><h3>{esc(b)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       </a>"""
         grade = f'<div class="cards verses">{cards}\n    </div>' if livros else '<p class="era-gap-note">Cerca de 400 anos sem registro no cânon protestante.</p>'
         eras_html += f"""
-  <section class="era">
+  <section class="era" style="--era-accent:hsl({hue} 55% 42%)">
     <div class="era-head"><h2>{esc(era['nome'])}</h2><span class="era-period">{esc(era['periodo'])}</span></div>
     <p class="era-desc">{esc(era['descricao'])}</p>
     {grade}
@@ -1153,7 +1175,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
         dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
         pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
         rows += f"""
-    <div class="ch-verse" id="v{vs}" data-ref="{esc(v['referencia'])}">
+    <div class="ch-verse verse-reveal" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body verse-tap">
         <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v.get('original',''))}</p>

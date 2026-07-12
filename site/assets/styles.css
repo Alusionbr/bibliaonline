@@ -269,6 +269,9 @@ html.dark .chapter .ch-verse.sf-preview{background:rgba(47,143,91,.16)}
   border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:var(--vellum);font-size:.92rem}
 .btn.tiny{padding:5px 10px;font-size:.8rem;border-radius:999px}
 .ch-verse.studied{background:rgba(177,135,60,.1);box-shadow:inset 3px 0 0 var(--gold)}
+.ch-verse.listen-current{background:rgba(200,149,54,.16);box-shadow:inset 3px 0 0 var(--gold-deep);
+  border-radius:10px;transition:background .3s ease}
+html.dark .ch-verse.listen-current{background:rgba(227,191,126,.14)}
 html.dark .study-frac,html.dark .sf-field select,html.dark .sf-item{background:var(--paper)}
 html.dark .sf-bar{background:rgba(255,255,255,.1)}
 html.dark .ch-verse.studied{background:rgba(231,214,171,.09)}
@@ -491,8 +494,15 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 @keyframes rise{to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .reveal{opacity:1;transform:none}
+  .reveal,.verse-reveal{opacity:1;transform:none}
 }
+
+/* leitor: cada versículo "chega" com um leve aumento de tamanho ao entrar na
+   tela (não desloca o texto, só cresce/ganha nitidez) — desligável em
+   Configurações (checkbox liga html.no-reveal). */
+.verse-reveal{opacity:.55;transform:scale(.97);transition:opacity .45s ease,transform .45s ease}
+.verse-reveal.on{opacity:1;transform:scale(1)}
+html.no-reveal .verse-reveal{opacity:1;transform:none;transition:none}
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
 
 /* tradução pendente, links externos, rolagem infinita */
@@ -524,7 +534,13 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .favorite-item:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
 
 /* navegação por livro/capítulo + leitura de capítulo inteiro */
+.book-card{border-left-width:4px;border-left-style:solid}
+.book-card.bt-at{border-left-color:var(--gold-deep)}
+.book-card.bt-nt{border-left-color:var(--navy-2)}
+html.dark .book-card.bt-nt{border-left-color:var(--gold-soft)}
 .book-card .pt-mini{color:var(--muted);margin-top:6px}
+.book-era{font-family:"Inter",system-ui,sans-serif;font-size:.72rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.04em}
 .chapter-grid{gap:10px}
 .chapter-chip{min-width:48px;justify-content:center;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
 .chapter{max-width:var(--read);margin:0 auto}
@@ -660,7 +676,7 @@ html.fs-2 body{font-size:20.5px}
 html.fs-3 body{font-size:23px}
 
 /* tema sépia (novo) */
-html.sepia{--ink:#402d1b;--ink-soft:#5a4327;--muted:#7d6042;--vellum:#d6c09b;--vellum-2:#ead4ad;
+html.sepia{--ink:#402d1b;--ink-soft:#5a4327;--muted:#624930;--vellum:#d6c09b;--vellum-2:#ead4ad;
   --paper:#fae9ca;--line:rgba(64,45,27,.18);--gold-soft:#e8cf9a}
 html.sepia body{background:var(--vellum);color:var(--ink)}
 
@@ -720,15 +736,19 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 .order-toggle .ot-link{font-size:.88rem;margin-left:auto;color:var(--gold-deep);text-decoration:none;white-space:nowrap}
 html.dark .order-toggle .ot.on{color:#1a1610}
 
-/* linha do tempo (eras) */
-.era{margin:0 0 30px;border-left:3px solid var(--gold-soft);padding-left:18px}
+/* linha do tempo (eras): cada era carrega seu próprio matiz (--era-accent,
+   calculado no build) numa varredura dourado→violeta ao longo do tempo —
+   dá identidade visual a cada período sem imagens ou fontes novas. */
+.era{margin:0 0 34px;border-left:3px solid var(--era-accent, var(--gold-soft));padding-left:18px}
 .era-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px}
 .era-head h2{font-size:1.35rem}
-.era-period{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;color:var(--gold-deep);
-  background:var(--vellum-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.era-period{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;font-weight:600;
+  color:var(--era-accent, var(--gold-deep));background:color-mix(in srgb, var(--era-accent, var(--gold-deep)) 14%, var(--vellum-2));
+  border:1px solid color-mix(in srgb, var(--era-accent, var(--gold-deep)) 35%, var(--line));border-radius:999px;padding:3px 10px}
 .era-desc{color:var(--muted);margin:.4rem 0 .9rem}
 .era-gap-note{color:var(--muted);font-style:italic;margin:.2rem 0 .4rem}
 .era .book-card{padding:12px 14px}
+.era .book-card.bt-at,.era .book-card.bt-nt{border-left-color:var(--era-accent, var(--gold-deep))}
 
 /* ---------- Beta: banner, selo da conta e chip ---------- */
 .beta-banner{display:flex;align-items:center;gap:10px;justify-content:center;

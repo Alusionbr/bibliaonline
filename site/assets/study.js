@@ -273,8 +273,8 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     var act=e.target.closest && e.target.closest('[data-vs-act]');
     if(act && sheetRef){
       var box=sheet.querySelector('.verse-sheet-box'), kind=act.getAttribute('data-vs-act');
-      if(kind==='speak-orig') speak(box.dataset.origText, box.dataset.origLang, act.querySelector('span')||act);
-      else if(kind==='speak-pt') speak(box.dataset.ptText, 'pt-BR', act.querySelector('span')||act);
+      if(kind==='speak-orig'){ if(window.BEC && window.BEC.stopListenChapter) window.BEC.stopListenChapter(); speak(box.dataset.origText, box.dataset.origLang, act.querySelector('span')||act); }
+      else if(kind==='speak-pt'){ if(window.BEC && window.BEC.stopListenChapter) window.BEC.stopListenChapter(); speak(box.dataset.ptText, 'pt-BR', act.querySelector('span')||act); }
       else if(kind==='fav'){
         var cont=findCont(sheetRef);
         var on=toggleFav(sheetRef, refToUrl(sheetRef));
