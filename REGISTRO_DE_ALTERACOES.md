@@ -4,6 +4,38 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Criar Plano embutido nas abas do Workspace - 2026-07-12
+
+Intencao: "Criar Plano" ja funcionava (gera cronograma, liga com leitor e
+home), mas ficava enterrado numa secao propria abaixo de "Explorar", so
+alcancavel por um linkzinho no cabecalho de "Estudar" — pouco descoberto.
+
+Mudancas:
+
+- `scripts/build.py`: a secao `#criar-plano` deixa de ser uma `<section>`
+  separada e vira mais uma aba dentro de `#estudar` (`data-ws-tab`/
+  `data-ws-panel="criar-plano"`, ao lado de Atalhos/Anotacoes/Favoritos/
+  Colecoes/Cadernos). O painel mantem `id="criar-plano"` para os links
+  existentes (`workspace/#criar-plano` na home e no leitor) continuarem
+  funcionando. O link solto "Criar plano" no cabecalho de "Estudar" foi
+  removido (redundante com a aba).
+- `scripts/app.asset.js`: o modulo de abas do Workspace passa a ler
+  `location.hash` no carregamento da pagina — se o hash bater com o nome
+  de uma aba, ela e selecionada (sobrepondo a ultima aba lembrada) e o
+  painel recebe `scrollIntoView()`. Sem isso, a aba nova ficaria com
+  `hidden` e o link `#criar-plano` nao rolaria ate ela.
+
+Validacao realizada:
+
+- `python scripts/build.py`: passou (mesmos totais de sempre).
+- `python -m pytest`: 96 testes, todos passaram.
+- `git diff --check`: sem espacos em branco problematicos.
+- Verificacao com Playwright (servidor local): `workspace/#criar-plano`
+  carrega com a aba certa ativa e o formulario visivel no viewport sem
+  precisar clicar em nada; criar um plano pelo formulario funciona;
+  trocar de aba manualmente e recarregar `workspace/` sem hash preserva a
+  ultima aba escolhida (nao forca `criar-plano`); sem erros de console.
+
 ## PWA de bolso: icones/service worker reais, barra de app, leitor ligado ao plano, Workspace com abas - 2026-07-12
 
 Intencao: virar uma ferramenta de estudo "de bolso" (instalavel, funciona
