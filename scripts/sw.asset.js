@@ -18,7 +18,6 @@ var SHELL = [
   './assets/study.js?v=' + VERSION,
   './assets/lexicon.js?v=' + VERSION,
   './assets/game.js?v=' + VERSION,
-  './assets/community.js?v=' + VERSION,
   './assets/library.js?v=' + VERSION,
   './assets/report.js?v=' + VERSION,
   './data/hebrew-lexicon.json'

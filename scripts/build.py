@@ -48,7 +48,6 @@ SOURCE_ASSETS = {
     "study.asset.js": "study.js",
     "lexicon.asset.js": "lexicon.js",
     "gamification.asset.js": "game.js",
-    "community.asset.js": "community.js",
     "library.asset.js": "library.js",
     "report.asset.js": "report.js",
 }
@@ -211,9 +210,10 @@ def mnav_icon(name):
 
 
 def nav(prefix):
-    # Navegação enxuta: Estudar e Comunidade viveram como páginas próprias e
-    # foram fundidos no Workspace (seções #estudar e #comunidade); os endereços
-    # antigos redirecionam para lá.
+    # Navegação enxuta: Estudar viveu como página própria e foi fundida no
+    # Workspace (seção #estudar); o endereço antigo redireciona para lá.
+    # Comunidade também redireciona para o Workspace, mas está pausada (sem
+    # seção própria por enquanto — ver build_merged_redirects).
     links = [
         ("Início", f"{prefix}index.html"),
         ("Bíblia", f"{prefix}ler/"),
@@ -288,7 +288,6 @@ def footer(prefix):
         <a href="{prefix}workspace/">Workspace</a>
       </div>
       <div>
-        <a href="{prefix}workspace/#comunidade">Comunidade</a>
         <a href="{prefix}biblioteca/">Biblioteca</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
       </div>
@@ -309,7 +308,6 @@ def footer(prefix):
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/lexicon.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
-<script src="{prefix}assets/community.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/report.js?v={ASSET_VER}" defer></script>
 </body></html>"""
@@ -379,9 +377,8 @@ def action_cards(items):
 
 
 def study_continue_module(prefix, livro, ch=None, vs=None):
-    """Bloco único e compacto de continuidade: atalhos pessoais + Salas de
-    Estudo relacionadas. Substitui os antigos módulos "Estude em comunidade"
-    e "Mesa de Estudo", que duplicavam links entre si."""
+    """Bloco único e compacto de continuidade: atalhos pessoais para o que
+    já existe (notas, coleções, planos, dicionário)."""
     place = f"{livro} {ch}:{vs}" if vs else (f"{livro} {ch}" if ch else livro)
     return f"""
   <section class="study-continue">
@@ -395,12 +392,6 @@ def study_continue_module(prefix, livro, ch=None, vs=None):
       <a href="{prefix}planos/">🗓 Planos</a>
       <a href="{prefix}dicionario/">📖 Dicionário</a>
     </div>
-    <div class="room-suggest" data-room-suggest data-room-ref="{esc(place)}" hidden>
-      <p class="eyebrow">Salas abertas estudando este livro</p>
-      <div class="room-suggest-list" data-room-suggest-list></div>
-      <a class="room-suggest-more" href="{prefix}workspace/#comunidade">Pedir para entrar na Comunidade →</a>
-    </div>
-    <p class="map-actions"><a class="btn quiet" href="{prefix}workspace/#comunidade">Ver Salas de Estudo →</a></p>
   </section>"""
 
 
@@ -479,8 +470,9 @@ def reader_fab(prefix, has_fraction=True):
 
 def build_redirect_page(out_path, prefix, target, title):
     """Página-ponte: o endereço antigo continua existindo, mas leva direto ao
-    novo lugar (Estudar e Comunidade foram fundidos no Workspace). Mantém os
-    links espalhados por rodapés, capítulos e favoritos de usuários vivos."""
+    novo lugar (Estudar foi fundida no Workspace; Comunidade está pausada e
+    aponta pro Workspace também). Mantém os links espalhados por rodapés,
+    capítulos e favoritos de usuários vivos."""
     url = f"{prefix}{target}"
     html = f"""<!doctype html>
 <html lang="pt-BR"><head>
@@ -500,14 +492,17 @@ def build_redirect_page(out_path, prefix, target, title):
 
 def build_merged_redirects():
     build_redirect_page(SITE / "estudar" / "index.html", "../", "workspace/#estudar", "Estudar")
-    build_redirect_page(SITE / "comunidade" / "index.html", "../", "workspace/#comunidade", "Comunidade")
-    build_redirect_page(SITE / "comunidade" / "salas" / "index.html", "../../", "workspace/#comunidade", "Salas de Estudo")
+    # Comunidade/Salas de Estudo está pausada (será reformulada antes de
+    # voltar) — os endereços antigos continuam existindo, mas levam ao
+    # Workspace em vez de uma seção que não existe mais.
+    build_redirect_page(SITE / "comunidade" / "index.html", "../", "workspace/", "Comunidade")
+    build_redirect_page(SITE / "comunidade" / "salas" / "index.html", "../../", "workspace/", "Salas de Estudo")
 
 
 def build_workspace_page():
     prefix = "../"
     title = f"Workspace | {SITE_NAME}"
-    desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca, anotações e Salas de Estudo em um só lugar."
+    desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca e anotações em um só lugar."
     canonical = f"{BASE_URL}/workspace/"
     cards = action_cards([
         ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/", " data-ws-continue"),
@@ -528,11 +523,10 @@ def build_workspace_page():
   <header class="hub-hero">
     <p class="eyebrow">Seu espaço de estudo</p>
     <h1>Workspace</h1>
-    <p>Leitura, progresso, ferramentas de estudo e comunidade — tudo ao redor do texto, em um só lugar.</p>
+    <p>Leitura, progresso e ferramentas de estudo — tudo ao redor do texto, em um só lugar.</p>
     <div class="hub-cta">
       <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
       <a class="btn green" href="#progresso">Ver progresso</a>
-      <a class="btn quiet" href="#comunidade">Salas de Estudo</a>
     </div>
   </header>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
@@ -622,13 +616,6 @@ def build_workspace_page():
   <section class="hub-section" id="explorar">
     <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
     <div class="study-card-grid">{explore_cards}
-    </div>
-  </section>
-  <section class="hub-section comunidade" id="comunidade">
-    <div class="section-title"><h2>Comunidade</h2><span>Salas de Estudo por livro, capítulo, tema ou plano</span></div>
-    <p class="muted-line">Cada sala nasce de um conteúdo bíblico: crie a sua (a partir do nível 3), convide pelo código e conduza discussões ligadas ao texto. Sem feed genérico.</p>
-    <div class="community-app" data-community-app>
-      <p class="muted-line" data-community-fallback>Carregando salas…</p>
     </div>
   </section>
   <section class="hub-section" id="historico">
@@ -1341,12 +1328,6 @@ def build_home(topics, verses, articles, sources, order, struct):
         <p>Receba um versículo e abra o contexto completo.</p>
         <button type="button" id="random-verse" class="inline-action">Um versículo para você</button>
       </article>
-      <article class="home-block">
-        <span>Salas</span>
-        <h3>Relacionadas ao estudo</h3>
-        <p>Estude um livro, capítulo ou tema junto com um grupo.</p>
-        <a href="workspace/#comunidade">Ver Salas de Estudo</a>
-      </article>
     </div>
   </section>
 
@@ -1474,8 +1455,9 @@ def build_lexicon_shards():
 def build_game_js():
     write_asset("gamification.asset.js", "game.js")
 
-def build_community_js():
-    write_asset("community.asset.js", "community.js")
+# Comunidade/Salas de Estudo: pausada por decisão de produto (será reformulada
+# antes de voltar). scripts/community.asset.js continua no repositório com a
+# integração Supabase completa, só não é mais gerado nem carregado no site.
 
 def build_library_js():
     write_asset("library.asset.js", "library.js")
@@ -1559,7 +1541,7 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
         ],
         "shortcuts": [
             {"name": "Ler a Bíblia", "url": "ler/", "description": "Voltar direto para a leitura"},
-            {"name": "Workspace", "url": "workspace/", "description": "Progresso, planos e comunidade"},
+            {"name": "Workspace", "url": "workspace/", "description": "Progresso, planos e ferramentas de estudo"},
             {"name": "Planos de leitura", "url": "planos/", "description": "Continuar um plano de leitura"},
         ],
     }, ensure_ascii=False, indent=2))
@@ -1665,7 +1647,6 @@ def build_site(context):
     build_lexicon_js()
     build_lexicon_shards()
     build_game_js()
-    build_community_js()
     build_library_js()
     build_report_js()
     build_sw_js()

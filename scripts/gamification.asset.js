@@ -35,8 +35,7 @@
       {key:'streak_3',         title:'Constante',      description:'Estudou 3 dias seguidos.',            icon:'🔥', tier:'bronze', points:20, sort:7},
       {key:'streak_7',         title:'Semana Fiel',    description:'Estudou 7 dias seguidos.',            icon:'🔥', tier:'prata',  points:40, sort:8},
       {key:'streak_30',        title:'Devoto',         description:'Estudou 30 dias seguidos.',           icon:'🔥', tier:'ouro',   points:100,sort:9},
-      {key:'missoes_7',        title:'Peregrino',      description:'Completou 7 missoes diarias.',        icon:'🎯', tier:'prata',  points:40, sort:10},
-      {key:'comunidade',       title:'Companheiro',    description:'Entrou numa sala da comunidade.',     icon:'🤝', tier:'bronze', points:20, sort:11}
+      {key:'missoes_7',        title:'Peregrino',      description:'Completou 7 missoes diarias.',        icon:'🎯', tier:'prata',  points:40, sort:10}
     ]
   };
 
@@ -174,7 +173,6 @@
     if((s.streak||0)>=7) award(s,'streak_7');
     if((s.streak||0)>=30) award(s,'streak_30');
     if((s.missionsDoneTotal||0)>=7) award(s,'missoes_7');
-    // 'comunidade' e concedida ao entrar numa sala (fase da comunidade).
   }
 
   // ---- Sincronizacao best-effort com Supabase -----------------------------
@@ -464,12 +462,10 @@
       schedulePush();
       recordEvent(metric, eventDedup(metric), {});  // dual-write autoritativo
     },
-    // Concede uma medalha especifica (ex.: 'comunidade' ao entrar numa sala).
+    // Concede uma medalha especifica a partir de um evento externo ao motor.
     grant:function(key){
       var s=loadState(); rollover(s);
       if(award(s,key)){ saveState(s); renderPanel(s); schedulePush(); }
-      // A medalha 'comunidade' e derivada de um evento real de sala no servidor.
-      if(key==='comunidade') recordEvent('room_joined', 'joined', {});
     },
     // Nivel atual (UI de recursos travados por nivel, ex.: criar salas).
     // A trava real fica no servidor (create_group exige nivel 3).

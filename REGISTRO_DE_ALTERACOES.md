@@ -4,6 +4,52 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Pausa Comunidade/Salas de Estudo (decisao de produto) - 2026-07-12
+
+Intencao: decisao explicita do usuario — Comunidade sera reformulada antes de
+voltar ao projeto; por enquanto, tirar do site publicado.
+
+Mudancas:
+
+- `scripts/build.py`: remove a secao `#comunidade` do Workspace, o CTA
+  "Salas de Estudo" no hero do Workspace, o bloco `room-suggest` (+ link "Ver
+  Salas de Estudo") de `study_continue_module()`, o card "Salas" da home, o
+  link "Comunidade" do rodape, e a entrada de `community.js` em
+  `SOURCE_ASSETS`/no `<script>`/em `build_site()`. Os redirects
+  `/comunidade/` e `/comunidade/salas/` continuam existindo (noindex), mas
+  agora apontam para `workspace/` em vez de uma secao que nao existe mais.
+  `scripts/community.asset.js` (integracao Supabase completa: salas, papeis,
+  convites, topicos) continua no repositorio para a proxima versao — so nao
+  e mais gerado nem carregado.
+- `scripts/sw.asset.js`: remove `community.js` da lista de precache do
+  service worker (apontava pra um arquivo que deixou de existir).
+- `scripts/gamification.asset.js`: remove a medalha "Companheiro" (so podia
+  ser concedida ao entrar numa sala — ficaria eternamente trancada e
+  confusa na grade de medalhas).
+- `site/assets/styles.css`: remove o bloco inteiro de estilos exclusivos de
+  Comunidade (`.community-*`, `.room-*`, `.role-pill`, `.topic-*`,
+  `.post-*`, `.member-*`, `.invite`, `.pending-count`), preservando
+  `.btn.tiny` (usado em outros lugares).
+- `CLAUDE.md`: atualizado para nao listar mais `#comunidade` como secao
+  fundida no Workspace e documentar a pausa (com nota para nao reativar sem
+  confirmar com o usuario).
+- `tests/test_build_smoke.py`: `test_salas_de_estudo_reais` virou
+  `test_comunidade_pausada` (confirma ausencia, nao presenca); ajustes em
+  `test_nova_navegacao_principal` (sem `id="comunidade"`, redirects apontam
+  pra `workspace/` sem ancora).
+
+Validacao realizada:
+
+- `python scripts/build.py`: passou.
+- `python -m pytest`: 96 testes, todos passaram.
+- `git diff --check`: sem espacos em branco problematicos.
+- Playwright (servidor local): `/comunidade/`, `/comunidade/salas/`,
+  `/workspace/` e a home carregam sem erro; workspace nao tem mais
+  `id="comunidade"` nem o CTA "Salas de Estudo"; nenhuma referencia a
+  `community.js` sobrou em HTML gerado nem no `sw.js`.
+- Removido manualmente o `site/assets/community.js` (artefato de builds
+  anteriores que o build.py parou de regenerar).
+
 ## Leitor: audio de verdade pausa, marcador automatico opcional, leitura continua, contraste e identidade por era - 2026-07-12
 
 Intencao: corrigir um bug real de audio, adicionar controle sobre efeitos de
