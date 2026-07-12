@@ -566,9 +566,10 @@ def build_workspace_page():
     </details>
   </section>
   <section class="hub-section" id="estudar">
-    <div class="section-title"><h2>Estudar</h2><a href="#criar-plano">Criar plano</a></div>
+    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
     <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
       <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="atalhos">Atalhos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="anotacoes">Anotações</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
@@ -577,6 +578,25 @@ def build_workspace_page():
     <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
       <div class="study-card-grid">{cards}
       </div>
+    </div>
+    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
+      <form class="plan-form" data-plan-form>
+        <label>O que deseja estudar?
+          <select name="tipo" data-plan-tipo>
+            <option value="livro">Um livro da Bíblia</option>
+            <option value="tema">Um tema</option>
+          </select>
+        </label>
+        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
+        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
+        <label>Duração
+          <select name="duracao">
+            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
+          </select>
+        </label>
+        <button type="submit" class="btn primary">Gerar plano</button>
+      </form>
+      <div class="saved-plans" data-plan-list></div>
     </div>
     <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes" hidden>
       <div id="anotacoes" class="anot-list"></div>
@@ -596,26 +616,6 @@ def build_workspace_page():
     <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
     <div class="study-card-grid">{explore_cards}
     </div>
-  </section>
-  <section class="hub-section plan-builder" id="criar-plano">
-    <div class="section-title"><h2>Criar Plano</h2><span>Gera um cronograma dia a dia</span></div>
-    <form class="plan-form" data-plan-form>
-      <label>O que deseja estudar?
-        <select name="tipo" data-plan-tipo>
-          <option value="livro">Um livro da Bíblia</option>
-          <option value="tema">Um tema</option>
-        </select>
-      </label>
-      <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
-      <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
-      <label>Duração
-        <select name="duracao">
-          <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
-        </select>
-      </label>
-      <button type="submit" class="btn primary">Gerar plano</button>
-    </form>
-    <div class="saved-plans" data-plan-list></div>
   </section>
   <section class="hub-section comunidade" id="comunidade">
     <div class="section-title"><h2>Comunidade</h2><span>Salas de Estudo por livro, capítulo, tema ou plano</span></div>

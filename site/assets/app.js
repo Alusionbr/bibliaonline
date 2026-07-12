@@ -1350,5 +1350,11 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   var saved='atalhos';
   try{ saved=localStorage.getItem('bec.wsTab')||'atalhos'; }catch(e){}
   if(!buttons.some(function(b){return b.getAttribute('data-ws-tab')===saved;})) saved='atalhos';
+  var hashTab=(location.hash||'').replace('#','');
+  if(buttons.some(function(b){return b.getAttribute('data-ws-tab')===hashTab;})) saved=hashTab;
   setTab(saved);
+  if(hashTab===saved){
+    var target=document.getElementById(hashTab);
+    if(target) target.scrollIntoView();
+  }
 })();
