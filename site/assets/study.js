@@ -294,6 +294,11 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
       var notes=load('notes');
       if(val) notes[ref]=val; else delete notes[ref];
       save('notes', notes);
+      // marca a data da edição (só local — a home usa pra mostrar as mais
+      // recentes primeiro; não faz parte do que sincroniza com a conta).
+      var meta=load('notesMeta');
+      if(val){ meta[ref]=new Date().toISOString(); } else { delete meta[ref]; }
+      try{ localStorage.setItem('bec.notesMeta', JSON.stringify(meta)); }catch(err){}
       paintState(ref);
     }
   });

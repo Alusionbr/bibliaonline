@@ -167,12 +167,17 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
   function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
   function curTheme(){ var t=localStorage.getItem('bec.theme'); return THEMES.indexOf(t)>-1?t:'light'; }
+  var THEME_COLOR={dark:'#07111f',sepia:'#d6c09b',light:'#efe4d0'};
   function applyTheme(t){
     d.classList.remove('sepia','dark');
     if(t==='dark') d.classList.add('dark'); else if(t==='sepia') d.classList.add('sepia');
     try{localStorage.setItem('bec.theme',t);}catch(e){}
     if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+    var tc=document.querySelector('meta[name="theme-color"]');
+    if(tc) tc.setAttribute('content', THEME_COLOR[t]||THEME_COLOR.light);
   }
+  window.BEC = window.BEC || {};
+  window.BEC.setTheme = applyTheme;
   function origOn(){ return localStorage.getItem('bec.origmode')==='1'; }
   function syncOrigBtns(){
     var on=d.classList.contains('orig-on');
@@ -746,6 +751,9 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         gameRecord('read_chapters');
       }
     }catch(err){}
+    // avisa o módulo de plano de leitura: este capítulo pode ter ficado 100%
+    // coberto agora, o que pode concluir o dia de um plano ativo.
+    document.dispatchEvent(new CustomEvent('bec:chapter-read', {detail:{ref:chapterRef}}));
     var old=saveBtn.textContent;
     saveBtn.textContent='Salvo ✓';
     setTimeout(function(){ saveBtn.textContent=old; }, 1400);
@@ -762,6 +770,237 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   if(endSel.options.length) endSel.selectedIndex=endSel.options.length-1;
   document.addEventListener('bec:study-sync', paint);
   paint();
+})();
+
+// Dados de plano compartilhados (window.BEC.planData): planos criados no
+// Workspace + planos curados (plan-index.json), unificados no mesmo formato
+// {slug, tipo, titulo, dias:[[{label,url}]]}. Usado pelo banner do leitor,
+// pelo card "Plano de hoje" da home e por qualquer outro módulo que precise
+// saber em que dia de plano uma referência está.
+(function(){
+  window.BEC = window.BEC || {};
+  var core=window.BEC.core;
+
+  function loadJSON(k, fb){ try{ var v=JSON.parse(localStorage.getItem('bec.'+k)||'null'); return v==null?fb:v; }catch(e){ return fb; } }
+  function urlChapterKey(url){
+    var m=url && String(url).match(/ler\/([a-z0-9-]+)\/(\d+)\/?$/);
+    return m ? (m[1]+'/'+m[2]) : null;
+  }
+  function customPlans(){
+    // planos criados guardam o link do dia em "href" (ver módulo Criar Plano);
+    // normaliza para "url" aqui pra bater com o formato de plan-index.json.
+    return (loadJSON('studyPlans', [])||[]).map(function(p){
+      var dias=(p.dias||[]).map(function(refs){
+        return refs.map(function(r){ return {label:r.label, url:r.url||r.href||null}; });
+      });
+      return {slug:p.id, tipo:'criado', titulo:p.titulo, dias:dias};
+    });
+  }
+  function curatedPlans(){
+    if(!core) return Promise.resolve([]);
+    return core.fetchData('data/plan-index.json').then(function(idx){
+      return idx.map(function(p){ return {slug:p.slug, tipo:'curado', titulo:p.titulo, dias:p.dias}; });
+    }).catch(function(){ return []; });
+  }
+  function allPlans(){ return curatedPlans().then(function(c){ return customPlans().concat(c); }); }
+  function findDay(plan, chapterKey){
+    for(var i=0;i<plan.dias.length;i++){
+      for(var j=0;j<plan.dias[i].length;j++){
+        if(urlChapterKey(plan.dias[i][j].url)===chapterKey) return i;
+      }
+    }
+    return -1;
+  }
+  function progressFor(slug){
+    var all=loadJSON('planProgress', {});
+    return Array.isArray(all[slug]) ? all[slug] : [];
+  }
+  function nextOpenDay(plan){
+    var done=progressFor(plan.slug);
+    for(var i=0;i<plan.dias.length;i++){ if(done.indexOf(i)<0) return i; }
+    return -1; // plano concluído
+  }
+  function markDay(slug, dayIdx){
+    var all=loadJSON('planProgress', {});
+    var days=all[slug]||[];
+    if(days.indexOf(dayIdx)<0){
+      days.push(dayIdx); all[slug]=days;
+      try{ localStorage.setItem('bec.planProgress', JSON.stringify(all)); }catch(e){}
+      if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+      if(window.BEC.plans) window.BEC.plans.repaint();
+    }
+  }
+  function refCovered(entry, verseTotals, ranges){
+    var k=urlChapterKey(entry.url);
+    if(!k) return false; // ref de versículo avulso (plano por tema): fora do auto-mark
+    var parts=k.split('/'), total=verseTotals && verseTotals[parts[0]] && verseTotals[parts[0]][parts[1]];
+    if(!total) return false;
+    var r=ranges[entry.label];
+    if(!Array.isArray(r) || !r.length) return false;
+    var covered=0;
+    r.forEach(function(x){ covered += Math.max(0, Math.min(x.e,total)-Math.max(x.s,1)+1); });
+    return covered>=total;
+  }
+  function showToast(msg){
+    var t=document.createElement('div'); t.className='bec-toast'; t.textContent=msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function(){ t.classList.add('on'); });
+    setTimeout(function(){ t.classList.remove('on'); setTimeout(function(){ t.remove(); }, 300); }, 2600);
+  }
+
+  window.BEC.planData = {
+    allPlans: allPlans, findDay: findDay, progressFor: progressFor, nextOpenDay: nextOpenDay,
+    markDay: markDay, refCovered: refCovered, showToast: showToast, urlChapterKey: urlChapterKey,
+    loadJSON: loadJSON
+  };
+})();
+
+// Leitor ↔ plano de leitura: mostra "Dia N de T · Plano" quando o capítulo
+// aberto pertence a um plano ativo (criado no Workspace ou curado), com
+// link para o plano e botão para marcar o dia. Quando o capítulo é lido por
+// completo (evento bec:chapter-read do módulo de progresso por trecho, acima),
+// marca o dia sozinho se TODOS os capítulos daquele dia já estiverem 100%
+// cobertos — dias com referência de versículo avulso (planos por tema)
+// ficam de fora do auto-marcar e exigem o botão manual.
+(function(){
+  var box=document.querySelector('[data-plan-context]');
+  if(!box) return;
+  window.BEC = window.BEC || {};
+  var core=window.BEC.core, pd=window.BEC.planData;
+  var PREFIX=core?core.prefix:'';
+
+  function curChapterKey(){
+    var m=location.pathname.match(/ler\/([a-z0-9-]+)\/(\d+)\/?$/);
+    return m ? (m[1]+'/'+m[2]) : null;
+  }
+
+  function render(){
+    var chapterKey=curChapterKey();
+    if(!chapterKey || !core) return;
+    pd.allPlans().then(function(candidates){
+      for(var i=0;i<candidates.length;i++){
+        var plan=candidates[i];
+        var dayIdx=pd.findDay(plan, chapterKey);
+        if(dayIdx<0) continue;
+        var done=pd.progressFor(plan.slug);
+        var isDone=done.indexOf(dayIdx)>-1;
+        var planUrl=(plan.tipo==='curado') ? (PREFIX+'planos/'+plan.slug+'/') : (PREFIX+'workspace/#criar-plano');
+        box.innerHTML=
+          '<span class="plan-context-info">📖 <b>Dia '+(dayIdx+1)+' de '+plan.dias.length+'</b> · '+core.esc(plan.titulo)+
+          '<span class="plan-context-count">'+done.length+' de '+plan.dias.length+' dias</span></span>'+
+          '<span class="plan-context-actions">'+
+            '<a class="btn tiny ghost" href="'+planUrl+'">Ver plano</a>'+
+            (isDone
+              ? '<span class="plan-context-done">✓ Dia concluído</span>'
+              : '<button type="button" class="btn tiny primary" data-plan-context-mark="'+core.esc(plan.slug)+'" data-plan-context-day="'+dayIdx+'">Marcar dia como lido</button>')+
+          '</span>';
+        box.hidden=false;
+        return;
+      }
+      box.hidden=true;
+    });
+  }
+
+  box.addEventListener('click', function(e){
+    var b=e.target.closest && e.target.closest('[data-plan-context-mark]');
+    if(!b) return;
+    pd.markDay(b.getAttribute('data-plan-context-mark'), parseInt(b.getAttribute('data-plan-context-day'),10));
+    render();
+  });
+
+  document.addEventListener('bec:chapter-read', function(){
+    if(!core) return;
+    core.fetchData('data/chapter-verses.json').then(function(verseTotals){
+      var ranges=pd.loadJSON('readingRanges', {});
+      pd.allPlans().then(function(candidates){
+        var chapterKey=curChapterKey();
+        candidates.forEach(function(plan){
+          var dayIdx=pd.findDay(plan, chapterKey);
+          if(dayIdx<0) return;
+          if(pd.progressFor(plan.slug).indexOf(dayIdx)>-1) return;
+          var refs=plan.dias[dayIdx];
+          var allCovered=refs.length && refs.every(function(entry){ return pd.refCovered(entry, verseTotals, ranges); });
+          if(allCovered){
+            pd.markDay(plan.slug, dayIdx);
+            pd.showToast('Dia '+(dayIdx+1)+' concluído · '+plan.titulo+' ✓');
+            render();
+          }
+        });
+      });
+    }).catch(function(){});
+  });
+
+  render();
+  document.addEventListener('bec:study-sync', render);
+})();
+
+// Home viva: "Plano de hoje" (próximo dia não concluído do plano mais
+// recente) e Workspace "Continuar leitura" (usa bec.lastRead de verdade).
+(function(){
+  window.BEC = window.BEC || {};
+  var core=window.BEC.core, pd=window.BEC.planData;
+  var PREFIX=core?core.prefix:'';
+
+  var planBox=document.querySelector('[data-home-plan] [data-home-plan-body]');
+  if(planBox && pd){
+    pd.allPlans().then(function(plans){
+      if(!plans.length) return;
+      // prioriza planos criados (mais recentes primeiro, já vêm nessa ordem)
+      // com dia em aberto; senão o primeiro plano curado com dia em aberto.
+      for(var i=0;i<plans.length;i++){
+        var plan=plans[i], dayIdx=pd.nextOpenDay(plan);
+        if(dayIdx<0) continue;
+        var firstRef=plan.dias[dayIdx][0];
+        // reconstrói a URL a partir do slug/capítulo (não do href salvo, que
+        // é relativo à página onde o plano foi criado e pode ter outra
+        // profundidade da atual) — funciona a partir de qualquer página.
+        var key=firstRef && pd.urlChapterKey(firstRef.url);
+        var href=key ? (PREFIX+'ler/'+key+'/')
+          : (plan.tipo==='curado' ? PREFIX+'planos/'+plan.slug+'/' : PREFIX+'workspace/#criar-plano');
+        planBox.innerHTML=
+          '<p><b>Dia '+(dayIdx+1)+' de '+plan.dias.length+'</b> · '+core.esc(plan.titulo)+'</p>'+
+          '<a href="'+href+'">Continuar → '+core.esc(firstRef?firstRef.label:'')+'</a>';
+        return;
+      }
+    });
+  }
+
+  var notesBox=document.querySelector('[data-home-notes] [data-home-notes-body]');
+  if(notesBox){
+    var notes={}, notesMeta={};
+    try{ notes=JSON.parse(localStorage.getItem('bec.notes')||'{}')||{}; }catch(e){}
+    try{ notesMeta=JSON.parse(localStorage.getItem('bec.notesMeta')||'{}')||{}; }catch(e){}
+    var refs=Object.keys(notes);
+    if(refs.length){
+      refs.sort(function(a,b){
+        var da=notesMeta[a], db=notesMeta[b];
+        if(da && db) return db.localeCompare(da); // mais recente primeiro
+        if(da) return -1; if(db) return 1;
+        return a.localeCompare(b); // sem data (nota antiga): ordem estável
+      });
+      function refToUrl(ref){
+        var m=(ref||'').match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return null;
+        var slug=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+        return PREFIX+'versiculos/'+slug+'-'+m[2]+'-'+m[3]+'/';
+      }
+      notesBox.innerHTML=refs.slice(0,3).map(function(ref){
+        var url=refToUrl(ref); if(!url) return '';
+        var preview=(notes[ref]||'').slice(0,64);
+        return '<p class="home-note-row"><a href="'+url+'"><b>'+core.esc(ref)+'</b></a> — '+core.esc(preview)+(notes[ref].length>64?'…':'')+'</p>';
+      }).join('') || notesBox.innerHTML;
+    }
+  }
+
+  var wsContinue=document.querySelector('[data-ws-continue]');
+  if(wsContinue){
+    try{
+      var lr=JSON.parse(localStorage.getItem('bec.lastRead')||'null');
+      if(lr && lr.url){
+        wsContinue.href=lr.url;
+        wsContinue.querySelector('h3').textContent='Continuar: '+lr.label;
+      }
+    }catch(e){}
+  }
 })();
 
 // Modo leitura (foco): esconde menus, módulos e ferramentas, deixando só o
@@ -985,11 +1224,7 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   panel.addEventListener('click', function(e){
     var t=e.target.closest && e.target.closest('[data-set-theme]');
     if(t){
-      var theme=t.getAttribute('data-set-theme');
-      d.classList.remove('sepia','dark');
-      if(theme==='dark') d.classList.add('dark'); else if(theme==='sepia') d.classList.add('sepia');
-      try{localStorage.setItem('bec.theme', theme);}catch(err){}
-      if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+      if(window.BEC.setTheme) window.BEC.setTheme(t.getAttribute('data-set-theme'));
       syncUI(); return;
     }
     var f=e.target.closest && e.target.closest('[data-set-font]');
@@ -1089,4 +1324,30 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   }
   render();
   document.addEventListener('bec:study-sync', render);
+})();
+
+// Abas do Workspace (#estudar): Atalhos/Anotações/Favoritos/Coleções/Cadernos
+// embutidos como painéis — os apps (study.js, library.js, app.js) já se
+// inicializam sozinhos a partir dos containers; aqui só troca o que é visível.
+(function(){
+  var tabs=document.querySelector('[data-ws-tabs]');
+  if(!tabs) return;
+  var buttons=Array.prototype.slice.call(tabs.querySelectorAll('[data-ws-tab]'));
+  var panels=Array.prototype.slice.call(document.querySelectorAll('[data-ws-panel]'));
+  function setTab(name){
+    buttons.forEach(function(b){
+      var on=b.getAttribute('data-ws-tab')===name;
+      b.classList.toggle('on', on); b.setAttribute('aria-selected', on?'true':'false');
+    });
+    panels.forEach(function(p){ p.hidden = p.getAttribute('data-ws-panel')!==name; });
+    try{ localStorage.setItem('bec.wsTab', name); }catch(e){}
+  }
+  tabs.addEventListener('click', function(e){
+    var b=e.target.closest && e.target.closest('[data-ws-tab]');
+    if(b) setTab(b.getAttribute('data-ws-tab'));
+  });
+  var saved='atalhos';
+  try{ saved=localStorage.getItem('bec.wsTab')||'atalhos'; }catch(e){}
+  if(!buttons.some(function(b){return b.getAttribute('data-ws-tab')===saved;})) saved='atalhos';
+  setTab(saved);
 })();

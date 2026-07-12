@@ -4,6 +4,88 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## PWA de bolso: icones/service worker reais, barra de app, leitor ligado ao plano, Workspace com abas - 2026-07-12
+
+Intencao: virar uma ferramenta de estudo "de bolso" (instalavel, funciona
+offline) e com as ferramentas funcionando em conjunto (leitor, planos,
+home e Workspace conversando entre si), em vez de partes isoladas.
+
+Descobertas antes de mudar:
+
+- O PWA era fachada: `manifest.webmanifest` nao declarava `icons` (nao
+  havia nenhum arquivo de icone no repositorio) e `site/sw.js` estava
+  orfao — o build nao o gerava e nenhum script chamava
+  `serviceWorker.register()`, entao o offline nunca funcionou de verdade.
+- A barra inferior mobile tinha `grid-template-columns:repeat(5,1fr)`
+  para so 3 links (bug visual), sem icones e sem
+  `env(safe-area-inset-bottom)`.
+- Leitor e plano de leitura eram silos: nada dizia "Dia N do plano X" no
+  capitulo, e os cards "Plano de hoje"/"Ultimas anotacoes" da home eram
+  texto fixo fingindo ser dado real (bec.studyPlans/bec.notes existiam e
+  nunca eram lidos ali). O Workspace so linkava para anotacoes/coleções/
+  cadernos/favoritos em vez de embuti-los, apesar de todos os modulos JS
+  ja se inicializarem sozinhos a partir do container.
+- ~40 seletores `html.dark` usavam cor literal (`#211c13` ~9x, `#2a2418`
+  ~5x etc.) em vez de token; `.btn.ghost` (texto claro, pensado pro hero
+  escuro) estava sendo usado sem escopo em `/anotacoes/` e no overlay de
+  busca — botoes praticamente ilegiveis em fundo claro (bug real,
+  confirmado e corrigido).
+
+Mudancas:
+
+- `scripts/build_icons.py` (novo): gera `site/assets/icons/` (SVG + 4 PNG
+  via encoder proprio, so stdlib `zlib`+`struct`, sem Pillow nem outra
+  dependencia) — livro aberto dourado sobre navy. Rodado uma vez, commitado
+  como asset estatico (nao regenerado a cada build, evita custo em teste).
+- `scripts/build.py`: `head()` ganha `viewport-fit=cover`, `theme-color`
+  unico atualizado por JS, `link rel=icon`/`apple-touch-icon`; `build_meta()`
+  completa o manifest (`id`, `scope`, `icons`, `shortcuts`,
+  `display_override`, `categories`); novo `build_sw_js()` gera `sw.js` a
+  partir de `scripts/sw.asset.js` com `ASSET_VER` e shell completo (todos
+  os 10 scripts); `nav()` ganha barra inferior de 4 itens com icone SVG
+  (Inicio/Biblia/Buscar/Workspace, `grid-template-columns:repeat(4,1fr)`
+  corrigido); novo `build_plan_index()`/`build_chapter_verse_counts()`
+  geram `site/data/plan-index.json` e `chapter-verses.json` (dados de
+  ponte pro leitor saber em que dia de plano um capitulo esta); capitulo
+  ganha `data-plan-context`; Workspace `#estudar` vira abas (Atalhos/
+  Anotacoes/Favoritos/Colecoes/Cadernos) com os apps existentes embutidos
+  sem nenhuma mudanca neles; nova secao `#explorar` (dicionario/mapas/
+  temas/artigos) desorfaniza esse conteudo; hero da home reescrito pro
+  publico de estudo biblico profundo.
+- `scripts/core.asset.js`: registra o service worker.
+- `scripts/app.asset.js`: modulo `bec:chapter-read` (disparado no credito
+  real de leitura) liga o leitor ao plano — banner "Dia N de T" + auto-
+  marca o dia quando todos os capitulos do dia estao 100% cobertos (dias
+  com versiculo avulso de plano por tema ficam manuais); `window.BEC.planData`
+  compartilhado entre leitor/home; home "Plano de hoje"/"Ultimas anotacoes"
+  viram dinamicos; Workspace "Continuar leitura" usa `bec.lastRead`; modulo
+  de abas do Workspace.
+- `scripts/study.asset.js`: grava `bec.notesMeta` (data da nota, so local)
+  pra home ordenar por mais recente.
+- `site/assets/styles.css`: novos tokens semanticos (`--surface-raised`,
+  `--surface-hover`, `--accent-soft`, `--ink-strong`, `--nav-bg`) — ~15
+  overrides `html.dark` com cor literal viram `var(...)`; corrige
+  `.btn.ghost` ilegivel em `/anotacoes/` e no overlay de busca; remove
+  regra `.hub-hero` morta/duplicada (mesclada, sem mudanca visual).
+
+Corte deliberado (nao bloqueia): screenshots no manifest (exigiriam captura
+real), tokenizacao total das cores hardcoded restantes (so as recorrentes
+foram tokenizadas), icone set completo pra emojis estruturais (ficou pra
+proxima leva).
+
+Teste: `pytest` (mais testes novos: PWA/manifest implicito via checagem de
+icones e sw.js, plan-index, chapter-verses, integracao leitor-plano, abas
+do Workspace), `validate_data.py`, `git diff --check`, `ruff` (sem erro
+novo). Verificacao ponta a ponta com Playwright (servidor estatico local):
+service worker registra e fica `activated`; manifest valido; barra
+inferior com 4 itens e estado ativo correto por pagina; criar plano no
+Workspace, abrir o dia 1, marcar o capitulo inteiro como lido credita o
+dia automaticamente com toast, banner mostra "concluido" apos reload;
+abas do Workspace mostram nota/favorito/coleçao/caderno reais criados em
+outras paginas; dark mode sem regressao visual apos a tokenizacao
+(inspecionado); botoes de `/anotacoes/` legiveis (antes brancos sobre
+fundo claro). 15 paginas carregadas sem erro de console.
+
 ## Redesign profissional: folha de ferramentas unica, lexico, referencias cruzadas, plano gerado e busca global - 2026-07-12
 
 Intencao: a pagina de leitura acumulava controles em 4 lugares ao mesmo

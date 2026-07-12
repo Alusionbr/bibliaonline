@@ -56,4 +56,12 @@ window.BEC = window.BEC || {};
     prefix: PREFIX, esc: esc, download: download, confirmModal: confirmModal,
     copyText: copyText, flash: flash, fetchData: fetchData, bookSlugFromRef: bookSlugFromRef
   };
+
+  // registra o service worker (app-shell + offline). Escopo = raiz do site,
+  // então funciona em qualquer subpasta/profundidade de página.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register(PREFIX+'sw.js').catch(function(){});
+    });
+  }
 })();
