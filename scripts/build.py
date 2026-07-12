@@ -60,6 +60,7 @@ def asset_ver():
         Path(__file__),
         SCRIPTS_DIR / "build_config.py",
         SCRIPTS_DIR / "build_utils.py",
+        SCRIPTS_DIR / "sw.asset.js",
         *(SCRIPTS_DIR / name for name in SOURCE_ASSETS),
         SITE / "assets" / "styles.css",
     ]:
@@ -152,12 +153,15 @@ def head(title, description, canonical, prefix, jsonld=None):
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(description)}">
 <meta name="robots" content="index, follow, noai, noimageai">
 <link rel="canonical" href="{esc(canonical)}">
-<meta name="theme-color" content="#071a34">
+<meta name="theme-color" content="#efe4d0">
+<link rel="icon" href="{prefix}assets/icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="{prefix}assets/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="{prefix}assets/icons/icon-180.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(description)}">
@@ -173,13 +177,32 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body data-prefix="{esc(prefix)}">
-<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}}catch(e){{}}}})();</script>
+<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){{d.classList.add('dark');t='dark';}}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
   <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado neste navegador.</span>
   <button type="button" class="beta-dismiss" data-beta-dismiss aria-label="Ocultar aviso beta">×</button>
 </div>"""
+
+# Ícones de linha (24x24, currentColor) usados na barra inferior tipo app e
+# em outros pontos estruturais da navegação — nada de emoji nesses lugares
+# para ficar consistente entre sistemas/fontes.
+MNAV_ICONS = {
+    "home": '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h5V14h3v5.5h5V10"/>',
+    "book": ('<path d="M4 6c2.2-1.1 5.4-1.1 8 1c2.6-2.1 5.8-2.1 8-1v13c-2.2-1.1-5.4-1.1-8 1'
+              'c-2.6-2.1-5.8-2.1-8-1z"/><path d="M12 7v13"/>'),
+    "search": '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/>',
+    "grid": ('<rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/>'
+             '<rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/>'
+             '<rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/>'
+             '<rect x="13" y="13" width="7.5" height="7.5" rx="2"/>'),
+}
+
+
+def mnav_icon(name):
+    return f'<svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true">{MNAV_ICONS[name]}</svg>'
+
 
 def nav(prefix):
     # Navegação enxuta: Estudar e Comunidade viveram como páginas próprias e
@@ -191,7 +214,20 @@ def nav(prefix):
         ("Workspace", f"{prefix}workspace/"),
     ]
     nav_links = "\n      ".join(f'<a href="{url}">{label}</a>' for label, url in links)
-    mobile_links = "\n  ".join(f'<a href="{url}">{label}</a>' for label, url in links)
+    # a barra inferior (mobile) ganha um 4º item, "Buscar" — é uma ferramenta
+    # (abre o overlay já existente), não uma área de navegação nova; as áreas
+    # continuam sendo só Início/Bíblia/Workspace.
+    mobile_items = [
+        ("home", "Início", f"{prefix}index.html", "a"),
+        ("book", "Bíblia", f"{prefix}ler/", "a"),
+        ("search", "Buscar", None, "button"),
+        ("grid", "Workspace", f"{prefix}workspace/", "a"),
+    ]
+    mobile_links = "\n  ".join(
+        (f'<a href="{href}">{mnav_icon(icon)}<span>{label}</span></a>' if tag == "a"
+         else f'<button type="button" data-search-open>{mnav_icon(icon)}<span>{label}</span></button>')
+        for icon, label, href, tag in mobile_items
+    )
     return f"""
 <nav class="nav">
   <div class="nav-in">
@@ -249,6 +285,12 @@ def footer(prefix):
         <a href="{prefix}workspace/#comunidade">Comunidade</a>
         <a href="{prefix}biblioteca/">Biblioteca</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
+      </div>
+      <div>
+        <a href="{prefix}dicionario/">Dicionário</a>
+        <a href="{prefix}mapas/">Mapas</a>
+        <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
+        <a href="{prefix}index.html#artigos">Artigos</a>
       </div>
     </div>
   </div>
@@ -317,15 +359,17 @@ def mini_cards(items):
 
 
 def action_cards(items):
-    return "".join(
-        f"""
-    <a class="study-card link-card" href="{esc(url)}">
+    out = []
+    for item in items:
+        label, title, text, url = item[:4]
+        extra = item[4] if len(item) > 4 else ""
+        out.append(f"""
+    <a class="study-card link-card" href="{esc(url)}"{extra}>
       <span>{esc(label)}</span>
       <h3>{esc(title)}</h3>
       <p>{esc(text)}</p>
-    </a>"""
-        for label, title, text, url in items
-    )
+    </a>""")
+    return "".join(out)
 
 
 def study_continue_module(prefix, livro, ch=None, vs=None):
@@ -342,8 +386,8 @@ def study_continue_module(prefix, livro, ch=None, vs=None):
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="{prefix}anotacoes/">🗒 Minhas notas</a>
       <a href="{prefix}colecoes/">🗂 Coleções</a>
-      <a href="{prefix}workspace/#criar-plano">🗓 Meu plano</a>
-      <a href="{prefix}linha-do-tempo/">🗺 Linha do tempo</a>
+      <a href="{prefix}planos/">🗓 Planos</a>
+      <a href="{prefix}dicionario/">📖 Dicionário</a>
     </div>
     <div class="room-suggest" data-room-suggest data-room-ref="{esc(place)}" hidden>
       <p class="eyebrow">Salas abertas estudando este livro</p>
@@ -459,15 +503,17 @@ def build_workspace_page():
     desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca, anotações e Salas de Estudo em um só lugar."
     canonical = f"{BASE_URL}/workspace/"
     cards = action_cards([
-        ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/"),
+        ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/", " data-ws-continue"),
         ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
-        ("Biblioteca", "Minha biblioteca", "Notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
-        ("Favoritos", "Favoritos", "Versículos salvos para voltar depois.", f"{prefix}biblioteca/#favoritos"),
-        ("Anotações", "Anotações e grifos", "Notas e trechos grifados, sincronizáveis quando houver conta.", f"{prefix}anotacoes/"),
-        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
-        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
+        ("Biblioteca", "Minha biblioteca", "Tudo junto: notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
         ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
         ("Histórico", "Histórico", "Continue a leitura recente.", "#historico"),
+    ])
+    explore_cards = action_cards([
+        ("Léxico", "Dicionário", "Palavras-chave do hebraico e do grego, com significado.", f"{prefix}dicionario/"),
+        ("Geografia", "Mapas", "Lugares bíblicos e os versículos ligados a eles.", f"{prefix}mapas/"),
+        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}index.html#temas"),
+        ("Contexto", "Artigos", "Estudos originais sobre palavras, traduções e história do texto.", f"{prefix}index.html#artigos"),
     ])
     body = f"""
 <main id="main" class="wrap hub-page">
@@ -521,7 +567,34 @@ def build_workspace_page():
   </section>
   <section class="hub-section" id="estudar">
     <div class="section-title"><h2>Estudar</h2><a href="#criar-plano">Criar plano</a></div>
-    <div class="study-card-grid">{cards}
+    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
+      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="atalhos">Atalhos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="anotacoes">Anotações</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
+      <div class="study-card-grid">{cards}
+      </div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes" hidden>
+      <div id="anotacoes" class="anot-list"></div>
+      <p class="map-actions"><a class="btn ghost" href="{prefix}anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
+      <div class="library-rows" data-fav-full-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
+      <div class="collections-app" data-collections-app></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
+      <div class="notebooks-app" data-notebooks-app></div>
+    </div>
+  </section>
+  <section class="hub-section" id="explorar">
+    <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
+    <div class="study-card-grid">{explore_cards}
     </div>
   </section>
   <section class="hub-section plan-builder" id="criar-plano">
@@ -694,12 +767,46 @@ def load_reading_plans():
     return [p for p in plans if p.get("slug") and p.get("titulo") and p.get("dias")]
 
 
-def plan_ref_link(ref, prefix):
-    """Transforma "João 3" em link para a leitura do capítulo; texto puro se não reconhecer."""
+def plan_ref_url(ref, prefix=""):
+    """Transforma "João 3" na URL de leitura do capítulo; None se não reconhecer."""
     parts = str(ref).rsplit(" ", 1)
     if len(parts) == 2 and parts[0] in BOOK_ORDER and parts[1].isdigit():
-        return f'<a href="{prefix}ler/{book_slug(parts[0])}/{int(parts[1])}/">{esc(ref)}</a>'
-    return esc(str(ref))
+        return f"{prefix}ler/{book_slug(parts[0])}/{int(parts[1])}/"
+    return None
+
+
+def plan_ref_link(ref, prefix):
+    """Transforma "João 3" em link para a leitura do capítulo; texto puro se não reconhecer."""
+    url = plan_ref_url(ref, prefix)
+    return f'<a href="{url}">{esc(ref)}</a>' if url else esc(str(ref))
+
+
+def build_plan_index():
+    """site/data/plan-index.json: planos curados com URLs raiz-relativas, para
+    o leitor detectar "você está no Dia N do plano X" (ver app.asset.js)."""
+    plans = load_reading_plans()
+    index = [
+        {
+            "slug": p["slug"],
+            "titulo": p["titulo"],
+            "dias": [
+                [{"label": ref, "url": plan_ref_url(ref)} for ref in refs]
+                for refs in p["dias"]
+            ],
+        }
+        for p in plans
+    ]
+    write_file(DATA / "plan-index.json", json.dumps(index, ensure_ascii=False))
+
+
+def build_chapter_verse_counts(order, struct):
+    """site/data/chapter-verses.json: {slug: {capitulo: n_versiculos}} — usado
+    para saber se um dia de plano com 2+ capítulos foi lido por completo."""
+    counts = {
+        book_slug(livro): {str(ch): len(verses) for ch, verses in struct[livro].items()}
+        for livro in order
+    }
+    write_file(DATA / "chapter-verses.json", json.dumps(counts, ensure_ascii=False, separators=(",", ":")))
 
 
 def build_reading_plans_pages():
@@ -1066,6 +1173,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <h1>{esc(livro)} {ch}</h1>
     <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
   </header>
+  <div class="plan-context" data-plan-context hidden></div>
   {book_jump(prefix, order, livro)}
   {study_fraction_module(prefix, livro, ch, vnums)}
   <div class="chapter">{rows}
@@ -1142,13 +1250,19 @@ def build_home(topics, verses, articles, sources, order, struct):
 <header class="hero home-top" id="topo">
   <div class="hero-in">
     <div>
-      <p class="eyebrow on-dark">Bíblia · estudo · progresso</p>
-      <h1>Sua jornada nas Escrituras começa aqui.</h1>
-      <p class="lead">Leia a Bíblia com o texto original ao lado, guarde notas e favoritos, complete missões de estudo e acompanhe seu progresso no Workspace.</p>
+      <p class="eyebrow on-dark">Hebraico · Grego · Manuscritos · Sem anúncios</p>
+      <h1>Estude a Bíblia na língua em que foi escrita.</h1>
+      <p class="lead">Cada versículo com o original palavra por palavra, léxico com número de Strong, manuscritos reais e planos de leitura — salvo neste navegador, no celular e no computador, até offline.</p>
       <div class="hero-cta">
         <a class="btn primary" href="ler/">Ler a Bíblia</a>
         <a class="btn ghost" href="workspace/">Abrir o Workspace</a>
       </div>
+      <ul class="hero-feats">
+        <li>Palavra a palavra</li>
+        <li>Manuscritos reais</li>
+        <li>Funciona offline</li>
+        <li>Planos de leitura</li>
+      </ul>
     </div>
   </div>
 </header>
@@ -1178,17 +1292,21 @@ def build_home(topics, verses, articles, sources, order, struct):
         <a id="continue-read" class="continue-read" href="#" hidden></a>
         <p class="fallback-read">Abra um capítulo para o Workspace lembrar onde você parou.</p>
       </article>
-      <article class="home-block">
+      <article class="home-block" data-home-plan>
         <span>Hoje</span>
         <h3>Plano de hoje</h3>
-        <p>Romanos 1 · leitura leve com notas e grifos.</p>
-        <a href="workspace/#criar-plano">Criar plano</a>
+        <div data-home-plan-body>
+          <p>Crie um plano de leitura dia a dia, por livro ou por tema.</p>
+          <a href="workspace/#criar-plano">Criar plano</a>
+        </div>
       </article>
-      <article class="home-block">
+      <article class="home-block" data-home-notes>
         <span>Caderno</span>
         <h3>Últimas anotações</h3>
-        <p>Revise suas notas locais e exporte quando precisar.</p>
-        <a href="anotacoes/">Abrir anotações</a>
+        <div data-home-notes-body>
+          <p>Revise suas notas locais e exporte quando precisar.</p>
+          <a href="anotacoes/">Abrir anotações</a>
+        </div>
       </article>
       <article class="home-block" id="favorite-home" hidden>
         <span>Biblioteca</span>
@@ -1343,6 +1461,10 @@ def build_library_js():
 def build_report_js():
     write_asset("report.asset.js", "report.js")
 
+def build_sw_js():
+    js = read_asset("sw.asset.js").replace("__ASSET_VER__", ASSET_VER)
+    write_file(SITE / "sw.js", js)
+
 def build_annotations_page():
     prefix = "../"
     title = f"Minhas anotações | {SITE_NAME}"
@@ -1401,9 +1523,23 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
     ai_block = "".join(f"\nUser-agent: {b}\nDisallow: /\n" for b in ai_bots)
     write_file(SITE / "robots.txt", f"User-agent: *\nAllow: /\n{ai_block}\nSitemap: {BASE_URL}/sitemap.xml\n")
     write_file(SITE / "manifest.webmanifest", json.dumps({
-        "name":SITE_NAME,"short_name":"Bíblia em Contexto","lang":"pt-BR",
-        "start_url":"./","display":"standalone","background_color":"#f4eee2","theme_color":"#1a1610",
-        "description":"A Bíblia com os idiomas originais, manuscritos e fontes."
+        "id": "/", "name": SITE_NAME, "short_name": "Bíblia em Contexto", "lang": "pt-BR",
+        "start_url": "./", "scope": "./",
+        "display": "standalone", "display_override": ["standalone", "minimal-ui"],
+        "background_color": "#efe4d0", "theme_color": "#efe4d0",
+        "description": "A Bíblia com os idiomas originais, manuscritos e fontes.",
+        "categories": ["books", "education", "lifestyle"],
+        "icons": [
+            {"src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+            {"src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": "assets/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+        "shortcuts": [
+            {"name": "Ler a Bíblia", "url": "ler/", "description": "Voltar direto para a leitura"},
+            {"name": "Workspace", "url": "workspace/", "description": "Progresso, planos e comunidade"},
+            {"name": "Planos de leitura", "url": "planos/", "description": "Continuar um plano de leitura"},
+        ],
     }, ensure_ascii=False, indent=2))
 
 def build_404():
@@ -1510,6 +1646,7 @@ def build_site(context):
     build_community_js()
     build_library_js()
     build_report_js()
+    build_sw_js()
     build_annotations_page()
     build_workspace_page()
     build_merged_redirects()
@@ -1517,6 +1654,8 @@ def build_site(context):
     build_collections_page()
     build_notebooks_page()
     plan_slugs = build_reading_plans_pages()
+    build_plan_index()
+    build_chapter_verse_counts(order, struct)
     build_privacy_page()
     n_idx = build_search_index(verses, inputs.articles, inputs.topics)
     build_random_pool(verses)

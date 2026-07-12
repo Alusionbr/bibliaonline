@@ -1,5 +1,5 @@
 /* Service worker do Bíblia em Contexto — gerado por build.py. Não editar à mão. */
-var VERSION = '4c24bcee';
+var VERSION = 'ee48fe41';
 var SHELL_CACHE = 'bec-shell-' + VERSION;
 var PAGE_CACHE  = 'bec-pages-'  + VERSION;
 // app-shell mínimo (relativo ao escopo do SW = raiz do site)
@@ -9,8 +9,18 @@ var SHELL = [
   './offline/',
   './manifest.webmanifest',
   './assets/styles.css?v=' + VERSION,
+  './assets/icons/icon.svg',
+  './assets/icons/icon-192.png',
+  './assets/core.js?v=' + VERSION,
+  './assets/supabase-config.js?v=' + VERSION,
+  './assets/auth.js?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
   './assets/study.js?v=' + VERSION,
+  './assets/lexicon.js?v=' + VERSION,
+  './assets/game.js?v=' + VERSION,
+  './assets/community.js?v=' + VERSION,
+  './assets/library.js?v=' + VERSION,
+  './assets/report.js?v=' + VERSION,
   './data/hebrew-lexicon.json'
 ];
 

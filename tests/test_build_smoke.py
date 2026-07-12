@@ -251,6 +251,26 @@ def test_ferramentas_pessoais_reais(site):
     assert "bec.history" in app
 
 
+def test_workspace_abas_biblioteca_embutida(site):
+    # Anotações, favoritos, coleções e cadernos ficam embutidos como abas no
+    # Workspace (além de continuarem existindo como páginas próprias).
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert "data-ws-tabs" in ws
+    for tab in ("atalhos", "anotacoes", "favoritos", "colecoes", "cadernos"):
+        assert f'data-ws-tab="{tab}"' in ws and f'data-ws-panel="{tab}"' in ws
+    assert 'id="anotacoes"' in ws
+    assert "data-fav-full-list" in ws
+    assert "data-collections-app" in ws
+    assert "data-notebooks-app" in ws
+    # seção "Explorar" desorfaniza dicionário/mapas/temas/artigos
+    assert 'id="explorar"' in ws
+    assert f'href="../dicionario/"' in ws and f'href="../mapas/"' in ws
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "data-ws-tabs" in app and "bec.wsTab" in app
+    home = (site / "index.html").read_text("utf-8")
+    assert 'href="dicionario/"' in home or "dicionario/" in home
+
+
 def test_planos_de_leitura_reais(site):
     # Índice e página do plano são gerados com a navegação atual.
     index = (site / "planos" / "index.html").read_text("utf-8")
@@ -271,6 +291,24 @@ def test_planos_de_leitura_reais(site):
     sitemap = (site / "sitemap.xml").read_text("utf-8")
     assert "/planos/</loc>" in sitemap
     assert "/planos/joao-2-dias/</loc>" in sitemap
+
+
+def test_plan_index(site):
+    # Dados de ponte para o leitor saber em que dia de plano o capítulo está.
+    index = json.loads((site / "data" / "plan-index.json").read_text("utf-8"))
+    plan = next(p for p in index if p["slug"] == "joao-2-dias")
+    assert plan["titulo"] == "João em 2 dias"
+    assert plan["dias"][0][0] == {"label": "João 1", "url": "ler/joao/1/"}
+    # Referência desconhecida degrada para url None (sem link quebrado).
+    dia2 = {d["label"]: d["url"] for d in plan["dias"][1]}
+    assert dia2["João 2"] == "ler/joao/2/"
+    assert dia2["Salmo desconhecido"] is None
+
+
+def test_chapter_verse_counts(site):
+    counts = json.loads((site / "data" / "chapter-verses.json").read_text("utf-8"))
+    assert counts["genesis"]["1"] == 1
+    assert counts["joao"]["1"] == 1
 
 
 def test_sem_produto_de_ia_no_html_gerado(site):
@@ -505,6 +543,16 @@ def test_home_reorganizada(site):
     # A apresentação mantém o versículo-assinatura (specimen).
     apres = home[home.index('id="apresentacao"'):home.index('id="fontes"')]
     assert "specimen-card" in apres and "Ver fontes e licenças" in apres
+    # "Plano de hoje" e "Últimas anotações" viraram containers dinâmicos
+    # (deixam de ser texto fixo fingindo ser dado real).
+    assert "data-home-plan" in home and "data-home-plan-body" in home
+    assert "data-home-notes" in home and "data-home-notes-body" in home
+    assert "Romanos 1 · leitura leve" not in home
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert "data-ws-continue" in ws
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for token in ("planData", "nextOpenDay", "notesMeta", "data-ws-continue"):
+        assert token in app, token
 
 
 def test_modo_leitura_foco(site):
@@ -541,3 +589,16 @@ def test_lote4_linha_do_tempo(site):
     # link na navegação e no sitemap
     assert "Linha do tempo" in html
     assert "/linha-do-tempo/" in (site / "sitemap.xml").read_text("utf-8")
+
+
+def test_leitor_conectado_ao_plano(site):
+    # Banner de contexto (Dia N de T · Plano) no capítulo + auto-marcação do
+    # dia ao ler o capítulo por completo.
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-plan-context" in cap
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for token in ("bec:chapter-read", "plan-index.json", "chapter-verses.json",
+                  "data-plan-context-mark", "planos/"):
+        assert token in app, token
+    # o link enganoso "Meu plano" (que levava ao criador, não à leitura) saiu
+    assert "🗓 Meu plano" not in cap

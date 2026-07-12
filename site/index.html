@@ -2,12 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bíblia em Contexto — a Bíblia com os idiomas originais, manuscritos e fontes</title>
 <meta name="description" content="Leia cada versículo no idioma original (hebraico, grego, aramaico), com tradução de domínio público, foto do manuscrito quando há, e comentário rabínico ou explicação de origem.">
 <meta name="robots" content="index, follow, noai, noimageai">
 <link rel="canonical" href="https://alusionbr.github.io/bibliaonline/">
-<meta name="theme-color" content="#071a34">
+<meta name="theme-color" content="#efe4d0">
+<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Bíblia em Contexto — a Bíblia com os idiomas originais, manuscritos e fontes">
 <meta property="og:description" content="Leia cada versículo no idioma original (hebraico, grego, aramaico), com tradução de domínio público, foto do manuscrito quando há, e comentário rabínico ou explicação de origem.">
@@ -20,10 +23,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=4dd6dc64">
+<link rel="stylesheet" href="assets/styles.css?v=ee48fe41">
 </head>
 <body data-prefix="">
-<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}catch(e){}})();</script>
+<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
@@ -57,9 +60,10 @@
   </div>
 </nav>
 <nav class="mobile-primary-nav" aria-label="Navegação principal">
-  <a href="index.html">Início</a>
-  <a href="ler/">Bíblia</a>
-  <a href="workspace/">Workspace</a>
+  <a href="index.html"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h5V14h3v5.5h5V10"/></svg><span>Início</span></a>
+  <a href="ler/"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6c2.2-1.1 5.4-1.1 8 1c2.6-2.1 5.8-2.1 8-1v13c-2.2-1.1-5.4-1.1-8 1c-2.6-2.1-5.8-2.1-8-1z"/><path d="M12 7v13"/></svg><span>Bíblia</span></a>
+  <button type="button" data-search-open><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg><span>Buscar</span></button>
+  <a href="workspace/"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/><rect x="13" y="13" width="7.5" height="7.5" rx="2"/></svg><span>Workspace</span></a>
 </nav>
 <div class="search-overlay" data-search-overlay hidden>
   <div class="search-overlay-in">
@@ -73,13 +77,19 @@
 <header class="hero home-top" id="topo">
   <div class="hero-in">
     <div>
-      <p class="eyebrow on-dark">Bíblia · estudo · progresso</p>
-      <h1>Sua jornada nas Escrituras começa aqui.</h1>
-      <p class="lead">Leia a Bíblia com o texto original ao lado, guarde notas e favoritos, complete missões de estudo e acompanhe seu progresso no Workspace.</p>
+      <p class="eyebrow on-dark">Hebraico · Grego · Manuscritos · Sem anúncios</p>
+      <h1>Estude a Bíblia na língua em que foi escrita.</h1>
+      <p class="lead">Cada versículo com o original palavra por palavra, léxico com número de Strong, manuscritos reais e planos de leitura — salvo neste navegador, no celular e no computador, até offline.</p>
       <div class="hero-cta">
         <a class="btn primary" href="ler/">Ler a Bíblia</a>
         <a class="btn ghost" href="workspace/">Abrir o Workspace</a>
       </div>
+      <ul class="hero-feats">
+        <li>Palavra a palavra</li>
+        <li>Manuscritos reais</li>
+        <li>Funciona offline</li>
+        <li>Planos de leitura</li>
+      </ul>
     </div>
   </div>
 </header>
@@ -109,17 +119,21 @@
         <a id="continue-read" class="continue-read" href="#" hidden></a>
         <p class="fallback-read">Abra um capítulo para o Workspace lembrar onde você parou.</p>
       </article>
-      <article class="home-block">
+      <article class="home-block" data-home-plan>
         <span>Hoje</span>
         <h3>Plano de hoje</h3>
-        <p>Romanos 1 · leitura leve com notas e grifos.</p>
-        <a href="workspace/#criar-plano">Criar plano</a>
+        <div data-home-plan-body>
+          <p>Crie um plano de leitura dia a dia, por livro ou por tema.</p>
+          <a href="workspace/#criar-plano">Criar plano</a>
+        </div>
       </article>
-      <article class="home-block">
+      <article class="home-block" data-home-notes>
         <span>Caderno</span>
         <h3>Últimas anotações</h3>
-        <p>Revise suas notas locais e exporte quando precisar.</p>
-        <a href="anotacoes/">Abrir anotações</a>
+        <div data-home-notes-body>
+          <p>Revise suas notas locais e exporte quando precisar.</p>
+          <a href="anotacoes/">Abrir anotações</a>
+        </div>
       </article>
       <article class="home-block" id="favorite-home" hidden>
         <span>Biblioteca</span>
@@ -337,18 +351,24 @@
         <a href="biblioteca/">Biblioteca</a>
         <a href="index.html#fontes">Fontes e licenças</a>
       </div>
+      <div>
+        <a href="dicionario/">Dicionário</a>
+        <a href="mapas/">Mapas</a>
+        <a href="linha-do-tempo/">Linha do tempo</a>
+        <a href="index.html#artigos">Artigos</a>
+      </div>
     </div>
   </div>
 </footer>
-<script src="assets/core.js?v=4dd6dc64"></script>
-<script src="assets/supabase-config.js?v=4dd6dc64" defer></script>
+<script src="assets/core.js?v=ee48fe41"></script>
+<script src="assets/supabase-config.js?v=ee48fe41" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="assets/auth.js?v=4dd6dc64" defer></script>
-<script src="assets/app.js?v=4dd6dc64"></script>
-<script src="assets/study.js?v=4dd6dc64" defer></script>
-<script src="assets/lexicon.js?v=4dd6dc64" defer></script>
-<script src="assets/game.js?v=4dd6dc64" defer></script>
-<script src="assets/community.js?v=4dd6dc64" defer></script>
-<script src="assets/library.js?v=4dd6dc64" defer></script>
-<script src="assets/report.js?v=4dd6dc64" defer></script>
+<script src="assets/auth.js?v=ee48fe41" defer></script>
+<script src="assets/app.js?v=ee48fe41"></script>
+<script src="assets/study.js?v=ee48fe41" defer></script>
+<script src="assets/lexicon.js?v=ee48fe41" defer></script>
+<script src="assets/game.js?v=ee48fe41" defer></script>
+<script src="assets/community.js?v=ee48fe41" defer></script>
+<script src="assets/library.js?v=ee48fe41" defer></script>
+<script src="assets/report.js?v=ee48fe41" defer></script>
 </body></html>

@@ -29,6 +29,14 @@
   --radius-sm:12px;
   --max:1080px;
   --read:680px;
+  /* tokens semânticos: mesmo nome em qualquer tema, valor muda por tema
+     (ver overrides em html.sepia/html.dark) — evita cor literal espalhada
+     em componentes novos */
+  --surface-raised:var(--paper);
+  --surface-hover:var(--vellum-2);
+  --accent-soft:var(--gold-deep);
+  --ink-strong:var(--ink);
+  --nav-bg:rgba(252,248,240,.96);
 }
 
 *{box-sizing:border-box}
@@ -179,8 +187,6 @@ section{padding:52px 0}
   border-radius:999px;padding:8px 12px;font-family:"Inter",system-ui,sans-serif;font-weight:600;cursor:pointer}
 .inline-action:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
 .hub-page{padding:30px 20px 70px}
-.hub-hero{max-width:var(--read);margin:0 auto 24px}
-.hub-hero h1{font-size:clamp(2rem,7vw,3rem);margin:.25rem 0 .55rem}
 .hub-hero p:last-child{color:var(--muted);margin:0}
 .hub-section{max-width:var(--max);margin:0 auto;padding:28px 0}
 .section-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 14px}
@@ -196,9 +202,9 @@ section{padding:52px 0}
   background:radial-gradient(120% 70% at 12% -10%,rgba(200,149,54,.15),rgba(200,149,54,0) 55%)}
 .hub-page > *{position:relative;z-index:1}
 /* hero vira cartão de destaque */
-.hub-hero{max-width:var(--max);background:linear-gradient(160deg,var(--paper),var(--vellum-2));
+.hub-hero{max-width:var(--max);margin:0 auto 24px;background:linear-gradient(160deg,var(--paper),var(--vellum-2));
   border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px 24px;box-shadow:var(--shadow)}
-.hub-hero h1{font-size:clamp(1.9rem,6vw,2.6rem);letter-spacing:-.02em}
+.hub-hero h1{font-size:clamp(1.9rem,6vw,2.6rem);letter-spacing:-.02em;margin:.25rem 0 .55rem}
 .hub-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 /* cards mais arredondados, com leve elevação e brilho no hover */
 .hub-page .study-card,.hub-page .plan-form,.hub-page .community-form{border-radius:var(--radius-lg);
@@ -310,10 +316,10 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .study-map-head h2,.study-desk h2{font-size:1.35rem;margin:0 0 6px}
 .study-map-head p,.study-desk p{margin:0;color:var(--muted)}
 .map-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
-.btn.quiet,.auth-actions .btn.ghost,.hub-page .btn.ghost{
+.btn.quiet,.auth-actions .btn.ghost,.hub-page .btn.ghost,.verse-page .btn.ghost,.search-overlay .btn.ghost{
   border-color:var(--line);color:var(--ink-soft);background:var(--paper)
 }
-.btn.quiet:hover,.auth-actions .btn.ghost:hover,.hub-page .btn.ghost:hover{
+.btn.quiet:hover,.auth-actions .btn.ghost:hover,.hub-page .btn.ghost:hover,.verse-page .btn.ghost:hover,.search-overlay .btn.ghost:hover{
   border-color:var(--gold-deep);color:var(--gold-deep);background:var(--vellum-2)
 }
 .desk-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -445,7 +451,7 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
   .study-card-grid{grid-template-columns:1fr 1fr 1fr}
 }
 @media(max-width:759px){
-  body{padding-bottom:68px}
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
   .auth-trigger{max-width:82px;padding-inline:10px}
   /* No celular as ferramentas de leitura ficam no FAB; no topo fica só o tema,
      evitando que a barra estoure a largura e o site "corra pros lados". */
@@ -460,15 +466,20 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
   .nav-links a:hover{background:rgba(255,255,255,.08)}
   .menu-btn{display:block}
   .mobile-primary-nav{
-    position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;grid-template-columns:repeat(5,1fr);
-    background:rgba(252,248,240,.96);border-top:1px solid var(--line);backdrop-filter:saturate(1.4) blur(10px)
+    position:fixed;left:0;right:0;bottom:0;z-index:70;display:grid;grid-template-columns:repeat(4,1fr);
+    background:var(--nav-bg,rgba(252,248,240,.96));border-top:1px solid var(--line);
+    backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);
+    padding-bottom:env(safe-area-inset-bottom,0px)
   }
-  .mobile-primary-nav a{
-    min-height:58px;display:grid;place-items:center;text-align:center;text-decoration:none;
-    color:var(--ink-soft);font-family:"Inter",system-ui,sans-serif;font-size:.72rem;font-weight:700;padding:6px 2px
+  .mobile-primary-nav a,.mobile-primary-nav button{
+    min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    text-align:center;text-decoration:none;border:0;background:transparent;cursor:pointer;
+    color:var(--ink-soft);font-family:"Inter",system-ui,sans-serif;font-size:.68rem;font-weight:700;padding:6px 2px
   }
-  .mobile-primary-nav a:hover{background:var(--vellum-2);color:var(--ink)}
-  html.dark .mobile-primary-nav{background:rgba(7,17,31,.96)}
+  .mnav-ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round;transition:background .2s ease,color .2s ease}
+  .mobile-primary-nav a:hover,.mobile-primary-nav button:hover{background:var(--surface-hover,var(--vellum-2));color:var(--ink)}
+  html.dark .mobile-primary-nav{background:var(--nav-bg,rgba(7,17,31,.96))}
 }
 @media(max-width:430px){
   /* telas bem estreitas: mantém só o selo da marca (ב) para a barra caber */
@@ -656,7 +667,9 @@ html.sepia body{background:var(--vellum);color:var(--ink)}
 /* modo noturno (novo tema navy) */
 html.dark{--ink:#f6ecd6;--ink-soft:#d6cbb2;--muted:#a7b0c2;--vellum:#07111f;--vellum-2:#0c1728;
   --paper:#101d31;--line:rgba(255,255,255,.13);--gold-deep:#e3bf7e;--gold-soft:#efd08a;
-  --dark:#0c1728;--dark-2:#12355f}
+  --dark:#0c1728;--dark-2:#12355f;
+  --surface-raised:#211c13;--surface-hover:#2a2418;--accent-soft:#e2c26a;
+  --ink-strong:#f6efe2;--nav-bg:rgba(7,17,31,.96)}
 html.dark body{background:var(--vellum);color:var(--ink)}
 html.dark a:hover{color:var(--gold-soft)}
 html.dark .pen-toggle{background:var(--paper);color:var(--gold-soft)}
@@ -894,9 +907,14 @@ html.dark .community-alert.err{background:#3a201c;border-color:#7a3e34;color:#f0
 
 /* seção ativa na navegação */
 .nav-links a.active{background:rgba(28,22,12,.09);color:var(--ink);font-weight:700}
-html.dark .nav-links a.active{background:rgba(255,255,255,.12);color:#f6efe2}
-.mobile-primary-nav a.active{color:var(--ink);box-shadow:inset 0 -3px 0 var(--gold)}
-html.dark .mobile-primary-nav a.active{color:#f6efe2}
+html.dark .nav-links a.active{background:rgba(255,255,255,.12);color:var(--ink-strong)}
+.mobile-primary-nav a.active{color:var(--accent-soft,var(--gold-deep));font-weight:800}
+.mobile-primary-nav a.active .mnav-ic{
+  background:var(--gold-soft);border-radius:999px;padding:3px;
+  box-sizing:content-box;color:#3a2a08
+}
+html.dark .mobile-primary-nav a.active{color:var(--accent-soft,#e2c26a)}
+html.dark .mobile-primary-nav a.active .mnav-ic{background:rgba(239,208,138,.28);color:var(--accent-soft,#e2c26a)}
 
 /* Reportar bug: botão flutuante + modal + linhas de admin */
 .report-fab{position:fixed;right:14px;bottom:78px;z-index:60;display:inline-flex;align-items:center;gap:6px;
@@ -904,7 +922,7 @@ html.dark .mobile-primary-nav a.active{color:#f6efe2}
   padding:8px 13px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;
   box-shadow:0 3px 12px rgba(20,16,8,.16)}
 .report-fab:hover{border-color:var(--gold);color:var(--gold-deep)}
-html.dark .report-fab{background:#211c13;color:#efe7d8}
+html.dark .report-fab{background:var(--surface-raised);color:var(--ink-strong)}
 @media (min-width:760px){ .report-fab{bottom:20px} }
 .report-box{max-width:460px;text-align:left}
 .report-box form{display:grid;gap:11px;margin-top:6px}
@@ -949,9 +967,9 @@ details.collap summary:hover{background:var(--vellum-2)}
 .collap-chev{flex:none;color:var(--muted);transition:transform .2s ease}
 details.collap[open] .collap-chev{transform:rotate(180deg)}
 details.collap>.mission-list,details.collap>.medal-grid{padding:4px 14px 14px}
-html.dark details.collap{background:#211c13}
-html.dark details.collap summary:hover{background:#2a2418}
-html.dark .collap-count{background:#2a2418;color:#e2c26a}
+html.dark details.collap{background:var(--surface-raised)}
+html.dark details.collap summary:hover{background:var(--surface-hover)}
+html.dark .collap-count{background:var(--surface-hover);color:var(--accent-soft)}
 
 /* ---------- modo leitura (foco nas Escrituras) ---------- */
 .focus-btn{margin-top:10px}
@@ -970,7 +988,7 @@ html.focus-read .focus-exit{display:inline-flex;position:fixed;top:12px;right:12
   border-radius:999px;padding:8px 14px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;
   box-shadow:0 3px 12px rgba(20,16,8,.16)}
 html.focus-read .focus-exit:hover{border-color:var(--gold);color:var(--gold-deep)}
-html.dark.focus-read .focus-exit{background:#211c13;color:#efe7d8}
+html.dark.focus-read .focus-exit{background:var(--surface-raised);color:var(--ink-strong)}
 
 /* ---------- criar sala travada por nível ---------- */
 .room-locked{opacity:.92}
@@ -992,13 +1010,13 @@ html.focus-read .focus-progress span{font-family:"Inter",system-ui,sans-serif;fo
   padding:7px 13px;font-family:"Inter",system-ui,sans-serif;font-size:.8rem;font-weight:700;cursor:pointer}
 .focus-progress .fp-mark:hover{background:var(--gold-soft)}
 .focus-progress .fp-mark:disabled{background:var(--green);color:#fff;cursor:default}
-html.dark.focus-read .focus-progress{background:#211c13}
+html.dark.focus-read .focus-progress{background:var(--surface-raised)}
 
 /* ---------- salas com referência bíblica + descoberta ---------- */
 .room-ref{display:inline-flex;align-items:center;gap:4px;font-family:"Inter",system-ui,sans-serif;
   font-size:.72rem;font-weight:600;color:var(--gold-deep);background:var(--vellum-2);
   border:1px solid var(--line);border-radius:999px;padding:2px 9px}
-html.dark .room-ref{background:#2a2418;color:#e2c26a}
+html.dark .room-ref{background:var(--surface-hover);color:var(--accent-soft)}
 .room-card-ref{margin:.15rem 0 .2rem}
 .room-card.listed .btn{justify-self:start;margin-top:4px}
 .check-line{display:flex;flex-direction:row!important;gap:8px;align-items:center;font-size:.85rem}
@@ -1012,7 +1030,7 @@ html.dark .room-ref{background:#2a2418;color:#e2c26a}
 .room-suggest-card p{margin:0;font-size:.82rem;color:var(--muted)}
 .room-suggest-more{display:inline-block;margin-top:10px;font-family:"Inter",system-ui,sans-serif;
   font-size:.85rem;font-weight:600}
-html.dark .room-suggest-card{background:#211c13}
+html.dark .room-suggest-card{background:var(--surface-raised)}
 
 /* ==========================================================================
    Redesign profissional: folha única de ferramentas do versículo, busca
@@ -1083,8 +1101,8 @@ body.sheet-open{overflow:hidden}
 .vs-done{color:var(--green);font-weight:600;margin:0}
 html.dark .verse-sheet-box{background:var(--paper)}
 html.dark .vs-act,html.dark .vs-note,html.dark .xref-chip,html.dark .vs-col-new input{
-  background:#211c13;border-color:var(--line)}
-html.dark .vs-act:hover{background:#2a2418}
+  background:var(--surface-raised);border-color:var(--line)}
+html.dark .vs-act:hover{background:var(--surface-hover)}
 
 /* grifo por versículo com paleta de cores (substitui a caneta morta) */
 .v-hl[data-c="g"]{background:rgba(168,224,106,.28);border-left-color:#5fa832}
@@ -1104,7 +1122,7 @@ html.dark .v-hl[data-c="p"]{background:rgba(255,179,209,.16)}
 .study-continue{max-width:var(--read);margin:30px auto 0;border:1px solid var(--line);
   border-radius:var(--radius-lg);background:var(--paper);padding:20px 22px;box-shadow:var(--shadow)}
 .study-continue-head h2{font-size:1.25rem;margin:2px 0 0}
-html.dark .study-continue{background:#211c13}
+html.dark .study-continue{background:var(--surface-raised)}
 
 /* léxico interativo do hebraico/aramaico (Strong + morfologia) */
 .lex-w{cursor:pointer;border-bottom:1px dotted var(--gold-deep);border-radius:2px}
@@ -1119,7 +1137,7 @@ html.dark .study-continue{background:#211c13}
 .lex-pop-prefix,.lex-pop-empty{margin:0 0 4px;color:var(--muted);font-size:.82rem}
 .lex-pop-close{position:absolute;top:6px;right:8px;border:0;background:transparent;
   font-size:1.05rem;color:var(--muted);cursor:pointer;line-height:1}
-html.dark .lex-pop{background:#211c13}
+html.dark .lex-pop{background:var(--surface-raised)}
 
 /* busca global (botão no nav, disponível em toda página) */
 .search-overlay{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-start;
@@ -1133,7 +1151,7 @@ html.dark .lex-pop{background:#211c13}
 .search-overlay-head input{flex:1;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
   font:inherit;font-size:1rem;background:var(--vellum);color:var(--ink)}
 .search-overlay-results{overflow-y:auto;display:grid;gap:8px}
-html.dark .search-overlay-in{background:#211c13}
+html.dark .search-overlay-in{background:var(--surface-raised)}
 html.dark .search-overlay-head input{background:var(--paper)}
 body.search-open{overflow:hidden}
 
@@ -1145,7 +1163,7 @@ body.search-open{overflow:hidden}
 .stats-heatmap{display:flex;gap:5px;margin:4px 0 18px;flex-wrap:wrap}
 .hm-cell{width:16px;height:16px;border-radius:4px;background:rgba(28,22,12,.08)}
 .hm-cell.on{background:var(--gold)}
-html.dark .stat-tile{background:#211c13}
+html.dark .stat-tile{background:var(--surface-raised)}
 html.dark .hm-cell{background:rgba(255,255,255,.08)}
 html.dark .hm-cell.on{background:var(--gold-soft)}
 
@@ -1165,3 +1183,48 @@ html.dark .hm-cell.on{background:var(--gold-soft)}
   body{background:#fff;color:#000}
   .chapter,.verse-hero,.verse-page{max-width:100%}
 }
+
+/* ---------- leitor ↔ plano de leitura ---------- */
+.plan-context{
+  max-width:var(--read);margin:14px auto 0;display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:var(--surface-raised,var(--paper));border:1px solid var(--line);
+  border-radius:var(--radius-sm);padding:12px 16px
+}
+.plan-context[hidden]{display:none}
+.plan-context-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.92rem;color:var(--ink-soft)}
+.plan-context-info b{color:var(--ink);font-family:"Fraunces",serif;font-weight:600}
+.plan-context-count{font-family:"Inter",system-ui,sans-serif;font-size:.74rem;font-weight:700;
+  color:var(--gold-deep);background:var(--vellum-2);border:1px solid var(--line);
+  border-radius:999px;padding:3px 10px}
+.plan-context-actions{display:flex;align-items:center;gap:8px}
+.plan-context-done{font-size:.86rem;font-weight:700;color:var(--green)}
+
+/* aviso flutuante rápido (ex.: dia de plano concluído automaticamente) */
+.bec-toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);
+  transform:translate(-50%,12px);z-index:90;background:var(--dark);color:#f6efe2;
+  font-family:"Inter",system-ui,sans-serif;font-size:.86rem;font-weight:600;
+  padding:11px 18px;border-radius:999px;box-shadow:var(--shadow);
+  opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;
+  max-width:88vw;text-align:center
+}
+.bec-toast.on{opacity:1;transform:translate(-50%,0)}
+@media(min-width:760px){ .bec-toast{bottom:28px} }
+
+/* ---------- abas do Workspace (#estudar: atalhos/anotações/favoritos/
+   coleções/cadernos embutidos) ---------- */
+.ws-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 18px;
+  border-bottom:1px solid var(--line);padding-bottom:2px}
+.ws-tab{font-family:"Inter",system-ui,sans-serif;font-size:.86rem;font-weight:600;
+  border:0;background:transparent;color:var(--muted);cursor:pointer;
+  padding:9px 4px;margin-bottom:-1px;border-bottom:2px solid transparent}
+.ws-tab:hover{color:var(--ink-soft)}
+.ws-tab.on{color:var(--gold-deep);border-bottom-color:var(--gold)}
+.ws-panel[hidden]{display:none}
+
+/* faixa de diferenciais no hero da home */
+.hero-feats{display:flex;flex-wrap:wrap;gap:8px 14px;margin:18px 0 0;padding:0;list-style:none}
+.hero-feats li{display:flex;align-items:center;gap:6px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.82rem;font-weight:600;color:var(--gold-soft)}
+.hero-feats li::before{content:"✓";color:var(--gold);font-weight:700}
