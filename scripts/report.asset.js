@@ -112,17 +112,8 @@
     }).then(function(){ if(btn) btn.disabled=false; });
   }
 
-  // O acionador vive no conjunto de ferramentas do topo (nav). So cria o botao
-  // flutuante de fallback se, por algum motivo, a nav nao tiver o gatilho.
-  function mountButton(){
-    if(document.querySelector('[data-report-open]')) return;
-    if(document.querySelector('.report-fab')) return;
-    var b=document.createElement('button');
-    b.type='button'; b.className='report-fab'; b.setAttribute('data-report-open','');
-    b.title='Reportar um problema'; b.innerHTML='<span aria-hidden="true">🐞</span><span class="report-fab-txt">Reportar</span>';
-    document.body.appendChild(b);
-  }
-
+  // O acionador vive no conjunto unico de ferramentas (nav e painel do leitor,
+  // ambos com [data-report-open]) — sem botao flutuante proprio.
   document.addEventListener('click', function(e){
     if(e.target.closest && e.target.closest('[data-report-open]')) open();
   });
@@ -174,7 +165,7 @@
       .then(function(res){ if(!res.error) loadReports(); else rb.disabled=false; });
   });
 
-  function init(){ mountButton(); flushPending(); maybeAdmin(); }
+  function init(){ flushPending(); maybeAdmin(); }
   document.addEventListener('bec:account', function(){ flushPending(); maybeAdmin(); if(document.querySelector('.report-modal')) syncMode(); });
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

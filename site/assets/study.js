@@ -1,10 +1,19 @@
 var BEC_BASE="https://alusionbr.github.io/bibliaonline";
-﻿// Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
-// Tudo salvo no localStorage deste navegador. Nada vai para servidor.
+// Ferramentas de estudo por versículo: uma única folha de ferramentas (toque
+// no texto) reúne favoritar, grifar (com cor), anotar, ouvir, compartilhar,
+// salvar em coleção e ver referências cruzadas. Tudo salvo no localStorage
+// deste navegador; sincroniza quando há conta. Nada é enviado a servidor.
 (function(){
+  var core = window.BEC && window.BEC.core;
+  function esc(s){ return core ? core.esc(s) : (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function confirmModal(msg, onYes){ return core ? core.confirmModal(msg, onYes) : (onYes && onYes()); }
+  function download(name, text, type){ return core ? core.download(name, text, type) : null; }
+  function copyText(str, btn, label){ return core ? core.copyText(str, btn, label) : null; }
+  function flash(btn, txt){ return core ? core.flash(btn, txt) : null; }
+
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
   function save(k,v){try{localStorage.setItem('bec.'+k,JSON.stringify(v));}catch(e){} if(window.BEC_SYNC) window.BEC_SYNC.markDirty();}
-  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
   // referência "Livro c:v" → slug e URL absoluta do versículo (BEC_BASE injetado no build)
   function refToSlug(ref){
     var m=(ref||'').match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '';
@@ -12,74 +21,58 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     return b+'-'+m[2]+'-'+m[3];
   }
   function refToUrl(ref){ var s=refToSlug(ref); return s? BEC_BASE+'/versiculos/'+s+'/' : BEC_BASE; }
-  function downloadBlob(name, blob){
-    var u=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=u; a.download=name;
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u);
+
+  // ---------- grifo por versículo (4 cores) ----------
+  var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
+  function hlColor(ref){
+    var v=load('vhl')[ref];
+    if(!v) return null;
+    return typeof v==='object' ? (v.c||'y') : 'y'; // formato antigo: 1 = amarelo
+  }
+  function setHlColor(ref, color){
+    var all=load('vhl');
+    if(hlColor(ref)===color) delete all[ref]; else all[ref]={c:color};
+    save('vhl', all);
+    paintState(ref);
   }
 
-  // envolve cada palavra de um parágrafo em <span class="w"> para grifo por palavra
-  function wrapWords(el, field){
-    if(!el || el.dataset.wrapped) return;
-    var parts=el.textContent.split(/(\s+)/), i=0;
-    el.textContent='';
-    parts.forEach(function(p){
-      if(p===''||/^\s+$/.test(p)){ el.appendChild(document.createTextNode(p)); return; }
-      var s=document.createElement('span'); s.className='w'; s.dataset.f=field; s.dataset.i=i;
-      s.textContent=p; el.appendChild(s); i++;
+  function paintState(ref){
+    document.querySelectorAll('[data-ref]').forEach(function(cont){
+      if(cont.getAttribute('data-ref')!==ref) return;
+      var color=hlColor(ref);
+      cont.classList.toggle('v-hl', !!color);
+      if(color) cont.setAttribute('data-c', color); else cont.removeAttribute('data-c');
+      cont.classList.toggle('has-note', !!load('notes')[ref]);
     });
-    el.dataset.wrapped='1';
+  }
+  function paintAll(root){
+    (root||document).querySelectorAll('[data-ref]').forEach(function(cont){
+      paintState(cont.getAttribute('data-ref'));
+    });
   }
 
-  function setup(cont){
-    if(!cont || cont.dataset.studyReady) return;
-    var ref=cont.getAttribute('data-ref'); if(!ref) return;
-    var anchor=cont.querySelector('.verse-hero')||cont.querySelector('.ch-body')||cont;
-    var bar=document.createElement('div'); bar.className='study';
-    var hint=cont.matches('.verse-cont') ? '<span class="study-hint">selecione o texto para copiar</span>' : '';
-    bar.innerHTML='<button type="button" data-act="note">🗒 Anotar</button>'+
-      '<button type="button" data-act="copy">⧉ Copiar versículo</button>'+
-      '<button type="button" data-act="share">↗ Compartilhar</button>'+hint;
-    anchor.appendChild(bar);
-    var nb=document.createElement('div'); nb.className='note-box'; nb.hidden=true;
-    nb.innerHTML='<textarea placeholder="Sua anotação para '+esc(ref)+'..."></textarea>'+
-      '<div class="note-actions"><button type="button" data-act="copy-note">⧉ Copiar versículo + nota</button></div>';
-    anchor.appendChild(nb);
-    cont.dataset.studyReady='1';
-    apply(cont, ref);
+  // ---------- referências cruzadas (dataset curado, ~poucos KB) ----------
+  var xrefPromise=null;
+  function xrefData(){
+    if(!core) return Promise.resolve({});
+    if(!xrefPromise) xrefPromise=core.fetchData('data/cross-references.json').catch(function(){return {};});
+    return xrefPromise;
   }
-
-  function flash(btn, txt){ var o=btn.textContent; btn.textContent=txt; setTimeout(function(){btn.textContent=o;},1400); }
-  function copyText(str, btn){
-    (navigator.clipboard?navigator.clipboard.writeText(str):Promise.reject())
-      .then(function(){ if(btn) flash(btn,'Copiado!'); })
-      .catch(function(){ try{ var t=document.createElement('textarea'); t.value=str; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); if(btn) flash(btn,'Copiado!'); }catch(e){ if(btn) flash(btn,'Falhou'); } });
-  }
-  function verseText(cont, ref){
-    var pt=cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
-    var note=load('notes')[ref];
-    return ref + (t? '\n'+t : '') + (note? '\n\nAnotação: '+note : '');
-  }
-  function shareText(str, btn){
-    if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:str}).catch(function(){}); }
-    else copyText(str, btn);
-  }
-  // contador de palavras grifadas → cartão de doação a cada N (protótipo, sem backend)
-  var DONATE_EVERY=500, DONATE_URL='https://www.buymeacoffee.com/';
-  function bumpMark(){
-    var n=(parseInt(localStorage.getItem('bec.markCount'),10)||0)+1;
-    try{ localStorage.setItem('bec.markCount', n); }catch(e){}
-    var milestone=Math.floor(n/DONATE_EVERY);
-    var shown=parseInt(localStorage.getItem('bec.donateMilestone'),10)||0;
-    if(milestone>shown) showDonate(milestone);
-  }
-  function showDonate(milestone){
-    try{ localStorage.setItem('bec.donateMilestone', milestone); }catch(e){}
-    if(document.querySelector('.donate')) return;
-    var d=document.createElement('div'); d.className='donate';
-    d.innerHTML='<button type="button" class="x" aria-label="Fechar">×</button>'+
-      '<a href="'+DONATE_URL+'" target="_blank" rel="noopener">☕ Gostou? Apoie este projeto</a>';
-    d.querySelector('.x').onclick=function(){ d.remove(); };
-    document.body.appendChild(d);
+  function fillXrefBlocks(root){
+    (root||document).querySelectorAll('[data-xref]').forEach(function(sec){
+      if(sec.dataset.xrefDone) return;
+      var ref=sec.getAttribute('data-xref-ref');
+      xrefData().then(function(map){
+        sec.dataset.xrefDone='1';
+        var refs=map[ref];
+        if(!refs || !refs.length) return;
+        var list=sec.querySelector('[data-xref-list]');
+        if(list) list.innerHTML=refs.map(function(r){
+          return '<a class="xref-chip" href="'+refToUrl(r)+'">'+esc(r)+'</a>';
+        }).join('');
+        sec.hidden=false;
+      });
+    });
   }
 
   // ---------- compartilhar cartão-imagem do versículo (+ link) ----------
@@ -113,8 +106,13 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
       }catch(e){ reject(); }
     });
   }
-  function shareVerse(cont, ref, btn){
-    var pt=cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
+  function verseText(ref){
+    var cont=findCont(ref); var pt=cont&&cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
+    var note=load('notes')[ref];
+    return ref + (t? '\n'+t : '') + (note? '\n\nAnotação: '+note : '');
+  }
+  function shareVerse(ref, btn){
+    var cont=findCont(ref); var pt=cont&&cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
     var url=refToUrl(ref), text=ref+(t?'\n'+t:'')+'\n'+url;
     makeVerseCard(ref, t).then(function(blob){
       var file; try{ file=new File([blob],'versiculo.png',{type:'image/png'}); }catch(e){ file=null; }
@@ -122,154 +120,204 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
         navigator.share({files:[file], text:ref+'\n'+url, title:'Bíblia em Contexto'}).catch(function(){});
       } else if(navigator.share){
         navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){});
-      } else { copyText(text, btn); downloadBlob('versiculo.png', blob); }
+      } else { copyText(text, btn, 'Copiado!'); download('versiculo.png', blob, 'image/png'); }
     }).catch(function(){
       if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); }
-      else copyText(text, btn);
+      else copyText(text, btn, 'Copiado!');
     });
   }
 
-  // ---------- modal de confirmação (evita apagar por toque acidental) ----------
-  function confirmModal(msg, onYes){
-    var ov=document.createElement('div'); ov.className='bec-modal';
-    ov.innerHTML='<div class="bec-modal-box"><p>'+esc(msg)+'</p>'+
-      '<div class="bec-modal-actions"><button type="button" class="btn ghost" data-no>Cancelar</button>'+
-      '<button type="button" class="btn danger" data-yes>Apagar tudo</button></div></div>';
-    ov.addEventListener('click', function(e){
-      if(e.target===ov || (e.target.closest && e.target.closest('[data-no]'))) ov.remove();
-      else if(e.target.closest && e.target.closest('[data-yes]')){ ov.remove(); onYes(); }
+  // ---------- ferramentas de áudio (Web Speech), delegadas a BEC.speak ----------
+  function speak(text, lang, btn){
+    if(window.BEC && window.BEC.speak) return window.BEC.speak(text, lang, btn);
+    if(!('speechSynthesis' in window)){ if(btn) btn.textContent='Sem voz neste navegador'; return; }
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text); u.lang=lang||'pt-BR';
+    u.rate=(lang==='he-IL'||lang==='el-GR')?0.82:0.92;
+    u.onend=function(){ if(btn && btn.dataset.oldText){btn.textContent=btn.dataset.oldText; delete btn.dataset.oldText;} };
+    u.onerror=u.onend;
+    if(btn){ btn.dataset.oldText=btn.textContent; btn.textContent='Pausar…'; }
+    window.speechSynthesis.speak(u);
+  }
+
+  // ---------- coleções (mesmo formato de bec.collections usado pela Biblioteca) ----------
+  function collections(){ return load('collections'); }
+  function addToCollection(id, ref, url){
+    var all=collections(), c=all[id]; if(!c) return;
+    c.items=c.items||[];
+    if(c.items.some(function(it){return it.ref===ref;})) return;
+    c.items.push({ref:ref, url:url, addedAt:new Date().toISOString()});
+    save('collections', all);
+  }
+  function createCollection(name){
+    var all=collections(); var id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    all[id]={name:name, desc:'', items:[], createdAt:new Date().toISOString()};
+    save('collections', all);
+    return id;
+  }
+
+  // ---------- localizar o container do versículo em qualquer página aberta ----------
+  function findCont(ref){
+    var els=document.querySelectorAll('[data-ref]');
+    for(var i=0;i<els.length;i++){ if(els[i].getAttribute('data-ref')===ref) return els[i]; }
+    return null;
+  }
+
+  // ---------- folha de ferramentas (única, criada sob demanda) ----------
+  var sheet=null, sheetRef=null;
+  function getSheet(){
+    if(sheet) return sheet;
+    sheet=document.createElement('div'); sheet.className='verse-sheet'; sheet.hidden=true;
+    sheet.innerHTML='<div class="verse-sheet-backdrop" data-sheet-close></div><div class="verse-sheet-box" role="dialog" aria-modal="true"></div>';
+    document.body.appendChild(sheet);
+    sheet.addEventListener('click', function(e){
+      if(e.target.closest && e.target.closest('[data-sheet-close]')) closeSheet();
     });
-    document.body.appendChild(ov);
+    return sheet;
+  }
+  function closeSheet(){ if(sheet){ sheet.hidden=true; } sheetRef=null; document.body.classList.remove('sheet-open'); }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSheet(); });
+
+  function favState(ref){ return window.BEC && window.BEC.favs ? window.BEC.favs.isFav(ref) : !!load('favs')[ref]; }
+  function toggleFav(ref, url){
+    if(window.BEC && window.BEC.favs) return window.BEC.favs.toggle(ref, url);
+    var favs=load('favs');
+    if(favs[ref]) delete favs[ref]; else favs[ref]={url:url, savedAt:new Date().toISOString()};
+    save('favs', favs);
+    return !!favs[ref];
   }
 
-  // ---------- seta de ferramentas ocultas (salvar/compartilhar, anotações, apagar) ----------
-  function clearAll(){ ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); }); if(window.BEC_SYNC) window.BEC_SYNC.markDirty(); render(); }
-  function studyText(){ var n=load('notes'),v=load('vhl'),w=load('whl'); return exportText(allRefs(n,v,w),n,v,w); }
-  function makeToolsMenu(){
-    if(document.querySelector('.tools-fab')) return;
-    var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
-    fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='↥';
-    var panel=document.createElement('div'); panel.className='tools-panel'; panel.hidden=true;
-    panel.innerHTML='<button type="button" data-t="share">📝 Salvar nas Notas / Compartilhar</button>'+
-      '<button type="button" data-t="txt">📄 Baixar .txt</button>'+
-      '<a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒 Minhas anotações</a>'+
-      '<button type="button" data-t="clear">🗑 Apagar tudo</button>';
-    fab.onclick=function(){ var open=panel.hidden; panel.hidden=!open; fab.setAttribute('aria-expanded', open?'true':'false'); fab.textContent=open?'✕':'↥'; };
-    panel.addEventListener('click', function(e){
-      var b=e.target.closest && e.target.closest('[data-t]'); if(!b) return;
-      var t=b.getAttribute('data-t');
-      if(t==='share') shareText(studyText(), b);                       // iOS: folha de compartilhamento → Notas
-      else if(t==='txt') download('meu-estudo.txt', studyText(), 'text/plain');
-      else if(t==='clear') confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', clearAll);
+  function renderSheetBody(ref, cont){
+    var box=sheet.querySelector('.verse-sheet-box');
+    var origP=cont.querySelector('.orig'), ptP=cont.querySelector('.pt');
+    var origText=origP?origP.textContent.trim():'', origLang=origP?origP.getAttribute('data-lang'):'pt-BR';
+    var ptText=ptP?ptP.textContent.trim():'';
+    var color=hlColor(ref), fav=favState(ref), note=load('notes')[ref]||'';
+    var colorBtns=COLORS.map(function(c){
+      return '<button type="button" class="vs-color" data-vs-color="'+c+'" data-c="'+c+'" aria-pressed="'+(color===c?'true':'false')+'" aria-label="Grifar em '+CNAMES[c]+' (toque de novo para remover)"></button>';
+    }).join('');
+    box.innerHTML=
+      '<div class="verse-sheet-head"><b>'+esc(ref)+'</b><button type="button" class="vs-x" data-sheet-close aria-label="Fechar">×</button></div>'+
+      '<div class="verse-sheet-actions">'+
+        (origText?'<button type="button" class="vs-act" data-vs-act="speak-orig">🔊<span>Ouvir original</span></button>':'')+
+        (ptText?'<button type="button" class="vs-act" data-vs-act="speak-pt">🔊<span>Ouvir em português</span></button>':'')+
+        '<button type="button" class="vs-act" data-vs-act="fav" aria-pressed="'+(fav?'true':'false')+'">'+(fav?'★':'☆')+'<span>'+(fav?'Favorito':'Favoritar')+'</span></button>'+
+        '<button type="button" class="vs-act" data-vs-act="copy">⧉<span>Copiar</span></button>'+
+        '<button type="button" class="vs-act" data-vs-act="share">↗<span>Compartilhar</span></button>'+
+        '<button type="button" class="vs-act" data-vs-act="collection">🗂<span>Salvar em coleção</span></button>'+
+      '</div>'+
+      '<div class="verse-sheet-row vs-colors-row"><span>Grifar</span><div class="vs-colors">'+colorBtns+'</div></div>'+
+      '<div class="verse-sheet-row vs-note-row">'+
+        '<label for="vs-note-ta">Nota</label>'+
+        '<textarea id="vs-note-ta" class="vs-note" placeholder="Escreva sua anotação para '+esc(ref)+'…">'+esc(note)+'</textarea>'+
+      '</div>'+
+      '<div class="verse-sheet-row vs-xref-row" data-vs-xref hidden>'+
+        '<span>Referências cruzadas</span><div class="vs-xref-list" data-vs-xref-list></div>'+
+      '</div>'+
+      '<div class="verse-sheet-row vs-collection-row" data-vs-collection hidden></div>';
+    box.dataset.origText=origText; box.dataset.origLang=origLang; box.dataset.ptText=ptText;
+
+    xrefData().then(function(map){
+      if(sheetRef!==ref) return;
+      var refs=map[ref]; if(!refs || !refs.length) return;
+      var row=box.querySelector('[data-vs-xref]'), list=box.querySelector('[data-vs-xref-list]');
+      list.innerHTML=refs.map(function(r){ return '<a class="xref-chip" href="'+refToUrl(r)+'">'+esc(r)+'</a>'; }).join('');
+      row.hidden=false;
     });
-    document.body.appendChild(fab); document.body.appendChild(panel);
   }
 
-  function apply(cont, ref){
-    var notes=load('notes');
-    if(notes[ref]){
-      var ta=cont.querySelector('.note-box textarea');
-      if(ta){ ta.value=notes[ref]; ta.closest('.note-box').hidden=false; }
-      cont.classList.add('has-note');
-    }
+  function openSheet(cont){
+    var ref=cont.getAttribute('data-ref'); if(!ref) return;
+    sheetRef=ref;
+    var s=getSheet();
+    renderSheetBody(ref, cont);
+    s.hidden=false;
+    document.body.classList.add('sheet-open');
   }
 
-  function toggleWord(w){
-    var cont=w.closest('[data-ref]'); if(!cont) return;
-    var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
-    var all=load('whl'), recd=all[ref]||{}, arr=recd[f]||[];
-    var pos=-1; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ pos=n; break; } }
-    if(pos>-1){ arr.splice(pos,1); w.classList.remove('w-hl'); w.removeAttribute('data-c'); }
-    else { arr.push({i:i,t:w.textContent,c:'y'}); w.classList.add('w-hl'); w.setAttribute('data-c','y'); }
-    if(arr.length) recd[f]=arr; else delete recd[f];
-    if(Object.keys(recd).length) all[ref]=recd; else delete all[ref];
-    save('whl', all);
-    bumpMark();
+  function renderCollectionPicker(){
+    var box=sheet.querySelector('.verse-sheet-box'), row=box.querySelector('[data-vs-collection]');
+    var all=collections(), ids=Object.keys(all).sort(function(a,b){return (all[b].createdAt||'').localeCompare(all[a].createdAt||'');});
+    var items=ids.map(function(id){ return '<button type="button" class="btn tiny" data-vs-col-add="'+id+'">'+esc(all[id].name)+'</button>'; }).join('');
+    row.innerHTML=(items?'<div class="vs-col-list">'+items+'</div>':'<p class="muted-line">Nenhuma coleção ainda.</p>')+
+      '<form class="vs-col-new" data-vs-col-new><input type="text" name="name" maxlength="80" placeholder="Nova coleção…"><button type="submit" class="btn tiny primary">Criar</button></form>';
+    row.hidden=false;
   }
 
-  function toggleVerse(cont, ref, btn){
-    var all=load('vhl');
-    if(all[ref]){ delete all[ref]; cont.classList.remove('v-hl'); if(btn) btn.classList.remove('on'); }
-    else { all[ref]=1; cont.classList.add('v-hl'); if(btn) btn.classList.add('on'); }
-    save('vhl', all);
-  }
+  document.addEventListener('submit', function(e){
+    var f=e.target.closest && e.target.closest('[data-vs-col-new]');
+    if(!f || !sheetRef) return;
+    e.preventDefault();
+    var name=(f.name.value||'').trim(); if(!name) return;
+    var id=createCollection(name);
+    addToCollection(id, sheetRef, refToUrl(sheetRef));
+    var box=sheet.querySelector('.verse-sheet-box');
+    box.querySelector('[data-vs-collection]').innerHTML='<p class="vs-done">Adicionado a "'+esc(name)+'" ✓</p>';
+  });
 
   document.addEventListener('click', function(e){
-    var w=e.target.closest && e.target.closest('.w');
-    if(w && w.closest('[data-ref]')){ if(penOn) return; toggleWord(w); return; }
-    var btn=e.target.closest && e.target.closest('.study button, .note-actions button');
-    if(btn){
-      var cont=btn.closest('[data-ref]'), ref=cont.getAttribute('data-ref'), act=btn.dataset.act;
-      if(act==='vhl') toggleVerse(cont, ref, btn);
-      else if(act==='note'){ var nb=cont.querySelector('.note-box'); nb.hidden=!nb.hidden; if(!nb.hidden) nb.querySelector('textarea').focus(); }
-      else if(act==='copy' || act==='copy-note') copyText(verseText(cont, ref), btn);
-      else if(act==='share') shareVerse(cont, ref, btn);
+    // colar (colar dentro do sheet)
+    var colAdd=e.target.closest && e.target.closest('[data-vs-col-add]');
+    if(colAdd && sheetRef){
+      var id=colAdd.getAttribute('data-vs-col-add');
+      addToCollection(id, sheetRef, refToUrl(sheetRef));
+      flash(colAdd, '✓ Adicionado');
+      return;
+    }
+    var color=e.target.closest && e.target.closest('[data-vs-color]');
+    if(color && sheetRef){
+      setHlColor(sheetRef, color.getAttribute('data-vs-color'));
+      renderSheetBody(sheetRef, findCont(sheetRef) || document.createElement('div'));
+      return;
+    }
+    var act=e.target.closest && e.target.closest('[data-vs-act]');
+    if(act && sheetRef){
+      var box=sheet.querySelector('.verse-sheet-box'), kind=act.getAttribute('data-vs-act');
+      if(kind==='speak-orig') speak(box.dataset.origText, box.dataset.origLang, act.querySelector('span')||act);
+      else if(kind==='speak-pt') speak(box.dataset.ptText, 'pt-BR', act.querySelector('span')||act);
+      else if(kind==='fav'){
+        var cont=findCont(sheetRef);
+        var on=toggleFav(sheetRef, refToUrl(sheetRef));
+        act.setAttribute('aria-pressed', on?'true':'false');
+        act.innerHTML=(on?'★':'☆')+'<span>'+(on?'Favorito':'Favoritar')+'</span>';
+      }
+      else if(kind==='copy') copyText(verseText(sheetRef), act, 'Copiado!');
+      else if(kind==='share') shareVerse(sheetRef, act);
+      else if(kind==='collection') renderCollectionPicker();
+      return;
     }
   });
 
-  // ---------- caneta marca-texto: arrastar pinta as palavras (com cores) ----------
-  var penOn=false, penColor='y', painting=false, activePointerId=null, pendingWhl=null;
-  var COLORS=['y','g','b','p'], CNAMES={y:'Amarelo',g:'Verde',b:'Azul',p:'Rosa'};
-  function setPen(on, silent){
-    penOn=on; document.body.classList.toggle('hl-mode', on);
-    var b=document.querySelector('.pen-toggle');
-    if(b){ b.classList.toggle('on', on); b.setAttribute('aria-pressed', on?'true':'false'); }
-    if(!silent) save('penmode', {on:on}); // silent: restauracao na carga nao sincroniza
-  }
-  function setColor(c, silent){
-    penColor=c;
-    var sw=document.querySelectorAll('.pen-colors button');
-    for(var i=0;i<sw.length;i++){ sw[i].classList.toggle('on', sw[i].getAttribute('data-c')===c); }
-    if(!silent) save('pencolor', {c:c});
-  }
-  function wordAtPoint(x,y){ var el=document.elementFromPoint(x,y); return el && el.closest ? el.closest('.w') : null; }
-  function paintWord(w){
-    if(!w) return; var cont=w.closest('[data-ref]'); if(!cont) return;
-    var ref=cont.getAttribute('data-ref'), f=w.dataset.f, i=+w.dataset.i;
-    var recd=pendingWhl[ref]||(pendingWhl[ref]={}); var arr=recd[f]||(recd[f]=[]);
-    var found=null; for(var n=0;n<arr.length;n++){ if(arr[n].i===i){ found=arr[n]; break; } }
-    if(found){ if(found.c!==penColor){ found.c=penColor; w.setAttribute('data-c', penColor); } }
-    else { arr.push({i:i,t:w.textContent,c:penColor}); w.classList.add('w-hl'); w.setAttribute('data-c', penColor); bumpMark(); }
-  }
-  function startPaint(e){
-    if(!penOn) return;
-    var w=(e.target.closest && e.target.closest('.w')); if(!w || !w.closest('[data-ref]')) return;
-    e.preventDefault(); painting=true; activePointerId=e.pointerId; pendingWhl=load('whl'); paintWord(w);
-  }
-  function movePaint(e){ if(!painting || e.pointerId!==activePointerId) return; e.preventDefault(); paintWord(wordAtPoint(e.clientX, e.clientY)); }
-  function endPaint(){ if(!painting) return; painting=false; activePointerId=null; save('whl', pendingWhl); }
-  document.addEventListener('pointerdown', startPaint);
-  document.addEventListener('pointermove', movePaint);
-  document.addEventListener('pointerup', endPaint);
-  document.addEventListener('pointercancel', endPaint);
-  function makePenTools(){
-    return; // marca-texto (caneta) removido do leitor
-    /* eslint-disable no-unreachable */
-    if(!document.querySelector('.verse-cont[data-ref], .ch-verse[data-ref]')) return;
-    if(document.querySelector('.pen-toggle')) return;
-    var btn=document.createElement('button'); btn.type='button'; btn.className='pen-toggle';
-    btn.setAttribute('aria-pressed','false'); btn.title='Marca-texto (caneta)'; btn.textContent='🖍';
-    btn.onclick=function(){ setPen(!penOn); };
-    document.body.appendChild(btn);
-    var pal=document.createElement('div'); pal.className='pen-colors';
-    pal.innerHTML=COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" aria-label="'+CNAMES[c]+'"></button>'; }).join('');
-    pal.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) setColor(b.getAttribute('data-c')); });
-    document.body.appendChild(pal);
-    setColor((load('pencolor').c)||'y', true);
-    if(load('penmode').on) setPen(true, true);
-  }
+  document.addEventListener('input', function(e){
+    if(e.target.matches && e.target.matches('.vs-note') && sheetRef){
+      var ref=sheetRef, val=e.target.value.trim();
+      var notes=load('notes');
+      if(val) notes[ref]=val; else delete notes[ref];
+      save('notes', notes);
+      paintState(ref);
+    }
+  });
 
-  // ---------- marca-texto por seleção: barra flutuante (Grifar / Copiar) ----------
+  // toca no texto do versículo (fora de links/botões/seleção) abre a folha
+  document.addEventListener('click', function(e){
+    var tap=e.target.closest && e.target.closest('.verse-tap');
+    if(!tap) return;
+    if(e.target.closest && e.target.closest('a,button,select,textarea,input,.lex-w,.audio-transcript')) return;
+    var sel=window.getSelection();
+    if(sel && !sel.isCollapsed && sel.toString().trim()) return; // deixa a seleção de texto funcionar
+    var cont=tap.closest('[data-ref]'); if(!cont) return;
+    openSheet(cont);
+  });
+
+  // ---------- marca-texto por seleção: barra flutuante (Copiar seleção) ----------
   var selBar=null, selT=null;
   function getSelBar(){
     if(selBar) return selBar;
     selBar=document.createElement('div'); selBar.className='sel-bar'; selBar.hidden=true;
     selBar.innerHTML='<button type="button" data-sel="copy">⧉ Copiar seleção</button>';
     document.body.appendChild(selBar);
-    selBar.addEventListener('mousedown', function(e){ e.preventDefault(); });  // preserva a seleção
-    selBar.addEventListener('click', function(e){
-      var b=e.target.closest('button'); if(b) copySelection(b);
-    });
+    selBar.addEventListener('mousedown', function(e){ e.preventDefault(); });
+    selBar.addEventListener('click', function(e){ var b=e.target.closest('button'); if(b) copySelection(b); });
     return selBar;
   }
   function hideSelBar(){ if(selBar) selBar.hidden=true; }
@@ -295,7 +343,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
       bar.style.left=Math.max(4,left)+'px';
     }catch(e){}
   }
-  function copySelection(btn){ var info=selInfo(); if(info) copyText(info.text, btn); }
+  function copySelection(btn){ var info=selInfo(); if(info) copyText(info.text, btn, 'Copiado!'); }
   function scheduleSelBar(){ clearTimeout(selT); selT=setTimeout(showSelBar, 10); }
   document.addEventListener('mouseup', scheduleSelBar);
   document.addEventListener('touchend', scheduleSelBar);
@@ -306,54 +354,31 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     if(selBar && !selBar.hidden && !(e.target.closest && e.target.closest('.sel-bar'))) hideSelBar();
   });
   window.addEventListener('scroll', hideSelBar, {passive:true});
-  document.addEventListener('input', function(e){
-    if(e.target.matches && e.target.matches('.note-box textarea')){
-      var cont=e.target.closest('[data-ref]'), ref=cont.getAttribute('data-ref');
-      var notes=load('notes'), val=e.target.value.trim();
-      if(val){ notes[ref]=val; cont.classList.add('has-note'); } else { delete notes[ref]; cont.classList.remove('has-note'); }
-      save('notes', notes);
+
+  // ---------- ferramentas ocultas do painel de leitura (exportar/apagar) ----------
+  function studyText(){
+    var n=load('notes'), v=load('vhl'), keys=allRefs(n,v,{});
+    return exportText(keys, n, v, {});
+  }
+  function shareStudyText(text, btn){
+    // pela folha nativa de compartilhar (iOS/Android permitem "Salvar em Notas")
+    if(navigator.share){ navigator.share({title:'Bíblia em Contexto', text:text}).catch(function(){}); }
+    else copyText(text, btn, 'Copiado!');
+  }
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-study-export]')) download('meu-estudo.txt', studyText(), 'text/plain');
+    if(e.target.closest && e.target.closest('[data-study-share]')) shareStudyText(studyText(), e.target.closest('[data-study-share]'));
+    if(e.target.closest && e.target.closest('[data-study-clear]')){
+      confirmModal('Apagar TODAS as marcações e anotações deste navegador? Esta ação não pode ser desfeita.', function(){
+        ['notes','vhl','whl'].forEach(function(k){ localStorage.removeItem('bec.'+k); });
+        if(window.BEC_SYNC) window.BEC_SYNC.markDirty();
+        paintAll(); render();
+      });
     }
   });
 
-  function setupAll(root){ (root||document).querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(setup); }
-  function setupAdded(root){
-    if(!root || root.nodeType!==1) return;
-    if(root.matches && root.matches('.verse-cont[data-ref], .ch-verse[data-ref]')) setup(root);
-    setupAll(root);
-    makePenTools();
-  }
-  setupAll();
-  makePenTools();
-  makeToolsMenu();
-  document.addEventListener('bec:content-added', function(e){
-    setupAdded(e.detail && e.detail.root);
-  });
-  document.addEventListener('bec:study-sync', function(){
-    document.querySelectorAll('.verse-cont[data-ref], .ch-verse[data-ref]').forEach(function(cont){
-      var ref=cont.getAttribute('data-ref');
-      cont.classList.remove('v-hl','has-note');
-      cont.querySelectorAll('.w-hl').forEach(function(w){ w.classList.remove('w-hl'); w.removeAttribute('data-c'); });
-      var nb=cont.querySelector('.note-box');
-      if(nb){ var ta=nb.querySelector('textarea'); if(ta) ta.value=''; nb.hidden=true; }
-      apply(cont, ref);
-    });
-    render();
-  });
-  // versículos carregados por rolagem infinita também recebem as ferramentas
-  if(window.MutationObserver){
-    new MutationObserver(function(muts){
-      muts.forEach(function(m){ Array.prototype.forEach.call(m.addedNodes, function(n){
-        setupAdded(n);
-      }); });
-    }).observe(document.body, {childList:true, subtree:true});
-  }
-
   // ---------- página de Anotações: listar, copiar, baixar, limpar ----------
-  function slugFromRef(ref){
-    var m=ref.match(/^(.*?)\s+(\d+):(\d+)$/); if(!m) return '#';
-    var b=m[1].normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-    return '../versiculos/'+b+'-'+m[2]+'-'+m[3]+'/';
-  }
+  function slugFromRef(ref){ var s=refToSlug(ref); return s? '../versiculos/'+s+'/' : '#'; }
   function allRefs(notes, vhl, whl){
     var s={}; [notes,vhl,whl].forEach(function(o){ Object.keys(o).forEach(function(r){ s[r]=1; }); });
     return Object.keys(s).sort();
@@ -372,11 +397,6 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     });
     return out;
   }
-  function download(name, text, type){
-    var b=new Blob([text], {type:type}), u=URL.createObjectURL(b);
-    var a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a);
-    a.click(); a.remove(); URL.revokeObjectURL(u);
-  }
   function importData(obj){
     var n=load('notes'), v=load('vhl'), w=load('whl');
     if(obj.notes) Object.keys(obj.notes).forEach(function(r){ n[r]=obj.notes[r]; });
@@ -393,7 +413,7 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   function render(){
     var box=document.getElementById('anotacoes'); if(!box) return;
     var notes=load('notes'), vhl=load('vhl'), whl=load('whl'), keys=allRefs(notes,vhl,whl);
-    if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e use “Grifar” ou “Anotar”.</p>'; return; }
+    if(!keys.length){ box.innerHTML='<p class="empty">Você ainda não grifou nem anotou nada. Abra um versículo (ou um capítulo) e toque no texto para “Grifar” ou “Nota”.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
       var h='<div class="anot"><h3><a href="'+slugFromRef(ref)+'">'+esc(ref)+'</a></h3>';
       if(vhl[ref]) h+='<p class="anot-tag">✶ versículo grifado</p>';
@@ -433,4 +453,12 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     }
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire); else wire();
+
+  paintAll();
+  fillXrefBlocks();
+  document.addEventListener('bec:content-added', function(e){
+    var root=e.detail && e.detail.root;
+    paintAll(root); fillXrefBlocks(root);
+  });
+  document.addEventListener('bec:study-sync', function(){ paintAll(); render(); });
 })();

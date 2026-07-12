@@ -12,18 +12,22 @@
 <meta property="og:title" content="Workspace | Bíblia em Contexto">
 <meta property="og:description" content="Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca, anotações e Salas de Estudo em um só lugar.">
 <meta property="og:site_name" content="Bíblia em Contexto">
+<meta property="og:url" content="https://alusionbr.github.io/bibliaonline/workspace/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Workspace | Bíblia em Contexto">
+<meta name="twitter:description" content="Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca, anotações e Salas de Estudo em um só lugar.">
 <link rel="manifest" href="../manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/styles.css?v=06147c8f">
+<link rel="stylesheet" href="../assets/styles.css?v=4dd6dc64">
 </head>
-<body>
-<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}catch(e){}})();</script>
+<body data-prefix="../">
+<script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}catch(e){}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
-  <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado; recursos da comunidade estão em construção.</span>
+  <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado neste navegador.</span>
   <button type="button" class="beta-dismiss" data-beta-dismiss aria-label="Ocultar aviso beta">×</button>
 </div>
 <nav class="nav">
@@ -33,6 +37,7 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
@@ -56,6 +61,15 @@
   <a href="../ler/">Bíblia</a>
   <a href="../workspace/">Workspace</a>
 </nav>
+<div class="search-overlay" data-search-overlay hidden>
+  <div class="search-overlay-in">
+    <div class="search-overlay-head">
+      <input type="search" data-search-input placeholder="Buscar versículo, palavra, tema… (ex: livro:joão, ‘vida eterna’)" aria-label="Buscar na Bíblia">
+      <button type="button" class="btn ghost" data-search-close aria-label="Fechar busca">Fechar</button>
+    </div>
+    <div class="search-overlay-results" data-search-results></div>
+  </div>
+</div>
 <main id="main" class="wrap hub-page">
   <p class="crumb"><a href="../index.html">Início</a> · Workspace</p>
   <header class="hub-hero">
@@ -84,6 +98,14 @@
       <div class="pstat"><b data-progress-xp>0</b><span>pontos (XP)</span></div>
       <div class="pstat"><b data-progress-medals>0</b><span>medalhas</span></div>
     </div>
+    <div class="stats-grid" data-stats-grid>
+      <div class="stat-tile"><b data-stat-chapters>0</b><span>capítulos estudados</span></div>
+      <div class="stat-tile"><b data-stat-bible-pct>0%</b><span>da Bíblia</span></div>
+      <div class="stat-tile"><b data-stat-notes>0</b><span>notas</span></div>
+      <div class="stat-tile"><b data-stat-highlights>0</b><span>grifos</span></div>
+      <div class="stat-tile"><b data-stat-favs>0</b><span>favoritos</span></div>
+    </div>
+    <div class="stats-heatmap" data-stats-heatmap aria-label="Dias de leitura nas últimas semanas"></div>
     <details class="collap mission-block">
       <summary><span class="collap-title">Missões de hoje</span><span class="collap-count" data-mission-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
       <div class="mission-list" data-mission-list></div>
@@ -122,13 +144,8 @@
     </a>
     <a class="study-card link-card" href="../anotacoes/">
       <span>Anotações</span>
-      <h3>Anotações</h3>
-      <p>Notas salvas neste navegador e sincronizáveis quando houver conta.</p>
-    </a>
-    <a class="study-card link-card" href="../anotacoes/">
-      <span>Marcações</span>
-      <h3>Marcações</h3>
-      <p>Grifos por palavra e por versículo.</p>
+      <h3>Anotações e grifos</h3>
+      <p>Notas e trechos grifados, sincronizáveis quando houver conta.</p>
     </a>
     <a class="study-card link-card" href="../colecoes/">
       <span>Coleções</span>
@@ -153,26 +170,22 @@
     </div>
   </section>
   <section class="hub-section plan-builder" id="criar-plano">
-    <div class="section-title"><h2>Criar Plano</h2><span>Primeira versão local</span></div>
+    <div class="section-title"><h2>Criar Plano</h2><span>Gera um cronograma dia a dia</span></div>
     <form class="plan-form" data-plan-form>
       <label>O que deseja estudar?
-        <select name="tipo">
-          <option>Livro</option><option>Tema</option><option>Personagem</option><option>Palavra</option><option>Profecia</option>
+        <select name="tipo" data-plan-tipo>
+          <option value="livro">Um livro da Bíblia</option>
+          <option value="tema">Um tema</option>
         </select>
       </label>
-      <label>Escolher conteúdo <input name="conteudo" placeholder="Romanos, Salmos, oração, aliança..." required></label>
+      <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
+      <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
       <label>Duração
         <select name="duracao">
-          <option>7 dias</option><option>14 dias</option><option>21 dias</option><option>30 dias</option><option>Personalizado</option>
+          <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
         </select>
       </label>
-      <label>Ritmo
-        <select name="ritmo"><option>Leve</option><option>Normal</option><option>Profundo</option></select>
-      </label>
-      <label>Salvar como
-        <select name="visibilidade"><option>Privado</option><option>Público</option><option>Apenas uma Sala de Estudo</option></select>
-      </label>
-      <button type="submit" class="btn primary">Salvar plano</button>
+      <button type="submit" class="btn primary">Gerar plano</button>
     </form>
     <div class="saved-plans" data-plan-list></div>
   </section>
@@ -200,7 +213,48 @@
   </section>
   <section class="hub-section" id="configuracoes">
     <div class="section-title"><h2>Configurações e sincronização</h2><a href="../privacidade/">Privacidade</a></div>
-    <p class="muted-line">A conta fica restrita a perfil, configurações, privacidade, sincronização e sair. Ferramentas de estudo e comunidade vivem aqui no Workspace.</p>
+    <p class="muted-line">Preferências de leitura salvas neste navegador e sincronizadas quando você entra na conta.</p>
+    <div class="settings-grid" data-settings-panel>
+      <div class="settings-row">
+        <b>Tema</b>
+        <div class="settings-opts" role="group" aria-label="Tema de leitura">
+          <button type="button" class="btn quiet settings-opt" data-set-theme="light">Claro</button>
+          <button type="button" class="btn quiet settings-opt" data-set-theme="sepia">Sépia</button>
+          <button type="button" class="btn quiet settings-opt" data-set-theme="dark">Escuro</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <b>Tamanho da fonte</b>
+        <div class="settings-opts" role="group" aria-label="Tamanho da fonte">
+          <button type="button" class="btn quiet settings-opt" data-set-font="0">A</button>
+          <button type="button" class="btn quiet settings-opt" data-set-font="1">A</button>
+          <button type="button" class="btn quiet settings-opt" data-set-font="2">A</button>
+          <button type="button" class="btn quiet settings-opt" data-set-font="3">A</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <b>Idioma original</b>
+        <label class="settings-toggle"><input type="checkbox" data-set-orig> Mostrar hebraico/grego e transliteração</label>
+      </div>
+      <div class="settings-row">
+        <b>Ordem dos livros</b>
+        <div class="settings-opts" role="group" aria-label="Ordem dos livros">
+          <button type="button" class="btn quiet settings-opt" data-set-order="bib">Bíblica</button>
+          <button type="button" class="btn quiet settings-opt" data-set-order="alpha">Alfabética</button>
+          <button type="button" class="btn quiet settings-opt" data-set-order="chron">Cronológica</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <b>Meus dados</b>
+        <div class="settings-opts">
+          <button type="button" class="btn quiet" data-settings-export>Baixar backup (.json)</button>
+          <button type="button" class="btn quiet" data-settings-import>Importar backup</button>
+          <input type="file" accept="application/json" data-settings-import-file hidden>
+          <button type="button" class="btn danger ghost" data-settings-clear>Apagar tudo deste navegador</button>
+        </div>
+        <span class="settings-note" data-settings-status></span>
+      </div>
+    </div>
   </section>
   <section class="hub-section" id="reportes" data-admin-reports hidden>
     <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
@@ -228,13 +282,15 @@
     </div>
   </div>
 </footer>
-<script src="../assets/supabase-config.js?v=06147c8f" defer></script>
+<script src="../assets/core.js?v=4dd6dc64"></script>
+<script src="../assets/supabase-config.js?v=4dd6dc64" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../assets/auth.js?v=06147c8f" defer></script>
-<script src="../assets/app.js?v=06147c8f"></script>
-<script src="../assets/study.js?v=06147c8f" defer></script>
-<script src="../assets/game.js?v=06147c8f" defer></script>
-<script src="../assets/community.js?v=06147c8f" defer></script>
-<script src="../assets/library.js?v=06147c8f" defer></script>
-<script src="../assets/report.js?v=06147c8f" defer></script>
+<script src="../assets/auth.js?v=4dd6dc64" defer></script>
+<script src="../assets/app.js?v=4dd6dc64"></script>
+<script src="../assets/study.js?v=4dd6dc64" defer></script>
+<script src="../assets/lexicon.js?v=4dd6dc64" defer></script>
+<script src="../assets/game.js?v=4dd6dc64" defer></script>
+<script src="../assets/community.js?v=4dd6dc64" defer></script>
+<script src="../assets/library.js?v=4dd6dc64" defer></script>
+<script src="../assets/report.js?v=4dd6dc64" defer></script>
 </body></html>

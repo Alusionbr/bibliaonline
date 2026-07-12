@@ -9,7 +9,7 @@ Uso:
     python scripts/build.py
 Opcional: defina o domínio final em BASE_URL antes de publicar.
 """
-import json, shutil, sys, unicodedata, hashlib
+import json, re, shutil, sys, unicodedata, hashlib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -41,9 +41,11 @@ from build_utils import (
 )
 
 SOURCE_ASSETS = {
+    "core.asset.js": "core.js",
     "auth.asset.js": "auth.js",
     "app.asset.js": "app.js",
     "study.asset.js": "study.js",
+    "lexicon.asset.js": "lexicon.js",
     "gamification.asset.js": "game.js",
     "community.asset.js": "community.js",
     "library.asset.js": "library.js",
@@ -126,26 +128,6 @@ def original_html(v):
 def verse_url(prefix, slug):
     return f"{prefix}versiculos/{slug}/"
 
-def audio_button(label, text, lang, transcript="", transcript_label="Transcrição do áudio original"):
-    if not (text or "").strip():
-        return ""
-    trans_attr = f' data-transcript="{esc(transcript)}"' if (transcript or "").strip() else ""
-    label_attr = f' data-transcript-label="{esc(transcript_label)}"' if (transcript or "").strip() else ""
-    return (f'<button type="button" class="listen" data-speak="{esc(text)}" '
-            f'data-lang="{esc(lang)}"{trans_attr}{label_attr}>{esc(label)}</button>')
-
-def fav_button(ref, url):
-    return (f'<button type="button" class="listen fav" data-fav data-ref="{esc(ref)}" '
-            f'data-url="{esc(url)}" aria-pressed="false">☆ Favoritar</button>')
-
-def verse_tools(v, prefix):
-    transcript = v.get("transliteracao", "") if v.get("idioma") in ("hebraico", "aramaico") else ""
-    transcript_label = f"Transcrição do áudio {lang_label(v.get('idioma', '')).lower()}"
-    original = audio_button("Ouvir original", v.get("original", ""), speech_lang(v.get("idioma", "")), transcript, transcript_label)
-    pt = audio_button("Ouvir PT", v.get("texto_pt", ""), "pt-BR")
-    fav = fav_button(v.get("referencia", ""), verse_url(prefix, v.get("slug", "")))
-    return f'<div class="verse-tools">{original}{pt}{fav}</div>'
-
 def book_data_attrs(livro):
     # atributos para reordenar os cartões no cliente (bíblica/alfabética/cronológica)
     pos = BOOK_ORDER.index(livro) if livro in BOOK_ORDER else 999
@@ -180,18 +162,22 @@ def head(title, description, canonical, prefix, jsonld=None):
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:site_name" content="{SITE_NAME}">
+<meta property="og:url" content="{esc(canonical)}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{esc(title)}">
+<meta name="twitter:description" content="{esc(description)}">
 <link rel="manifest" href="{prefix}manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
-<body>
-<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}}catch(e){{}}}})();</script>
+<body data-prefix="{esc(prefix)}">
+<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
-  <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado; recursos da comunidade estão em construção.</span>
+  <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado neste navegador.</span>
   <button type="button" class="beta-dismiss" data-beta-dismiss aria-label="Ocultar aviso beta">×</button>
 </div>"""
 
@@ -214,6 +200,7 @@ def nav(prefix):
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
@@ -232,7 +219,16 @@ def nav(prefix):
 </nav>
 <nav class="mobile-primary-nav" aria-label="Navegação principal">
   {mobile_links}
-</nav>"""
+</nav>
+<div class="search-overlay" data-search-overlay hidden>
+  <div class="search-overlay-in">
+    <div class="search-overlay-head">
+      <input type="search" data-search-input placeholder="Buscar versículo, palavra, tema… (ex: livro:joão, ‘vida eterna’)" aria-label="Buscar na Bíblia">
+      <button type="button" class="btn ghost" data-search-close aria-label="Fechar busca">Fechar</button>
+    </div>
+    <div class="search-overlay-results" data-search-results></div>
+  </div>
+</div>"""
 
 def footer(prefix):
     return f"""
@@ -257,11 +253,13 @@ def footer(prefix):
     </div>
   </div>
 </footer>
+<script src="{prefix}assets/core.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/supabase-config.js?v={ASSET_VER}" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
 <script src="{prefix}assets/auth.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/lexicon.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/community.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
@@ -330,85 +328,71 @@ def action_cards(items):
     )
 
 
-def study_map_module(prefix, livro, ch=None, vs=None):
+def study_continue_module(prefix, livro, ch=None, vs=None):
+    """Bloco único e compacto de continuidade: atalhos pessoais + Salas de
+    Estudo relacionadas. Substitui os antigos módulos "Estude em comunidade"
+    e "Mesa de Estudo", que duplicavam links entre si."""
     place = f"{livro} {ch}:{vs}" if vs else (f"{livro} {ch}" if ch else livro)
     return f"""
-  <section class="study-map">
-    <div class="study-map-head">
-      <p class="eyebrow">Estude em comunidade</p>
+  <section class="study-continue">
+    <div class="study-continue-head">
+      <p class="eyebrow">Continue estudando</p>
       <h2>{esc(place)}</h2>
-      <p>Crie uma Sala de Estudo sobre este trecho e convide pelo código, ou continue com suas ferramentas pessoais.</p>
+    </div>
+    <div class="desk-tabs" aria-label="Continuar o estudo">
+      <a href="{prefix}anotacoes/">🗒 Minhas notas</a>
+      <a href="{prefix}colecoes/">🗂 Coleções</a>
+      <a href="{prefix}workspace/#criar-plano">🗓 Meu plano</a>
+      <a href="{prefix}linha-do-tempo/">🗺 Linha do tempo</a>
     </div>
     <div class="room-suggest" data-room-suggest data-room-ref="{esc(place)}" hidden>
       <p class="eyebrow">Salas abertas estudando este livro</p>
       <div class="room-suggest-list" data-room-suggest-list></div>
       <a class="room-suggest-more" href="{prefix}workspace/#comunidade">Pedir para entrar na Comunidade →</a>
     </div>
-    <p class="map-actions"><a class="btn primary" href="{prefix}workspace/#comunidade">Ver Salas de Estudo</a><a class="btn quiet" href="{prefix}workspace/#estudar">Abrir ferramentas de estudo</a></p>
-  </section>"""
-
-
-def study_desk_module(prefix, livro, ch=None):
-    title = f"Mesa de Estudo: {livro} {ch}" if ch else f"Mesa de Estudo: {livro}"
-    return f"""
-  <section class="study-desk">
-    <div>
-      <p class="eyebrow">Mesa de Estudo</p>
-      <h2>{esc(title)}</h2>
-      <p>Um ponto de encontro entre Bíblia, notas, coleções, perguntas, manuscritos, plano e progresso.</p>
-    </div>
-    <div class="desk-tabs" aria-label="Ferramentas da Mesa de Estudo">
-      <a href="{prefix}ler/">Bíblia</a>
-      <a href="{prefix}anotacoes/">Minhas notas</a>
-      <a href="{prefix}colecoes/">Coleções</a>
-      <a href="{prefix}workspace/#comunidade">Pessoas estudando</a>
-      <a href="{prefix}workspace/#comunidade">Perguntas</a>
-      <a href="{prefix}linha-do-tempo/">Mapa</a>
-      <a href="{prefix}workspace/#criar-plano">Plano</a>
-    </div>
+    <p class="map-actions"><a class="btn quiet" href="{prefix}workspace/#comunidade">Ver Salas de Estudo →</a></p>
   </section>"""
 
 
 def study_fraction_module(prefix, livro, ch, vnums):
     """Progresso por trecho: marcar do versiculo X ao Y sem exigir o capitulo
-    inteiro. Persistido em bec.readingRanges e sincronizado como preferencia."""
+    inteiro. Persistido em bec.readingRanges e sincronizado como preferencia.
+    Recolhido por padrão (details/summary) para não competir com o texto."""
     if not vnums:
         return ""
     ref = f"{livro} {ch}"
     opts = "".join(f'<option value="{n}">{n}</option>' for n in vnums)
     return f"""
-  <section class="study-frac" data-study-frac data-chapter-ref="{esc(ref)}" data-total="{len(vnums)}">
-    <div class="sf-head">
-      <div>
-        <p class="eyebrow">Progresso por trecho</p>
-        <h2>Marque o que já estudou</h2>
-        <p class="sf-hint">Salve o trecho estudado, do versículo inicial ao final, sem precisar concluir o capítulo inteiro. Fica salvo neste navegador e sincroniza quando você entra na conta.</p>
+  <details class="collap study-frac" data-study-frac data-chapter-ref="{esc(ref)}" data-total="{len(vnums)}">
+    <summary>
+      <span class="collap-title">Progresso por trecho</span>
+      <span class="collap-count" data-sf-pct>0%</span>
+      <span class="collap-chev" aria-hidden="true">▾</span>
+    </summary>
+    <div class="sf-body">
+      <p class="sf-hint">Salve o trecho estudado, do versículo inicial ao final, sem precisar concluir o capítulo inteiro. Fica salvo neste navegador e sincroniza quando você entra na conta.</p>
+      <div class="sf-bar" data-sf-bar role="img" aria-label="Trechos estudados neste capítulo"></div>
+      <div class="sf-controls">
+        <button type="button" class="btn quiet sf-mark" data-sf-mark="start" aria-pressed="false">Marcar início</button>
+        <button type="button" class="btn quiet sf-mark" data-sf-mark="end" aria-pressed="false">Marcar fim</button>
+        <span class="sf-range" data-sf-range aria-live="polite">Início: — · Fim: —</span>
+        <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho</button>
       </div>
-      <div class="sf-meter" aria-hidden="true">
-        <span class="sf-pct" data-sf-pct>0%</span>
-        <span class="sf-pct-lbl">estudado</span>
+      <p class="sf-hint sf-mark-hint" data-sf-mark-hint hidden>Toque no versículo onde começou a leitura.</p>
+      <div class="sf-controls sf-precise">
+        <span class="sf-field">Ajuste fino: do versículo <select data-sf-start aria-label="Versículo inicial do trecho">{opts}</select></span>
+        <span class="sf-field">até <select data-sf-end aria-label="Versículo final do trecho">{opts}</select></span>
       </div>
+      <ul class="sf-list" data-sf-list aria-live="polite"></ul>
     </div>
-    <div class="sf-bar" data-sf-bar role="img" aria-label="Trechos estudados neste capítulo"></div>
-    <div class="sf-controls">
-      <button type="button" class="btn quiet sf-mark" data-sf-mark="start" aria-pressed="false">Marcar início</button>
-      <button type="button" class="btn quiet sf-mark" data-sf-mark="end" aria-pressed="false">Marcar fim</button>
-      <span class="sf-range" data-sf-range aria-live="polite">Início: — · Fim: —</span>
-      <button type="button" class="btn primary sf-save" data-sf-save>Salvar trecho</button>
-    </div>
-    <p class="sf-hint sf-mark-hint" data-sf-mark-hint hidden>Toque no versículo onde começou a leitura.</p>
-    <div class="sf-controls sf-precise">
-      <span class="sf-field">Ajuste fino: do versículo <select data-sf-start aria-label="Versículo inicial do trecho">{opts}</select></span>
-      <span class="sf-field">até <select data-sf-end aria-label="Versículo final do trecho">{opts}</select></span>
-    </div>
-    <ul class="sf-list" data-sf-list aria-live="polite"></ul>
-  </section>"""
+  </details>"""
 
 
-def reader_fab(has_fraction=True):
-    """FAB de ferramentas de leitura no celular (canto inferior direito).
-    Reaproveita os gatilhos existentes (data-rt, data-report-open) e aciona
-    o painel de progresso (marcar inicio/fim/salvar)."""
+def reader_fab(prefix, has_fraction=True):
+    """Painel único de ferramentas de leitura (celular e desktop). Reúne o
+    que antes eram 3 controles flutuantes concorrentes (ferramentas de
+    leitura, ferramentas de estudo e reportar) num só, com posição salva e
+    lista personalizável de atalhos visíveis."""
     mark = ""
     if has_fraction:
         mark = (
@@ -423,8 +407,13 @@ def reader_fab(has_fraction=True):
     <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
+    <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
-    {mark}<button type="button" class="rfb" data-tool="report" data-report-open>🐞<span>Reportar</span></button>
+    {mark}<a class="rfb" data-tool="study-notes" href="{prefix}anotacoes/">🗒<span>Anotações</span></a>
+    <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
+    <button type="button" class="rfb" data-tool="study-export" data-study-export>📄<span>Baixar .txt</span></button>
+    <button type="button" class="rfb" data-tool="study-clear" data-study-clear>🗑<span>Apagar tudo</span></button>
+    <button type="button" class="rfb" data-tool="report" data-report-open>🐞<span>Reportar</span></button>
     <button type="button" class="reader-fab-config-btn" data-reader-fab-config aria-expanded="false" aria-label="Personalizar ferramentas">⚙ Personalizar</button>
     <div class="reader-fab-config" data-reader-fab-config-panel hidden></div>
   </div>
@@ -474,8 +463,7 @@ def build_workspace_page():
         ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
         ("Biblioteca", "Minha biblioteca", "Notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
         ("Favoritos", "Favoritos", "Versículos salvos para voltar depois.", f"{prefix}biblioteca/#favoritos"),
-        ("Anotações", "Anotações", "Notas salvas neste navegador e sincronizáveis quando houver conta.", f"{prefix}anotacoes/"),
-        ("Marcações", "Marcações", "Grifos por palavra e por versículo.", f"{prefix}anotacoes/"),
+        ("Anotações", "Anotações e grifos", "Notas e trechos grifados, sincronizáveis quando houver conta.", f"{prefix}anotacoes/"),
         ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
         ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
         ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
@@ -510,6 +498,14 @@ def build_workspace_page():
       <div class="pstat"><b data-progress-xp>0</b><span>pontos (XP)</span></div>
       <div class="pstat"><b data-progress-medals>0</b><span>medalhas</span></div>
     </div>
+    <div class="stats-grid" data-stats-grid>
+      <div class="stat-tile"><b data-stat-chapters>0</b><span>capítulos estudados</span></div>
+      <div class="stat-tile"><b data-stat-bible-pct>0%</b><span>da Bíblia</span></div>
+      <div class="stat-tile"><b data-stat-notes>0</b><span>notas</span></div>
+      <div class="stat-tile"><b data-stat-highlights>0</b><span>grifos</span></div>
+      <div class="stat-tile"><b data-stat-favs>0</b><span>favoritos</span></div>
+    </div>
+    <div class="stats-heatmap" data-stats-heatmap aria-label="Dias de leitura nas últimas semanas"></div>
     <details class="collap mission-block">
       <summary><span class="collap-title">Missões de hoje</span><span class="collap-count" data-mission-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
       <div class="mission-list" data-mission-list></div>
@@ -529,26 +525,22 @@ def build_workspace_page():
     </div>
   </section>
   <section class="hub-section plan-builder" id="criar-plano">
-    <div class="section-title"><h2>Criar Plano</h2><span>Primeira versão local</span></div>
+    <div class="section-title"><h2>Criar Plano</h2><span>Gera um cronograma dia a dia</span></div>
     <form class="plan-form" data-plan-form>
       <label>O que deseja estudar?
-        <select name="tipo">
-          <option>Livro</option><option>Tema</option><option>Personagem</option><option>Palavra</option><option>Profecia</option>
+        <select name="tipo" data-plan-tipo>
+          <option value="livro">Um livro da Bíblia</option>
+          <option value="tema">Um tema</option>
         </select>
       </label>
-      <label>Escolher conteúdo <input name="conteudo" placeholder="Romanos, Salmos, oração, aliança..." required></label>
+      <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
+      <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
       <label>Duração
         <select name="duracao">
-          <option>7 dias</option><option>14 dias</option><option>21 dias</option><option>30 dias</option><option>Personalizado</option>
+          <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
         </select>
       </label>
-      <label>Ritmo
-        <select name="ritmo"><option>Leve</option><option>Normal</option><option>Profundo</option></select>
-      </label>
-      <label>Salvar como
-        <select name="visibilidade"><option>Privado</option><option>Público</option><option>Apenas uma Sala de Estudo</option></select>
-      </label>
-      <button type="submit" class="btn primary">Salvar plano</button>
+      <button type="submit" class="btn primary">Gerar plano</button>
     </form>
     <div class="saved-plans" data-plan-list></div>
   </section>
@@ -576,7 +568,48 @@ def build_workspace_page():
   </section>
   <section class="hub-section" id="configuracoes">
     <div class="section-title"><h2>Configurações e sincronização</h2><a href="{prefix}privacidade/">Privacidade</a></div>
-    <p class="muted-line">A conta fica restrita a perfil, configurações, privacidade, sincronização e sair. Ferramentas de estudo e comunidade vivem aqui no Workspace.</p>
+    <p class="muted-line">Preferências de leitura salvas neste navegador e sincronizadas quando você entra na conta.</p>
+    <div class="settings-grid" data-settings-panel>
+      <div class="settings-row">
+        <b>Tema</b>
+        <div class="settings-opts" role="group" aria-label="Tema de leitura">
+          <button type="button" class="btn quiet settings-opt" data-set-theme="light">Claro</button>
+          <button type="button" class="btn quiet settings-opt" data-set-theme="sepia">Sépia</button>
+          <button type="button" class="btn quiet settings-opt" data-set-theme="dark">Escuro</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <b>Tamanho da fonte</b>
+        <div class="settings-opts" role="group" aria-label="Tamanho da fonte">
+          <button type="button" class="btn quiet settings-opt" data-set-font="0">A</button>
+          <button type="button" class="btn quiet settings-opt" data-set-font="1">A</button>
+          <button type="button" class="btn quiet settings-opt" data-set-font="2">A</button>
+          <button type="button" class="btn quiet settings-opt" data-set-font="3">A</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <b>Idioma original</b>
+        <label class="settings-toggle"><input type="checkbox" data-set-orig> Mostrar hebraico/grego e transliteração</label>
+      </div>
+      <div class="settings-row">
+        <b>Ordem dos livros</b>
+        <div class="settings-opts" role="group" aria-label="Ordem dos livros">
+          <button type="button" class="btn quiet settings-opt" data-set-order="bib">Bíblica</button>
+          <button type="button" class="btn quiet settings-opt" data-set-order="alpha">Alfabética</button>
+          <button type="button" class="btn quiet settings-opt" data-set-order="chron">Cronológica</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <b>Meus dados</b>
+        <div class="settings-opts">
+          <button type="button" class="btn quiet" data-settings-export>Baixar backup (.json)</button>
+          <button type="button" class="btn quiet" data-settings-import>Importar backup</button>
+          <input type="file" accept="application/json" data-settings-import-file hidden>
+          <button type="button" class="btn danger ghost" data-settings-clear>Apagar tudo deste navegador</button>
+        </div>
+        <span class="settings-note" data-settings-status></span>
+      </div>
+    </div>
   </section>
   <section class="hub-section" id="reportes" data-admin-reports hidden>
     <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
@@ -839,19 +872,23 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     <h1>{esc(v['referencia'])}</h1>
   </header>
 
-  <div class="verse-hero reveal">
-    <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
+  <div class="verse-hero verse-tap reveal">
+    <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v['original'])}</p>
     <p class="translit">{esc(v['transliteracao'])}</p>
     {pt_html}
-    {verse_tools(v, prefix)}
     <p class="src-line">{esc(v.get('contexto',''))}</p>
   </div>
+  <p class="verse-tap-hint">Toque no texto para grifar, anotar, favoritar, ouvir ou compartilhar.</p>
 
   {specimen_block(v)}
   {blocks}
   {kw_html}
   {rel}
-  {study_map_module(prefix, v['livro'], ch, vs)}
+  <section class="block xref-block" data-xref data-xref-ref="{esc(v['referencia'])}" hidden>
+    <h2><span class="dot"></span>Referências cruzadas</h2>
+    <div class="xref-list" data-xref-list></div>
+  </section>
+  {study_continue_module(prefix, v['livro'], ch, vs)}
   {src_note}
   {pager}
   </article>
@@ -987,8 +1024,7 @@ def build_book_page(livro, chapters, order):
   <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
   <div class="chips chapter-grid">{chips}
   </div>
-  {study_map_module(prefix, livro)}
-  {study_desk_module(prefix, livro)}
+  {study_continue_module(prefix, livro)}
 </main>"""
     out = SITE / "ler" / book_slug(livro) / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1012,11 +1048,10 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
         rows += f"""
     <div class="ch-verse" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
-      <div class="ch-body">
-        <p class="orig {sc}"{dir_attr}>{esc(v.get('original',''))}</p>
+      <div class="ch-body verse-tap">
+        <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v.get('original',''))}</p>
         <p class="translit">{esc(v.get('transliteracao',''))}</p>
         <p class="pt">{pt}</p>
-        {verse_tools(v, prefix)}
       </div>
     </div>"""
     prev_html = (f'<a class="pg prev" href="../{ch-1}/"><span>← Capítulo</span><b>{livro} {ch-1}</b></a>'
@@ -1035,12 +1070,11 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   {study_fraction_module(prefix, livro, ch, vnums)}
   <div class="chapter">{rows}
   </div>
-  {study_map_module(prefix, livro, ch)}
-  {study_desk_module(prefix, livro, ch)}
+  {study_continue_module(prefix, livro, ch)}
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
   <p class="backline"><a href="../">← Todos os capítulos de {esc(livro)}</a></p>
 </main>
-{reader_fab(has_fraction=bool(vnums))}"""
+{reader_fab(prefix, has_fraction=bool(vnums))}"""
     out = SITE / "ler" / bslug / str(ch) / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
@@ -1048,17 +1082,20 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
 def build_search_index(verses, articles, topics):
     """Índice de busca em arquivo externo (carregado sob demanda pela home),
     em vez de embutido no index.html — reduz a página de ~20 MB para poucos KB."""
+    # "k" guarda só o texto de busca que NÃO está em titulo/desc (o cliente
+    # concatena titulo+desc+k antes de dobrar acentos) — evita duplicar
+    # referência e tradução inteiras dentro do próprio índice.
     index = []
     for v in verses:
         index.append({"t":"Versículo","titulo":v["referencia"],"desc":v.get("texto_pt",""),
                       "url":f"versiculos/{v['slug']}/",
-                      "k":(v["referencia"]+" "+v.get("texto_pt","")+" "+v.get("contexto","")+" "+" ".join(v.get("palavras",[]))).lower()})
+                      "k":(v.get("contexto","")+" "+" ".join(v.get("palavras",[]))).lower()})
     for a in articles:
         index.append({"t":"Artigo","titulo":a["titulo"],"desc":a.get("resumo",""),
-                      "url":f"artigos/{a['slug']}/","k":(a["titulo"]+" "+a.get("resumo","")+" "+a.get("versiculo","")).lower()})
+                      "url":f"artigos/{a['slug']}/","k":a.get("versiculo","").lower()})
     for t in topics:
         index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
-                      "url":"ler/","k":(t["titulo"]+" "+t.get("descricao","")).lower()})
+                      "url":"ler/","k":""})
     write_file(DATA / "search-index.json", json.dumps(index, ensure_ascii=False))
     return len(index)
 
@@ -1253,8 +1290,13 @@ def build_home(topics, verses, articles, sources, order, struct):
     out = SITE / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_app_js():
-    write_asset("app.asset.js", "app.js")
+def build_core_js():
+    write_asset("core.asset.js", "core.js")
+
+def build_app_js(order, struct):
+    books = [{"nome": livro, "slug": book_slug(livro), "cap": len(struct[livro])} for livro in order]
+    js = read_asset("app.asset.js")
+    write_file(SITE / "assets" / "app.js", f"var BEC_BOOKS={json.dumps(books, ensure_ascii=False)};\n" + js)
 
 def build_auth_js():
     write_asset("auth.asset.js", "auth.js")
@@ -1262,6 +1304,32 @@ def build_auth_js():
 def build_study_js():
     js = read_asset("study.asset.js")
     write_file(SITE / "assets" / "study.js", f"var BEC_BASE={json.dumps(BASE_URL)};\n" + js)
+
+def build_lexicon_js():
+    lex_path = DATA / "hebrew-lexicon.json"
+    lex = json.loads(lex_path.read_text(encoding="utf-8")) if lex_path.exists() else {}
+    js = read_asset("lexicon.asset.js")
+    write_file(SITE / "assets" / "lexicon.js", f"var BEC_LEXICON={json.dumps(lex, ensure_ascii=False)};\n" + js)
+
+def build_lexicon_shards():
+    """Fragmenta hebrew-tokens.json (tokenização palavra-a-palavra do WLC) em
+    um arquivo por livro, carregado sob demanda pelo léxico interativo."""
+    out_dir = SITE / "data" / "tokens"
+    shutil.rmtree(out_dir, ignore_errors=True)
+    src = DATA / "hebrew-tokens.json"
+    if not src.exists():
+        return
+    tokens = json.loads(src.read_text(encoding="utf-8"))
+    by_book = {}
+    for ref, toks in tokens.items():
+        m = re.match(r"^(.*?)\s+(\d+):(\d+)$", ref)
+        if not m:
+            continue
+        livro, ch, vs = m.group(1), m.group(2), m.group(3)
+        by_book.setdefault(livro, {})[f"{ch}:{vs}"] = toks
+    for livro, verses_map in by_book.items():
+        write_file(out_dir / f"{book_slug(livro)}.json",
+                   json.dumps(verses_map, ensure_ascii=False, separators=(",", ":")))
 
 def build_game_js():
     write_asset("gamification.asset.js", "game.js")
@@ -1432,9 +1500,12 @@ def build_site(context):
 
     clean_generated_output()
     build_home(inputs.topics, verses, inputs.articles, inputs.sources, order, struct)
+    build_core_js()
     build_auth_js()
-    build_app_js()
+    build_app_js(order, struct)
     build_study_js()
+    build_lexicon_js()
+    build_lexicon_shards()
     build_game_js()
     build_community_js()
     build_library_js()
