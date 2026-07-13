@@ -80,23 +80,25 @@ def test_gera_paginas_principais(site):
 
 
 def test_nova_navegacao_principal(site):
-    # Navegação enxuta: Estudar e Comunidade foram fundidos no Workspace.
+    # Navegação enxuta: Estudar foi fundida no Workspace; Comunidade está
+    # pausada (redirects antigos seguem existindo, mas sem seção própria).
     home = (site / "index.html").read_text("utf-8")
     for label in ("Início", "Bíblia", "Workspace"):
         assert label in home
     assert 'class="mobile-primary-nav"' in home
     assert 'href="workspace/"' in home
     assert 'href="ler/"' in home
-    # O Workspace carrega as seções fundidas.
+    # O Workspace carrega a seção fundida de Estudar (com a aba Criar plano).
     ws = (site / "workspace" / "index.html").read_text("utf-8")
-    assert 'id="estudar"' in ws and 'id="comunidade"' in ws and 'id="criar-plano"' in ws
+    assert 'id="estudar"' in ws and 'id="criar-plano"' in ws
+    assert 'id="comunidade"' not in ws
     # Os endereços antigos seguem vivos como redirects (noindex).
     estudar = (site / "estudar" / "index.html").read_text("utf-8")
     comunidade = (site / "comunidade" / "index.html").read_text("utf-8")
     salas = (site / "comunidade" / "salas" / "index.html").read_text("utf-8")
     assert "url=../workspace/#estudar" in estudar
-    assert "url=../workspace/#comunidade" in comunidade
-    assert "url=../../workspace/#comunidade" in salas
+    assert "url=../workspace/" in comunidade
+    assert "url=../../workspace/" in salas
     for page in (estudar, comunidade, salas):
         assert "noindex" in page
 
@@ -189,27 +191,21 @@ def test_reportar_bug(site):
     assert "data-admin-reports" in ws
 
 
-def test_salas_de_estudo_reais(site):
-    # O app de comunidade é gerado e vive na seção Comunidade do Workspace.
-    assert (site / "assets" / "community.js").exists()
-    community = (site / "assets" / "community.js").read_text("utf-8")
-    for rpc in ("create_group", "join_group", "create_topic", "add_post"):
-        assert rpc in community
+def test_comunidade_pausada(site):
+    # Comunidade/Salas de Estudo está pausada por decisão de produto (será
+    # reformulada antes de voltar) — o código fonte com a integração Supabase
+    # continua em scripts/community.asset.js, mas nada disso é gerado nem
+    # carregado no site publicado.
+    assert not (site / "assets" / "community.js").exists()
+    home = (site / "index.html").read_text("utf-8")
+    assert "assets/community.js" not in home
     ws = (site / "workspace" / "index.html").read_text("utf-8")
-    assert "data-community-app" in ws
-    assert "assets/community.js" in ws
-    # As antigas salas de demonstração saíram.
-    assert "Sala Evangelho de João" not in ws
-    # Criar sala exige nível 3: a UI espelha a trava real da RPC create_group.
-    for token in ("CREATE_LEVEL", "createRoomForm", "room-locked"):
-        assert token in community
-    # Salas com referência bíblica + descoberta: vitrine, pedido sem código e
-    # sugestões na página do capítulo (view listed_rooms, sem invite_code).
-    for token in ("p_reference", "p_listed", "listed_rooms", "join_listed_group",
-                  "data-room-suggest", "ask-join"):
-        assert token in community, token
+    assert "data-community-app" not in ws
+    assert "assets/community.js" not in ws
+    sw = (site / "sw.js").read_text("utf-8")
+    assert "community.js" not in sw
     cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
-    assert "data-room-suggest" in cap and 'data-room-ref="Gênesis 1"' in cap
+    assert "data-room-suggest" not in cap
 
 
 def test_sem_ancoras_mortas_nem_metricas_falsas(site):

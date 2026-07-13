@@ -19,6 +19,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 from build_config import (
     BASE_URL,
+    BOOK_ERA,
     BOOK_ORDER,
     CHRON_INDEX,
     DATA,
@@ -47,7 +48,6 @@ SOURCE_ASSETS = {
     "study.asset.js": "study.js",
     "lexicon.asset.js": "lexicon.js",
     "gamification.asset.js": "game.js",
-    "community.asset.js": "community.js",
     "library.asset.js": "library.js",
     "report.asset.js": "report.js",
 }
@@ -129,11 +129,16 @@ def original_html(v):
 def verse_url(prefix, slug):
     return f"{prefix}versiculos/{slug}/"
 
+def book_testament(livro):
+    pos = BOOK_ORDER.index(livro) if livro in BOOK_ORDER else 999
+    return "at" if pos < 39 else "nt"
+
 def book_data_attrs(livro):
     # atributos para reordenar os cartões no cliente (bíblica/alfabética/cronológica)
     pos = BOOK_ORDER.index(livro) if livro in BOOK_ORDER else 999
     nome = unicodedata.normalize("NFKD", livro).encode("ascii","ignore").decode().lower()
-    return f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
+    return (f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
+            f' data-testament="{book_testament(livro)}"')
 
 def order_toggle(prefix):
     # controle de ordenação no topo da grade de livros (cliente, persistido)
@@ -177,7 +182,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body data-prefix="{esc(prefix)}">
-<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){{d.classList.add('dark');t='dark';}}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}}catch(e){{}}}})();</script>
+<script>(function(){{try{{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){{d.classList.add('dark');t='dark';}}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
@@ -205,9 +210,10 @@ def mnav_icon(name):
 
 
 def nav(prefix):
-    # Navegação enxuta: Estudar e Comunidade viveram como páginas próprias e
-    # foram fundidos no Workspace (seções #estudar e #comunidade); os endereços
-    # antigos redirecionam para lá.
+    # Navegação enxuta: Estudar viveu como página própria e foi fundida no
+    # Workspace (seção #estudar); o endereço antigo redireciona para lá.
+    # Comunidade também redireciona para o Workspace, mas está pausada (sem
+    # seção própria por enquanto — ver build_merged_redirects).
     links = [
         ("Início", f"{prefix}index.html"),
         ("Bíblia", f"{prefix}ler/"),
@@ -282,7 +288,6 @@ def footer(prefix):
         <a href="{prefix}workspace/">Workspace</a>
       </div>
       <div>
-        <a href="{prefix}workspace/#comunidade">Comunidade</a>
         <a href="{prefix}biblioteca/">Biblioteca</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
       </div>
@@ -303,7 +308,6 @@ def footer(prefix):
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/lexicon.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
-<script src="{prefix}assets/community.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/report.js?v={ASSET_VER}" defer></script>
 </body></html>"""
@@ -373,9 +377,8 @@ def action_cards(items):
 
 
 def study_continue_module(prefix, livro, ch=None, vs=None):
-    """Bloco único e compacto de continuidade: atalhos pessoais + Salas de
-    Estudo relacionadas. Substitui os antigos módulos "Estude em comunidade"
-    e "Mesa de Estudo", que duplicavam links entre si."""
+    """Bloco único e compacto de continuidade: atalhos pessoais para o que
+    já existe (notas, coleções, planos, dicionário)."""
     place = f"{livro} {ch}:{vs}" if vs else (f"{livro} {ch}" if ch else livro)
     return f"""
   <section class="study-continue">
@@ -389,12 +392,6 @@ def study_continue_module(prefix, livro, ch=None, vs=None):
       <a href="{prefix}planos/">🗓 Planos</a>
       <a href="{prefix}dicionario/">📖 Dicionário</a>
     </div>
-    <div class="room-suggest" data-room-suggest data-room-ref="{esc(place)}" hidden>
-      <p class="eyebrow">Salas abertas estudando este livro</p>
-      <div class="room-suggest-list" data-room-suggest-list></div>
-      <a class="room-suggest-more" href="{prefix}workspace/#comunidade">Pedir para entrar na Comunidade →</a>
-    </div>
-    <p class="map-actions"><a class="btn quiet" href="{prefix}workspace/#comunidade">Ver Salas de Estudo →</a></p>
   </section>"""
 
 
@@ -450,6 +447,7 @@ def reader_fab(prefix, has_fraction=True):
     <button type="button" class="rfb" data-tool="font-dec" data-rt="font-dec">A−<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
+    <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
@@ -472,8 +470,9 @@ def reader_fab(prefix, has_fraction=True):
 
 def build_redirect_page(out_path, prefix, target, title):
     """Página-ponte: o endereço antigo continua existindo, mas leva direto ao
-    novo lugar (Estudar e Comunidade foram fundidos no Workspace). Mantém os
-    links espalhados por rodapés, capítulos e favoritos de usuários vivos."""
+    novo lugar (Estudar foi fundida no Workspace; Comunidade está pausada e
+    aponta pro Workspace também). Mantém os links espalhados por rodapés,
+    capítulos e favoritos de usuários vivos."""
     url = f"{prefix}{target}"
     html = f"""<!doctype html>
 <html lang="pt-BR"><head>
@@ -493,14 +492,17 @@ def build_redirect_page(out_path, prefix, target, title):
 
 def build_merged_redirects():
     build_redirect_page(SITE / "estudar" / "index.html", "../", "workspace/#estudar", "Estudar")
-    build_redirect_page(SITE / "comunidade" / "index.html", "../", "workspace/#comunidade", "Comunidade")
-    build_redirect_page(SITE / "comunidade" / "salas" / "index.html", "../../", "workspace/#comunidade", "Salas de Estudo")
+    # Comunidade/Salas de Estudo está pausada (será reformulada antes de
+    # voltar) — os endereços antigos continuam existindo, mas levam ao
+    # Workspace em vez de uma seção que não existe mais.
+    build_redirect_page(SITE / "comunidade" / "index.html", "../", "workspace/", "Comunidade")
+    build_redirect_page(SITE / "comunidade" / "salas" / "index.html", "../../", "workspace/", "Salas de Estudo")
 
 
 def build_workspace_page():
     prefix = "../"
     title = f"Workspace | {SITE_NAME}"
-    desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca, anotações e Salas de Estudo em um só lugar."
+    desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca e anotações em um só lugar."
     canonical = f"{BASE_URL}/workspace/"
     cards = action_cards([
         ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/", " data-ws-continue"),
@@ -521,11 +523,10 @@ def build_workspace_page():
   <header class="hub-hero">
     <p class="eyebrow">Seu espaço de estudo</p>
     <h1>Workspace</h1>
-    <p>Leitura, progresso, ferramentas de estudo e comunidade — tudo ao redor do texto, em um só lugar.</p>
+    <p>Leitura, progresso e ferramentas de estudo — tudo ao redor do texto, em um só lugar.</p>
     <div class="hub-cta">
       <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
       <a class="btn green" href="#progresso">Ver progresso</a>
-      <a class="btn quiet" href="#comunidade">Salas de Estudo</a>
     </div>
   </header>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
@@ -617,13 +618,6 @@ def build_workspace_page():
     <div class="study-card-grid">{explore_cards}
     </div>
   </section>
-  <section class="hub-section comunidade" id="comunidade">
-    <div class="section-title"><h2>Comunidade</h2><span>Salas de Estudo por livro, capítulo, tema ou plano</span></div>
-    <p class="muted-line">Cada sala nasce de um conteúdo bíblico: crie a sua (a partir do nível 3), convide pelo código e conduza discussões ligadas ao texto. Sem feed genérico.</p>
-    <div class="community-app" data-community-app>
-      <p class="muted-line" data-community-fallback>Carregando salas…</p>
-    </div>
-  </section>
   <section class="hub-section" id="historico">
     <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
     <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
@@ -663,6 +657,11 @@ def build_workspace_page():
       <div class="settings-row">
         <b>Idioma original</b>
         <label class="settings-toggle"><input type="checkbox" data-set-orig> Mostrar hebraico/grego e transliteração</label>
+      </div>
+      <div class="settings-row">
+        <b>Leitura</b>
+        <label class="settings-toggle"><input type="checkbox" data-set-autoread> Marcar versículos como lidos automaticamente ao rolar a página</label>
+        <label class="settings-toggle"><input type="checkbox" data-set-reveal checked> Efeito de entrada suave no texto ao rolar</label>
       </div>
       <div class="settings-row">
         <b>Ordem dos livros</b>
@@ -1040,20 +1039,26 @@ def build_books_index(order, struct):
     title = f"Livros da Bíblia | {SITE_NAME}"
     desc = "Navegue pela Bíblia livro a livro: escolha um livro e leia capítulo por capítulo no idioma original, com tradução e transliteração."
     canonical = f"{BASE_URL}/ler/"
+    n_at = sum(1 for b in order if book_testament(b) == "at")
+    n_nt = len(order) - n_at
     cards = ""
     for livro in order:
         n_caps = len(struct[livro])
         idioma = struct[livro][min(struct[livro])][0].get("idioma","hebraico")
+        testamento = book_testament(livro)
+        era = BOOK_ERA.get(livro)
+        era_tag = f'<span class="book-era">{esc(era[1]["nome"])}</span>' if era else ""
         cards += f"""
-    <a class="card book-card" href="{book_slug(livro)}/"{book_data_attrs(livro)}>
+    <a class="card book-card bt-{testamento}" href="{book_slug(livro)}/"{book_data_attrs(livro)}>
       <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
+      {era_tag}
     </a>"""
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Livros</p>
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
-  <p class="read" style="color:var(--muted)">Escolha um livro para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
+  <p class="read" style="color:var(--muted)">{n_at} livros do Antigo Testamento e {n_nt} do Novo — escolha um para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
   {order_toggle(prefix)}
   <div class="cards verses" data-booklist>{cards}
   </div>
@@ -1068,19 +1073,23 @@ def build_timeline_page(order, struct):
     desc = "A Bíblia em ordem histórica: os livros agrupados por períodos, de Gênesis ao Apocalipse (datas aproximadas)."
     canonical = f"{BASE_URL}/linha-do-tempo/"
     present = set(order)
+    n_eras = len(TIMELINE)
     eras_html = ""
-    for era in TIMELINE:
+    for era_idx, era in enumerate(TIMELINE):
+        # cada era ganha um matiz próprio (varre de dourado a violeta ao longo da
+        # linha do tempo) — só decorativo (borda/selo), não é usado em texto.
+        hue = round(30 + (era_idx / max(1, n_eras - 1)) * 300)
         livros = [b for b in era["livros"] if b in present]
         cards = ""
         for b in livros:
             idioma = struct[b][min(struct[b])][0].get("idioma","hebraico")
             cards += f"""
-      <a class="card book-card" href="{prefix}ler/{book_slug(b)}/">
+      <a class="card book-card bt-{book_testament(b)}" href="{prefix}ler/{book_slug(b)}/">
         <div class="ref-row"><h3>{esc(b)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       </a>"""
         grade = f'<div class="cards verses">{cards}\n    </div>' if livros else '<p class="era-gap-note">Cerca de 400 anos sem registro no cânon protestante.</p>'
         eras_html += f"""
-  <section class="era">
+  <section class="era" style="--era-accent:hsl({hue} 55% 42%)">
     <div class="era-head"><h2>{esc(era['nome'])}</h2><span class="era-period">{esc(era['periodo'])}</span></div>
     <p class="era-desc">{esc(era['descricao'])}</p>
     {grade}
@@ -1153,7 +1162,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
         dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
         pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
         rows += f"""
-    <div class="ch-verse" id="v{vs}" data-ref="{esc(v['referencia'])}">
+    <div class="ch-verse verse-reveal" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body verse-tap">
         <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v.get('original',''))}</p>
@@ -1319,12 +1328,6 @@ def build_home(topics, verses, articles, sources, order, struct):
         <p>Receba um versículo e abra o contexto completo.</p>
         <button type="button" id="random-verse" class="inline-action">Um versículo para você</button>
       </article>
-      <article class="home-block">
-        <span>Salas</span>
-        <h3>Relacionadas ao estudo</h3>
-        <p>Estude um livro, capítulo ou tema junto com um grupo.</p>
-        <a href="workspace/#comunidade">Ver Salas de Estudo</a>
-      </article>
     </div>
   </section>
 
@@ -1452,8 +1455,9 @@ def build_lexicon_shards():
 def build_game_js():
     write_asset("gamification.asset.js", "game.js")
 
-def build_community_js():
-    write_asset("community.asset.js", "community.js")
+# Comunidade/Salas de Estudo: pausada por decisão de produto (será reformulada
+# antes de voltar). scripts/community.asset.js continua no repositório com a
+# integração Supabase completa, só não é mais gerado nem carregado no site.
 
 def build_library_js():
     write_asset("library.asset.js", "library.js")
@@ -1537,7 +1541,7 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
         ],
         "shortcuts": [
             {"name": "Ler a Bíblia", "url": "ler/", "description": "Voltar direto para a leitura"},
-            {"name": "Workspace", "url": "workspace/", "description": "Progresso, planos e comunidade"},
+            {"name": "Workspace", "url": "workspace/", "description": "Progresso, planos e ferramentas de estudo"},
             {"name": "Planos de leitura", "url": "planos/", "description": "Continuar um plano de leitura"},
         ],
     }, ensure_ascii=False, indent=2))
@@ -1643,7 +1647,6 @@ def build_site(context):
     build_lexicon_js()
     build_lexicon_shards()
     build_game_js()
-    build_community_js()
     build_library_js()
     build_report_js()
     build_sw_js()
