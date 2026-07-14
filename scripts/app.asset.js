@@ -1495,7 +1495,12 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
 (function(){
   var ch=document.querySelector('.chapter[data-prev-chapter], .chapter[data-next-chapter]');
   if(!ch) return;
-  var prevUrl=ch.getAttribute('data-prev-chapter'), nextUrl=ch.getAttribute('data-next-chapter');
+  // só navega para um caminho relativo no formato exato gerado pelo build
+  // (../<numero>/) — nunca para uma URL absoluta, esquema (javascript:) ou
+  // caminho protocolo-relativo (//host/...), mesmo que o atributo seja
+  // adulterado no DOM.
+  function safeChapterUrl(u){ return (typeof u==='string' && /^\.\.\/[0-9]+\/$/.test(u)) ? u : null; }
+  var prevUrl=safeChapterUrl(ch.getAttribute('data-prev-chapter')), nextUrl=safeChapterUrl(ch.getAttribute('data-next-chapter'));
   var x0=0, y0=0, tracking=false;
   var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function blocked(t){
