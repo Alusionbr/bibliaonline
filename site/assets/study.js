@@ -111,9 +111,11 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     var note=load('notes')[ref];
     return ref + (t? '\n'+t : '') + (note? '\n\nAnotação: '+note : '');
   }
-  function shareVerse(ref, btn){
-    var cont=findCont(ref); var pt=cont&&cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
-    var url=refToUrl(ref), text=ref+(t?'\n'+t:'')+'\n'+url;
+  // compartilha um versículo a partir do texto já em mãos (não depende do DOM):
+  // gera o cartão-imagem e usa Web Share API, com cópia como último recurso.
+  function shareCard(ref, t, url, btn){
+    url=url||refToUrl(ref);
+    var text=ref+(t?'\n'+t:'')+'\n'+url;
     makeVerseCard(ref, t).then(function(blob){
       var file; try{ file=new File([blob],'versiculo.png',{type:'image/png'}); }catch(e){ file=null; }
       if(file && navigator.canShare && navigator.canShare({files:[file]})){
@@ -126,6 +128,11 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
       else copyText(text, btn, 'Copiado!');
     });
   }
+  function shareVerse(ref, btn){
+    var cont=findCont(ref); var pt=cont&&cont.querySelector('.pt'); var t=pt?pt.textContent.trim():'';
+    shareCard(ref, t, refToUrl(ref), btn);
+  }
+  window.BEC=window.BEC||{}; window.BEC.shareCard=shareCard;
 
   // ---------- ferramentas de áudio (Web Speech), delegadas a BEC.speak ----------
   function speak(text, lang, btn){
@@ -172,6 +179,24 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
     document.body.appendChild(sheet);
     sheet.addEventListener('click', function(e){
       if(e.target.closest && e.target.closest('[data-sheet-close]')) closeSheet();
+    });
+    // arrastar a folha para baixo (no mobile ela nasce colada embaixo) dispensa
+    var box=sheet.querySelector('.verse-sheet-box'), dragY0=null, dragDist=0;
+    box.addEventListener('touchstart', function(e){
+      // só inicia o arrasto pelo topo/cabeçalho, não em áreas roláveis/campos
+      if(e.target.closest('textarea,input,.vs-xref-list,.vs-col-list')) { dragY0=null; return; }
+      dragY0=e.touches[0].clientY; dragDist=0;
+    }, {passive:true});
+    box.addEventListener('touchmove', function(e){
+      if(dragY0==null) return;
+      dragDist=e.touches[0].clientY-dragY0;
+      if(dragDist>0){ box.style.transform='translateX(-50%) translateY('+dragDist+'px)'; box.style.transition='none'; }
+    }, {passive:true});
+    box.addEventListener('touchend', function(){
+      if(dragY0==null) return;
+      box.style.transform=''; box.style.transition='';
+      if(dragDist>90) closeSheet();
+      dragY0=null; dragDist=0;
     });
     return sheet;
   }

@@ -307,6 +307,39 @@ def test_chapter_verse_counts(site):
     assert counts["joao"]["1"] == 1
 
 
+def test_versiculo_do_dia(site):
+    # Pool curado com slug + referência + texto, para montar o cartão sem 2ª requisição.
+    # Refs ausentes do dataset são ignoradas (aqui só existem Gênesis 1:1 e João 1:1).
+    daily = json.loads((site / "data" / "daily.json").read_text("utf-8"))
+    assert len(daily) >= 1
+    for item in daily:
+        assert set(item) == {"slug", "ref", "pt"}
+        assert item["slug"] and item["ref"] and item["pt"]
+    refs = {d["ref"] for d in daily}
+    assert "Gênesis 1:1" in refs
+    # Cartão na home mantém o botão de sorteio (id preservado) e ganha share/streak.
+    home = (site / "index.html").read_text("utf-8")
+    for hook in ('data-daily-verse', 'data-daily-share', 'data-daily-streak', 'id="random-verse"'):
+        assert hook in home, hook
+    # JS: rotação estável por dia + reforço de hábito + share reutilizado.
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for token in ("data-daily-verse", "daily.json", "86400000", "bec.dailySeen", "shareCard"):
+        assert token in app, token
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "BEC.shareCard" in study
+
+
+def test_gesto_swipe_entre_capitulos(site):
+    # Livro de um só capítulo não expõe nenhum destino de swipe (sem vizinhos).
+    cap1 = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-prev-chapter" not in cap1 and "data-next-chapter" not in cap1
+    # JS do gesto presente, com as travas contra seleção/folha aberta/grifo.
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for token in ("touchstart", "data-prev-chapter", "data-next-chapter",
+                  "swiping-", "sheet-open", "hl-mode", "getSelection"):
+        assert token in app, token
+
+
 def test_sem_produto_de_ia_no_html_gerado(site):
     proibidos = ("IA Bíblica", "Bíblia com IA", "assistente IA")
     pages = [

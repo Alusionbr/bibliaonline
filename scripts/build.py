@@ -22,6 +22,7 @@ from build_config import (
     BOOK_ERA,
     BOOK_ORDER,
     CHRON_INDEX,
+    DAILY_VERSES,
     DATA,
     GENERATED_DIRS,
     MANUSCRITO_FACSIMILE,
@@ -1174,6 +1175,12 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
                  if ch > 1 else '<span class="pg empty"></span>')
     next_html = (f'<a class="pg next" href="../{ch+1}/"><span>Capítulo →</span><b>{livro} {ch+1}</b></a>'
                  if ch < n_chapters else '<span class="pg empty"></span>')
+    # destinos expostos para o gesto de deslizar (swipe) entre capítulos no JS
+    swipe_attrs = ""
+    if ch > 1:
+        swipe_attrs += f' data-prev-chapter="../{ch-1}/"'
+    if ch < n_chapters:
+        swipe_attrs += f' data-next-chapter="../{ch+1}/"'
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · <a href="../">{esc(livro)}</a> · {ch}</p>
@@ -1185,7 +1192,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   <div class="plan-context" data-plan-context hidden></div>
   {book_jump(prefix, order, livro)}
   {study_fraction_module(prefix, livro, ch, vnums)}
-  <div class="chapter">{rows}
+  <div class="chapter"{swipe_attrs}>{rows}
   </div>
   {study_continue_module(prefix, livro, ch)}
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
@@ -1322,11 +1329,17 @@ def build_home(topics, verses, articles, sources, order, struct):
         <h3>Favoritos recentes</h3>
         <div id="favorite-list" class="favorite-list"></div>
       </article>
-      <article class="home-block">
-        <span>Descobrir</span>
-        <h3>Explorar um trecho</h3>
-        <p>Receba um versículo e abra o contexto completo.</p>
-        <button type="button" id="random-verse" class="inline-action">Um versículo para você</button>
+      <article class="home-block daily-verse-block" data-daily-verse>
+        <span>Versículo do dia</span>
+        <div data-daily-verse-body>
+          <h3 class="daily-verse-ref">Versículo do dia</h3>
+          <p class="daily-verse-text">Receba um versículo para meditar e abra o contexto completo.</p>
+        </div>
+        <p class="daily-streak" data-daily-streak hidden></p>
+        <div class="daily-verse-actions">
+          <button type="button" class="btn tiny ghost" data-daily-share hidden>↗ Compartilhar</button>
+          <button type="button" id="random-verse" class="inline-action">Ver outro versículo</button>
+        </div>
       </article>
     </div>
   </section>
@@ -1573,6 +1586,20 @@ def build_random_pool(verses):
     write_file(DATA / "random.json", json.dumps(slugs, ensure_ascii=False))
     return len(slugs)
 
+def build_daily_verses(verses):
+    # "Versículo do dia": lista curada e estável (rotaciona um por dia no cliente).
+    # Cada item leva slug + referência + texto PT, para montar o cartão na home
+    # sem uma segunda requisição. Refs ausentes são ignoradas.
+    by_ref = {v["referencia"]: v for v in verses}
+    pool = []
+    for ref in DAILY_VERSES:
+        v = by_ref.get(ref)
+        pt = (v.get("texto_pt", "").strip() if v else "")
+        if v and pt:
+            pool.append({"slug": v["slug"], "ref": ref, "pt": pt})
+    write_file(DATA / "daily.json", json.dumps(pool, ensure_ascii=False))
+    return len(pool)
+
 @dataclass
 class BuildInputs:
     topics: list
@@ -1662,6 +1689,7 @@ def build_site(context):
     build_privacy_page()
     n_idx = build_search_index(verses, inputs.articles, inputs.topics)
     build_random_pool(verses)
+    build_daily_verses(verses)
 
     n = len(verses)
     for i, v in enumerate(verses):

@@ -4,6 +4,55 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Cara de app no leitor: gestos, versiculo do dia e ergonomia mobile - 2026-07-13
+
+Intencao: com o alicerce de PWA/estudo maduro, o proximo salto e "sensacao de
+app" e uso diario no telefone (pensando na futura versao como app). O usuario
+priorizou tres frentes; offline/instalacao ficou para uma rodada futura.
+
+O que foi analisado:
+
+- O plano anterior (PWA real + integracao) ja estava todo publicado: icones,
+  service worker gerado e registrado, manifest com shortcuts/icons/theme-color,
+  bottom nav de 4 itens, home com cards dinamicos, abas do Workspace, folha de
+  acoes do versiculo. As lacunas reais eram de interacao mobile, nao de conteudo.
+- Faltavam: gesto de deslizar entre capitulos (so havia links de texto), um
+  versiculo do dia estavel (o `random.json` so sorteava um aleatorio a cada
+  carregamento) e alguns alvos de toque pequenos.
+
+Mudancas:
+
+- Gestos: `build_chapter_page()` (`scripts/build.py`) expoe
+  `data-prev-chapter`/`data-next-chapter` no `.chapter`; novo modulo em
+  `scripts/app.asset.js` traduz swipe horizontal em navegacao (esquerda =
+  proximo, direita = anterior), com travas contra selecao de texto, folha
+  aberta (`sheet-open`), modo grifo (`hl-mode`) e alvos interativos. Animacao
+  de saida em `site/assets/styles.css`, desligada por `prefers-reduced-motion`.
+- Versiculo do dia: `build_config.py` ganha `DAILY_VERSES` (lista curada);
+  `build_daily_verses()` grava `site/data/daily.json` com `{slug, ref, pt}`.
+  A home troca o bloco "Explorar um trecho" por um cartao "Versiculo do dia"
+  (`data-daily-verse`) com texto, link para o contexto, botao Compartilhar e
+  reforco da sequencia (streak). No cliente, a rotacao e estavel por dia
+  (`Math.floor(Date.now()/86400000) % n`), conta como "meditar" uma vez ao dia
+  (`bec.dailySeen`) e reaproveita o cartao-imagem de compartilhar
+  (`window.BEC.shareCard`, extraido de `shareVerse` em `study.asset.js`). O
+  sorteio antigo vira acao secundaria "Ver outro versiculo" (id preservado).
+- Ergonomia: folha do versiculo dispensavel arrastando para baixo
+  (`study.asset.js`); alvos de toque maiores (`.ch-num`, `.vs-color` 40px,
+  `.vs-x` 44px, `.pg` 56px de altura) e realce (grifo) reforcado no tema sepia,
+  que nao tinha override e ficava fraco no fundo vellum.
+
+Validacao:
+
+- `python scripts/build.py` (mesmos totais), `python -m pytest` (98 testes,
+  +`test_versiculo_do_dia` e +`test_gesto_swipe_entre_capitulos`),
+  `git diff --check` limpo, `node --check` em `app.js`/`study.js`.
+- Playwright local (mobile, toque real simulado): versiculo do dia renderiza e
+  e estavel entre recarregamentos, com share e streak; swipe navega para o
+  proximo/anterior capitulo e e ignorado durante selecao de texto; tocar no
+  versiculo abre a folha, que fecha por arraste; alvos de toque conferidos
+  (>=40/44/56px); capturas nos 3 temas confirmando contraste dos grifos.
+
 ## Pausa Comunidade/Salas de Estudo (decisao de produto) - 2026-07-12
 
 Intencao: decisao explicita do usuario — Comunidade sera reformulada antes de
