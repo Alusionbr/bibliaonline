@@ -411,7 +411,7 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 
 /* folhear (anterior / próximo) */
 .pager{max-width:var(--read);margin:30px auto 0;display:flex;gap:12px;align-items:stretch}
-.pg{flex:1;display:flex;flex-direction:column;gap:3px;text-decoration:none;
+.pg{flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px;text-decoration:none;min-height:56px;
   background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 16px;color:var(--ink);min-width:0}
 .pg:hover{border-color:var(--gold);color:var(--ink)}
 .pg span{font-family:"Inter",sans-serif;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
@@ -546,8 +546,8 @@ html.dark .book-card.bt-nt{border-left-color:var(--gold-soft)}
 .chapter{max-width:var(--read);margin:0 auto}
 .ch-verse{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
 .ch-verse:last-child{border-bottom:0}
-.ch-num{flex:0 0 auto;min-width:1.8em;text-align:right;color:var(--gold-deep);font-weight:700;
-  font-variant-numeric:tabular-nums;text-decoration:none;padding-top:2px}
+.ch-num{flex:0 0 auto;min-width:2em;align-self:stretch;text-align:right;color:var(--gold-deep);font-weight:700;
+  font-variant-numeric:tabular-nums;text-decoration:none;padding:4px 4px 0 0}
 .ch-num:hover{text-decoration:underline}
 .ch-body{flex:1 1 auto;min-width:0}
 .ch-body .orig{margin:0 0 4px}
@@ -1028,7 +1028,7 @@ body.sheet-open{overflow:hidden}
 .verse-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .verse-sheet-head b{font-family:"Fraunces",serif;font-size:1.15rem}
 .vs-x{border:0;background:transparent;font-size:1.3rem;line-height:1;color:var(--muted);
-  cursor:pointer;padding:2px 8px;border-radius:8px}
+  cursor:pointer;padding:2px 8px;border-radius:8px;min-width:44px;min-height:44px}
 .vs-x:hover{background:var(--vellum-2);color:var(--ink)}
 .verse-sheet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
 .vs-act{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid var(--line);
@@ -1041,8 +1041,8 @@ body.sheet-open{overflow:hidden}
 .verse-sheet-row{margin-bottom:14px}
 .verse-sheet-row>span,.verse-sheet-row>label{display:block;font-family:"Inter",system-ui,sans-serif;
   font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px}
-.vs-colors{display:flex;gap:10px}
-.vs-color{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.vs-colors{display:flex;gap:12px}
+.vs-color{width:40px;height:40px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
 .vs-color[data-c="y"]{background:#ffe14d}
 .vs-color[data-c="g"]{background:#a8e06a}
 .vs-color[data-c="b"]{background:#8ecbff}
@@ -1074,6 +1074,11 @@ html.dark .v-hl{background:rgba(255,225,77,.14)}
 html.dark .v-hl[data-c="g"]{background:rgba(168,224,106,.16)}
 html.dark .v-hl[data-c="b"]{background:rgba(142,203,255,.16)}
 html.dark .v-hl[data-c="p"]{background:rgba(255,179,209,.16)}
+/* sépia: fundo vellum quente esmaece os tons pastel — realça um pouco o preenchimento */
+html.sepia .v-hl{background:rgba(227,182,46,.34)}
+html.sepia .v-hl[data-c="g"]{background:rgba(95,168,50,.26)}
+html.sepia .v-hl[data-c="b"]{background:rgba(74,144,196,.26)}
+html.sepia .v-hl[data-c="p"]{background:rgba(212,106,149,.26)}
 .verse-cont.has-note .verse-head h1::after{content:'🗒';margin-left:8px;font-size:.7em;opacity:.7}
 
 /* painel único de leitura: link do item "Anotações" não sublinha */
@@ -1190,3 +1195,23 @@ html.dark .hm-cell.on{background:var(--gold-soft)}
 .hero-feats li{display:flex;align-items:center;gap:6px;font-family:"Inter",system-ui,sans-serif;
   font-size:.82rem;font-weight:600;color:var(--gold-soft)}
 .hero-feats li::before{content:"✓";color:var(--gold);font-weight:700}
+
+/* Versículo do dia (home) */
+.daily-verse-block .daily-verse-ref{font-family:"Fraunces",serif;color:var(--gold-deep);margin:0 0 6px}
+.daily-verse-text{font-family:"Fraunces",serif;font-size:1.05rem;line-height:1.5;margin:0 0 10px;color:var(--ink)}
+.daily-verse-open{font-family:"Inter",system-ui,sans-serif;font-weight:600;font-size:.85rem;
+  text-decoration:none;color:var(--gold-deep)}
+.daily-verse-open:hover{text-decoration:underline}
+.daily-streak{font-family:"Inter",system-ui,sans-serif;font-size:.82rem;font-weight:600;
+  color:var(--gold-soft);margin:10px 0 0}
+.daily-verse-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
+
+/* Gesto de deslizar entre capítulos: leve deslize/esmaecer ao sair.
+   Desligado por prefers-reduced-motion (o JS nem adiciona a classe nesse caso). */
+body.swiping-left .chapter,body.swiping-right .chapter{
+  transition:transform .16s ease,opacity .16s ease}
+body.swiping-left .chapter{transform:translateX(-26px);opacity:.35}
+body.swiping-right .chapter{transform:translateX(26px);opacity:.35}
+@media (prefers-reduced-motion: reduce){
+  body.swiping-left .chapter,body.swiping-right .chapter{transition:none;transform:none;opacity:1}
+}

@@ -244,7 +244,7 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
       if(lr&&lr.url){ cont.href=lr.url; cont.textContent='▶ Continuar de onde parei: '+lr.label; cont.hidden=false; } }catch(e){}
   }
 
-  // versículo para meditar (aleatório — sem dado/sorteio)
+  // "Ver outro versículo": sorteio aleatório (mantém o comportamento antigo)
   var rb=document.getElementById('random-verse');
   if(rb){
     rb.addEventListener('click',function(){
@@ -255,6 +255,45 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
         else rb.disabled=false;
       }).catch(function(){ rb.disabled=false; });
     });
+  }
+
+  // Versículo do dia: estável (o mesmo o dia inteiro, muda à meia-noite),
+  // compartilhável, e conta como "meditar" uma vez por dia (reforço de hábito).
+  var dailyBox=document.querySelector('[data-daily-verse]');
+  if(dailyBox){
+    var dvBody=dailyBox.querySelector('[data-daily-verse-body]');
+    var dvShare=dailyBox.querySelector('[data-daily-share]');
+    var dvStreak=dailyBox.querySelector('[data-daily-streak]');
+    var todayKey=new Date().toISOString().slice(0,10);
+    fetch('data/daily.json').then(function(r){return r.json();}).then(function(list){
+      if(!list || !list.length) return;
+      var item=list[Math.floor(Date.now()/86400000)%list.length];
+      var vurl=new URL('versiculos/'+item.slug+'/', location.href).href;
+      if(dvBody){
+        // construído via DOM (não innerHTML) para não depender de escapar string nenhuma
+        var h3=document.createElement('h3'); h3.className='daily-verse-ref'; h3.textContent=item.ref;
+        var p=document.createElement('p'); p.className='daily-verse-text'; p.textContent=item.pt;
+        var a=document.createElement('a'); a.className='daily-verse-open'; a.href='versiculos/'+encodeURIComponent(item.slug)+'/'; a.textContent='Abrir contexto →';
+        dvBody.textContent=''; dvBody.appendChild(h3); dvBody.appendChild(p); dvBody.appendChild(a);
+      }
+      if(dvShare){
+        dvShare.hidden=false;
+        dvShare.addEventListener('click',function(){
+          if(window.BEC && window.BEC.shareCard) window.BEC.shareCard(item.ref, item.pt, vurl, dvShare);
+        });
+      }
+      try{
+        if(localStorage.getItem('bec.dailySeen')!==todayKey){
+          localStorage.setItem('bec.dailySeen', todayKey);
+          gameRecord('meditate');
+        }
+      }catch(e){}
+      if(dvStreak){
+        try{ var g=JSON.parse(localStorage.getItem('bec.game')||'{}'); var st=g.streak||0;
+          if(st>0){ dvStreak.textContent='🔥 '+st+(st===1?' dia seguido':' dias seguidos')+' — volte amanhã'; dvStreak.hidden=false; }
+        }catch(e){}
+      }
+    }).catch(function(){});
   }
 })();
 
@@ -1448,4 +1487,44 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
     var target=document.getElementById(hashTab);
     if(target) target.scrollIntoView();
   }
+})();
+
+// Gesto de deslizar (swipe) para folhear capítulos no leitor — deixa a leitura
+// no telefone com cara de app. Deslizar para a esquerda vai ao próximo capítulo,
+// para a direita ao anterior. Só age em gestos claramente horizontais e nunca
+// atrapalha seleção de texto, a folha do versículo ou o modo de grifar.
+(function(){
+  var ch=document.querySelector('.chapter[data-prev-chapter], .chapter[data-next-chapter]');
+  if(!ch) return;
+  // só navega para um caminho relativo no formato exato gerado pelo build
+  // (../<numero>/) — nunca para uma URL absoluta, esquema (javascript:) ou
+  // caminho protocolo-relativo (//host/...), mesmo que o atributo seja
+  // adulterado no DOM.
+  function safeChapterUrl(u){ return (typeof u==='string' && /^\.\.\/[0-9]+\/$/.test(u)) ? u : null; }
+  var prevUrl=safeChapterUrl(ch.getAttribute('data-prev-chapter')), nextUrl=safeChapterUrl(ch.getAttribute('data-next-chapter'));
+  var x0=0, y0=0, tracking=false;
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function blocked(t){
+    var b=document.body.classList;
+    if(b.contains('sheet-open') || b.contains('hl-mode')) return true;
+    try{ if(window.getSelection && String(window.getSelection())) return true; }catch(e){}
+    if(t && t.closest && t.closest('a,button,input,textarea,select,[data-vs-act],[contenteditable]')) return true;
+    return false;
+  }
+  ch.addEventListener('touchstart', function(e){
+    if(e.touches.length!==1 || blocked(e.target)){ tracking=false; return; }
+    x0=e.touches[0].clientX; y0=e.touches[0].clientY; tracking=true;
+  }, {passive:true});
+  ch.addEventListener('touchend', function(e){
+    if(!tracking) return; tracking=false;
+    var t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    // precisa ser um gesto nítido e predominantemente horizontal
+    if(Math.abs(dx)<60 || Math.abs(dx)<Math.abs(dy)*1.4) return;
+    if(blocked(e.target)) return;
+    var url=dx<0?nextUrl:prevUrl;
+    if(!url) return;
+    if(reduce){ location.href=url; return; }
+    document.body.classList.add('swiping-'+(dx<0?'left':'right'));
+    setTimeout(function(){ location.href=url; }, 160);
+  }, {passive:true});
 })();

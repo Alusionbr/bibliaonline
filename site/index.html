@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/styles.css?v=7a4a9d2c">
+<link rel="stylesheet" href="assets/styles.css?v=4ea23780">
 </head>
 <body data-prefix="">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -140,11 +140,17 @@
         <h3>Favoritos recentes</h3>
         <div id="favorite-list" class="favorite-list"></div>
       </article>
-      <article class="home-block">
-        <span>Descobrir</span>
-        <h3>Explorar um trecho</h3>
-        <p>Receba um versículo e abra o contexto completo.</p>
-        <button type="button" id="random-verse" class="inline-action">Um versículo para você</button>
+      <article class="home-block daily-verse-block" data-daily-verse>
+        <span>Versículo do dia</span>
+        <div data-daily-verse-body>
+          <h3 class="daily-verse-ref">Versículo do dia</h3>
+          <p class="daily-verse-text">Receba um versículo para meditar e abra o contexto completo.</p>
+        </div>
+        <p class="daily-streak" data-daily-streak hidden></p>
+        <div class="daily-verse-actions">
+          <button type="button" class="btn tiny ghost" data-daily-share hidden>↗ Compartilhar</button>
+          <button type="button" id="random-verse" class="inline-action">Ver outro versículo</button>
+        </div>
       </article>
     </div>
   </section>
@@ -353,14 +359,14 @@
     </div>
   </div>
 </footer>
-<script src="assets/core.js?v=7a4a9d2c"></script>
-<script src="assets/supabase-config.js?v=7a4a9d2c" defer></script>
+<script src="assets/core.js?v=4ea23780"></script>
+<script src="assets/supabase-config.js?v=4ea23780" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="assets/auth.js?v=7a4a9d2c" defer></script>
-<script src="assets/app.js?v=7a4a9d2c"></script>
-<script src="assets/study.js?v=7a4a9d2c" defer></script>
-<script src="assets/lexicon.js?v=7a4a9d2c" defer></script>
-<script src="assets/game.js?v=7a4a9d2c" defer></script>
-<script src="assets/library.js?v=7a4a9d2c" defer></script>
-<script src="assets/report.js?v=7a4a9d2c" defer></script>
+<script src="assets/auth.js?v=4ea23780" defer></script>
+<script src="assets/app.js?v=4ea23780"></script>
+<script src="assets/study.js?v=4ea23780" defer></script>
+<script src="assets/lexicon.js?v=4ea23780" defer></script>
+<script src="assets/game.js?v=4ea23780" defer></script>
+<script src="assets/library.js?v=4ea23780" defer></script>
+<script src="assets/report.js?v=4ea23780" defer></script>
 </body></html>
