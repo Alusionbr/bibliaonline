@@ -243,8 +243,6 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
       if(lr&&lr.url){ cont.href=lr.url; cont.textContent='▶ Continuar de onde parei: '+lr.label; cont.hidden=false; } }catch(e){}
   }
 
-  function escH(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
   // "Ver outro versículo": sorteio aleatório (mantém o comportamento antigo)
   var rb=document.getElementById('random-verse');
   if(rb){
@@ -271,9 +269,11 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
       var item=list[Math.floor(Date.now()/86400000)%list.length];
       var vurl=new URL('versiculos/'+item.slug+'/', location.href).href;
       if(dvBody){
-        dvBody.innerHTML='<h3 class="daily-verse-ref">'+escH(item.ref)+'</h3>'+
-          '<p class="daily-verse-text">'+escH(item.pt)+'</p>'+
-          '<a class="daily-verse-open" href="versiculos/'+escH(item.slug)+'/">Abrir contexto →</a>';
+        // construído via DOM (não innerHTML) para não depender de escapar string nenhuma
+        var h3=document.createElement('h3'); h3.className='daily-verse-ref'; h3.textContent=item.ref;
+        var p=document.createElement('p'); p.className='daily-verse-text'; p.textContent=item.pt;
+        var a=document.createElement('a'); a.className='daily-verse-open'; a.href='versiculos/'+encodeURIComponent(item.slug)+'/'; a.textContent='Abrir contexto →';
+        dvBody.textContent=''; dvBody.appendChild(h3); dvBody.appendChild(p); dvBody.appendChild(a);
       }
       if(dvShare){
         dvShare.hidden=false;
