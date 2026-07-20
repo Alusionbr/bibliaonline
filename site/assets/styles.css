@@ -1215,3 +1215,67 @@ body.swiping-right .chapter{transform:translateX(26px);opacity:.35}
 @media (prefers-reduced-motion: reduce){
   body.swiping-left .chapter,body.swiping-right .chapter{transition:none;transform:none;opacity:1}
 }
+
+/* ---------- Memorização (repetição espaçada) e quiz por capítulo ---------- */
+.quiz-open-btn{background:linear-gradient(135deg,var(--green),#6cc38a);color:#06190f;border:0;margin:14px 0}
+.quiz-open-btn:hover{filter:brightness(1.04);color:#06190f}
+
+.memory-head{display:flex;gap:10px;margin:.2rem 0 .8rem}
+.memory-head .pstat{background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:12px;text-align:center;flex:1}
+.memory-head .pstat b{display:block;font-family:"Fraunces",serif;font-size:1.5rem;color:var(--gold-deep);line-height:1}
+.memory-head .pstat span{font-family:"Inter",system-ui,sans-serif;font-size:.76rem;color:var(--muted)}
+.memory-list{margin-top:.8rem}
+.mem-due.late{color:var(--gold-deep);font-weight:600}
+
+.mem-review-box,.quiz-box{max-width:520px}
+.mem-progress{font-family:"Inter",system-ui,sans-serif;font-size:.78rem;color:var(--muted);margin-left:auto;margin-right:10px}
+.mem-text{font-family:"Fraunces",serif;font-size:1.2rem;line-height:1.5;color:var(--ink);margin:0 0 16px}
+.mem-chip{display:inline-block;border:1px dashed var(--gold);border-radius:6px;background:rgba(200,149,54,.12);
+  color:transparent;padding:0 4px;margin:0 1px;font-family:"Fraunces",serif;font-size:1.2rem;letter-spacing:2px;cursor:pointer}
+.mem-chip:hover{background:rgba(200,149,54,.22)}
+.mem-chip-revealed{font-weight:700;color:var(--gold-deep)}
+.mem-hidden{color:var(--muted);font-style:italic}
+.mem-grade-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.mem-grade{border-radius:12px;padding:10px 6px;font-weight:600;font-size:.86rem;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+.mem-grade.g0{border-color:#b3261e;color:#b3261e}
+.mem-grade.g0:hover{background:#b3261e;color:#fff}
+.mem-grade.g1{border-color:#a8781f;color:#a8781f}
+.mem-grade.g1:hover{background:#a8781f;color:#fff}
+.mem-grade.g2{border-color:var(--green);color:var(--green)}
+.mem-grade.g2:hover{background:var(--green);color:#fff}
+.mem-grade.g3{border-color:#1f7a4d;color:#1f7a4d}
+.mem-grade.g3:hover{background:#1f7a4d;color:#fff}
+.mem-summary{color:var(--ink-soft);margin:0 0 16px}
+
+.quiz-prompt{font-family:"Inter",system-ui,sans-serif;font-size:.82rem;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.03em;margin:0 0 6px}
+.quiz-opts{display:grid;gap:8px;margin-top:12px}
+.quiz-opt{text-align:left}
+.quiz-opt.correct{border-color:var(--green);background:rgba(47,143,91,.14);color:var(--green)}
+.quiz-opt.wrong{border-color:#b3261e;background:rgba(179,38,30,.12);color:#b3261e}
+.quiz-order-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.quiz-block.picked{opacity:.35}
+.quiz-order-picked{min-height:2.4rem;border:1px dashed var(--line);border-radius:10px;padding:8px;
+  display:flex;flex-wrap:wrap;gap:6px;font-family:"Fraunces",serif}
+.quiz-order-picked.ok{border-color:var(--green)}
+.quiz-order-picked.bad{border-color:#b3261e}
+.quiz-block-picked{background:var(--vellum-2);border-radius:6px;padding:2px 8px}
+
+/* Retrospectiva "Sua semana de estudo" (#progresso) */
+.week-recap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:.2rem 0 .6rem}
+.week-recap-book{color:var(--ink-soft);font-size:.9rem;margin:0 0 .6rem}
+
+/* Trilha de leitura por referências cruzadas (ver study.js) */
+.xchain-bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  background:var(--vellum-2);border-bottom:1px solid var(--line);padding:8px 16px;font-size:.86rem;color:var(--ink-soft)}
+.xchain-bar a{color:var(--gold-deep);text-decoration:none}
+.xchain-bar a:hover{text-decoration:underline}
+.xchain-bar button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;margin-left:auto}
+
+@media (max-width:560px){
+  .week-recap-grid{grid-template-columns:repeat(2,1fr)}
+  .mem-grade-row{grid-template-columns:repeat(2,1fr)}
+}
+
+html.dark .memory-head .pstat,html.dark .mem-grade{background:var(--surface-raised)}

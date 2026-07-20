@@ -18,12 +18,15 @@
       {key:'ler_capitulo', title:'Leia um capitulo',    description:'Marque um trecho de leitura como lido hoje.',   icon:'📖', goal:1, metric:'read_chapters', points:10, sort:1},
       {key:'meditar',      title:'Medite no versiculo',  description:'Abra o versiculo para meditar hoje.',           icon:'🕊️', goal:1, metric:'meditate',      points:10, sort:2},
       {key:'anotar',       title:'Faca uma anotacao',    description:'Registre um aprendizado em uma anotacao.',      icon:'✍️', goal:1, metric:'notes',         points:10, sort:3},
-      {key:'favoritar',    title:'Guarde um versiculo',  description:'Marque um versiculo como favorito.',            icon:'⭐', goal:1, metric:'favorites',     points:10, sort:4}
+      {key:'favoritar',    title:'Guarde um versiculo',  description:'Marque um versiculo como favorito.',            icon:'⭐', goal:1, metric:'favorites',     points:10, sort:4},
+      {key:'revisar',      title:'Revise seus versiculos', description:'Revise 3 versiculos na fila de memorizacao.', icon:'🧠', goal:3, metric:'memorize',      points:15, sort:5},
+      {key:'quiz',         title:'Teste seu conhecimento', description:'Complete o quiz de um capitulo.',              icon:'🧩', goal:1, metric:'quiz',          points:15, sort:6}
     ],
     weekly: [
       {key:'semana_leitura',   title:'Ritmo de leitura',       description:'Marque trechos de leitura em 4 dias desta semana.', icon:'📖', goal:4, metric:'read_chapters', points:40, sort:1},
       {key:'semana_anotacoes', title:'Semana de anotacoes',    description:'Faca 3 anotacoes nesta semana.',                    icon:'✍️', goal:3, metric:'notes',         points:40, sort:2},
-      {key:'semana_favoritos', title:'Colecionador da semana', description:'Guarde 5 versiculos favoritos nesta semana.',       icon:'⭐', goal:5, metric:'favorites',     points:40, sort:3}
+      {key:'semana_favoritos', title:'Colecionador da semana', description:'Guarde 5 versiculos favoritos nesta semana.',       icon:'⭐', goal:5, metric:'favorites',     points:40, sort:3},
+      {key:'semana_memoria',   title:'Semana de memorizacao',  description:'Faca 10 revisoes espacadas nesta semana.',          icon:'🧠', goal:10,metric:'memorize',     points:40, sort:4}
     ],
     badges: [
       {key:'primeiro_passo',   title:'Primeiro Passo', description:'Comecou a jornada de estudo.',        icon:'🌱', tier:'bronze', points:10, sort:1},
@@ -35,7 +38,10 @@
       {key:'streak_3',         title:'Constante',      description:'Estudou 3 dias seguidos.',            icon:'🔥', tier:'bronze', points:20, sort:7},
       {key:'streak_7',         title:'Semana Fiel',    description:'Estudou 7 dias seguidos.',            icon:'🔥', tier:'prata',  points:40, sort:8},
       {key:'streak_30',        title:'Devoto',         description:'Estudou 30 dias seguidos.',           icon:'🔥', tier:'ouro',   points:100,sort:9},
-      {key:'missoes_7',        title:'Peregrino',      description:'Completou 7 missoes diarias.',        icon:'🎯', tier:'prata',  points:40, sort:10}
+      {key:'missoes_7',        title:'Peregrino',      description:'Completou 7 missoes diarias.',        icon:'🎯', tier:'prata',  points:40, sort:10},
+      {key:'memorizador',      title:'Memorizador',    description:'Fez a primeira revisao espacada.',    icon:'🧠', tier:'bronze', points:15, sort:11},
+      {key:'memorizador_10',   title:'Guardiao da Palavra', description:'Fez 10 revisoes espacadas.',     icon:'🧠', tier:'prata',  points:40, sort:12},
+      {key:'quiz_10',          title:'Estudante Atento',description:'Completou 10 quizzes de capitulo.',  icon:'🧩', tier:'prata',  points:40, sort:13}
     ]
   };
 
@@ -89,6 +95,7 @@
     s.missions=s.missions||{}; s.badges=s.badges||{};
     s.weekly=s.weekly||{};   // progresso das missoes semanais (reinicia por semana ISO)
     s.missionsDoneTotal=s.missionsDoneTotal||0; s.chaptersReadTotal=s.chaptersReadTotal||0;
+    s.reviewsTotal=s.reviewsTotal||0; s.quizzesTotal=s.quizzesTotal||0;
     return s;
   }
   function saveState(s){try{localStorage.setItem(STATE_KEY,JSON.stringify(s));}catch(e){}}
@@ -173,6 +180,9 @@
     if((s.streak||0)>=7) award(s,'streak_7');
     if((s.streak||0)>=30) award(s,'streak_30');
     if((s.missionsDoneTotal||0)>=7) award(s,'missoes_7');
+    if((s.reviewsTotal||0)>=1) award(s,'memorizador');
+    if((s.reviewsTotal||0)>=10) award(s,'memorizador_10');
+    if((s.quizzesTotal||0)>=10) award(s,'quiz_10');
   }
 
   // ---- Sincronizacao best-effort com Supabase -----------------------------
@@ -448,6 +458,8 @@
       n=n||1;
       var s=loadState(); rollover(s);
       if(metric==='read_chapters') s.chaptersReadTotal=(s.chaptersReadTotal||0)+n;
+      if(metric==='memorize') s.reviewsTotal=(s.reviewsTotal||0)+n;
+      if(metric==='quiz') s.quizzesTotal=(s.quizzesTotal||0)+n;
       missionByMetric(metric).forEach(function(m){
         var cur=(s.missions[m.key]&&s.missions[m.key].p)||0;
         setMissionProgress(s,m,cur+n);

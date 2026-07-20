@@ -49,6 +49,7 @@ SOURCE_ASSETS = {
     "study.asset.js": "study.js",
     "lexicon.asset.js": "lexicon.js",
     "gamification.asset.js": "game.js",
+    "practice.asset.js": "practice.js",
     "library.asset.js": "library.js",
     "report.asset.js": "report.js",
 }
@@ -309,6 +310,7 @@ def footer(prefix):
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/lexicon.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/practice.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/report.js?v={ASSET_VER}" defer></script>
 </body></html>"""
@@ -449,6 +451,7 @@ def reader_fab(prefix, has_fraction=True):
     <button type="button" class="rfb" data-tool="font-inc" data-rt="font-inc">A+<span>Fonte</span></button>
     <button type="button" class="rfb" data-tool="orig" data-rt="orig">א/A<span>Original</span></button>
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
+    <button type="button" class="rfb" data-tool="review" data-mem-review-fab>🧠<span>Revisar</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
@@ -554,6 +557,19 @@ def build_workspace_page():
       <div class="stat-tile"><b data-stat-favs>0</b><span>favoritos</span></div>
     </div>
     <div class="stats-heatmap" data-stats-heatmap aria-label="Dias de leitura nas últimas semanas"></div>
+    <details class="collap week-recap" data-week-recap hidden>
+      <summary><span class="collap-title">Sua semana de estudo</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
+      <div class="week-recap-body">
+        <div class="week-recap-grid">
+          <div class="pstat"><b data-week-days>0</b><span>dias ativos</span></div>
+          <div class="pstat"><b data-week-chapters>0</b><span>capítulos</span></div>
+          <div class="pstat"><b data-week-reviews>0</b><span>revisões</span></div>
+          <div class="pstat"><b data-week-quizzes>0</b><span>quizzes</span></div>
+        </div>
+        <p class="week-recap-book" data-week-topbook hidden></p>
+        <button type="button" class="btn quiet" data-week-share>↗ Compartilhar minha semana</button>
+      </div>
+    </details>
     <details class="collap mission-block">
       <summary><span class="collap-title">Missões de hoje</span><span class="collap-count" data-mission-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
       <div class="mission-list" data-mission-list></div>
@@ -576,6 +592,7 @@ def build_workspace_page():
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="decorar">Decorar</button>
     </div>
     <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
       <div class="study-card-grid">{cards}
@@ -612,6 +629,9 @@ def build_workspace_page():
     </div>
     <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
       <div class="notebooks-app" data-notebooks-app></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="decorar" hidden>
+      <div class="memory-app" data-memory-app><p class="muted-line">Carregando…</p></div>
     </div>
   </section>
   <section class="hub-section" id="explorar">
@@ -1192,8 +1212,9 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
   <div class="plan-context" data-plan-context hidden></div>
   {book_jump(prefix, order, livro)}
   {study_fraction_module(prefix, livro, ch, vnums)}
-  <div class="chapter"{swipe_attrs}>{rows}
+  <div class="chapter" data-chapter-ref="{esc(f'{livro} {ch}')}"{swipe_attrs}>{rows}
   </div>
+  {'<button type="button" class="btn quiz-open-btn" data-quiz-open>🧩 Testar meu conhecimento</button>' if len(verses) >= 5 else ''}
   {study_continue_module(prefix, livro, ch)}
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
   <p class="backline"><a href="../">← Todos os capítulos de {esc(livro)}</a></p>
@@ -1465,8 +1486,35 @@ def build_lexicon_shards():
         write_file(out_dir / f"{book_slug(livro)}.json",
                    json.dumps(verses_map, ensure_ascii=False, separators=(",", ":")))
 
+def build_xref_shards():
+    """Fragmenta o dataset ampliado de referências cruzadas (TSK, domínio
+    público — ver docs em scripts/import_tsk.py) em um arquivo por livro
+    âncora, carregado sob demanda por study.js. tsk-crossrefs.json é gerado
+    à parte (import manual, único) e comitado; enquanto não existir, esta
+    função não faz nada e o site segue com só o cross-references.json curado."""
+    out_dir = SITE / "data" / "xref"
+    shutil.rmtree(out_dir, ignore_errors=True)
+    src = DATA / "tsk-crossrefs.json"
+    if not src.exists():
+        return
+    refs = json.loads(src.read_text(encoding="utf-8"))
+    by_book = {}
+    for ref, targets in refs.items():
+        m = re.match(r"^(.*?)\s+(\d+):(\d+)$", ref)
+        if not m:
+            continue
+        livro, ch, vs = m.group(1), m.group(2), m.group(3)
+        by_book.setdefault(livro, {})[f"{ch}:{vs}"] = targets
+    for livro, verses_map in by_book.items():
+        write_file(out_dir / f"{book_slug(livro)}.json",
+                   json.dumps(verses_map, ensure_ascii=False, separators=(",", ":")))
+
 def build_game_js():
     write_asset("gamification.asset.js", "game.js")
+
+def build_practice_js():
+    js = read_asset("practice.asset.js")
+    write_file(SITE / "assets" / "practice.js", f"var BEC_BASE={json.dumps(BASE_URL)};\n" + js)
 
 # Comunidade/Salas de Estudo: pausada por decisão de produto (será reformulada
 # antes de voltar). scripts/community.asset.js continua no repositório com a
@@ -1673,7 +1721,9 @@ def build_site(context):
     build_study_js()
     build_lexicon_js()
     build_lexicon_shards()
+    build_xref_shards()
     build_game_js()
+    build_practice_js()
     build_library_js()
     build_report_js()
     build_sw_js()

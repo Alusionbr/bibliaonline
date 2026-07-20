@@ -36,5 +36,10 @@ def expand_verses():
 
 
 @pytest.fixture(scope="session")
+def import_tsk():
+    return _load("import_tsk")
+
+
+@pytest.fixture(scope="session")
 def build():
     return _load("build")

@@ -155,10 +155,11 @@ def test_gamificacao_e_beta(site):
 
 
 def test_sincronizacao_ampliada(site):
-    # O sync cobre planos, coleções e cadernos, com fallback para o
-    # esquema v1 enquanto a migração não é aplicada.
+    # O sync cobre planos, coleções, cadernos e memorização (v3), com
+    # fallback em camadas enquanto as migrações não são aplicadas.
     auth = (site / "assets" / "auth.js").read_text("utf-8")
-    for token in ("study_plans", "collections", "notebooks", "legacyColumns", "bec.planProgress"):
+    for token in ("study_plans", "collections", "notebooks", "colsLevel", "bec.planProgress",
+                  "bec.memory", "COLS_V3", "mergeMemory", "bec.quiz"):
         assert token in auth
 
 
@@ -631,3 +632,144 @@ def test_leitor_conectado_ao_plano(site):
         assert token in app, token
     # o link enganoso "Meu plano" (que levava ao criador, não à leitura) saiu
     assert "🗓 Meu plano" not in cap
+
+
+def test_memorizacao_workspace(site):
+    # aba "Decorar" embutida no Workspace, como as demais (mesmo padrão
+    # data-ws-tab/data-ws-panel usado por atalhos/anotações/favoritos/...).
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    assert 'data-ws-tab="decorar"' in ws and 'data-ws-panel="decorar"' in ws
+    assert "data-memory-app" in ws
+    # asset novo gerado e carregado (footer + service worker)
+    assert (site / "assets" / "practice.js").exists()
+    practice = (site / "assets" / "practice.js").read_text("utf-8")
+    assert practice.startswith("var BEC_BASE=")
+    home = (site / "index.html").read_text("utf-8")
+    assert "assets/practice.js" in home
+    sw = (site / "sw.js").read_text("utf-8")
+    assert "practice.js" in sw
+    # SM-2 simplificado: fator de facilidade, intervalo e vencimento
+    for token in ("BEC_MEMORY", "function schedule(", "item.ef", "item.ivl", "item.due", "dueRefs"):
+        assert token in practice, token
+
+
+def test_memorizacao_botao_no_versiculo_e_favoritos(site):
+    # botão "Decorar" na folha de ferramentas do versículo...
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert 'data-vs-act="memorize"' in study
+    assert "BEC_MEMORY" in study
+    # ...e na lista de favoritos (Workspace/Biblioteca), sem exigir reabrir o versículo
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "data-mem-toggle" in app and "data-mem-url" in app
+
+
+def test_quiz_por_capitulo(build, tmp_path, monkeypatch):
+    # Botão só aparece quando o build sabe que o capítulo tem versículos
+    # suficientes para gerar perguntas não-triviais (gate final é no cliente).
+    monkeypatch.setattr(build, "SITE", tmp_path / "site")
+
+    def verse(n, texto):
+        return {
+            "referencia": f"Gênesis 1:{n}", "slug": f"genesis-1-{n}", "livro": "Gênesis",
+            "idioma": "hebraico", "dir": "rtl", "original": "בְּרֵאשִׁית",
+            "transliteracao": "bereshiyt", "texto_pt": texto,
+        }
+
+    textos = [
+        "No princípio criou Deus os céus e a terra.",
+        "E a terra era sem forma e vazia, e havia trevas sobre a face do abismo.",
+        "E disse Deus: haja luz, e houve luz, e viu Deus que era boa a luz.",
+        "E fez Deus a expansão, e separou as águas debaixo dela das águas acima.",
+        "E chamou Deus à expansão céus, e foi a tarde e a manhã, o dia segundo.",
+        "E disse Deus: ajuntem-se as águas debaixo dos céus num só lugar.",
+    ]
+    verses6 = [verse(i + 1, t) for i, t in enumerate(textos)]
+    build.build_chapter_page("Gênesis", 1, verses6, 1, ["Gênesis"])
+    cap6 = (tmp_path / "site" / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-quiz-open" in cap6
+    assert 'data-chapter-ref="Gênesis 1"' in cap6
+
+    verses2 = verses6[:2]
+    build.build_chapter_page("Gênesis", 1, verses2, 1, ["Gênesis"])
+    cap2 = (tmp_path / "site" / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-quiz-open" not in cap2
+    # o atributo do capítulo continua presente (a cadeia de leitura/xref depende dele)
+    assert 'data-chapter-ref="Gênesis 1"' in cap2
+
+
+def test_quiz_capitulo_pequeno_no_fixture_padrao(site):
+    # No dataset de teste padrão (1 versículo por capítulo) o botão não deve
+    # aparecer — regressão contra o gate de len(verses) do build.
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-quiz-open" not in cap
+
+
+def test_quiz_gerado_no_cliente(site):
+    # Perguntas geradas a partir do DOM do capítulo (sem curadoria, sem
+    # fetch extra): completar palavra, número do versículo, ordenar.
+    practice = (site / "assets" / "practice.js").read_text("utf-8")
+    for token in ("eligibleVerses", "buildFillBlank", "buildVerseNumber", "buildOrder",
+                  "openQuiz", "bec.quiz", "isContentWord"):
+        assert token in practice, token
+
+
+def test_gamificacao_memorizacao_e_quiz(site):
+    game = (site / "assets" / "game.js").read_text("utf-8")
+    assert "metric:'memorize'" in game or 'metric:"memorize"' in game
+    assert "metric:'quiz'" in game or 'metric:"quiz"' in game
+    for badge in ("memorizador", "memorizador_10", "quiz_10"):
+        assert badge in game
+    assert "reviewsTotal" in game and "quizzesTotal" in game
+    # migrações Supabase aditivas documentadas (aplicadas manualmente, fora do build)
+    from pathlib import Path
+    docs = Path(__file__).resolve().parents[1] / "docs"
+    v3 = (docs / "supabase-user-study-state-v3.sql").read_text("utf-8")
+    assert "memory jsonb" in v3
+    mem_sql = (docs / "supabase-gamification-memory.sql").read_text("utf-8")
+    for token in ("memorizador_10", "quiz_10", "recompute_gamification", "'memorize'"):
+        assert token in mem_sql
+
+
+def test_retrospectiva_semana_de_estudo(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    for hook in ("data-week-recap", "data-week-days", "data-week-chapters",
+                 "data-week-reviews", "data-week-quizzes", "data-week-share"):
+        assert hook in ws
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    for token in ("renderWeekRecap", "data-week-share", "loadJSON('memory'", "loadJSON('quiz'"):
+        assert token in app, token
+
+
+def test_fab_revisar_memorizacao(site):
+    cap = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "data-mem-review-fab" in cap
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "data-mem-review-fab" in app
+
+
+def test_referencias_cruzadas_ampliadas_infraestrutura(site):
+    # Sem site/data/tsk-crossrefs.json (dataset é gerado à parte, uma vez,
+    # por scripts/import_tsk.py) build_xref_shards() não gera nada — o site
+    # segue funcionando só com o dataset curado.
+    assert not (site / "data" / "xref").exists()
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    for token in ("xrefBookData", "allXrefs", "data-xref-expand", "extendChain", "data-xchain-end", "xchain-bar"):
+        assert token in study, token
+
+
+def test_build_xref_shards_fragmenta_por_livro(build, tmp_path, monkeypatch):
+    site_dir = tmp_path / "site"
+    data_dir = site_dir / "data"
+    data_dir.mkdir(parents=True)
+    verses = [{"referencia": "Gênesis 1:1"}, {"referencia": "Gênesis 1:2"}, {"referencia": "João 1:1"}]
+    (data_dir / "verses.json").write_text(json.dumps(verses, ensure_ascii=False), "utf-8")
+    tsk = {"Gênesis 1:1": ["João 1:1"], "Gênesis 1:2": ["Salmos 33:6"]}
+    (data_dir / "tsk-crossrefs.json").write_text(json.dumps(tsk, ensure_ascii=False), "utf-8")
+
+    monkeypatch.setattr(build, "SITE", site_dir)
+    monkeypatch.setattr(build, "DATA", data_dir)
+    build.build_xref_shards()
+
+    shard = json.loads((data_dir / "xref" / "genesis.json").read_text("utf-8"))
+    assert shard == {"1:1": ["João 1:1"], "1:2": ["Salmos 33:6"]}
+    assert not (data_dir / "xref" / "joao.json").exists()

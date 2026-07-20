@@ -332,7 +332,9 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
     if(!keys.length){ box.innerHTML='<p class="muted-line">Nenhum versículo favoritado ainda. Toque em ☆ Favoritar durante a leitura.</p>'; return; }
     box.innerHTML=keys.map(function(ref){
       var item=favs[ref]||{};
+      var memorized=window.BEC_MEMORY && window.BEC_MEMORY.isMemorized(ref);
       return '<div class="fav-row"><a href="'+esc(item.url||'#')+'">'+esc(ref)+'</a>'+
+        '<button type="button" class="btn tiny ghost" data-mem-toggle="'+esc(ref)+'" data-mem-url="'+esc(item.url||'')+'" aria-pressed="'+(memorized?'true':'false')+'">'+(memorized?'✓ Na fila':'🧠 Decorar')+'</button>'+
         '<button type="button" class="btn tiny ghost" data-fav-del="'+esc(ref)+'">Remover</button></div>';
     }).join('');
   }
@@ -1201,7 +1203,7 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
   var TOOLS_KEY='bec.readerTools', POS_KEY='bec.fabPos';
   var LABELS={'font-dec':'Diminuir fonte','font-inc':'Aumentar fonte','orig':'Idioma original',
     'theme':'Tema','search':'Buscar','focus':'Modo leitura','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar',
-    'study-notes':'Minhas anotações','study-share':'Compartilhar estudo','study-export':'Baixar .txt','study-clear':'Apagar tudo'};
+    'study-notes':'Minhas anotações','study-share':'Compartilhar estudo','study-export':'Baixar .txt','study-clear':'Apagar tudo','listen':'Ouvir capítulo','review':'Revisar memorização'};
 
   function toolButtons(){return Array.prototype.slice.call(panel.querySelectorAll('.rfb[data-tool]'));}
   function allTools(){return toolButtons().map(function(b){return b.getAttribute('data-tool');});}
@@ -1259,7 +1261,7 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
     if(sv){ var s=document.querySelector('[data-study-frac] [data-sf-save]'); if(s) s.click(); setOpen(false); return; }
     // reportar, exportar e apagar fecham o painel (assumem modal/download próprios);
     // fonte/original/tema/foco mantêm o painel aberto para vários toques seguidos
-    if(ev.target.closest && ev.target.closest('[data-report-open],[data-search-open],[data-study-export],[data-study-share],[data-study-clear]')) setOpen(false);
+    if(ev.target.closest && ev.target.closest('[data-report-open],[data-search-open],[data-study-export],[data-study-share],[data-study-clear],[data-mem-review-fab]')) setOpen(false);
   });
   document.addEventListener('click',function(ev){
     if(panel.hidden) return;
@@ -1451,9 +1453,70 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
       }
       hm.innerHTML=cells;
     }
+
+    renderWeekRecap(history);
   }
+
+  // "Sua semana de estudo": retrospectiva dos últimos 7 dias, derivada dos
+  // mesmos dados locais (histórico de leitura, revisões de memorização e
+  // quizzes) — nada é contado no servidor.
+  function renderWeekRecap(history){
+    var recap=document.querySelector('[data-week-recap]');
+    if(!recap) return;
+    var mem=loadJSON('memory',{items:{},log:{}});
+    var quiz=loadJSON('quiz',{chapters:{},log:{}});
+    var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-6); cutoff.setHours(0,0,0,0);
+    function inWeek(iso){ var d=new Date(iso); return !isNaN(d) && d>=cutoff; }
+
+    var activeDays={}, chapterHits={};
+    (history||[]).forEach(function(h){
+      if(!h || !h.at || !inWeek(h.at)) return;
+      activeDays[h.at.slice(0,10)]=1;
+      var m=h.url && h.url.match(/ler\/([a-z0-9-]+)\/(\d+)\//);
+      if(m) chapterHits[m[1]+'/'+m[2]]=1;
+    });
+    var chapterCount=Object.keys(chapterHits).length;
+
+    var bookCounts={};
+    Object.keys(chapterHits).forEach(function(key){
+      var slug=key.split('/')[0];
+      bookCounts[slug]=(bookCounts[slug]||0)+1;
+    });
+    var topSlug=null, topN=0;
+    Object.keys(bookCounts).forEach(function(s){ if(bookCounts[s]>topN){ topN=bookCounts[s]; topSlug=s; } });
+    var topBook=topSlug ? (BOOKS.filter(function(b){return b.slug===topSlug;})[0]||{}).nome : null;
+
+    var reviews=0;
+    Object.keys(mem.log||{}).forEach(function(d){ if(inWeek(d+'T12:00:00')) reviews+=mem.log[d]||0; });
+    var quizzes=0;
+    Object.keys(quiz.log||{}).forEach(function(d){ if(inWeek(d+'T12:00:00')) quizzes+=quiz.log[d]||0; });
+
+    var daysActive=Object.keys(activeDays).length;
+    recap.hidden = !(daysActive || chapterCount || reviews || quizzes);
+    if(recap.hidden) return;
+    var setR=function(sel,val){ var el=recap.querySelector(sel); if(el) el.textContent=val; };
+    setR('[data-week-days]', daysActive);
+    setR('[data-week-chapters]', chapterCount);
+    setR('[data-week-reviews]', reviews);
+    setR('[data-week-quizzes]', quizzes);
+    var topEl=recap.querySelector('[data-week-topbook]');
+    if(topEl){
+      topEl.hidden=!topBook;
+      if(topBook) topEl.textContent='Livro mais lido: '+topBook;
+    }
+    recap.dataset.shareText=daysActive+' dias ativos · '+chapterCount+' capítulos · '+reviews+' revisões · '+quizzes+' quizzes esta semana';
+  }
+  document.addEventListener('click', function(e){
+    var btn=e.target.closest && e.target.closest('[data-week-share]');
+    if(!btn) return;
+    var recap=document.querySelector('[data-week-recap]');
+    var text=(recap && recap.dataset.shareText)||'Minha semana de estudo';
+    if(window.BEC && window.BEC.shareCard) window.BEC.shareCard('Minha semana de estudo', text, location.origin+'/workspace/#progresso', btn);
+  });
+
   render();
   document.addEventListener('bec:study-sync', render);
+  document.addEventListener('bec:practice-changed', render);
 })();
 
 // Abas do Workspace (#estudar): Atalhos/Anotações/Favoritos/Coleções/Cadernos

@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../assets/styles.css?v=ee01d493">
 </head>
 <body data-prefix="../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -109,6 +109,19 @@
       <div class="stat-tile"><b data-stat-favs>0</b><span>favoritos</span></div>
     </div>
     <div class="stats-heatmap" data-stats-heatmap aria-label="Dias de leitura nas últimas semanas"></div>
+    <details class="collap week-recap" data-week-recap hidden>
+      <summary><span class="collap-title">Sua semana de estudo</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
+      <div class="week-recap-body">
+        <div class="week-recap-grid">
+          <div class="pstat"><b data-week-days>0</b><span>dias ativos</span></div>
+          <div class="pstat"><b data-week-chapters>0</b><span>capítulos</span></div>
+          <div class="pstat"><b data-week-reviews>0</b><span>revisões</span></div>
+          <div class="pstat"><b data-week-quizzes>0</b><span>quizzes</span></div>
+        </div>
+        <p class="week-recap-book" data-week-topbook hidden></p>
+        <button type="button" class="btn quiet" data-week-share>↗ Compartilhar minha semana</button>
+      </div>
+    </details>
     <details class="collap mission-block">
       <summary><span class="collap-title">Missões de hoje</span><span class="collap-count" data-mission-count>0/0</span><span class="collap-chev" aria-hidden="true">▾</span></summary>
       <div class="mission-list" data-mission-list></div>
@@ -131,6 +144,7 @@
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
       <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="decorar">Decorar</button>
     </div>
     <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
       <div class="study-card-grid">
@@ -192,6 +206,9 @@
     </div>
     <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
       <div class="notebooks-app" data-notebooks-app></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="decorar" hidden>
+      <div class="memory-app" data-memory-app><p class="muted-line">Carregando…</p></div>
     </div>
   </section>
   <section class="hub-section" id="explorar">
@@ -315,14 +332,15 @@
     </div>
   </div>
 </footer>
-<script src="../assets/core.js?v=4ea23780"></script>
-<script src="../assets/supabase-config.js?v=4ea23780" defer></script>
+<script src="../assets/core.js?v=ee01d493"></script>
+<script src="../assets/supabase-config.js?v=ee01d493" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../assets/auth.js?v=4ea23780" defer></script>
-<script src="../assets/app.js?v=4ea23780"></script>
-<script src="../assets/study.js?v=4ea23780" defer></script>
-<script src="../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../assets/game.js?v=4ea23780" defer></script>
-<script src="../assets/library.js?v=4ea23780" defer></script>
-<script src="../assets/report.js?v=4ea23780" defer></script>
+<script src="../assets/auth.js?v=ee01d493" defer></script>
+<script src="../assets/app.js?v=ee01d493"></script>
+<script src="../assets/study.js?v=ee01d493" defer></script>
+<script src="../assets/lexicon.js?v=ee01d493" defer></script>
+<script src="../assets/game.js?v=ee01d493" defer></script>
+<script src="../assets/practice.js?v=ee01d493" defer></script>
+<script src="../assets/library.js?v=ee01d493" defer></script>
+<script src="../assets/report.js?v=ee01d493" defer></script>
 </body></html>

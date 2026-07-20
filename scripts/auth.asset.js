@@ -8,15 +8,20 @@
     favs:'bec.favs',
     plans:'bec.studyPlans',
     collections:'bec.collections',
-    notebooks:'bec.notebooks'
+    notebooks:'bec.notebooks',
+    memory:'bec.memory'
   };
-  var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode','bec.lastRead','bec.history','bec.planProgress','bec.readingRanges','bec.origmode','bec.readerTools','bec.fabPos'];
-  // Colunas do user_study_state. Se a migracao v2 (docs/supabase-user-study-state-v2.sql)
-  // ainda nao foi aplicada, cai para o conjunto v1 sem derrubar a sincronizacao.
+  var PREF_KEYS=['bec.theme','bec.fontscale','bec.bookorder','bec.pencolor','bec.penmode','bec.lastRead','bec.history','bec.planProgress','bec.readingRanges','bec.origmode','bec.readerTools','bec.fabPos','bec.quiz'];
+  // Colunas do user_study_state, em camadas: v3 acrescenta a memorizacao com
+  // repeticao espacada (docs/supabase-user-study-state-v3.sql), v2 acrescenta
+  // planos/colecoes/cadernos (...-v2.sql). Se uma migracao ainda nao foi
+  // aplicada, cai um nivel sem derrubar a sincronizacao (erro 42703/PGRST204).
   var COLS_V1='notes,verse_highlights,word_highlights,favorites,preferences,updated_at';
   var COLS_V2='notes,verse_highlights,word_highlights,favorites,preferences,study_plans,collections,notebooks,updated_at';
+  var COLS_V3='notes,verse_highlights,word_highlights,favorites,preferences,study_plans,collections,notebooks,memory,updated_at';
   var V2_FIELDS=['study_plans','collections','notebooks'];
-  var legacyColumns=false;
+  var V3_FIELDS=['memory'];
+  var colsLevel=3; // 3=v3, 2=v2, 1=v1 — desce quando o banco acusa coluna ausente
   var client=null, currentUser=null, currentProfile=null, syncing=false, dirty=false, syncTimer=null;
 
   // Ponte de conta para os demais scripts (ex.: game.js): cliente, usuario e
@@ -77,10 +82,13 @@
       preferences:prefs(),
       updated_at:new Date().toISOString()
     };
-    if(!legacyColumns){
+    if(colsLevel>=2){
       out.study_plans=parse(KEYS.plans,[]);
       out.collections=parse(KEYS.collections,{});
       out.notebooks=parse(KEYS.notebooks,{});
+    }
+    if(colsLevel>=3){
+      out.memory=parse(KEYS.memory,{items:{},log:{}});
     }
     return out;
   }
@@ -105,6 +113,7 @@
     if('study_plans' in row) changed=storeChanged(KEYS.plans,row.study_plans||[])||changed;
     if('collections' in row) changed=storeChanged(KEYS.collections,row.collections||{})||changed;
     if('notebooks' in row) changed=storeChanged(KEYS.notebooks,row.notebooks||{})||changed;
+    if('memory' in row) changed=storeChanged(KEYS.memory,row.memory||{items:{},log:{}})||changed;
     changed=applyPrefs(row.preferences||{})||changed;
     if(changed) document.dispatchEvent(new CustomEvent('bec:study-sync'));
   }
@@ -118,6 +127,23 @@
     out.sort(function(a,b){return (b.createdAt||'').localeCompare(a.createdAt||'');});
     return out.slice(0,12);
   }
+  // Une os itens de memorizacao dos dois lados: por referencia, vence o item
+  // com "last" (data da revisao) mais recente; o log diario de revisoes soma
+  // o maior valor por dia (nunca perde revisao feita em outro aparelho).
+  function mergeMemory(remote, local){
+    remote=remote||{}; local=local||{};
+    var items={}, ref, d;
+    var rItems=remote.items||{}, lItems=local.items||{};
+    for(ref in rItems) items[ref]=rItems[ref];
+    for(ref in lItems){
+      var l=lItems[ref], r=items[ref];
+      if(!r || (l.last||'')>(r.last||'')) items[ref]=l;
+    }
+    var log={}, rLog=remote.log||{}, lLog=local.log||{};
+    for(d in rLog) log[d]=rLog[d];
+    for(d in lLog) log[d]=Math.max(log[d]||0, lLog[d]||0);
+    return {items:items, log:log};
+  }
   function mergedPayload(userId,row){
     var local=localPayload(userId);
     if(!row) return local;
@@ -130,10 +156,13 @@
       preferences:shallowMerge(row.preferences, local.preferences),
       updated_at:new Date().toISOString()
     };
-    if(!legacyColumns){
+    if(colsLevel>=2){
       out.study_plans=mergePlans(row.study_plans, local.study_plans);
       out.collections=shallowMerge(row.collections, local.collections);
       out.notebooks=shallowMerge(row.notebooks, local.notebooks);
+    }
+    if(colsLevel>=3){
+      out.memory=mergeMemory(row.memory, local.memory);
     }
     return out;
   }
@@ -155,11 +184,12 @@
     client=window.supabase.createClient(c.url, c.publishableKey);
     return client;
   }
+  var EXTRA_FIELDS=V2_FIELDS.concat(V3_FIELDS); // heurística extra p/ erros sem código padrão
   function isMissingColumn(e){
     if(!e) return false;
     if(e.code==='42703'||e.code==='PGRST204') return true;
     var msg=(e.message||'');
-    return /column/i.test(msg) && V2_FIELDS.some(function(f){return msg.indexOf(f)>-1;});
+    return /column/i.test(msg) && EXTRA_FIELDS.some(function(f){return msg.indexOf(f)>-1;});
   }
   async function syncNow(opts){
     var sb=ensureClient();
@@ -170,7 +200,8 @@
     syncing=true; dirty=false;
     try{
       setStatus('Sincronizando...', 'muted');
-      var res=await sb.from(TABLE).select(legacyColumns?COLS_V1:COLS_V2).eq('user_id', currentUser.id).maybeSingle();
+      var cols=colsLevel>=3?COLS_V3:(colsLevel>=2?COLS_V2:COLS_V1);
+      var res=await sb.from(TABLE).select(cols).eq('user_id', currentUser.id).maybeSingle();
       if(res.error && res.error.code!=='PGRST116') throw res.error;
       var payload=mergedPayload(currentUser.id, res.data);
       if(push || !res.data){
@@ -180,9 +211,9 @@
       applyPayload(payload);
       setStatus('Sincronizado.', 'ok');
     }catch(e){
-      if(!legacyColumns && isMissingColumn(e)){
-        // Banco ainda sem a migracao v2: refaz uma vez com as colunas v1.
-        legacyColumns=true;
+      if(colsLevel>1 && isMissingColumn(e)){
+        // Banco ainda sem a migracao deste nivel: desce um nivel e refaz.
+        colsLevel--;
         syncing=false;
         if(push) dirty=true;
         return syncNow(opts);

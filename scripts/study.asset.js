@@ -50,29 +50,106 @@
     });
   }
 
-  // ---------- referências cruzadas (dataset curado, ~poucos KB) ----------
+  // ---------- referências cruzadas: dataset curado (poucos KB, sempre
+  // carregado) + TSK ampliado por livro (site/data/xref/<livro>.json, sob
+  // demanda — só existe depois de scripts/import_tsk.py + build_xref_shards;
+  // enquanto não existir, o fetch falha e a fonte curada segue sozinha) ----
   var xrefPromise=null;
   function xrefData(){
     if(!core) return Promise.resolve({});
     if(!xrefPromise) xrefPromise=core.fetchData('data/cross-references.json').catch(function(){return {};});
     return xrefPromise;
   }
+  var xrefBookCache={};
+  function xrefBookData(ref){
+    var slug=core?core.bookSlugFromRef(ref):'';
+    if(!slug) return Promise.resolve({});
+    if(!xrefBookCache[slug]) xrefBookCache[slug]=core.fetchData('data/xref/'+slug+'.json').catch(function(){return {};});
+    return xrefBookCache[slug];
+  }
+  function chVsKey(ref){ var m=(ref||'').match(/(\d+):(\d+)$/); return m ? m[1]+':'+m[2] : ''; }
+  function allXrefs(ref){
+    return Promise.all([xrefData(), xrefBookData(ref)]).then(function(res){
+      var curated=res[0][ref]||[];
+      var extra=(res[1][chVsKey(ref)]||[]).filter(function(r){ return r!==ref && curated.indexOf(r)<0; });
+      return {curated:curated, extra:extra};
+    });
+  }
+  var XREF_INITIAL_LIMIT=10;
+  function xrefChip(r, curated){
+    return '<a class="xref-chip'+(curated?' curated':'')+'" href="'+refToUrl(r)+'" data-xref-nav="'+esc(r)+'">'+esc(r)+'</a>';
+  }
+  function renderXrefInto(list, data, expanded){
+    if(!list) return;
+    var curatedSet={}; data.curated.forEach(function(r){ curatedSet[r]=1; });
+    var all=data.curated.concat(data.extra);
+    var limit=expanded ? all.length : XREF_INITIAL_LIMIT;
+    var shown=all.slice(0, limit);
+    var html=shown.map(function(r){ return xrefChip(r, !!curatedSet[r]); }).join('');
+    if(!expanded && all.length>limit) html+='<button type="button" class="xref-more" data-xref-expand>mostrar todas ('+all.length+')</button>';
+    list.innerHTML=html;
+  }
   function fillXrefBlocks(root){
     (root||document).querySelectorAll('[data-xref]').forEach(function(sec){
       if(sec.dataset.xrefDone) return;
       var ref=sec.getAttribute('data-xref-ref');
-      xrefData().then(function(map){
+      allXrefs(ref).then(function(data){
         sec.dataset.xrefDone='1';
-        var refs=map[ref];
-        if(!refs || !refs.length) return;
-        var list=sec.querySelector('[data-xref-list]');
-        if(list) list.innerHTML=refs.map(function(r){
-          return '<a class="xref-chip" href="'+refToUrl(r)+'">'+esc(r)+'</a>';
-        }).join('');
+        if(!data.curated.length && !data.extra.length) return;
+        sec._xrefData=data;
+        renderXrefInto(sec.querySelector('[data-xref-list]'), data, false);
         sec.hidden=false;
       });
     });
   }
+  document.addEventListener('click', function(e){
+    var expandBtn=e.target.closest && e.target.closest('[data-xref-expand]');
+    if(!expandBtn) return;
+    var container=expandBtn.closest('[data-xref],[data-vs-xref]');
+    if(container && container._xrefData){
+      var list=container.querySelector('[data-xref-list],[data-vs-xref-list]');
+      renderXrefInto(list, container._xrefData, true);
+    }
+  });
+
+  // ---------- cadeia de leitura: segue de referência em referência mostrando
+  // a trilha percorrida (sensação de descoberta, sem estado no servidor) ----
+  var CHAIN_KEY='bec.xchain', CHAIN_MAX=12;
+  function loadChain(){ try{ return JSON.parse(sessionStorage.getItem(CHAIN_KEY)||'[]'); }catch(e){ return []; } }
+  function saveChain(list){ try{ sessionStorage.setItem(CHAIN_KEY, JSON.stringify(list.slice(-CHAIN_MAX))); }catch(e){} }
+  function extendChain(fromRef, fromUrl, toRef, toUrl){
+    var chain=loadChain();
+    if(!chain.length || chain[chain.length-1].ref!==fromRef) chain.push({ref:fromRef, url:fromUrl});
+    chain.push({ref:toRef, url:toUrl});
+    saveChain(chain);
+  }
+  function renderChainBar(){
+    var cont=document.querySelector('.verse-cont[data-ref]');
+    var main=document.getElementById('main');
+    if(!cont || !main) return;
+    var ref=cont.getAttribute('data-ref');
+    var chain=loadChain();
+    if(!chain.length || chain[chain.length-1].ref!==ref) return;
+    var bar=document.createElement('div'); bar.className='xchain-bar';
+    bar.innerHTML='🔗 Trilha: '+chain.map(function(step, i){
+      return i===chain.length-1 ? '<b>'+esc(step.ref)+'</b>' : '<a href="'+esc(step.url)+'">'+esc(step.ref)+'</a>';
+    }).join(' → ')+' <button type="button" data-xchain-end>Encerrar</button>';
+    main.insertBefore(bar, main.firstChild);
+  }
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-xchain-end]')){
+      try{ sessionStorage.removeItem(CHAIN_KEY); }catch(err){}
+      var bar=e.target.closest('.xchain-bar'); if(bar) bar.remove();
+      return;
+    }
+    var navChip=e.target.closest && e.target.closest('[data-xref-nav]');
+    if(!navChip) return;
+    var toRef=navChip.getAttribute('data-xref-nav'), toUrl=navChip.getAttribute('href');
+    var fromRef=sheetRef;
+    if(!fromRef){ var sec=navChip.closest('[data-xref-ref]'); fromRef=sec?sec.getAttribute('data-xref-ref'):null; }
+    if(fromRef) extendChain(fromRef, refToUrl(fromRef), toRef, toUrl);
+  });
+  renderChainBar();
 
   // ---------- compartilhar cartão-imagem do versículo (+ link) ----------
   function wrapCanvas(ctx, text, maxW){
@@ -226,6 +303,7 @@
         (origText?'<button type="button" class="vs-act" data-vs-act="speak-orig">🔊<span>Ouvir original</span></button>':'')+
         (ptText?'<button type="button" class="vs-act" data-vs-act="speak-pt">🔊<span>Ouvir em português</span></button>':'')+
         '<button type="button" class="vs-act" data-vs-act="fav" aria-pressed="'+(fav?'true':'false')+'">'+(fav?'★':'☆')+'<span>'+(fav?'Favorito':'Favoritar')+'</span></button>'+
+        (window.BEC_MEMORY ? '<button type="button" class="vs-act" data-vs-act="memorize" aria-pressed="'+(window.BEC_MEMORY.isMemorized(ref)?'true':'false')+'">'+(window.BEC_MEMORY.isMemorized(ref)?'✓':'🧠')+'<span>'+(window.BEC_MEMORY.isMemorized(ref)?'Na fila de decorar':'Decorar')+'</span></button>' : '')+
         '<button type="button" class="vs-act" data-vs-act="copy">⧉<span>Copiar</span></button>'+
         '<button type="button" class="vs-act" data-vs-act="share">↗<span>Compartilhar</span></button>'+
         '<button type="button" class="vs-act" data-vs-act="collection">🗂<span>Salvar em coleção</span></button>'+
@@ -241,11 +319,12 @@
       '<div class="verse-sheet-row vs-collection-row" data-vs-collection hidden></div>';
     box.dataset.origText=origText; box.dataset.origLang=origLang; box.dataset.ptText=ptText;
 
-    xrefData().then(function(map){
+    allXrefs(ref).then(function(data){
       if(sheetRef!==ref) return;
-      var refs=map[ref]; if(!refs || !refs.length) return;
-      var row=box.querySelector('[data-vs-xref]'), list=box.querySelector('[data-vs-xref-list]');
-      list.innerHTML=refs.map(function(r){ return '<a class="xref-chip" href="'+refToUrl(r)+'">'+esc(r)+'</a>'; }).join('');
+      if(!data.curated.length && !data.extra.length) return;
+      var row=box.querySelector('[data-vs-xref]');
+      row._xrefData=data;
+      renderXrefInto(box.querySelector('[data-vs-xref-list]'), data, false);
       row.hidden=false;
     });
   }
@@ -304,6 +383,11 @@
         var on=toggleFav(sheetRef, refToUrl(sheetRef));
         act.setAttribute('aria-pressed', on?'true':'false');
         act.innerHTML=(on?'★':'☆')+'<span>'+(on?'Favorito':'Favoritar')+'</span>';
+      }
+      else if(kind==='memorize' && window.BEC_MEMORY){
+        var on=window.BEC_MEMORY.toggle(sheetRef, box.dataset.ptText, refToUrl(sheetRef));
+        act.setAttribute('aria-pressed', on?'true':'false');
+        act.innerHTML=(on?'✓':'🧠')+'<span>'+(on?'Na fila de decorar':'Decorar')+'</span>';
       }
       else if(kind==='copy') copyText(verseText(sheetRef), act, 'Copiado!');
       else if(kind==='share') shareVerse(sheetRef, act);
