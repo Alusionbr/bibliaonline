@@ -562,7 +562,6 @@ window.BEC = window.BEC || {};
 
   var core=window.BEC.core;
   var PREFIX=core?core.prefix:((document.body&&document.body.getAttribute('data-prefix'))||'');
-  var esc=core?core.esc:function(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
 
   var box=null, input=null, listEl=null, gridEl=null, titleEl=null;
   var shown=[], active=0, current=null, lastFocus=null, read={};
@@ -606,15 +605,43 @@ window.BEC = window.BEC || {};
     return bookHref(b)+n+'/';
   }
 
+  // Lista e grade são montadas por DOM, não por innerHTML. O prefixo do site
+  // vem de um atributo do <body>, então qualquer string montada a partir dele
+  // e jogada em innerHTML conta como texto do DOM reinterpretado como HTML —
+  // mesmo escapado, porque o esc chega por indireção e não é reconhecido como
+  // sanitizador. Com textContent não há string de HTML para escapar.
+  function span(cls, text){
+    var el=document.createElement('span');
+    el.className=cls;
+    if(text!=null) el.textContent=text;
+    return el;
+  }
+
   function renderBooks(){
-    listEl.innerHTML=shown.map(function(b,i){
+    listEl.textContent='';
+    if(!shown.length){
+      var none=document.createElement('p');
+      none.className='refp-none';
+      none.textContent='Nenhum livro com esse nome.';
+      listEl.appendChild(none);
+      return;
+    }
+    shown.forEach(function(b,i){
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.className='refp-book'+(i===active?' on':'');
+      btn.setAttribute('role','option');
+      btn.setAttribute('aria-selected', i===active?'true':'false');
+      btn.setAttribute('data-i', i);
+      // classe do testamento vem de uma lista fechada, não do dado cru
+      var bar=span('refp-bt bt-'+(b.t==='nt'?'nt':'at'));
+      bar.setAttribute('aria-hidden','true');
+      btn.appendChild(bar);
+      btn.appendChild(span('refp-name', b.nome));
       var done=Object.keys(read[b.nome]||{}).length;
-      var tag=done?('<span class="refp-done">'+done+'/'+b.cap+'</span>'):'';
-      return '<button type="button" class="refp-book'+(i===active?' on':'')+'" role="option"'+
-        ' aria-selected="'+(i===active?'true':'false')+'" data-i="'+i+'">'+
-        '<span class="refp-bt bt-'+esc(b.t)+'" aria-hidden="true"></span>'+
-        '<span class="refp-name">'+esc(b.nome)+'</span>'+tag+'</button>';
-    }).join('') || '<p class="refp-none">Nenhum livro com esse nome.</p>';
+      if(done) btn.appendChild(span('refp-done', done+'/'+b.cap));
+      listEl.appendChild(btn);
+    });
     revealActive();
   }
 
@@ -630,18 +657,26 @@ window.BEC = window.BEC || {};
 
   function renderChapters(highlight){
     var b=shown[active];
-    if(!b){ titleEl.textContent=''; gridEl.innerHTML=''; return; }
-    titleEl.innerHTML='<a href="'+esc(bookHref(b))+'">'+esc(b.nome)+'</a> · '+b.cap+
-      ' capítulo'+(b.cap!==1?'s':'');
-    var done=read[b.nome]||{}, out='';
+    titleEl.textContent=''; gridEl.textContent='';
+    if(!b) return;
+    var link=document.createElement('a');
+    link.href=bookHref(b);
+    link.textContent=b.nome;
+    titleEl.appendChild(link);
+    titleEl.appendChild(document.createTextNode(
+      ' · '+b.cap+' capítulo'+(b.cap!==1?'s':'')));
+    var done=read[b.nome]||{};
     for(var i=1;i<=b.cap;i++){
       var cls='chip chapter-chip';
       if(done[i]) cls+=' done';
       if(highlight===i) cls+=' hl';
       if(current && current.slug===b.slug && current.ch===i) cls+=' here';
-      out+='<a class="'+cls+'" href="'+esc(chapterHref(b,i))+'">'+i+'</a>';
+      var a=document.createElement('a');
+      a.className=cls;
+      a.href=chapterHref(b,i);
+      a.textContent=i;
+      gridEl.appendChild(a);
     }
-    gridEl.innerHTML=out;
     revealActive();
   }
 
@@ -653,11 +688,27 @@ window.BEC = window.BEC || {};
     renderChapters(parsed.ch && shown[active] && parsed.ch<=shown[active].cap ? parsed.ch : null);
   }
 
+  // Allowlist da URL final, imediatamente antes de navegar. Não basta validar
+  // o capítulo: bookHref começa com PREFIX, que sai de um atributo do <body>,
+  // e por isso a string inteira conta como texto do DOM chegando a
+  // location.href. O formato aceito é só "../../ler/<slug>/" com capítulo
+  // opcional — nunca URL absoluta, esquema (javascript:) ou caminho
+  // protocolo-relativo (//host/...). Mesma trava que b48ff27 pôs no gesto de
+  // deslizar, pelo mesmo motivo.
+  function safeReadUrl(u){
+    return (typeof u==='string' && /^(\.\.\/)*ler\/[a-z0-9-]+\/([0-9]+\/)?$/.test(u)) ? u : null;
+  }
+
+  function navigate(u){
+    var safe=safeReadUrl(u);
+    if(safe) location.href=safe;
+  }
+
   // Enter: se a consulta trouxe capítulo válido vai direto nele; senão abre o
-  // livro. chapterHref é quem valida — capítulo fora da faixa cai no livro.
+  // livro. chapterHref é quem valida o número — fora da faixa cai no livro.
   function go(){
     var b=shown[active]; if(!b) return;
-    location.href=chapterHref(b, api.parseQuery(input.value).ch);
+    navigate(chapterHref(b, api.parseQuery(input.value).ch));
   }
 
   function open(trigger){
