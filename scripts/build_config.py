@@ -143,4 +143,11 @@ GENERATED_DIRS = (
     "cadernos",
     "planos",
     "privacidade",
+    # Estas quatro ficaram fora do build por um tempo e congelaram com a
+    # navegação antiga (sem Workspace, sem barra inferior no celular). Voltaram
+    # a ser geradas — precisam ser limpas a cada build como as demais.
+    "temas",
+    "dicionario",
+    "mapas",
+    "offline",
 )

@@ -45,6 +45,20 @@ def site(tmp_path, build, monkeypatch):
     topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
 
+    # temas, léxico e atlas: dados curados, cada um com uma referência que
+    # existe e uma que não existe (para checar que o build ignora a que falta)
+    topic_refs = {"criacao": ["Gênesis 1:1", "Ageu 9:9"]}
+    glossary = [{
+        "slug": "logos", "termo": "Logos", "original": "λόγος", "translit": "logos",
+        "idioma": "grego", "dir": "ltr", "definicao": "Palavra, razão, discurso.",
+        "refs": ["João 1:1", "Ageu 9:9"],
+    }]
+    places = [{
+        "slug": "eden", "nome": "Éden", "tipo": "Região", "regiao": "Origens",
+        "descricao": "O jardim da criação.", "lat": 33.1, "lon": 44.2,
+        "refs": ["Gênesis 1:1"],
+    }]
+
     plans = [{
         "slug": "joao-2-dias", "titulo": "João em 2 dias",
         "descricao": "Leitura curta de exemplo.",
@@ -56,6 +70,9 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
+    (data_dir / "topic-refs.json").write_text(json.dumps(topic_refs, ensure_ascii=False), "utf-8")
+    (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
+    (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -631,3 +648,75 @@ def test_leitor_conectado_ao_plano(site):
         assert token in app, token
     # o link enganoso "Meu plano" (que levava ao criador, não à leitura) saiu
     assert "🗓 Meu plano" not in cap
+
+
+def test_temas_dicionario_e_mapas_voltam_ao_build(site):
+    """As três seções ficaram fora do gerador e congelaram com a navegação
+    antiga (sem Workspace, sem barra inferior). Agora são geradas com o mesmo
+    shell das demais páginas."""
+    for path in (
+        ("temas", "index.html"), ("temas", "criacao", "index.html"),
+        ("dicionario", "index.html"), ("dicionario", "logos", "index.html"),
+        ("mapas", "index.html"), ("mapas", "eden", "index.html"),
+        ("offline", "index.html"),
+    ):
+        page = site.joinpath(*path)
+        assert page.exists(), path
+        html = page.read_text("utf-8")
+        # shell atual: navegação de 3 áreas, barra inferior e overlay de busca
+        assert 'class="mobile-primary-nav"' in html
+        assert "workspace/" in html
+        assert "data-search-overlay" in html
+        # nada da navegação velha
+        assert ">Linha do tempo</a>\n      <a" not in html
+        assert 'data-rt="context"' not in html
+
+
+def test_temas_ligam_versiculos_e_nao_caem_todos_em_ler(site):
+    # Antes: os 12 chips da home apontavam todos para /ler/.
+    home = (site / "index.html").read_text("utf-8")
+    assert 'class="chip" href="temas/criacao/"' in home
+    assert 'class="chip" href="ler/"' not in home
+    tema = (site / "temas" / "criacao" / "index.html").read_text("utf-8")
+    assert "versiculos/genesis-1-1/" in tema
+    # referência curada que não existe no dataset é ignorada, não quebra o build
+    assert "Ageu 9:9" not in tema
+    # a busca também leva ao tema, não a /ler/
+    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
+    temas = [i for i in index if i["t"] == "Tema"]
+    assert temas and all(i["url"].startswith("temas/") for i in temas)
+
+
+def test_dicionario_e_mapas_ligam_versiculos_e_fontes(site):
+    gloss = (site / "dicionario" / "logos" / "index.html").read_text("utf-8")
+    assert "versiculos/joao-1-1/" in gloss
+    assert "λόγος" in gloss
+    # artigo do mesmo termo entra em "Para aprofundar" quando existe
+    mapa = (site / "mapas" / "eden" / "index.html").read_text("utf-8")
+    assert "openstreetmap.org" in mapa
+    assert "versiculos/genesis-1-1/" in mapa
+
+
+def test_versiculo_volta_para_o_capitulo(site):
+    # Antes o caminho versículo -> capítulo não existia: a trilha ia de
+    # "Livros" direto para a referência.
+    verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'href="../../ler/joao/">João</a>' in verso
+    assert 'href="../../ler/joao/1/">1</a>' in verso
+    assert "Ler João 1 inteiro" in verso
+
+
+def test_404_oferece_busca_e_saidas(site):
+    html = (site / "404.html").read_text("utf-8")
+    assert 'id="q"' in html and 'id="results"' in html
+    for destino in ('href="ler/"', 'href="temas/"', 'href="workspace/"'):
+        assert destino in html
+
+
+def test_sitemap_inclui_temas_dicionario_e_mapas(site):
+    sitemap = (site / "sitemap.xml").read_text("utf-8")
+    for path in ("/temas/", "/temas/criacao/", "/dicionario/", "/dicionario/logos/",
+                 "/mapas/", "/mapas/eden/", "/anotacoes/"):
+        assert f"{path}</loc>" in sitemap
+    # a página de fallback do service worker não é conteúdo indexável
+    assert "/offline/</loc>" not in sitemap

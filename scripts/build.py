@@ -75,6 +75,19 @@ def load(name):
     return json.loads((DATA / name).read_text(encoding="utf-8"))
 
 
+def load_optional(name, default):
+    """Dados curados que podem não existir (o teste de fumaça monta um site/
+    mínimo). Ausência ou JSON quebrado devolve o padrão em vez de derrubar o
+    build inteiro."""
+    path = DATA / name
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return default
+
+
 def read_asset(name):
     return (SCRIPTS_DIR / name).read_text(encoding="utf-8")
 
@@ -293,6 +306,7 @@ def footer(prefix):
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
       </div>
       <div>
+        <a href="{prefix}temas/">Temas</a>
         <a href="{prefix}dicionario/">Dicionário</a>
         <a href="{prefix}mapas/">Mapas</a>
         <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
@@ -350,6 +364,47 @@ def specimen_block(v):
       {fac}
     </figcaption>
   </figure>"""
+
+def ref_results(prefix, refs, verses_by_ref):
+    """Lista de versículos a partir de referências curadas ("João 3:16").
+    Referência que não existe no dataset é ignorada em silêncio — os JSON de
+    temas/léxico/lugares são curados à mão e podem citar trecho ainda sem
+    tradução."""
+    out = []
+    for ref in refs or ():
+        v = verses_by_ref.get(ref)
+        if not v:
+            continue
+        out.append(
+            f'<a class="result" href="{prefix}versiculos/{esc(v["slug"])}/">'
+            f'<span class="kind">Versículo</span><h4>{esc(v["referencia"])}</h4>'
+            f'<p>{esc(v.get("texto_pt", ""))}</p></a>'
+        )
+    return "".join(out)
+
+
+def article_results(prefix, articles):
+    return "".join(
+        f'<a class="result" href="{prefix}artigos/{esc(a["slug"])}/">'
+        f'<span class="kind">Artigo</span><h4>{esc(a["titulo"])}</h4>'
+        f'<p>{esc(a.get("resumo", ""))}</p></a>'
+        for a in articles
+    )
+
+
+def deepen_block(prefix, articles):
+    if not articles:
+        return ""
+    return f"""
+  <section class="block">
+    <h2><span class="dot"></span>Para aprofundar</h2>
+    <div class="related-list">{article_results(prefix, articles)}</div>
+  </section>"""
+
+
+def topic_slug(topic):
+    return topic.get("slug") or book_slug(topic.get("titulo", ""))
+
 
 def mini_cards(items):
     return "".join(
@@ -515,7 +570,7 @@ def build_workspace_page():
     explore_cards = action_cards([
         ("Léxico", "Dicionário", "Palavras-chave do hebraico e do grego, com significado.", f"{prefix}dicionario/"),
         ("Geografia", "Mapas", "Lugares bíblicos e os versículos ligados a eles.", f"{prefix}mapas/"),
-        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}index.html#temas"),
+        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}temas/"),
         ("Contexto", "Artigos", "Estudos originais sobre palavras, traduções e história do texto.", f"{prefix}index.html#artigos"),
     ])
     body = f"""
@@ -755,6 +810,262 @@ def build_notebooks_page():
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 
+def build_topics_pages(topics, topic_refs, articles, verses_by_ref):
+    """Índice temático (/temas/) e uma página por tema.
+
+    Voltou ao build: as páginas existiam no site publicado, mas congeladas com
+    a navegação antiga porque o gerador tinha sido removido. Os chips da home
+    apontavam todos para /ler/ — 12 rótulos e um destino só."""
+    if not topics:
+        return []
+    prefix = "../"
+    cards = ""
+    slugs = []
+    for t in topics:
+        slug = topic_slug(t)
+        if not slug:
+            continue
+        slugs.append(slug)
+        refs = [r for r in topic_refs.get(slug, []) if r in verses_by_ref]
+        count = f'<span class="topic-count">{len(refs)} versículo{"s" if len(refs) != 1 else ""}</span>' if refs else ""
+        icone = f'<span class="gl">{esc(t.get("icone", ""))}</span> ' if t.get("icone") else ""
+        cards += f"""
+    <a class="card topic-card" href="{esc(slug)}/">
+      <div class="ref-row"><h3>{icone}{esc(t.get('titulo', ''))}</h3></div>
+      <p class="pt-mini">{esc(t.get('descricao', ''))}</p>
+      {count}
+    </a>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Temas</p>
+  <header class="verse-head"><h1>Temas de estudo</h1></header>
+  <p class="read" style="color:var(--muted)">Pontos de entrada para quem busca um assunto, não uma referência exata. Cada tema reúne versículos curados; clique para ler cada um no idioma original, com contexto.</p>
+  <div class="cards verses">{cards}
+  </div>
+  <p class="backline"><a href="{prefix}ler/">← Ler a Bíblia livro a livro</a></p>
+</main>"""
+    write_file(
+        SITE / "temas" / "index.html",
+        head(f"Temas de estudo | {SITE_NAME}",
+             "Versículos agrupados por assunto: ansiedade, medo, fé, oração, perdão, sofrimento e mais.",
+             f"{BASE_URL}/temas/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+
+    inner = "../../"
+    for t in topics:
+        slug = topic_slug(t)
+        if not slug:
+            continue
+        refs = topic_refs.get(slug, [])
+        results = ref_results(inner, refs, verses_by_ref)
+        lista = (f'<div class="related-list">{results}</div>' if results
+                 else '<p class="muted-line">Versículos deste tema em curadoria.</p>')
+        rel = deepen_block(inner, [a for a in articles if a.get("tema") == slug])
+        icone = f'<span class="gl">{esc(t.get("icone", ""))}</span> ' if t.get("icone") else ""
+        tbody = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{inner}index.html">Início</a> · <a href="../">Temas</a> · {esc(t.get('titulo', ''))}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-hebraico">Tema</span>
+    <h1>{icone}{esc(t.get('titulo', ''))}</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">{esc(t.get('descricao', ''))}</p>
+  {lista}
+  {rel}
+  <p class="backline"><a href="../">← Todos os temas</a></p>
+</main>"""
+        write_file(
+            SITE / "temas" / slug / "index.html",
+            head(f"{t.get('titulo', '')} — versículos e contexto | {SITE_NAME}",
+                 t.get("descricao", ""), f"{BASE_URL}/temas/{slug}/", inner,
+                 {"@context": "https://schema.org", "@type": "CollectionPage",
+                  "name": t.get("titulo", ""), "inLanguage": "pt-BR",
+                  "isPartOf": {"@type": "WebSite", "name": SITE_NAME, "url": BASE_URL}})
+            + nav(inner) + tbody + footer(inner),
+        )
+    return slugs
+
+
+def build_dictionary_pages(glossary, articles, verses_by_ref):
+    """Dicionário (/dicionario/) a partir de glossary.json — mesma situação de
+    /temas/: dado curado no repositório, página publicada, gerador perdido."""
+    if not glossary:
+        return []
+    prefix = "../"
+    grupos = {}
+    for g in glossary:
+        grupos.setdefault(g.get("idioma", "hebraico"), []).append(g)
+    secoes = ""
+    for idioma in ("hebraico", "grego", "aramaico"):
+        termos = grupos.get(idioma)
+        if not termos:
+            continue
+        cards = ""
+        for g in termos:
+            dir_attr = ' dir="rtl"' if g.get("dir") == "rtl" else ' dir="ltr"'
+            sc = script_class(idioma, g.get("dir", "ltr"))
+            cards += f"""
+    <a class="card gloss-card" href="{esc(g['slug'])}/">
+      <div class="ref-row"><h3>{esc(g['termo'])}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
+      <p class="gloss-orig {sc}"{dir_attr}>{esc(g.get('original', ''))}</p>
+      <p class="pt-mini">{esc(g.get('definicao', ''))}</p>
+    </a>"""
+        secoes += f"""
+  <h2 class="gloss-group">{lang_label(idioma)}</h2>
+  <div class="cards verses">{cards}
+  </div>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Dicionário</p>
+  <header class="verse-head"><h1>Dicionário bíblico</h1></header>
+  <p class="read" style="color:var(--muted)">Palavras-chave no idioma original, com o sentido por trás da tradução e versículos onde aparecem. Conjunto inicial, em expansão.</p>
+  {secoes}
+  <p class="backline"><a href="{prefix}ler/">← Ler a Bíblia livro a livro</a></p>
+</main>"""
+    write_file(
+        SITE / "dicionario" / "index.html",
+        head(f"Dicionário bíblico — hebraico, grego e aramaico | {SITE_NAME}",
+             "Palavras-chave da Bíblia no idioma original (shalom, hesed, logos, ágape, abba e mais) com significado e versículos de exemplo.",
+             f"{BASE_URL}/dicionario/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+
+    inner = "../../"
+    for g in glossary:
+        idioma = g.get("idioma", "hebraico")
+        dir_attr = ' dir="rtl"' if g.get("dir") == "rtl" else ' dir="ltr"'
+        sc = script_class(idioma, g.get("dir", "ltr"))
+        results = ref_results(inner, g.get("refs", []), verses_by_ref)
+        onde = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Onde aparece</h2>
+    <div class="related-list">{results}</div>
+  </section>""" if results else ""
+        # artigo do mesmo termo, quando existe (shalom -> shalom-significado-hebraico)
+        rel = deepen_block(inner, [a for a in articles
+                                   if a["slug"].split("-")[0] == g["slug"]])
+        gbody = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{inner}index.html">Início</a> · <a href="../">Dicionário</a> · {esc(g['termo'])}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
+    <h1>{esc(g['termo'])}</h1>
+  </header>
+  <div class="verse-hero gloss-hero">
+    <p class="gloss-orig gloss-big {sc}"{dir_attr}>{esc(g.get('original', ''))}</p>
+    <p class="translit">{esc(g.get('translit', ''))}</p>
+    <p class="pt">{esc(g.get('definicao', ''))}</p>
+  </div>
+  {onde}
+  {rel}
+  <p class="backline"><a href="../">← Todo o dicionário</a></p>
+</main>"""
+        write_file(
+            SITE / "dicionario" / g["slug"] / "index.html",
+            head(f"{g['termo']} ({g.get('translit', '')}) — significado no {lang_label(idioma).lower()} bíblico | {SITE_NAME}",
+                 g.get("definicao", ""), f"{BASE_URL}/dicionario/{g['slug']}/", inner,
+                 {"@context": "https://schema.org", "@type": "DefinedTerm",
+                  "name": g["termo"], "description": g.get("definicao", ""),
+                  "inLanguage": "pt-BR"})
+            + nav(inner) + gbody + footer(inner),
+        )
+    return [g["slug"] for g in glossary]
+
+
+def build_maps_pages(places, verses_by_ref):
+    """Atlas (/mapas/) a partir de places.json, agrupado por região na ordem em
+    que aparece no arquivo (a curadoria segue a cronologia da narrativa)."""
+    if not places:
+        return []
+    prefix = "../"
+    regioes = {}
+    for p in places:
+        regioes.setdefault(p.get("regiao", "Outros"), []).append(p)
+    secoes = ""
+    for regiao, lugares in regioes.items():
+        cards = "".join(f"""
+    <a class="card place-card" href="{esc(p['slug'])}/">
+      <div class="ref-row"><h3>{esc(p['nome'])}</h3><span class="place-type">{esc(p.get('tipo', ''))}</span></div>
+      <p class="pt-mini">{esc(p.get('descricao', ''))}</p>
+    </a>""" for p in lugares)
+        secoes += f"""
+  <h2 class="place-group">{esc(regiao)}</h2>
+  <div class="cards verses">{cards}
+  </div>"""
+    body = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Mapas</p>
+  <header class="verse-head"><h1>Atlas bíblico</h1></header>
+  <p class="read" style="color:var(--muted)">Os lugares onde a história aconteceu, por região. Cada lugar abre com os versículos em que aparece e um link para o mapa. Conjunto inicial, em expansão.</p>
+  {secoes}
+  <p class="backline"><a href="{prefix}linha-do-tempo/">← Ver a linha do tempo</a></p>
+</main>"""
+    write_file(
+        SITE / "mapas" / "index.html",
+        head(f"Atlas bíblico — lugares da Bíblia | {SITE_NAME}",
+             "Os lugares da Bíblia por região: cidades, montes e rios, com os versículos em que aparecem.",
+             f"{BASE_URL}/mapas/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+
+    inner = "../../"
+    for p in places:
+        results = ref_results(inner, p.get("refs", []), verses_by_ref)
+        onde = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Onde aparece</h2>
+    <div class="related-list">{results}</div>
+  </section>""" if results else ""
+        mapa = ""
+        if p.get("lat") is not None and p.get("lon") is not None:
+            osm = (f"https://www.openstreetmap.org/?mlat={p['lat']}&mlon={p['lon']}"
+                   f"#map=8/{p['lat']}/{p['lon']}")
+            mapa = f'\n  <p class="read"><a class="ext-link" href="{esc(osm)}" target="_blank" rel="noopener">Ver no mapa (OpenStreetMap) ↗</a></p>'
+        pbody = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{inner}index.html">Início</a> · <a href="../">Mapas</a> · {esc(p['nome'])}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-hebraico">{esc(p.get('tipo', 'Lugar'))}</span>
+    <h1>{esc(p['nome'])}</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">{esc(p.get('descricao', ''))}</p>{mapa}
+  {onde}
+  <p class="backline"><a href="../">← Todo o atlas</a></p>
+</main>"""
+        write_file(
+            SITE / "mapas" / p["slug"] / "index.html",
+            head(f"{p['nome']} na Bíblia — lugar e versículos | {SITE_NAME}",
+                 p.get("descricao", ""), f"{BASE_URL}/mapas/{p['slug']}/", inner,
+                 {"@context": "https://schema.org", "@type": "Place",
+                  "name": p["nome"], "description": p.get("descricao", "")})
+            + nav(inner) + pbody + footer(inner),
+        )
+    return [p["slug"] for p in places]
+
+
+def build_offline_page():
+    """Página servida pelo service worker quando não há rede. Precisa da
+    navegação atual: é o único caminho de volta que o usuário tem offline."""
+    prefix = "../"
+    body = f"""
+<main id="main" class="wrap verse-page" style="text-align:center">
+  <header class="verse-head" style="margin-top:30px">
+    <span class="lang-tag lang-hebraico">Sem conexão</span>
+    <h1>Você está offline</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">Sem internet no momento. Os capítulos que você já abriu continuam disponíveis, e suas anotações, grifos e favoritos ficam salvos neste navegador — nada se perde.</p>
+  <p class="map-actions">
+    <a class="btn primary" href="{prefix}ler/">Ir para a Bíblia</a>
+    <a class="btn ghost" href="{prefix}workspace/">Abrir o Workspace</a>
+    <a class="btn ghost" href="{prefix}anotacoes/">Minhas anotações</a>
+  </p>
+  <p class="backline"><a href="{prefix}index.html">← Voltar ao início</a></p>
+</main>"""
+    write_file(
+        SITE / "offline" / "index.html",
+        head(f"Sem conexão | {SITE_NAME}", "Você está offline.",
+             f"{BASE_URL}/offline/", prefix, None) + nav(prefix) + body + footer(prefix),
+    )
+
+
 def load_reading_plans():
     """Planos curados de site/data/reading-plans.json; tolera ausência do arquivo."""
     path = DATA / "reading-plans.json"
@@ -973,7 +1284,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     body = f"""
 <main id="main" class="wrap verse-page" data-next="{next_url}">
   <article class="verse-cont" data-slug="{esc(v['slug'])}" data-ref="{esc(v['referencia'])}" data-title="{esc(title)}">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · {esc(v['referencia'])}</p>
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · <a href="{prefix}ler/{book_slug(v['livro'])}/">{esc(v['livro'])}</a> · <a href="{prefix}ler/{book_slug(v['livro'])}/{ch}/">{ch}</a> · {vs}</p>
   <header class="verse-head">
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
     <h1>{esc(v['referencia'])}</h1>
@@ -1001,7 +1312,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </article>
   <div class="vs-sentinel" aria-hidden="true"></div>
   <p class="vs-loading" aria-live="polite"></p>
-  <p class="backline"><a href="{prefix}ler/">← Todos os livros</a></p>
+  <p class="backline"><a href="{prefix}ler/{book_slug(v['livro'])}/{ch}/">← Ler {esc(v['livro'])} {ch} inteiro</a></p>
 </main>"""
     out = SITE / "versiculos" / v["slug"] / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1219,7 +1530,7 @@ def build_search_index(verses, articles, topics):
                       "url":f"artigos/{a['slug']}/","k":a.get("versiculo","").lower()})
     for t in topics:
         index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
-                      "url":"ler/","k":""})
+                      "url":f"temas/{topic_slug(t)}/","k":""})
     write_file(DATA / "search-index.json", json.dumps(index, ensure_ascii=False))
     return len(index)
 
@@ -1232,9 +1543,11 @@ def build_home(topics, verses, articles, sources, order, struct):
     featured = next(v for v in verses if v["slug"]=="genesis-1-1")
     fsc = script_class(featured["idioma"], featured.get("dir","ltr"))
 
-    # temas (os livros saíram da home e vivem na seção própria em /ler/)
+    # temas (os livros saíram da home e vivem na seção própria em /ler/).
+    # Cada chip leva ao seu próprio tema — antes os 12 apontavam todos para /ler/.
     chips = "".join(
-        f'<a class="chip" href="ler/"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
+        f'<a class="chip" href="temas/{esc(topic_slug(t))}/">'
+        f'<span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
         for t in topics)
 
     n_books = len(order)
@@ -1363,6 +1676,9 @@ def build_home(topics, verses, articles, sources, order, struct):
       <p>Pontos de entrada para quem busca um assunto, não uma referência exata.</p>
     </div>
     <div class="chips wrap">{chips}
+    </div>
+    <div class="wrap home-books-cta">
+      <a class="btn ghost" href="temas/">Ver todos os temas</a>
     </div>
   </section>
 
@@ -1507,10 +1823,12 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_meta(verses, articles, order, struct, plan_slugs=()):
+def build_meta(verses, articles, order, struct, plan_slugs=(),
+               topic_slugs=(), gloss_slugs=(), place_slugs=()):
     # sitemap
     # /estudar/ e /comunidade/ viraram redirects (noindex) para o Workspace e
-    # por isso ficam fora do sitemap.
+    # por isso ficam fora do sitemap. /offline/ também fica de fora: é a página
+    # de fallback do service worker, não conteúdo.
     urls = [
         BASE_URL + "/",
         f"{BASE_URL}/ler/",
@@ -1518,12 +1836,17 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
         f"{BASE_URL}/biblioteca/",
         f"{BASE_URL}/colecoes/",
         f"{BASE_URL}/cadernos/",
+        f"{BASE_URL}/anotacoes/",
         f"{BASE_URL}/privacidade/",
         f"{BASE_URL}/linha-do-tempo/",
     ]
     if plan_slugs:
         urls.append(f"{BASE_URL}/planos/")
         urls += [f"{BASE_URL}/planos/{slug}/" for slug in plan_slugs]
+    for base, slugs in (("temas", topic_slugs), ("dicionario", gloss_slugs), ("mapas", place_slugs)):
+        if slugs:
+            urls.append(f"{BASE_URL}/{base}/")
+            urls += [f"{BASE_URL}/{base}/{slug}/" for slug in slugs]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
@@ -1561,13 +1884,25 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
 
 def build_404():
     prefix = ""
+    # A busca usa os mesmos ids da home (#q/#results): o app.js já liga os dois
+    # em qualquer página, então o 404 vira uma saída útil em vez de um beco.
     body = """
 <main id="main" class="wrap verse-page" style="text-align:center">
   <header class="verse-head" style="margin-top:30px">
     <span class="lang-tag lang-hebraico">404</span>
     <h1>Página não encontrada</h1>
   </header>
-  <p class="read" style="color:var(--muted)">O versículo ou a página que você procura não está aqui. Talvez tenha mudado de lugar.</p>
+  <p class="read" style="color:var(--muted)">O versículo ou a página que você procura não está aqui. Talvez tenha mudado de lugar — procure abaixo pela referência.</p>
+  <div class="searchbox">
+    <span class="ico">⌕</span>
+    <input id="q" type="search" placeholder="Buscar: João 3:16, Salmo 23, shalom…" autocomplete="off" aria-label="Buscar na Bíblia">
+  </div>
+  <div id="results" class="search-results"></div>
+  <p class="map-actions">
+    <a class="btn primary" href="ler/">Ler a Bíblia</a>
+    <a class="btn ghost" href="temas/">Temas de estudo</a>
+    <a class="btn ghost" href="workspace/">Workspace</a>
+  </p>
   <p class="backline" style="text-align:center"><a href="index.html">← Voltar ao início</a></p>
 </main>"""
     out = SITE / "404.html"
@@ -1606,6 +1941,9 @@ class BuildInputs:
     verses: list
     articles: list
     sources: list
+    topic_refs: dict
+    glossary: list
+    places: list
 
 
 @dataclass
@@ -1615,6 +1953,7 @@ class BuildContext:
     order: list
     struct: dict
     articles_by_slug: dict
+    verses_by_ref: dict
 
 
 @dataclass
@@ -1639,6 +1978,9 @@ def load_build_inputs():
         verses=load("verses.json"),
         articles=load("articles.json"),
         sources=load("sources.json"),
+        topic_refs=load_optional("topic-refs.json", {}),
+        glossary=load_optional("glossary.json", []),
+        places=load_optional("places.json", []),
     )
 
 
@@ -1651,6 +1993,7 @@ def prepare_build_context(inputs):
         order=order,
         struct=struct,
         articles_by_slug={a["slug"]: a for a in inputs.articles},
+        verses_by_ref={v["referencia"]: v for v in verses},
     )
 
 
@@ -1683,6 +2026,11 @@ def build_site(context):
     build_library_page()
     build_collections_page()
     build_notebooks_page()
+    topic_slugs = build_topics_pages(inputs.topics, inputs.topic_refs, inputs.articles,
+                                     context.verses_by_ref)
+    gloss_slugs = build_dictionary_pages(inputs.glossary, inputs.articles, context.verses_by_ref)
+    place_slugs = build_maps_pages(inputs.places, context.verses_by_ref)
+    build_offline_page()
     plan_slugs = build_reading_plans_pages()
     build_plan_index()
     build_chapter_verse_counts(order, struct)
@@ -1710,7 +2058,8 @@ def build_site(context):
             build_chapter_page(livro, ch, chapters[ch], total_caps, order)
             n_chapters += 1
 
-    build_meta(verses, inputs.articles, order, struct, plan_slugs)
+    build_meta(verses, inputs.articles, order, struct, plan_slugs,
+               topic_slugs, gloss_slugs, place_slugs)
     build_404()
     return BuildSummary(
         verses=len(verses),

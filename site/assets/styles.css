@@ -1215,3 +1215,21 @@ body.swiping-right .chapter{transform:translateX(26px);opacity:.35}
 @media (prefers-reduced-motion: reduce){
   body.swiping-left .chapter,body.swiping-right .chapter{transition:none;transform:none;opacity:1}
 }
+
+/* Temas, dicionário e atlas — as três seções voltaram ao build e precisam de
+   novo dos estilos próprios que se perderam quando o gerador saiu. */
+.gloss-group,.place-group{font-family:"Fraunces",serif;font-size:1.25rem;color:var(--gold-deep);
+  max-width:var(--max);margin:26px auto 12px;padding:0 4px}
+.gloss-card .gloss-orig{font-size:1.5rem;line-height:1.5;color:var(--ink);margin:.1rem 0}
+.gloss-hero{text-align:center}
+.gloss-hero .gloss-big{font-size:2.4rem;line-height:1.6;margin:0 0 .3rem}
+.gloss-hero .translit{font-size:1rem}
+.place-type{font-family:"Inter",system-ui,sans-serif;font-size:.7rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  background:var(--vellum-2);border-radius:999px;padding:4px 9px;white-space:nowrap}
+.place-card{border-left:4px solid var(--navy-2)}
+.topic-card{border-left:4px solid var(--gold-deep)}
+.topic-card h3 .gl{color:var(--gold-deep);margin-right:6px}
+.topic-count{font-family:"Inter",system-ui,sans-serif;font-size:.78rem;font-weight:600;
+  color:var(--gold-deep);margin-top:auto}
+html.dark .place-type{background:rgba(255,255,255,.08);color:var(--muted)}
