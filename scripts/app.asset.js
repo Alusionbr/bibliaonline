@@ -593,15 +593,23 @@ window.BEC = window.BEC || {};
     wire();
   }
 
-  // O slug sai de BEC_BOOKS (gerado no build), mas o capítulo vem do que a
-  // pessoa digitou na caixa: só entra na URL depois de virar inteiro dentro da
-  // faixa do livro. Mesmo padrão de allowlist já usado no gesto de deslizar —
-  // fecha o caminho da entrada até location.href em vez de confiar na origem.
-  function bookHref(b){ return PREFIX+'ler/'+b.slug+'/'; }
+  // Allowlist na saída dos geradores de URL, para que todo consumidor receba
+  // um valor já validado — o painel alimenta três destinos (location.href, o
+  // href do livro e o de cada capítulo) e guardar só um deixava os outros
+  // dois abertos. PREFIX sai de document.body.getAttribute('data-prefix'),
+  // então a string inteira é texto do DOM chegando a um sink de URL, não só o
+  // capítulo. O formato aceito é apenas "../../ler/<slug>/" com capítulo
+  // opcional: nunca URL absoluta, esquema (javascript:) ou caminho
+  // protocolo-relativo (//host/...). Mesma trava que b48ff27 pôs no gesto de
+  // deslizar, pelo mesmo motivo.
+  function safeReadUrl(u){
+    return (typeof u==='string' && /^(\.\.\/)*ler\/[a-z0-9-]+\/([0-9]+\/)?$/.test(u)) ? u : '';
+  }
+  function bookHref(b){ return safeReadUrl(PREFIX+'ler/'+b.slug+'/'); }
   function chapterHref(b, ch){
     var n=Math.trunc(Number(ch));
     if(!(n>=1 && n<=b.cap)) return bookHref(b);
-    return bookHref(b)+n+'/';
+    return safeReadUrl(PREFIX+'ler/'+b.slug+'/'+n+'/');
   }
 
   // Lista e grade são montadas por DOM, não por innerHTML. O prefixo do site
@@ -659,7 +667,7 @@ window.BEC = window.BEC || {};
     titleEl.textContent=''; gridEl.textContent='';
     if(!b) return;
     var link=document.createElement('a');
-    link.href=bookHref(b);
+    link.href=safeReadUrl(bookHref(b));
     link.textContent=b.nome;
     titleEl.appendChild(link);
     titleEl.appendChild(document.createTextNode(
@@ -672,7 +680,7 @@ window.BEC = window.BEC || {};
       if(current && current.slug===b.slug && current.ch===i) cls+=' here';
       var a=document.createElement('a');
       a.className=cls;
-      a.href=chapterHref(b,i);
+      a.href=safeReadUrl(chapterHref(b,i));
       a.textContent=i;
       gridEl.appendChild(a);
     }
@@ -687,27 +695,12 @@ window.BEC = window.BEC || {};
     renderChapters(parsed.ch && shown[active] && parsed.ch<=shown[active].cap ? parsed.ch : null);
   }
 
-  // Allowlist da URL final, imediatamente antes de navegar. Não basta validar
-  // o capítulo: bookHref começa com PREFIX, que sai de um atributo do <body>,
-  // e por isso a string inteira conta como texto do DOM chegando a
-  // location.href. O formato aceito é só "../../ler/<slug>/" com capítulo
-  // opcional — nunca URL absoluta, esquema (javascript:) ou caminho
-  // protocolo-relativo (//host/...). Mesma trava que b48ff27 pôs no gesto de
-  // deslizar, pelo mesmo motivo.
-  function safeReadUrl(u){
-    return (typeof u==='string' && /^(\.\.\/)*ler\/[a-z0-9-]+\/([0-9]+\/)?$/.test(u)) ? u : null;
-  }
-
-  function navigate(u){
-    var safe=safeReadUrl(u);
-    if(safe) location.href=safe;
-  }
-
   // Enter: se a consulta trouxe capítulo válido vai direto nele; senão abre o
   // livro. chapterHref é quem valida o número — fora da faixa cai no livro.
   function go(){
     var b=shown[active]; if(!b) return;
-    navigate(chapterHref(b, api.parseQuery(input.value).ch));
+    var url=safeReadUrl(chapterHref(b, api.parseQuery(input.value).ch));
+    if(url) location.href=url;
   }
 
   function open(trigger){
