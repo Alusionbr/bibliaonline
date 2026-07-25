@@ -16,7 +16,6 @@ https://github.com/supabase/supabase-js/releases de tempos em tempos.
 Uso (só ao trocar de versão):
     python scripts/fetch_vendor.py
 """
-import sys
 import urllib.request
 from pathlib import Path
 
@@ -50,4 +49,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

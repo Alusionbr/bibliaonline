@@ -18,7 +18,6 @@ Uso (só quando mudar a lista de fontes):
 Gera: site/assets/fonts/*.woff2 e site/assets/fonts.css
 """
 import re
-import sys
 import urllib.request
 from pathlib import Path
 
@@ -105,4 +104,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
