@@ -1469,13 +1469,15 @@ window.BEC = window.BEC || {};
     }
   }
 
+  // "Continuar leitura" saiu de um cartão (que tinha <h3>) para o botão
+  // principal do hero, que é só texto — daí escrever no alvo que existir.
   var wsContinue=document.querySelector('[data-ws-continue]');
   if(wsContinue){
     try{
       var lr=JSON.parse(localStorage.getItem('bec.lastRead')||'null');
       if(lr && lr.url){
         wsContinue.href=lr.url;
-        wsContinue.querySelector('h3').textContent='Continuar: '+lr.label;
+        (wsContinue.querySelector('h3') || wsContinue).textContent='Continuar: '+lr.label;
       }
     }catch(e){}
   }
@@ -1856,9 +1858,13 @@ window.BEC = window.BEC || {};
     var b=e.target.closest && e.target.closest('[data-ws-tab]');
     if(b) setTab(b.getAttribute('data-ws-tab'));
   });
-  var saved='atalhos';
-  try{ saved=localStorage.getItem('bec.wsTab')||'atalhos'; }catch(e){}
-  if(!buttons.some(function(b){return b.getAttribute('data-ws-tab')===saved;})) saved='atalhos';
+  // A aba padrão é a primeira que existir, não um nome fixo: "atalhos" deixou
+  // de existir e o fallback apontava para ela, então nenhuma aba ficava ativa
+  // e todos os painéis sumiam. Quem tinha "atalhos" salvo caía no mesmo buraco.
+  var fallback=buttons.length ? buttons[0].getAttribute('data-ws-tab') : '';
+  var saved=fallback;
+  try{ saved=localStorage.getItem('bec.wsTab')||fallback; }catch(e){}
+  if(!buttons.some(function(b){return b.getAttribute('data-ws-tab')===saved;})) saved=fallback;
   var hashTab=(location.hash||'').replace('#','');
   if(buttons.some(function(b){return b.getAttribute('data-ws-tab')===hashTab;})) saved=hashTab;
   setTab(saved);

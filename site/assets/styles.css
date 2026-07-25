@@ -1261,6 +1261,20 @@ html.dark .search-overlay-in{background:var(--surface-raised)}
 html.dark .search-overlay-head input{background:var(--paper)}
 body.search-open{overflow:hidden}
 
+/* índice das seções do Workspace: a página tem várias telas de altura e não
+   oferecia nenhuma forma de pular para o que se procura */
+.ws-sections{display:flex;gap:8px;flex-wrap:wrap;margin:0 auto 6px;max-width:var(--max);
+  font-family:"Inter",system-ui,sans-serif}
+.ws-sections a[hidden]{display:none}
+.ws-sections a{font-size:.86rem;padding:7px 13px;border-radius:999px;text-decoration:none;
+  border:1px solid var(--line);color:var(--ink-soft);background:transparent}
+.ws-sections a:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
+@media (max-width:720px){
+  .ws-sections{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .ws-sections::-webkit-scrollbar{display:none}
+  .ws-sections a{flex:0 0 auto}
+}
+
 /* dashboard de estatísticas do Workspace */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:10px;margin:16px 0}
 .stat-tile{background:var(--vellum);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}

@@ -276,8 +276,12 @@ def test_workspace_abas_biblioteca_embutida(site):
     # Workspace (além de continuarem existindo como páginas próprias).
     ws = (site / "workspace" / "index.html").read_text("utf-8")
     assert "data-ws-tabs" in ws
-    for tab in ("atalhos", "anotacoes", "favoritos", "colecoes", "cadernos"):
+    for tab in ("anotacoes", "favoritos", "colecoes", "cadernos", "criar-plano"):
         assert f'data-ws-tab="{tab}"' in ws and f'data-ws-panel="{tab}"' in ws
+    # "Atalhos" era uma grade de links dentro de uma aba, e abria por padrão:
+    # a seção Estudar apresentava links em vez do trabalho da pessoa.
+    assert 'data-ws-tab="atalhos"' not in ws
+    assert 'data-ws-tab="anotacoes">Anotações' in ws.replace('class="ws-tab on" role="tab" aria-selected="true" ', '')
     assert 'id="anotacoes"' in ws
     assert "data-fav-full-list" in ws
     assert "data-collections-app" in ws
@@ -493,6 +497,38 @@ def test_seletor_de_livro_e_capitulo_abre_do_leitor(site):
     app = (site / "assets" / "app.js").read_text("utf-8")
     assert "data-ref-picker" in app and "refp-chapters" in app
     assert '"cap":' in app and '"t":' in app
+
+
+def test_workspace_poe_ferramentas_antes_do_placar(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    # Estudar vinha depois de quase duas telas de gamificação; agora abre a página
+    assert ws.index('id="estudar"') < ws.index('id="progresso"')
+    # e a página ganhou índice, porque tinha várias telas sem forma de pular
+    assert "ws-sections" in ws
+    # o botão principal é o que sabe onde a pessoa parou
+    assert 'data-ws-continue' in ws and 'class="btn primary"' in ws
+
+
+def test_conta_sai_do_workspace(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    conta = (site / "conta" / "index.html").read_text("utf-8")
+    # perfil e configurações ocupavam 27% do Workspace e não são estudo
+    for marca in ('id="perfil"', 'id="configuracoes"', "data-settings-panel", "data-profile-name"):
+        assert marca not in ws, marca
+        assert marca in conta, marca
+    # a conta tem o shell atual e volta para o Workspace
+    assert "mobile-primary-nav" in conta and 'href="../workspace/"' in conta
+    # o menu da conta aponta para o novo endereço
+    auth = (site / "assets" / "auth.js").read_text("utf-8")
+    assert "conta/#perfil" in auth and "conta/#configuracoes" in auth
+    assert "workspace/#perfil" not in auth
+
+
+def test_progresso_nao_aparece_zerado_para_quem_nunca_leu(site):
+    game = (site / "assets" / "game.js").read_text("utf-8")
+    # o painel só é revelado quando há atividade real, não incondicionalmente
+    assert "panel.hidden=true; return;" in game
+    assert "bec.readingRanges" in game
 
 
 def test_palavras_de_jesus_saem_em_vermelho_com_legenda(site):

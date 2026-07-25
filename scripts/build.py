@@ -632,18 +632,18 @@ def build_workspace_page():
     title = f"Workspace | {SITE_NAME}"
     desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca e anotações em um só lugar."
     canonical = f"{BASE_URL}/workspace/"
-    cards = action_cards([
-        ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/", " data-ws-continue"),
-        ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
-        ("Biblioteca", "Minha biblioteca", "Tudo junto: notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
-        ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
-        ("Histórico", "Histórico", "Continue a leitura recente.", "#historico"),
-    ])
+    # A aba "Atalhos" saiu: era uma grade de links dentro de uma aba dentro de
+    # uma seção, e abria por padrão — a seção "Estudar" apresentava links em
+    # vez do trabalho da pessoa. Os destinos que valiam continuam aqui em
+    # Explorar; "Continuar leitura" virou o botão principal do hero, que é
+    # onde alguém procura por ele.
     explore_cards = action_cards([
+        ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
         ("Léxico", "Dicionário", "Palavras-chave do hebraico e do grego, com significado.", f"{prefix}dicionario/"),
         ("Geografia", "Mapas", "Lugares bíblicos e os versículos ligados a eles.", f"{prefix}mapas/"),
         ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}temas/"),
         ("Contexto", "Artigos", "Estudos originais sobre palavras, traduções e história do texto.", f"{prefix}index.html#artigos"),
+        ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
     ])
     body = f"""
 <main id="main" class="wrap hub-page">
@@ -653,10 +653,58 @@ def build_workspace_page():
     <h1>Workspace</h1>
     <p>Leitura, progresso e ferramentas de estudo — tudo ao redor do texto, em um só lugar.</p>
     <div class="hub-cta">
-      <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
-      <a class="btn green" href="#progresso">Ver progresso</a>
+      <a class="btn primary" href="{prefix}ler/" data-ws-continue>Continuar leitura</a>
+      <a class="btn green" href="#estudar">Minhas anotações</a>
     </div>
   </header>
+  <nav class="ws-sections" aria-label="Seções do Workspace">
+    <a href="#estudar">Estudar</a>
+    <a href="#progresso">Progresso</a>
+    <a href="#explorar">Explorar</a>
+    <a href="#historico">Histórico</a>
+  </nav>
+  <section class="hub-section" id="estudar">
+    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
+    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
+      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="anotacoes">Anotações</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
+    </div>
+    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
+      <form class="plan-form" data-plan-form>
+        <label>O que deseja estudar?
+          <select name="tipo" data-plan-tipo>
+            <option value="livro">Um livro da Bíblia</option>
+            <option value="tema">Um tema</option>
+          </select>
+        </label>
+        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
+        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
+        <label>Duração
+          <select name="duracao">
+            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
+          </select>
+        </label>
+        <button type="submit" class="btn primary">Gerar plano</button>
+      </form>
+      <div class="saved-plans" data-plan-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes">
+      <div id="anotacoes" class="anot-list"></div>
+      <p class="map-actions"><a class="btn ghost" href="{prefix}anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
+      <div class="library-rows" data-fav-full-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
+      <div class="collections-app" data-collections-app></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
+      <div class="notebooks-app" data-notebooks-app></div>
+    </div>
+  </section>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
     <div class="level-card">
@@ -694,53 +742,6 @@ def build_workspace_page():
       <div class="medal-grid" data-medal-grid></div>
     </details>
   </section>
-  <section class="hub-section" id="estudar">
-    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
-    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
-      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="atalhos">Atalhos</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="anotacoes">Anotações</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
-      <div class="study-card-grid">{cards}
-      </div>
-    </div>
-    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
-      <form class="plan-form" data-plan-form>
-        <label>O que deseja estudar?
-          <select name="tipo" data-plan-tipo>
-            <option value="livro">Um livro da Bíblia</option>
-            <option value="tema">Um tema</option>
-          </select>
-        </label>
-        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
-        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
-        <label>Duração
-          <select name="duracao">
-            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
-          </select>
-        </label>
-        <button type="submit" class="btn primary">Gerar plano</button>
-      </form>
-      <div class="saved-plans" data-plan-list></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes" hidden>
-      <div id="anotacoes" class="anot-list"></div>
-      <p class="map-actions"><a class="btn ghost" href="{prefix}anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
-      <div class="library-rows" data-fav-full-list></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
-      <div class="collections-app" data-collections-app></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
-      <div class="notebooks-app" data-notebooks-app></div>
-    </div>
-  </section>
   <section class="hub-section" id="explorar">
     <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
     <div class="study-card-grid">{explore_cards}
@@ -750,6 +751,35 @@ def build_workspace_page():
     <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
     <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
   </section>
+  <section class="hub-section" id="reportes" data-admin-reports hidden>
+    <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
+    <div class="library-rows" data-admin-reports-list><p class="muted-line">Carregando reportes…</p></div>
+  </section>
+</main>"""
+    out = SITE / "workspace" / "index.html"
+    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
+
+
+def build_account_page():
+    """Conta: perfil, preferências e sincronização.
+
+    Perfil e Configurações ocupavam 1.457px do Workspace — 27% da página — e
+    não são estudo. Saíram para cá, que é onde o menu da conta já os anuncia
+    (Meu perfil, Configurações, Sincronização, Privacidade, Sair). O Workspace
+    fica com leitura, ferramentas e progresso; a conta fica com a conta.
+    """
+    prefix = "../"
+    title = f"Minha conta | {SITE_NAME}"
+    desc = "Perfil de estudo, preferências de leitura e sincronização da sua conta."
+    canonical = f"{BASE_URL}/conta/"
+    body = f"""
+<main id="main" class="wrap hub-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Minha conta</p>
+  <header class="hub-hero">
+    <p class="eyebrow">Sua conta</p>
+    <h1>Minha conta</h1>
+    <p>Perfil, preferências de leitura e seus dados. O estudo em si fica no <a href="{prefix}workspace/">Workspace</a>.</p>
+  </header>
   <section class="hub-section profile-study" id="perfil">
     <div class="section-title"><h2>Perfil de estudo</h2><span>Sem seguidores ou ranking</span></div>
     <div class="profile-grid">
@@ -811,12 +841,8 @@ def build_workspace_page():
       </div>
     </div>
   </section>
-  <section class="hub-section" id="reportes" data-admin-reports hidden>
-    <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
-    <div class="library-rows" data-admin-reports-list><p class="muted-line">Carregando reportes…</p></div>
-  </section>
 </main>"""
-    out = SITE / "workspace" / "index.html"
+    out = SITE / "conta" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 
@@ -1959,6 +1985,7 @@ def build_meta(verses, articles, order, struct, plan_slugs=(),
         f"{BASE_URL}/cadernos/",
         f"{BASE_URL}/anotacoes/",
         f"{BASE_URL}/privacidade/",
+        f"{BASE_URL}/conta/",
         f"{BASE_URL}/linha-do-tempo/",
     ]
     if plan_slugs:
@@ -2155,6 +2182,7 @@ def build_site(context):
     build_sw_js()
     build_annotations_page()
     build_workspace_page()
+    build_account_page()
     build_merged_redirects()
     build_library_page()
     build_collections_page()

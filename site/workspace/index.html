@@ -26,8 +26,8 @@
 <meta name="twitter:description" content="Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca e anotações em um só lugar.">
 <meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../manifest.webmanifest">
-<link rel="stylesheet" href="../assets/fonts.css?v=b8db4163">
-<link rel="stylesheet" href="../assets/styles.css?v=b8db4163">
+<link rel="stylesheet" href="../assets/fonts.css?v=5f53f1d4">
+<link rel="stylesheet" href="../assets/styles.css?v=5f53f1d4">
 </head>
 <body data-prefix="../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -84,10 +84,58 @@
     <h1>Workspace</h1>
     <p>Leitura, progresso e ferramentas de estudo — tudo ao redor do texto, em um só lugar.</p>
     <div class="hub-cta">
-      <a class="btn primary" href="../ler/">Continuar leitura</a>
-      <a class="btn green" href="#progresso">Ver progresso</a>
+      <a class="btn primary" href="../ler/" data-ws-continue>Continuar leitura</a>
+      <a class="btn green" href="#estudar">Minhas anotações</a>
     </div>
   </header>
+  <nav class="ws-sections" aria-label="Seções do Workspace">
+    <a href="#estudar">Estudar</a>
+    <a href="#progresso">Progresso</a>
+    <a href="#explorar">Explorar</a>
+    <a href="#historico">Histórico</a>
+  </nav>
+  <section class="hub-section" id="estudar">
+    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
+    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
+      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="anotacoes">Anotações</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
+    </div>
+    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
+      <form class="plan-form" data-plan-form>
+        <label>O que deseja estudar?
+          <select name="tipo" data-plan-tipo>
+            <option value="livro">Um livro da Bíblia</option>
+            <option value="tema">Um tema</option>
+          </select>
+        </label>
+        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
+        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
+        <label>Duração
+          <select name="duracao">
+            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
+          </select>
+        </label>
+        <button type="submit" class="btn primary">Gerar plano</button>
+      </form>
+      <div class="saved-plans" data-plan-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes">
+      <div id="anotacoes" class="anot-list"></div>
+      <p class="map-actions"><a class="btn ghost" href="../anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
+      <div class="library-rows" data-fav-full-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
+      <div class="collections-app" data-collections-app></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
+      <div class="notebooks-app" data-notebooks-app></div>
+    </div>
+  </section>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
     <div class="level-card">
@@ -125,81 +173,14 @@
       <div class="medal-grid" data-medal-grid></div>
     </details>
   </section>
-  <section class="hub-section" id="estudar">
-    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
-    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
-      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="atalhos">Atalhos</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="anotacoes">Anotações</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
-      <div class="study-card-grid">
-    <a class="study-card link-card" href="../ler/" data-ws-continue>
-      <span>Leitura</span>
-      <h3>Continuar leitura</h3>
-      <p>Retome o último capítulo ou versículo aberto.</p>
-    </a>
+  <section class="hub-section" id="explorar">
+    <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
+    <div class="study-card-grid">
     <a class="study-card link-card" href="../planos/">
       <span>Planos</span>
       <h3>Planos de leitura</h3>
       <p>Acompanhe leituras guiadas dia a dia.</p>
     </a>
-    <a class="study-card link-card" href="../biblioteca/">
-      <span>Biblioteca</span>
-      <h3>Minha biblioteca</h3>
-      <p>Tudo junto: notas, grifos, favoritos, planos e artigos.</p>
-    </a>
-    <a class="study-card link-card" href="../linha-do-tempo/">
-      <span>Explorar</span>
-      <h3>Linha do tempo</h3>
-      <p>Os livros na ordem histórica dos acontecimentos.</p>
-    </a>
-    <a class="study-card link-card" href="#historico">
-      <span>Histórico</span>
-      <h3>Histórico</h3>
-      <p>Continue a leitura recente.</p>
-    </a>
-      </div>
-    </div>
-    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
-      <form class="plan-form" data-plan-form>
-        <label>O que deseja estudar?
-          <select name="tipo" data-plan-tipo>
-            <option value="livro">Um livro da Bíblia</option>
-            <option value="tema">Um tema</option>
-          </select>
-        </label>
-        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
-        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
-        <label>Duração
-          <select name="duracao">
-            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
-          </select>
-        </label>
-        <button type="submit" class="btn primary">Gerar plano</button>
-      </form>
-      <div class="saved-plans" data-plan-list></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes" hidden>
-      <div id="anotacoes" class="anot-list"></div>
-      <p class="map-actions"><a class="btn ghost" href="../anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
-      <div class="library-rows" data-fav-full-list></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
-      <div class="collections-app" data-collections-app></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
-      <div class="notebooks-app" data-notebooks-app></div>
-    </div>
-  </section>
-  <section class="hub-section" id="explorar">
-    <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
-    <div class="study-card-grid">
     <a class="study-card link-card" href="../dicionario/">
       <span>Léxico</span>
       <h3>Dicionário</h3>
@@ -220,72 +201,16 @@
       <h3>Artigos</h3>
       <p>Estudos originais sobre palavras, traduções e história do texto.</p>
     </a>
+    <a class="study-card link-card" href="../linha-do-tempo/">
+      <span>Explorar</span>
+      <h3>Linha do tempo</h3>
+      <p>Os livros na ordem histórica dos acontecimentos.</p>
+    </a>
     </div>
   </section>
   <section class="hub-section" id="historico">
     <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
     <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
-  </section>
-  <section class="hub-section profile-study" id="perfil">
-    <div class="section-title"><h2>Perfil de estudo</h2><span>Sem seguidores ou ranking</span></div>
-    <div class="profile-grid">
-      <div><b>Nome</b><span data-profile-name>Seu nome público</span></div>
-      <div><b>Conta</b><span data-profile-status>Visitante (estudo salvo neste navegador)</span></div>
-      <div><b>Dias seguidos</b><span data-profile-streak>0</span></div>
-      <div><b>Anotações</b><span data-profile-notes>0</span></div>
-      <div><b>Favoritos</b><span data-profile-favs>0</span></div>
-      <div><b>Grifos</b><span data-profile-highlights>0</span></div>
-    </div>
-  </section>
-  <section class="hub-section" id="configuracoes">
-    <div class="section-title"><h2>Configurações e sincronização</h2><a href="../privacidade/">Privacidade</a></div>
-    <p class="muted-line">Preferências de leitura salvas neste navegador e sincronizadas quando você entra na conta.</p>
-    <div class="settings-grid" data-settings-panel>
-      <div class="settings-row">
-        <b>Tema</b>
-        <div class="settings-opts" role="group" aria-label="Tema de leitura">
-          <button type="button" class="btn quiet settings-opt" data-set-theme="light">Claro</button>
-          <button type="button" class="btn quiet settings-opt" data-set-theme="sepia">Sépia</button>
-          <button type="button" class="btn quiet settings-opt" data-set-theme="dark">Escuro</button>
-        </div>
-      </div>
-      <div class="settings-row">
-        <b>Tamanho da fonte</b>
-        <div class="settings-opts" role="group" aria-label="Tamanho da fonte">
-          <button type="button" class="btn quiet settings-opt" data-set-font="0">A</button>
-          <button type="button" class="btn quiet settings-opt" data-set-font="1">A</button>
-          <button type="button" class="btn quiet settings-opt" data-set-font="2">A</button>
-          <button type="button" class="btn quiet settings-opt" data-set-font="3">A</button>
-        </div>
-      </div>
-      <div class="settings-row">
-        <b>Idioma original</b>
-        <label class="settings-toggle"><input type="checkbox" data-set-orig> Mostrar hebraico/grego e transliteração</label>
-      </div>
-      <div class="settings-row">
-        <b>Leitura</b>
-        <label class="settings-toggle"><input type="checkbox" data-set-autoread> Marcar versículos como lidos automaticamente ao rolar a página</label>
-        <label class="settings-toggle"><input type="checkbox" data-set-reveal checked> Efeito de entrada suave no texto ao rolar</label>
-      </div>
-      <div class="settings-row">
-        <b>Ordem dos livros</b>
-        <div class="settings-opts" role="group" aria-label="Ordem dos livros">
-          <button type="button" class="btn quiet settings-opt" data-set-order="bib">Bíblica</button>
-          <button type="button" class="btn quiet settings-opt" data-set-order="alpha">Alfabética</button>
-          <button type="button" class="btn quiet settings-opt" data-set-order="chron">Cronológica</button>
-        </div>
-      </div>
-      <div class="settings-row">
-        <b>Meus dados</b>
-        <div class="settings-opts">
-          <button type="button" class="btn quiet" data-settings-export>Baixar backup (.json)</button>
-          <button type="button" class="btn quiet" data-settings-import>Importar backup</button>
-          <input type="file" accept="application/json" data-settings-import-file hidden>
-          <button type="button" class="btn danger ghost" data-settings-clear>Apagar tudo deste navegador</button>
-        </div>
-        <span class="settings-note" data-settings-status></span>
-      </div>
-    </div>
   </section>
   <section class="hub-section" id="reportes" data-admin-reports hidden>
     <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
@@ -322,14 +247,14 @@
     </div>
   </div>
 </footer>
-<script src="../assets/core.js?v=b8db4163"></script>
-<script src="../assets/supabase-config.js?v=b8db4163" defer></script>
-<script src="../assets/vendor-supabase-2.45.4.min.js?v=b8db4163" defer></script>
-<script src="../assets/auth.js?v=b8db4163" defer></script>
-<script src="../assets/app.js?v=b8db4163"></script>
-<script src="../assets/study.js?v=b8db4163" defer></script>
-<script src="../assets/lexicon.js?v=b8db4163" defer></script>
-<script src="../assets/game.js?v=b8db4163" defer></script>
-<script src="../assets/library.js?v=b8db4163" defer></script>
-<script src="../assets/report.js?v=b8db4163" defer></script>
+<script src="../assets/core.js?v=5f53f1d4"></script>
+<script src="../assets/supabase-config.js?v=5f53f1d4" defer></script>
+<script src="../assets/vendor-supabase-2.45.4.min.js?v=5f53f1d4" defer></script>
+<script src="../assets/auth.js?v=5f53f1d4" defer></script>
+<script src="../assets/app.js?v=5f53f1d4"></script>
+<script src="../assets/study.js?v=5f53f1d4" defer></script>
+<script src="../assets/lexicon.js?v=5f53f1d4" defer></script>
+<script src="../assets/game.js?v=5f53f1d4" defer></script>
+<script src="../assets/library.js?v=5f53f1d4" defer></script>
+<script src="../assets/report.js?v=5f53f1d4" defer></script>
 </body></html>
