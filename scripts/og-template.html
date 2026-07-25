@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  Molde da imagem de compartilhamento (og:image), 1200x630.
+
+  Gera site/assets/og-default.png. Sem essa imagem, todo link do site colado
+  no WhatsApp, no Instagram ou no X aparecia como um retângulo vazio — e
+  compartilhar versículo é justamente como um site bíblico circula.
+
+  Para regerar depois de editar este arquivo: servir site/ em localhost e
+  fotografar esta página em 1200x630 com qualquer navegador headless. As
+  fontes vêm de assets/fonts.css, as mesmas do site.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1200px;height:630px;overflow:hidden;background:#07111f;
+       display:flex;flex-direction:column;justify-content:space-between;
+       padding:72px 80px;position:relative}
+  /* brilho quente vindo do canto, para a arte não ser um retângulo chapado */
+  body::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(120% 90% at 88% 8%, rgba(200,149,54,.20), transparent 58%);}
+  .row{display:flex;align-items:center;gap:22px;position:relative;z-index:1}
+  .mark{width:74px;height:74px;flex:0 0 auto;display:grid;place-items:center;
+    border-radius:19px;background:#c89536;color:#0b1626;
+    font-family:"Frank Ruhl Libre",serif;font-size:44px;line-height:1;padding-bottom:6px}
+  .name{font-family:"Fraunces",serif;font-weight:600;font-size:44px;color:#f6ecd6;letter-spacing:-.015em}
+  .mid{position:relative;z-index:1}
+  h1{font-family:"Fraunces",serif;font-weight:600;font-size:74px;line-height:1.08;
+     letter-spacing:-.02em;color:#f6ecd6;max-width:15ch}
+  h1 em{font-style:normal;color:#efd08a}
+  .heb{font-family:"Frank Ruhl Libre",serif;direction:rtl;font-size:37px;
+    color:rgba(239,208,138,.42);margin-top:30px}
+  .foot{display:flex;align-items:center;gap:14px;position:relative;z-index:1;
+    font-family:"Inter",system-ui,sans-serif;font-size:21px;color:#a7b0c2}
+  .foot b{color:#efd08a;font-weight:600}
+  .dot{width:5px;height:5px;border-radius:50%;background:#3c4a60}
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="mark">ב</div>
+    <div class="name">Bíblia em Contexto</div>
+  </div>
+  <div class="mid">
+    <h1>O texto na <em>língua em que foi escrito</em>.</h1>
+    <div class="heb">בְּרֵאשִׁית בָּרָא אֱלֹהִים</div>
+  </div>
+  <div class="foot">
+    <b>Hebraico e grego</b><span class="dot"></span>
+    <span>Manuscritos e fontes rastreáveis</span><span class="dot"></span>
+    <span>Sem anúncios</span>
+  </div>
+</body>
+</html>

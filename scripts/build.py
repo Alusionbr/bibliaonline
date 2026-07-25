@@ -64,6 +64,7 @@ def asset_ver():
         SCRIPTS_DIR / "sw.asset.js",
         *(SCRIPTS_DIR / name for name in SOURCE_ASSETS),
         SITE / "assets" / "styles.css",
+        SITE / "assets" / "fonts.css",
     ]:
         if path.exists():
             h.update(path.read_bytes())
@@ -199,13 +200,17 @@ def head(title, description, canonical, prefix, jsonld=None):
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:site_name" content="{SITE_NAME}">
 <meta property="og:url" content="{esc(canonical)}">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="{BASE_URL}/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{esc(title)}">
 <meta name="twitter:description" content="{esc(description)}">
+<meta name="twitter:image" content="{BASE_URL}/assets/og-default.png">
 <link rel="manifest" href="{prefix}manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{prefix}assets/fonts.css?v={ASSET_VER}">
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body data-prefix="{esc(prefix)}">
@@ -225,6 +230,10 @@ MNAV_ICONS = {
     "book": ('<path d="M4 6c2.2-1.1 5.4-1.1 8 1c2.6-2.1 5.8-2.1 8-1v13c-2.2-1.1-5.4-1.1-8 1'
               'c-2.6-2.1-5.8-2.1-8-1z"/><path d="M12 7v13"/>'),
     "search": '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/>',
+    # ferramentas de leitura do nav de desktop — antes eram emoji (🔍 🌙 🐞),
+    # que mudam de desenho a cada sistema e destoam do resto do chrome.
+    # "א/A" e "A−/A+" continuam texto: dizem o que fazem melhor que um símbolo.
+    "moon": '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
     "grid": ('<rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/>'
              '<rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/>'
              '<rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/>'
@@ -269,12 +278,11 @@ def nav(prefix):
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">{mnav_icon("search")}</button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">{mnav_icon("moon")}</button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -317,6 +325,9 @@ def footer(prefix):
       <div>
         <a href="{prefix}biblioteca/">Biblioteca</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
         <a href="{prefix}temas/">Temas</a>
@@ -330,7 +341,7 @@ def footer(prefix):
 </footer>
 <script src="{prefix}assets/core.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/supabase-config.js?v={ASSET_VER}" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+<script src="{prefix}assets/vendor-supabase.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/auth.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
@@ -350,31 +361,34 @@ def verse_stack(v, big=False):
     <p class="pt">{esc(v['texto_pt'])}</p>"""
 
 def specimen_block(v):
+    """Manuscrito do versículo.
+
+    Nenhum dos 31.173 versículos tem imagem: o campo `manuscrito.imagem` é
+    null em todos, e o bloco publicava "pendente de licença" com o selo
+    "Verificar licença — A confirmar" — estado interno de trabalho exposto em
+    toda a superfície pública do site. Agora, sem imagem, sai só a linha
+    honesta: o fac-símile do códice correspondente ao idioma do versículo. A
+    moldura com imagem continua pronta para quando algum versículo receber uma
+    com licença confirmada.
+    """
     m = v.get("manuscrito") or {}
     img = m.get("imagem")
-    cap = esc(m.get("legenda",""))
-    lic = esc(m.get("licenca",""))
-    fonte_nome = esc(m.get("fonte_nome",""))
-    fonte_url = esc(m.get("fonte_url",""))
-    seal = "Domínio público" if "domínio público" in (m.get("licenca","").lower()) else "Verificar licença"
-    if img:
-        frame = (f'<div class="frame"><img loading="lazy" alt="{cap}" src="{esc(img)}" '
-                 f'onerror="this.closest(\'.specimen\').querySelector(\'.frame\').innerHTML=\'<div class=&quot;ph&quot;><b>✶</b>Imagem indisponível no momento. Veja no acervo da fonte.</div>\'"></div>')
-    else:
-        frame = ('<div class="frame"><div class="ph"><b>✶</b>'
-                 'Manuscritos são fotografados por página, não por versículo. '
-                 'Veja o fac-símile completo do códice-fonte.</div></div>')
+    lic = m.get("licenca", "")
+    nome, url = MANUSCRITO_FACSIMILE.get(
+        v.get("idioma", ""), MANUSCRITO_FACSIMILE["hebraico"])
+    if not img:
+        return f"""
+  <p class="facsimile-line">Este versículo vem do <a class="ext-link" href="{esc(url)}" target="_blank" rel="noopener">{esc(nome)} ↗</a>, fotografado por página no acervo da fonte.</p>"""
+    cap = esc(m.get("legenda", "")) or f"Manuscrito: {esc(nome)}."
+    fonte_nome = esc(m.get("fonte_nome", ""))
+    fonte_url = esc(m.get("fonte_url", ""))
     link = f' · <a href="{fonte_url}" target="_blank" rel="noopener">{fonte_nome} ↗</a>' if fonte_url else ""
-    cap_txt = cap or "Texto hebraico do Códice de Leningrado (Westminster Leningrad Codex)."
-    fac = (f'<div class="lic"><a class="ext-link" href="{MANUSCRITO_FACSIMILE}" target="_blank" '
-           f'rel="noopener">Ver o manuscrito (Códice de Leningrado) ↗</a></div>') if not img else ""
     return f"""
   <figure class="specimen">
-    {frame}
+    <div class="frame"><img loading="lazy" alt="{cap}" src="{esc(img)}"></div>
     <figcaption class="cap">
-      <p>{cap_txt}</p>
-      <div class="lic"><span class="seal">{esc(seal)}</span> {lic}{link}</div>
-      {fac}
+      <p>{cap}</p>
+      <div class="lic"><span class="seal">Domínio público</span> {esc(lic)}{link}</div>
     </figcaption>
   </figure>"""
 

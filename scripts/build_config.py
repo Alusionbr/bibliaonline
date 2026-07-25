@@ -55,7 +55,15 @@ SEFARIA = {
     "Malaquias": "Malachi",
 }
 
-MANUSCRITO_FACSIMILE = "https://commons.wikimedia.org/wiki/Leningrad_Codex"
+# Fac-símile do códice que corresponde a CADA idioma. Antes havia um único
+# link (Leningrado) para todo o site — mas Leningrado é o texto massorético
+# hebraico, e apontá-lo a partir de um versículo grego é simplesmente errado.
+# O Novo Testamento vai para o Sinaítico, já declarado em sources.json.
+MANUSCRITO_FACSIMILE = {
+    "hebraico": ("Códice de Leningrado", "https://commons.wikimedia.org/wiki/Leningrad_Codex"),
+    "aramaico": ("Códice de Leningrado", "https://commons.wikimedia.org/wiki/Leningrad_Codex"),
+    "grego": ("Códice Sinaítico", "https://www.codexsinaiticus.org/en/manuscript.aspx"),
+}
 
 BOOK_ORDER = [
     "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio", "Josué",

@@ -392,8 +392,10 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
   border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .specimen .frame{background:#2a2218;display:grid;place-items:center;min-height:120px}
 .specimen .frame img{width:100%;height:auto;object-fit:cover;max-height:420px}
-.specimen .ph{padding:34px 20px;text-align:center;color:rgba(239,231,216,.8);font-family:"Inter",sans-serif;font-size:.9rem}
-.specimen .ph b{display:block;color:var(--gold-soft);font-size:1.4rem;margin-bottom:6px;font-family:"Frank Ruhl Libre",serif;font-weight:400}
+/* sem imagem, o versículo mostra só a procedência numa linha — a moldura
+   vazia com aviso de licença saía em todas as 31 mil páginas */
+.facsimile-line{max-width:var(--read);margin:22px auto 0;font-family:"Inter",sans-serif;
+  font-size:.84rem;color:var(--muted);line-height:1.6}
 .specimen .cap{padding:14px 18px}
 .specimen .cap p{margin:0;font-size:.92rem;color:var(--ink-soft)}
 .specimen .cap .lic{font-family:"Inter",sans-serif;font-size:.74rem;color:var(--muted);margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -434,6 +436,10 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .footer a{color:var(--gold-soft);text-decoration:none}
 .footer .cols{display:flex;gap:30px;flex-wrap:wrap;font-family:"Inter",sans-serif;font-size:.9rem}
 .footer .cols a{display:block;padding:3px 0;color:rgba(217,207,189,.85)}
+/* botão que precisa parecer link (abre o painel de reporte, não navega) */
+.footer .cols .footer-link{display:block;padding:3px 0;background:0;border:0;cursor:pointer;
+  font:inherit;text-align:left;color:rgba(217,207,189,.85)}
+.footer .cols .footer-link:hover{color:var(--gold-soft)}
 
 /* ---------- responsivo ---------- */
 @media(min-width:760px){
@@ -633,8 +639,14 @@ body.hl-mode .pt,body.hl-mode .orig{-webkit-user-select:none;user-select:none;-w
 /* controles de leitura no nav */
 .reader-tools{display:inline-flex;gap:4px;margin-left:auto;margin-right:8px}
 .reader-tools .rt{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;min-width:38px;min-height:38px;
+  display:inline-grid;place-items:center;
   border:1px solid var(--line);background:transparent;color:var(--ink-soft);border-radius:10px;cursor:pointer}
 .reader-tools .rt:hover{border-color:var(--gold-deep);color:var(--gold-deep)}
+/* os botões de ferramenta usam ícone de linha, não emoji: emoji muda de
+   desenho a cada sistema e nunca acompanha a cor do resto do chrome */
+.reader-tools .rt .mnav-ic{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.reader-tools .rt.rt-txt{font-variant-numeric:tabular-nums;font-weight:600}
 .auth-trigger{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;min-height:38px;
   border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);border-radius:999px;
   padding:7px 13px;cursor:pointer;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -709,7 +721,7 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 .ref-jump:hover{border-color:var(--gold);color:var(--ink)}
 .ref-jump .rj-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ref-jump .rj-chev{color:var(--muted);font-size:.8rem}
-.ref-jump.compact{font-weight:500;flex:0 0 auto}
+.ref-jump.compact{font-weight:400;flex:0 0 auto}
 /* o teclado do celular não tem "g": a dica só faz sentido com ponteiro fino */
 @media (hover:none){.book-jump-hint{display:none}}
 
@@ -974,7 +986,7 @@ html.dark .order-toggle .ot.on{color:#1a1610}
 /* seção ativa na navegação */
 .nav-links a.active{background:rgba(28,22,12,.09);color:var(--ink);font-weight:700}
 html.dark .nav-links a.active{background:rgba(255,255,255,.12);color:var(--ink-strong)}
-.mobile-primary-nav a.active{color:var(--accent-soft,var(--gold-deep));font-weight:800}
+.mobile-primary-nav a.active{color:var(--accent-soft,var(--gold-deep));font-weight:700}
 .mobile-primary-nav a.active .mnav-ic{
   background:var(--gold-soft);border-radius:999px;padding:3px;
   box-sizing:content-box;color:#3a2a08
