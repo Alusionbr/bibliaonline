@@ -472,18 +472,36 @@ def test_lote2_cartao_ferramentas_modal(site):
     assert "data-study-export" in cap and "data-study-share" in cap and "data-study-clear" in cap
 
 
-def test_lote2_seletor_ir_para_livro(site):
+def test_seletor_de_livro_e_capitulo_abre_do_leitor(site):
+    # o gatilho aparece nas duas páginas do leitor, já sabendo onde o leitor está
     cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
-    assert 'class="book-jump"' in cap
-    assert "Antigo Testamento" in cap and "Novo Testamento" in cap
-    # o seletor leva a outros livros (valor com caminho de leitura)
-    assert "ler/genesis/" in cap
-    # também presente na página do livro
+    assert 'data-refp-book="joao"' in cap and 'data-refp-chapter="1"' in cap
     book = (site / "ler" / "joao" / "index.html").read_text("utf-8")
-    assert 'class="book-jump"' in book
-    # wiring no app.js
+    assert 'data-ref-picker' in book and 'data-refp-chapter' not in book
+    # sem JavaScript continua sendo um link para a lista de livros
+    assert 'href="../../ler/"' in book
+    # e também está entre as ferramentas do leitor
+    assert 'data-tool="goto"' in cap
+    # o painel é montado no cliente a partir de BEC_BOOKS (livro + nº de capítulos)
     app = (site / "assets" / "app.js").read_text("utf-8")
-    assert "book-jump" in app
+    assert "data-ref-picker" in app and "refp-chapters" in app
+    assert '"cap":' in app and '"t":' in app
+
+
+def test_lista_de_livros_tem_filtro_e_progresso(site):
+    ler = (site / "ler" / "index.html").read_text("utf-8")
+    assert "data-book-filter" in ler
+    assert 'data-testament="at"' in ler and 'data-testament="nt"' in ler
+    # cada cartão traz o selo de progresso, oculto até haver leitura marcada
+    assert 'data-book-prog="João"' in ler
+    assert "data-booklist-empty" in ler
+    # a grade de capítulos expõe o número para o cliente marcar o que já foi lido
+    book = (site / "ler" / "joao" / "index.html").read_text("utf-8")
+    assert 'data-chapter-grid data-book="João"' in book
+    assert 'data-ch="1"' in book
+    # o progresso vem de bec.readingRanges, não do HTML publicado
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "data-book-prog" in app and "readingRanges" in app
 
 
 def test_lote2_bloqueio_de_ias(site):

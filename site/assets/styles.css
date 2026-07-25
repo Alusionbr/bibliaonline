@@ -319,10 +319,10 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
 .study-map-head h2,.study-desk h2{font-size:1.35rem;margin:0 0 6px}
 .study-map-head p,.study-desk p{margin:0;color:var(--muted)}
 .map-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
-.btn.quiet,.auth-actions .btn.ghost,.hub-page .btn.ghost,.verse-page .btn.ghost,.search-overlay .btn.ghost{
+.btn.quiet,.auth-actions .btn.ghost,.hub-page .btn.ghost,.verse-page .btn.ghost,.search-overlay .btn.ghost,.refp .btn.ghost{
   border-color:var(--line);color:var(--ink-soft);background:var(--paper)
 }
-.btn.quiet:hover,.auth-actions .btn.ghost:hover,.hub-page .btn.ghost:hover,.verse-page .btn.ghost:hover,.search-overlay .btn.ghost:hover{
+.btn.quiet:hover,.auth-actions .btn.ghost:hover,.hub-page .btn.ghost:hover,.verse-page .btn.ghost:hover,.search-overlay .btn.ghost:hover,.refp .btn.ghost:hover{
   border-color:var(--gold-deep);color:var(--gold-deep);background:var(--vellum-2)
 }
 .desk-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -697,12 +697,116 @@ html.dark .searchbox{background:var(--paper);border-color:var(--line)}
 html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 
 /* ===== Lote 2: seletor de livro, ferramentas ocultas, modal de confirmação ===== */
-/* seletor "Ir para livro" */
-.book-jump-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 14px;
+/* gatilho "Ir para": abre o seletor de livro + capítulo (.refp abaixo) */
+.book-jump-wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 14px;
   font-family:"Inter",system-ui,sans-serif}
-.book-jump-lbl{font-size:.92rem;color:var(--muted)}
-.book-jump{font-family:inherit;font-size:.95rem;padding:9px 12px;border-radius:10px;
-  border:1px solid var(--line);background:var(--paper);color:var(--ink);min-height:40px;cursor:pointer;max-width:100%}
+.book-jump-hint{font-size:.82rem;color:var(--muted)}
+.book-jump-hint kbd{font-family:inherit;font-size:.78rem;border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--vellum);color:var(--ink-soft)}
+.ref-jump{display:inline-flex;align-items:center;gap:8px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.95rem;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);
+  background:var(--paper);color:var(--ink);min-height:40px;cursor:pointer;text-decoration:none;max-width:100%}
+.ref-jump:hover{border-color:var(--gold);color:var(--ink)}
+.ref-jump .rj-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-jump .rj-chev{color:var(--muted);font-size:.8rem}
+.ref-jump.compact{font-weight:500;flex:0 0 auto}
+/* o teclado do celular não tem "g": a dica só faz sentido com ponteiro fino */
+@media (hover:none){.book-jump-hint{display:none}}
+
+/* seletor de livro e capítulo: painel único (celular e desktop) */
+.refp{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px}
+.refp[hidden]{display:none}
+.refp-backdrop{position:absolute;inset:0;background:rgba(15,10,4,.5);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.refp-box{position:relative;width:min(860px,100%);max-height:min(80vh,640px);
+  display:flex;flex-direction:column;gap:12px;padding:16px;
+  background:var(--paper);border:1px solid var(--line);border-radius:20px;
+  box-shadow:0 24px 70px rgba(20,14,6,.4);animation:vsPop .16s ease}
+.refp-head{display:flex;gap:8px}
+.refp-head input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
+  font:inherit;font-size:1rem;background:var(--vellum);color:var(--ink)}
+.refp-panes{flex:1;min-height:0;display:grid;grid-template-columns:minmax(200px,270px) 1fr;gap:14px}
+.refp-books{overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding-right:4px;
+  border-right:1px solid var(--line)}
+.refp-book{display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
+  font-family:"Inter",system-ui,sans-serif;font-size:.94rem;color:var(--ink-soft);
+  background:transparent;border:0;border-radius:9px;padding:9px 10px;min-height:40px}
+.refp-book:hover{background:var(--vellum)}
+.refp-book.on{background:var(--gold);color:#2a2206;font-weight:600}
+.refp-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.refp-bt{flex:0 0 auto;width:3px;align-self:stretch;border-radius:2px}
+.refp-bt.bt-at{background:var(--gold-deep)}
+.refp-bt.bt-nt{background:var(--navy-2)}
+.refp-done{flex:0 0 auto;font-size:.72rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.refp-book.on .refp-done{color:#4a3a10}
+.refp-chapters{overflow-y:auto;min-width:0}
+.refp-chtitle{margin:0 0 10px;font-family:"Inter",system-ui,sans-serif;font-size:.88rem;color:var(--muted)}
+.refp-chtitle a{color:var(--gold-deep)}
+.refp-chapters .chapter-grid{justify-content:flex-start}
+.refp-none{color:var(--muted);font-size:.9rem;padding:10px}
+.refp-hint{margin:0;font-family:"Inter",system-ui,sans-serif;font-size:.78rem;color:var(--muted);text-align:center}
+.chapter-chip.hl,.chapter-chip.here{border-color:var(--gold-deep);box-shadow:0 0 0 2px var(--gold)}
+body.refp-open{overflow:hidden}
+html.dark .refp-box{background:var(--surface-raised)}
+html.dark .refp-head input{background:var(--paper)}
+html.dark .refp-book.on{color:#1a1610}
+html.dark .refp-bt.bt-nt{background:var(--gold-soft)}
+@media (max-width:720px){
+  .refp{padding:0;align-items:stretch}
+  .refp-box{width:100%;max-height:100%;border-radius:0;border:0;padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
+  .refp-panes{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:10px}
+  .refp-books{border-right:0;border-bottom:1px solid var(--line);padding:0 0 8px}
+  .refp-chapters{max-height:38vh}
+  .refp-hint{display:none}
+}
+
+/* lista de livros (/ler/): filtro por nome + recorte por testamento */
+.booklist-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 8px;
+  font-family:"Inter",system-ui,sans-serif}
+.booklist-find{display:flex;gap:8px;flex:1 1 280px;min-width:0}
+.booklist-find input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px 14px;
+  font:inherit;font-size:.95rem;background:var(--vellum);color:var(--ink)}
+.booklist-filters{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.booklist-filters .order-toggle{margin:0;flex:1 1 auto}
+.testament-toggle{display:flex;gap:8px;flex-wrap:wrap}
+/* no celular as duas faixas viram uma tira que rola de lado: empilhadas, elas
+   empurravam o primeiro livro para fora da primeira tela. */
+@media (max-width:720px){
+  .booklist-filters{flex-wrap:nowrap;overflow-x:auto;gap:8px;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .booklist-filters::-webkit-scrollbar{display:none}
+  .booklist-filters .testament-toggle,
+  .booklist-filters .order-toggle{flex:0 0 auto;flex-wrap:nowrap}
+  .booklist-filters .order-toggle .ot-lbl{display:none}
+  .booklist-filters .order-toggle .ot-link{margin-left:0}
+}
+.testament-toggle .ot{font-family:inherit;font-size:.88rem;min-height:38px;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer}
+.testament-toggle .ot.on{background:var(--gold);border-color:var(--gold-deep);color:#2a2206;font-weight:600}
+.book-card[hidden]{display:none}  /* o atributo hidden precisa vencer o display do cartão */
+.booklist-empty{text-align:center;color:var(--muted);margin:18px 0}
+html.dark .booklist-find input{background:var(--paper)}
+html.dark .testament-toggle .ot.on{color:#1a1610}
+
+/* progresso de leitura por livro (preenchido pelo cliente) */
+.book-prog{display:flex;align-items:center;gap:8px;font-family:"Inter",system-ui,sans-serif;
+  font-size:.74rem;color:var(--muted);margin-top:8px}
+.book-prog[hidden]{display:none}
+.bp-bar{flex:1;min-width:40px;height:4px;border-radius:999px;background:rgba(28,22,12,.12);overflow:hidden}
+.bp-fill{display:block;height:100%;width:0;background:var(--gold-deep);border-radius:999px}
+.bp-txt{flex:0 0 auto;font-variant-numeric:tabular-nums}
+.chapter-grid-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.chapter-grid-head .read{margin:0}
+.chapter-grid-head .book-prog{margin-top:0;min-width:120px}
+/* capítulo com trecho já estudado */
+.chapter-chip.done{border-color:var(--gold-deep);background:var(--vellum)}
+.chapter-chip.done::after{content:"✓";font-size:.66rem;color:var(--gold-deep);margin-left:2px}
+html.dark .bp-bar{background:rgba(255,255,255,.12)}
+html.dark .bp-fill{background:var(--gold-soft)}
+/* no escuro, --vellum é mais escuro que --paper: usar o mesmo fundo do tema
+   claro faria o capítulo já lido parecer apagado em vez de marcado. */
+html.dark .chapter-chip.done{border-color:var(--gold-soft);background:rgba(239,208,138,.14)}
+html.dark .chapter-chip.done::after{color:var(--gold-soft)}
 
 /* seta de ferramentas ocultas (canto inferior esquerdo) */
 .tools-fab{position:fixed;left:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;
@@ -1145,8 +1249,8 @@ html.dark .hm-cell.on{background:var(--gold-soft)}
 
 /* impressão: só o texto, sem chrome */
 @media print{
-  .nav,.mobile-primary-nav,.reader-fab,.verse-sheet,.search-overlay,.beta-banner,.footer,
-  .study-continue,.book-jump-wrap,.pager,.skip,.order-toggle,.focus-exit,.focus-progress{display:none!important}
+  .nav,.mobile-primary-nav,.reader-fab,.verse-sheet,.search-overlay,.refp,.beta-banner,.footer,
+  .study-continue,.book-jump-wrap,.booklist-tools,.pager,.skip,.order-toggle,.focus-exit,.focus-progress{display:none!important}
   body{background:#fff;color:#000}
   .chapter,.verse-hero,.verse-page{max-width:100%}
 }

@@ -154,6 +154,19 @@ def book_data_attrs(livro):
     return (f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
             f' data-testament="{book_testament(livro)}"')
 
+def book_progress_badge(livro, n_caps, compact=False):
+    """Selo de progresso de leitura do livro.
+
+    Sai vazio do gerador e é preenchido no cliente a partir de
+    bec.readingRanges — o avanço pertence ao navegador/conta, não ao HTML
+    publicado. Enquanto não houver nada lido, fica oculto.
+    """
+    cls = "book-prog compact" if compact else "book-prog"
+    return (f'<span class="{cls}" data-book-prog="{esc(livro)}" data-caps="{n_caps}" hidden>'
+            f'<span class="bp-bar" aria-hidden="true"><span class="bp-fill"></span></span>'
+            f'<span class="bp-txt"></span></span>')
+
+
 def order_toggle(prefix):
     # controle de ordenação no topo da grade de livros (cliente, persistido)
     return f"""
@@ -506,6 +519,7 @@ def reader_fab(prefix, has_fraction=True):
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="{prefix}ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     {mark}<a class="rfb" data-tool="study-notes" href="{prefix}anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -1365,15 +1379,33 @@ def build_books_index(order, struct):
       <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
       {era_tag}
+      {book_progress_badge(livro, n_caps, compact=True)}
     </a>"""
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Livros</p>
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
   <p class="read" style="color:var(--muted)">{n_at} livros do Antigo Testamento e {n_nt} do Novo — escolha um para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
-  {order_toggle(prefix)}
-  <div class="cards verses" data-booklist>{cards}
+  <a class="continue-read" id="continue-read" href="#" hidden></a>
+  <div class="booklist-tools">
+    <div class="booklist-find">
+      <input type="search" data-book-filter autocomplete="off"
+             placeholder="Filtrar livro — ex.: joão, sl, 1co"
+             aria-label="Filtrar livros pelo nome" aria-controls="booklist">
+      {ref_picker_trigger(prefix, extra_class="compact")}
+    </div>
   </div>
+  <div class="booklist-filters">
+    <div class="testament-toggle" role="group" aria-label="Filtrar por testamento">
+      <button type="button" class="ot on" data-testament="all">Todos</button>
+      <button type="button" class="ot" data-testament="at">Antigo</button>
+      <button type="button" class="ot" data-testament="nt">Novo</button>
+    </div>
+    {order_toggle(prefix)}
+  </div>
+  <div class="cards verses" id="booklist" data-booklist>{cards}
+  </div>
+  <p class="booklist-empty" data-booklist-empty hidden>Nenhum livro com esse nome. Limpe o filtro para ver os {len(order)}.</p>
 </main>"""
     out = SITE / "ler" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1418,39 +1450,53 @@ def build_timeline_page(order, struct):
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def book_jump(prefix, order, current):
-    # seletor "Ir para livro" (Antigo/Novo Testamento) para pular entre livros sem voltar ao menu
-    at, nt = [], []
-    for b in order:
-        idx = BOOK_ORDER.index(b) if b in BOOK_ORDER else 999
-        (at if idx < 39 else nt).append(b)
-    def opts(books):
-        return "".join(
-            f'<option value="{prefix}ler/{book_slug(b)}/"{" selected" if b==current else ""}>{esc(b)}</option>'
-            for b in books)
+def ref_picker_trigger(prefix, livro=None, ch=None, extra_class=""):
+    """Gatilho do seletor de livro *e* capítulo.
+
+    Antes daqui só saía um <select> de livros: escolher "Salmos 119" custava
+    duas páginas (livro, depois a grade de capítulos). O gatilho abre um painel
+    único — o mesmo no celular e no desktop — com filtro por nome e a grade de
+    capítulos ao lado. Sem JavaScript ele continua sendo um link comum para a
+    lista de livros, então nunca vira um controle morto.
+    """
+    label = f"{livro} {ch}" if livro and ch else (livro or "Escolher livro")
+    attrs = f' data-refp-book="{esc(book_slug(livro))}"' if livro else ""
+    if ch:
+        attrs += f' data-refp-chapter="{ch}"'
+    cls = ("ref-jump " + extra_class).strip()
+    return (f'<a class="{cls}" href="{prefix}ler/" data-ref-picker{attrs}'
+            f' aria-label="Escolher livro e capítulo">'
+            f'<span class="rj-ic" aria-hidden="true">📖</span>'
+            f'<span class="rj-label">{esc(label)}</span>'
+            f'<span class="rj-chev" aria-hidden="true">▾</span></a>')
+
+
+def ref_picker_row(prefix, livro=None, ch=None):
     return f"""
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento">{opts(at)}</optgroup>
-      <optgroup label="Novo Testamento">{opts(nt)}</optgroup>
-    </select>
+  <div class="book-jump-wrap">{ref_picker_trigger(prefix, livro, ch)}
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>"""
 
-def build_book_page(livro, chapters, order):
+def build_book_page(livro, chapters):
     prefix = "../../"
     title = f"{livro} — capítulos | {SITE_NAME}"
     desc = f"Leia {livro} capítulo por capítulo: texto no idioma original, transliteração e tradução Almeida 1911."
     canonical = f"{BASE_URL}/ler/{book_slug(livro)}/"
+    # data-ch deixa o JS pintar no chip o que já foi lido (bec.readingRanges),
+    # para a grade de capítulos mostrar o avanço do estudo, não só os números.
     chips = "".join(
-        f'<a class="chip chapter-chip" href="{ch}/">{ch}</a>' for ch in sorted(chapters))
+        f'<a class="chip chapter-chip" href="{ch}/" data-ch="{ch}">{ch}</a>'
+        for ch in sorted(chapters))
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Livros</a> · {esc(livro)}</p>
   <header class="verse-head"><h1>{esc(livro)}</h1></header>
-  {book_jump(prefix, order, livro)}
-  <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
-  <div class="chips chapter-grid">{chips}
+  {ref_picker_row(prefix, livro)}
+  <div class="chapter-grid-head">
+    <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
+    {book_progress_badge(livro, len(chapters))}
+  </div>
+  <div class="chips chapter-grid" data-chapter-grid data-book="{esc(livro)}">{chips}
   </div>
   {study_continue_module(prefix, livro)}
 </main>"""
@@ -1458,7 +1504,7 @@ def build_book_page(livro, chapters, order):
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_chapter_page(livro, ch, verses, n_chapters, order):
+def build_chapter_page(livro, ch, verses, n_chapters):
     prefix = "../../../"
     bslug = book_slug(livro)
     title = f"{livro} {ch} — original, transliteração e tradução | {SITE_NAME}"
@@ -1501,7 +1547,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
   </header>
   <div class="plan-context" data-plan-context hidden></div>
-  {book_jump(prefix, order, livro)}
+  {ref_picker_row(prefix, livro, ch)}
   {study_fraction_module(prefix, livro, ch, vnums)}
   <div class="chapter"{swipe_attrs}>{rows}
   </div>
@@ -1744,7 +1790,10 @@ def build_core_js():
     write_asset("core.asset.js", "core.js")
 
 def build_app_js(order, struct):
-    books = [{"nome": livro, "slug": book_slug(livro), "cap": len(struct[livro])} for livro in order]
+    # "t" (testamento) alimenta os grupos Antigo/Novo no seletor de livro e
+    # capítulo, sem o cliente precisar reconstruir a ordem canônica.
+    books = [{"nome": livro, "slug": book_slug(livro), "cap": len(struct[livro]),
+              "t": book_testament(livro)} for livro in order]
     js = read_asset("app.asset.js")
     write_file(SITE / "assets" / "app.js", f"var BEC_BOOKS={json.dumps(books, ensure_ascii=False)};\n" + js)
 
@@ -2052,10 +2101,10 @@ def build_site(context):
     n_chapters = 0
     for livro in order:
         chapters = struct[livro]
-        build_book_page(livro, chapters, order)
+        build_book_page(livro, chapters)
         total_caps = max(chapters)
         for ch in sorted(chapters):
-            build_chapter_page(livro, ch, chapters[ch], total_caps, order)
+            build_chapter_page(livro, ch, chapters[ch], total_caps)
             n_chapters += 1
 
     build_meta(verses, inputs.articles, order, struct, plan_slugs,

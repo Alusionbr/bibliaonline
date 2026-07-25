@@ -1,4 +1,4 @@
-var BEC_BOOKS=[{"nome": "Gênesis", "slug": "genesis", "cap": 50}, {"nome": "Êxodo", "slug": "exodo", "cap": 40}, {"nome": "Levítico", "slug": "levitico", "cap": 27}, {"nome": "Números", "slug": "numeros", "cap": 36}, {"nome": "Deuteronômio", "slug": "deuteronomio", "cap": 34}, {"nome": "Josué", "slug": "josue", "cap": 24}, {"nome": "Juízes", "slug": "juizes", "cap": 21}, {"nome": "Rute", "slug": "rute", "cap": 4}, {"nome": "1 Samuel", "slug": "1-samuel", "cap": 31}, {"nome": "2 Samuel", "slug": "2-samuel", "cap": 24}, {"nome": "1 Reis", "slug": "1-reis", "cap": 22}, {"nome": "2 Reis", "slug": "2-reis", "cap": 25}, {"nome": "1 Crônicas", "slug": "1-cronicas", "cap": 29}, {"nome": "2 Crônicas", "slug": "2-cronicas", "cap": 36}, {"nome": "Esdras", "slug": "esdras", "cap": 10}, {"nome": "Neemias", "slug": "neemias", "cap": 13}, {"nome": "Ester", "slug": "ester", "cap": 10}, {"nome": "Jó", "slug": "jo", "cap": 42}, {"nome": "Salmos", "slug": "salmos", "cap": 150}, {"nome": "Provérbios", "slug": "proverbios", "cap": 31}, {"nome": "Eclesiastes", "slug": "eclesiastes", "cap": 12}, {"nome": "Cânticos", "slug": "canticos", "cap": 8}, {"nome": "Isaías", "slug": "isaias", "cap": 66}, {"nome": "Jeremias", "slug": "jeremias", "cap": 52}, {"nome": "Lamentações", "slug": "lamentacoes", "cap": 5}, {"nome": "Ezequiel", "slug": "ezequiel", "cap": 48}, {"nome": "Daniel", "slug": "daniel", "cap": 12}, {"nome": "Oseias", "slug": "oseias", "cap": 14}, {"nome": "Joel", "slug": "joel", "cap": 4}, {"nome": "Amós", "slug": "amos", "cap": 9}, {"nome": "Obadias", "slug": "obadias", "cap": 1}, {"nome": "Jonas", "slug": "jonas", "cap": 4}, {"nome": "Miquéias", "slug": "miqueias", "cap": 7}, {"nome": "Naum", "slug": "naum", "cap": 3}, {"nome": "Habacuque", "slug": "habacuque", "cap": 3}, {"nome": "Sofonias", "slug": "sofonias", "cap": 3}, {"nome": "Ageu", "slug": "ageu", "cap": 2}, {"nome": "Zacarias", "slug": "zacarias", "cap": 14}, {"nome": "Malaquias", "slug": "malaquias", "cap": 3}, {"nome": "Mateus", "slug": "mateus", "cap": 28}, {"nome": "Marcos", "slug": "marcos", "cap": 16}, {"nome": "Lucas", "slug": "lucas", "cap": 24}, {"nome": "João", "slug": "joao", "cap": 21}, {"nome": "Atos", "slug": "atos", "cap": 28}, {"nome": "Romanos", "slug": "romanos", "cap": 16}, {"nome": "1 Coríntios", "slug": "1-corintios", "cap": 16}, {"nome": "2 Coríntios", "slug": "2-corintios", "cap": 13}, {"nome": "Gálatas", "slug": "galatas", "cap": 6}, {"nome": "Efésios", "slug": "efesios", "cap": 6}, {"nome": "Filipenses", "slug": "filipenses", "cap": 4}, {"nome": "Colossenses", "slug": "colossenses", "cap": 4}, {"nome": "1 Tessalonicenses", "slug": "1-tessalonicenses", "cap": 5}, {"nome": "2 Tessalonicenses", "slug": "2-tessalonicenses", "cap": 3}, {"nome": "1 Timóteo", "slug": "1-timoteo", "cap": 6}, {"nome": "2 Timóteo", "slug": "2-timoteo", "cap": 4}, {"nome": "Tito", "slug": "tito", "cap": 3}, {"nome": "Filemom", "slug": "filemom", "cap": 1}, {"nome": "Hebreus", "slug": "hebreus", "cap": 13}, {"nome": "Tiago", "slug": "tiago", "cap": 5}, {"nome": "1 Pedro", "slug": "1-pedro", "cap": 5}, {"nome": "2 Pedro", "slug": "2-pedro", "cap": 3}, {"nome": "1 João", "slug": "1-joao", "cap": 5}, {"nome": "2 João", "slug": "2-joao", "cap": 1}, {"nome": "3 João", "slug": "3-joao", "cap": 1}, {"nome": "Judas", "slug": "judas", "cap": 1}, {"nome": "Apocalipse", "slug": "apocalipse", "cap": 22}];
+var BEC_BOOKS=[{"nome": "Gênesis", "slug": "genesis", "cap": 50, "t": "at"}, {"nome": "Êxodo", "slug": "exodo", "cap": 40, "t": "at"}, {"nome": "Levítico", "slug": "levitico", "cap": 27, "t": "at"}, {"nome": "Números", "slug": "numeros", "cap": 36, "t": "at"}, {"nome": "Deuteronômio", "slug": "deuteronomio", "cap": 34, "t": "at"}, {"nome": "Josué", "slug": "josue", "cap": 24, "t": "at"}, {"nome": "Juízes", "slug": "juizes", "cap": 21, "t": "at"}, {"nome": "Rute", "slug": "rute", "cap": 4, "t": "at"}, {"nome": "1 Samuel", "slug": "1-samuel", "cap": 31, "t": "at"}, {"nome": "2 Samuel", "slug": "2-samuel", "cap": 24, "t": "at"}, {"nome": "1 Reis", "slug": "1-reis", "cap": 22, "t": "at"}, {"nome": "2 Reis", "slug": "2-reis", "cap": 25, "t": "at"}, {"nome": "1 Crônicas", "slug": "1-cronicas", "cap": 29, "t": "at"}, {"nome": "2 Crônicas", "slug": "2-cronicas", "cap": 36, "t": "at"}, {"nome": "Esdras", "slug": "esdras", "cap": 10, "t": "at"}, {"nome": "Neemias", "slug": "neemias", "cap": 13, "t": "at"}, {"nome": "Ester", "slug": "ester", "cap": 10, "t": "at"}, {"nome": "Jó", "slug": "jo", "cap": 42, "t": "at"}, {"nome": "Salmos", "slug": "salmos", "cap": 150, "t": "at"}, {"nome": "Provérbios", "slug": "proverbios", "cap": 31, "t": "at"}, {"nome": "Eclesiastes", "slug": "eclesiastes", "cap": 12, "t": "at"}, {"nome": "Cânticos", "slug": "canticos", "cap": 8, "t": "at"}, {"nome": "Isaías", "slug": "isaias", "cap": 66, "t": "at"}, {"nome": "Jeremias", "slug": "jeremias", "cap": 52, "t": "at"}, {"nome": "Lamentações", "slug": "lamentacoes", "cap": 5, "t": "at"}, {"nome": "Ezequiel", "slug": "ezequiel", "cap": 48, "t": "at"}, {"nome": "Daniel", "slug": "daniel", "cap": 12, "t": "at"}, {"nome": "Oseias", "slug": "oseias", "cap": 14, "t": "at"}, {"nome": "Joel", "slug": "joel", "cap": 4, "t": "at"}, {"nome": "Amós", "slug": "amos", "cap": 9, "t": "at"}, {"nome": "Obadias", "slug": "obadias", "cap": 1, "t": "at"}, {"nome": "Jonas", "slug": "jonas", "cap": 4, "t": "at"}, {"nome": "Miquéias", "slug": "miqueias", "cap": 7, "t": "at"}, {"nome": "Naum", "slug": "naum", "cap": 3, "t": "at"}, {"nome": "Habacuque", "slug": "habacuque", "cap": 3, "t": "at"}, {"nome": "Sofonias", "slug": "sofonias", "cap": 3, "t": "at"}, {"nome": "Ageu", "slug": "ageu", "cap": 2, "t": "at"}, {"nome": "Zacarias", "slug": "zacarias", "cap": 14, "t": "at"}, {"nome": "Malaquias", "slug": "malaquias", "cap": 3, "t": "at"}, {"nome": "Mateus", "slug": "mateus", "cap": 28, "t": "nt"}, {"nome": "Marcos", "slug": "marcos", "cap": 16, "t": "nt"}, {"nome": "Lucas", "slug": "lucas", "cap": 24, "t": "nt"}, {"nome": "João", "slug": "joao", "cap": 21, "t": "nt"}, {"nome": "Atos", "slug": "atos", "cap": 28, "t": "nt"}, {"nome": "Romanos", "slug": "romanos", "cap": 16, "t": "nt"}, {"nome": "1 Coríntios", "slug": "1-corintios", "cap": 16, "t": "nt"}, {"nome": "2 Coríntios", "slug": "2-corintios", "cap": 13, "t": "nt"}, {"nome": "Gálatas", "slug": "galatas", "cap": 6, "t": "nt"}, {"nome": "Efésios", "slug": "efesios", "cap": 6, "t": "nt"}, {"nome": "Filipenses", "slug": "filipenses", "cap": 4, "t": "nt"}, {"nome": "Colossenses", "slug": "colossenses", "cap": 4, "t": "nt"}, {"nome": "1 Tessalonicenses", "slug": "1-tessalonicenses", "cap": 5, "t": "nt"}, {"nome": "2 Tessalonicenses", "slug": "2-tessalonicenses", "cap": 3, "t": "nt"}, {"nome": "1 Timóteo", "slug": "1-timoteo", "cap": 6, "t": "nt"}, {"nome": "2 Timóteo", "slug": "2-timoteo", "cap": 4, "t": "nt"}, {"nome": "Tito", "slug": "tito", "cap": 3, "t": "nt"}, {"nome": "Filemom", "slug": "filemom", "cap": 1, "t": "nt"}, {"nome": "Hebreus", "slug": "hebreus", "cap": 13, "t": "nt"}, {"nome": "Tiago", "slug": "tiago", "cap": 5, "t": "nt"}, {"nome": "1 Pedro", "slug": "1-pedro", "cap": 5, "t": "nt"}, {"nome": "2 Pedro", "slug": "2-pedro", "cap": 3, "t": "nt"}, {"nome": "1 João", "slug": "1-joao", "cap": 5, "t": "nt"}, {"nome": "2 João", "slug": "2-joao", "cap": 1, "t": "nt"}, {"nome": "3 João", "slug": "3-joao", "cap": 1, "t": "nt"}, {"nome": "Judas", "slug": "judas", "cap": 1, "t": "nt"}, {"nome": "Apocalipse", "slug": "apocalipse", "cap": 22, "t": "nt"}];
 ﻿// Sinaliza atividade para a gamificação (game.js). Se o game.js ainda não
 // carregou (ordem dos <script>), enfileira em window.BEC_ACT para ele drenar.
 function gameRecord(metric){
@@ -221,12 +221,6 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
     d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+curFont());
     syncOrigBtns();
   });
-  // seletor "Ir para livro": navega ao escolher outro livro
-  document.addEventListener('change',function(e){
-    var s=e.target.closest && e.target.closest('.book-jump');
-    if(s && s.value) location.href=s.value;
-  });
-
   // continuar lendo: guarda a última leitura (capítulo/versículo) e mostra na home
   var h1=document.querySelector('.verse-head h1');
   var reading=document.querySelector('.ch-verse[data-ref], .verse-cont[data-ref]');
@@ -473,6 +467,325 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
   });
   var saved='bib'; try{ saved=localStorage.getItem('bec.bookorder')||'bib'; }catch(e){}
   if(saved!=='bib') apply(saved);
+})();
+
+// ---------------------------------------------------------------------------
+// Navegação da Bíblia: livro + capítulo num lugar só
+// ---------------------------------------------------------------------------
+// Base compartilhada pelo seletor, pelo filtro da lista de livros e pelos
+// selos de progresso. Tudo sai de BEC_BOOKS (gerado no build) e de
+// bec.readingRanges (o que o leitor marcou como estudado).
+window.BEC = window.BEC || {};
+(function(){
+  var BOOKS=window.BEC_BOOKS||[];
+
+  function fold(s){
+    return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+  }
+  // "1 Coríntios" -> "1corintios": deixa "1co", "1cor" e "corintios" acharem o livro
+  function key(nome){ return fold(nome).replace(/[^a-z0-9]+/g,''); }
+
+  // "sl" está dentro de "salmos" na ordem certa, mesmo sem ser prefixo — é assim
+  // que funcionam as abreviações usuais (Sl, Gn, Mq, Hc, Tg...).
+  function subseq(k, q){
+    var i=0;
+    for(var j=0;j<k.length && i<q.length;j++) if(k[j]===q[i]) i++;
+    return i===q.length;
+  }
+
+  // Pontuação de busca por livro: quanto menor, melhor. -1 = não serve.
+  function score(nome, q){
+    if(!q) return 0;
+    var k=key(nome);
+    if(k===q) return 0;                       // "jo" -> Jó
+    if(k.indexOf(q)===0) return 1;            // "1co" -> 1 Coríntios
+    if(k.indexOf(q)>0) return 2;              // "corintios" -> 1 Coríntios
+    // abreviação por consoantes: exige a mesma inicial, senão "sl" traria
+    // "1 Samuel" (s...l) antes de Salmos.
+    if(k[0]===q[0] && subseq(k,q)) return 3;  // "sl" -> Salmos
+    if(subseq(k,q)) return 4;
+    return -1;
+  }
+
+  // Aceita "joao", "joao 3", "jo 3:16", "sl23". Devolve {q, ch} — q é a parte
+  // do livro já normalizada, ch o capítulo quando veio junto.
+  function parseQuery(raw){
+    var s=fold(raw).replace(/[.,]/g,' ');
+    var m=s.match(/^(.*?[a-z])\s*(\d+)(?:\s*:\s*\d+)?\s*$/);
+    if(m) return {q:key(m[1]), ch:parseInt(m[2],10)};
+    return {q:key(s), ch:null};
+  }
+
+  function matches(q){
+    if(!q) return BOOKS.slice();
+    var out=[];
+    BOOKS.forEach(function(b,i){
+      var s=score(b.nome, q);
+      if(s>=0) out.push({b:b, s:s, i:i});
+    });
+    out.sort(function(a,b){ return a.s-b.s || a.i-b.i; });
+    return out.map(function(x){ return x.b; });
+  }
+
+  // Capítulos com algum trecho salvo, por livro: {"João": {3:true, 4:true}}
+  function readChapters(){
+    var all={};
+    try{ all=JSON.parse(localStorage.getItem('bec.readingRanges')||'{}')||{}; }catch(e){ return {}; }
+    var by={};
+    Object.keys(all).forEach(function(ref){
+      var m=ref.match(/^(.*)\s+(\d+)$/); if(!m) return;
+      var r=all[ref];
+      if(!Array.isArray(r) || !r.length) return;
+      (by[m[1]]=by[m[1]]||{})[+m[2]]=true;
+    });
+    return by;
+  }
+
+  window.BEC.books = {
+    all: BOOKS, fold: fold, key: key, matches: matches,
+    parseQuery: parseQuery, readChapters: readChapters,
+    bySlug: function(slug){
+      for(var i=0;i<BOOKS.length;i++) if(BOOKS[i].slug===slug) return BOOKS[i];
+      return null;
+    }
+  };
+})();
+
+// Seletor de livro e capítulo (data-ref-picker). Um painel só, igual no
+// celular e no desktop: filtro por nome à esquerda, grade de capítulos à
+// direita, com os capítulos já estudados marcados. Digitar "sl 23" e apertar
+// Enter vai direto ao capítulo — sem passar pela lista de livros.
+(function(){
+  var api=window.BEC.books;
+  if(!api || !api.all.length) return;
+  if(!document.querySelector('[data-ref-picker]')) return;
+
+  var core=window.BEC.core;
+  var PREFIX=core?core.prefix:((document.body&&document.body.getAttribute('data-prefix'))||'');
+  var esc=core?core.esc:function(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
+
+  var box=null, input=null, listEl=null, gridEl=null, titleEl=null;
+  var shown=[], active=0, current=null, lastFocus=null, read={};
+
+  function build(){
+    box=document.createElement('div');
+    box.className='refp'; box.hidden=true;
+    box.innerHTML=
+      '<div class="refp-backdrop" data-refp-close></div>'+
+      '<div class="refp-box" role="dialog" aria-modal="true" aria-label="Escolher livro e capítulo">'+
+        '<div class="refp-head">'+
+          '<input type="search" data-refp-q autocomplete="off" spellcheck="false" '+
+            'placeholder="Livro ou referência — ex.: joão 3, sl 23, 1co" aria-label="Buscar livro ou referência">'+
+          '<button type="button" class="btn ghost refp-x" data-refp-close aria-label="Fechar">Fechar</button>'+
+        '</div>'+
+        '<div class="refp-panes">'+
+          '<div class="refp-books" data-refp-books role="listbox" aria-label="Livros"></div>'+
+          '<div class="refp-chapters">'+
+            '<p class="refp-chtitle" data-refp-title></p>'+
+            '<div class="chips chapter-grid" data-refp-grid></div>'+
+          '</div>'+
+        '</div>'+
+        '<p class="refp-hint">Enter abre o primeiro resultado · ↑ ↓ navegam · Esc fecha</p>'+
+      '</div>';
+    document.body.appendChild(box);
+    input=box.querySelector('[data-refp-q]');
+    listEl=box.querySelector('[data-refp-books]');
+    gridEl=box.querySelector('[data-refp-grid]');
+    titleEl=box.querySelector('[data-refp-title]');
+    wire();
+  }
+
+  function bookHref(b){ return PREFIX+'ler/'+b.slug+'/'; }
+  function chapterHref(b, ch){ return bookHref(b)+ch+'/'; }
+
+  function renderBooks(){
+    listEl.innerHTML=shown.map(function(b,i){
+      var done=Object.keys(read[b.nome]||{}).length;
+      var tag=done?('<span class="refp-done">'+done+'/'+b.cap+'</span>'):'';
+      return '<button type="button" class="refp-book'+(i===active?' on':'')+'" role="option"'+
+        ' aria-selected="'+(i===active?'true':'false')+'" data-i="'+i+'">'+
+        '<span class="refp-bt bt-'+esc(b.t)+'" aria-hidden="true"></span>'+
+        '<span class="refp-name">'+esc(b.nome)+'</span>'+tag+'</button>';
+    }).join('') || '<p class="refp-none">Nenhum livro com esse nome.</p>';
+    revealActive();
+  }
+
+  // scrollIntoView não funciona enquanto o painel está oculto — abrir em
+  // "João" deixaria a lista parada em Gênesis. Por isso a rolagem é chamada de
+  // novo depois de exibir o painel.
+  function revealActive(){
+    ['.refp-book.on', '.chapter-chip.hl, .chapter-chip.here'].forEach(function(sel){
+      var el=box.querySelector(sel);
+      if(el && el.scrollIntoView) el.scrollIntoView({block:'nearest'});
+    });
+  }
+
+  function renderChapters(highlight){
+    var b=shown[active];
+    if(!b){ titleEl.textContent=''; gridEl.innerHTML=''; return; }
+    titleEl.innerHTML='<a href="'+esc(bookHref(b))+'">'+esc(b.nome)+'</a> · '+b.cap+
+      ' capítulo'+(b.cap!==1?'s':'');
+    var done=read[b.nome]||{}, out='';
+    for(var i=1;i<=b.cap;i++){
+      var cls='chip chapter-chip';
+      if(done[i]) cls+=' done';
+      if(highlight===i) cls+=' hl';
+      if(current && current.slug===b.slug && current.ch===i) cls+=' here';
+      out+='<a class="'+cls+'" href="'+esc(chapterHref(b,i))+'">'+i+'</a>';
+    }
+    gridEl.innerHTML=out;
+    revealActive();
+  }
+
+  function refresh(){
+    var parsed=api.parseQuery(input.value);
+    shown=api.matches(parsed.q);
+    if(active>=shown.length) active=0;
+    renderBooks();
+    renderChapters(parsed.ch && shown[active] && parsed.ch<=shown[active].cap ? parsed.ch : null);
+  }
+
+  // Enter: se a consulta trouxe capítulo válido vai direto nele; senão abre o livro.
+  function go(){
+    var b=shown[active]; if(!b) return;
+    var ch=api.parseQuery(input.value).ch;
+    location.href=(ch && ch>=1 && ch<=b.cap) ? chapterHref(b,ch) : bookHref(b);
+  }
+
+  function open(trigger){
+    if(!box) build();
+    read=api.readChapters();
+    lastFocus=trigger||document.activeElement;
+    var slug=trigger && trigger.getAttribute('data-refp-book');
+    var ch=trigger && parseInt(trigger.getAttribute('data-refp-chapter'),10);
+    current=slug?{slug:slug, ch:isNaN(ch)?null:ch}:null;
+    input.value='';
+    shown=api.matches('');
+    active=0;
+    if(slug){
+      for(var i=0;i<shown.length;i++){ if(shown[i].slug===slug){ active=i; break; } }
+    }
+    renderBooks(); renderChapters(null);
+    box.hidden=false;
+    document.body.classList.add('refp-open');
+    revealActive();
+    input.focus();
+  }
+
+  function close(){
+    if(!box || box.hidden) return;
+    box.hidden=true;
+    document.body.classList.remove('refp-open');
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function wire(){
+    input.addEventListener('input', function(){ active=0; refresh(); });
+    input.addEventListener('keydown', function(e){
+      if(e.key==='ArrowDown'){ e.preventDefault(); if(active<shown.length-1){ active++; renderBooks(); renderChapters(null); } }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); if(active>0){ active--; renderBooks(); renderChapters(null); } }
+      else if(e.key==='Enter'){ e.preventDefault(); go(); }
+    });
+    box.addEventListener('click', function(e){
+      if(e.target.closest('[data-refp-close]')){ close(); return; }
+      var b=e.target.closest('.refp-book');
+      if(b){ active=+b.getAttribute('data-i')||0; renderBooks(); renderChapters(null); }
+    });
+    box.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  }
+
+  document.addEventListener('click', function(e){
+    var t=e.target.closest && e.target.closest('[data-ref-picker]');
+    if(!t) return;
+    e.preventDefault();
+    open(t);
+  });
+
+  // "g" (de "ir para") abre o seletor de qualquer página do leitor, desde que
+  // o foco não esteja num campo de texto.
+  document.addEventListener('keydown', function(e){
+    if(e.key!=='g' || e.ctrlKey || e.metaKey || e.altKey) return;
+    var el=e.target;
+    if(el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName||''))) return;
+    if(box && !box.hidden) return;
+    e.preventDefault();
+    open(document.querySelector('[data-ref-picker]'));
+  });
+})();
+
+// Lista de livros (/ler/): filtro por nome, recorte por testamento e o
+// progresso de leitura em cada cartão — para a página responder a "onde eu
+// parei?" sem sair dela.
+(function(){
+  var api=window.BEC.books;
+  var list=document.querySelector('[data-booklist]');
+  if(!api || !list) return;
+  var filter=document.querySelector('[data-book-filter]');
+  var empty=document.querySelector('[data-booklist-empty]');
+  var testament='all';
+
+  function apply(){
+    var q=api.key(filter?filter.value:'');
+    var visible=0;
+    list.querySelectorAll('.book-card').forEach(function(card){
+      var nome=(card.querySelector('h3')||{}).textContent||'';
+      var okT=(testament==='all') || card.getAttribute('data-testament')===testament;
+      var okQ=!q || api.key(nome).indexOf(q)>=0;
+      var on=okT&&okQ;
+      card.hidden=!on;
+      if(on) visible++;
+    });
+    if(empty) empty.hidden=visible>0;
+  }
+
+  if(filter) filter.addEventListener('input', apply);
+  document.addEventListener('click', function(e){
+    // escopo restrito ao grupo de botões: os cartões de livro também carregam
+    // data-testament (usado pela ordenação) e não podem virar alvo daqui.
+    var b=e.target.closest && e.target.closest('.testament-toggle [data-testament]');
+    if(!b) return;
+    testament=b.getAttribute('data-testament');
+    document.querySelectorAll('.testament-toggle [data-testament]').forEach(function(x){
+      x.classList.toggle('on', x===b);
+    });
+    apply();
+  });
+})();
+
+// Selos de progresso (lista de livros e página do livro) e capítulos já
+// estudados na grade — lidos de bec.readingRanges.
+(function(){
+  var api=window.BEC.books;
+  if(!api) return;
+
+  function paint(){
+    var read=api.readChapters();
+
+    document.querySelectorAll('[data-book-prog]').forEach(function(el){
+      var nome=el.getAttribute('data-book-prog');
+      var caps=parseInt(el.getAttribute('data-caps'),10)||0;
+      var done=Object.keys(read[nome]||{}).length;
+      if(!done || !caps){ el.hidden=true; return; }
+      var pct=Math.min(100, Math.round((done/caps)*100));
+      var fill=el.querySelector('.bp-fill');
+      var txt=el.querySelector('.bp-txt');
+      if(fill) fill.style.width=pct+'%';
+      if(txt) txt.textContent=done+'/'+caps+' cap.';
+      el.setAttribute('title', done+' de '+caps+' capítulos com trecho estudado');
+      el.hidden=false;
+    });
+
+    var grid=document.querySelector('[data-chapter-grid]');
+    if(grid){
+      var done=read[grid.getAttribute('data-book')]||{};
+      grid.querySelectorAll('.chapter-chip[data-ch]').forEach(function(chip){
+        chip.classList.toggle('done', !!done[+chip.getAttribute('data-ch')]);
+      });
+    }
+  }
+
+  paint();
+  document.addEventListener('bec:study-sync', paint);
 })();
 
 // Criar Plano: gera um cronograma real dia a dia (por livro ou por tema) e
@@ -1199,16 +1512,30 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
   var configPanel=fab.querySelector('[data-reader-fab-config-panel]');
   if(!toggle||!panel) return;
 
-  var TOOLS_KEY='bec.readerTools', POS_KEY='bec.fabPos';
+  var TOOLS_KEY='bec.readerTools', SEEN_KEY='bec.readerToolsSeen', POS_KEY='bec.fabPos';
   var LABELS={'font-dec':'Diminuir fonte','font-inc':'Aumentar fonte','orig':'Idioma original',
-    'theme':'Tema','search':'Buscar','focus':'Modo leitura','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar',
+    'theme':'Tema','search':'Buscar','goto':'Ir para livro/capítulo','focus':'Modo leitura','mark-start':'Marcar início','mark-end':'Marcar fim','save':'Salvar trecho','report':'Reportar',
     'study-notes':'Minhas anotações','study-share':'Compartilhar estudo','study-export':'Baixar .txt','study-clear':'Apagar tudo'};
 
   function toolButtons(){return Array.prototype.slice.call(panel.querySelectorAll('.rfb[data-tool]'));}
   function allTools(){return toolButtons().map(function(b){return b.getAttribute('data-tool');});}
   function loadEnabled(){
-    try{var v=JSON.parse(localStorage.getItem(TOOLS_KEY)||'null'); if(Array.isArray(v)) return v;}catch(e){}
-    return allTools(); // padrão: todas as ferramentas visíveis
+    var saved=null;
+    try{var v=JSON.parse(localStorage.getItem(TOOLS_KEY)||'null'); if(Array.isArray(v)) saved=v;}catch(e){}
+    if(!saved) return allTools(); // padrão: todas as ferramentas visíveis
+    // Uma ferramenta lançada depois que o usuário personalizou a lista não está
+    // "desligada", só nunca existiu para ele. Sem esta reconciliação toda
+    // novidade nasceria invisível para quem já mexeu no ⚙ Personalizar.
+    var seen=[];
+    try{var s=JSON.parse(localStorage.getItem(SEEN_KEY)||'null'); if(Array.isArray(s)) seen=s;}catch(e){}
+    if(!seen.length) seen=saved;
+    var fresh=allTools().filter(function(t){ return seen.indexOf(t)<0 && saved.indexOf(t)<0; });
+    if(fresh.length){
+      saved=saved.concat(fresh);
+      try{localStorage.setItem(TOOLS_KEY, JSON.stringify(saved));}catch(e){}
+    }
+    try{localStorage.setItem(SEEN_KEY, JSON.stringify(allTools()));}catch(e){}
+    return saved;
   }
   function saveEnabled(list){
     try{localStorage.setItem(TOOLS_KEY, JSON.stringify(list));}catch(e){}
