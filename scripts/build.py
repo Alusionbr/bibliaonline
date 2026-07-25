@@ -360,6 +360,50 @@ def verse_stack(v, big=False):
     <p class="translit">{esc(v['transliteracao'])}</p>
     <p class="pt">{esc(v['texto_pt'])}</p>"""
 
+# Palavras de Jesus (red-letters.json). O arquivo marca versículos inteiros,
+# não trechos, então o destaque vai na tradução toda. Preenchido em build_site.
+RED_LETTERS = {}
+
+
+def is_red_letter(referencia):
+    return bool(RED_LETTERS.get(referencia))
+
+
+def pt_class(v, extra=""):
+    """Classes do parágrafo em português, incluindo o destaque de fala de Jesus."""
+    cls = ["pt"]
+    if extra:
+        cls.append(extra)
+    if is_red_letter(v.get("referencia", "")):
+        cls.append("jesus")
+    return " ".join(cls)
+
+
+def red_letter_note():
+    """Legenda do destaque. Sem ela, texto vermelho no meio do capítulo é só
+    uma cor sem explicação para quem nunca viu uma Bíblia com letras vermelhas."""
+    return ('\n  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>'
+            'As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>')
+
+
+def commentary_block(referencia, commentary):
+    """Comentário curado por versículo (commentary.json)."""
+    entries = commentary.get(referencia) or []
+    if not entries:
+        return ""
+    items = "".join(
+        f'<div class="cmt-item"><b>{esc(e.get("perspectiva",""))}</b>'
+        f'<p>{esc(e.get("texto",""))}</p></div>'
+        for e in entries if e.get("texto"))
+    if not items:
+        return ""
+    return f"""
+  <section class="block cmt-block">
+    <h2><span class="dot"></span>Comentário</h2>
+    <div class="cmt-list">{items}</div>
+  </section>"""
+
+
 def specimen_block(v):
     """Manuscrito do versículo.
 
@@ -1232,7 +1276,7 @@ def build_privacy_page():
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 # ---------- páginas ----------
-def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
+def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, commentary=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -1304,7 +1348,11 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
 
     next_url = f"../{next_v['slug']}/" if next_v else ""
     if v.get("texto_pt","").strip():
-        pt_html = f'<p class="pt">{esc(v["texto_pt"])}</p>'
+        pt_html = f'<p class="{pt_class(v)}">{esc(v["texto_pt"])}</p>'
+        if is_red_letter(v["referencia"]):
+            pt_html += ('<p class="red-note red-note-inline">'
+                        '<span class="red-dot" aria-hidden="true"></span>'
+                        'Em vermelho: palavras de Jesus.</p>')
     else:
         pt_html = ('<p class="pt pt-missing">Tradução em português deste trecho em revisão '
                    '(diferença de numeração entre o hebraico e a edição Almeida 1911).</p>')
@@ -1321,12 +1369,13 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <div class="verse-hero verse-tap reveal">
     <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v['original'])}</p>
     <p class="translit">{esc(v['transliteracao'])}</p>
-    {pt_html}
-    <p class="src-line">{esc(v.get('contexto',''))}</p>
+    {pt_html}{f'''
+    <p class="src-line">{esc(v["contexto"])}</p>''' if v.get("contexto", "").strip() else ""}
   </div>
   <p class="verse-tap-hint">Toque no texto para grifar, anotar, favoritar, ouvir ou compartilhar.</p>
 
   {specimen_block(v)}
+  {commentary_block(v['referencia'], commentary or {})}
   {blocks}
   {kw_html}
   {rel}
@@ -1528,18 +1577,24 @@ def build_chapter_page(livro, ch, verses, n_chapters):
     sc = script_class(idioma, verses[0].get("dir","ltr") if verses else "ltr")
     vnums = []
     rows = ""
+    has_red = False
     for v in verses:
         _, vs = ref_chvs(v["referencia"])
         vnums.append(vs)
         dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
-        pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
+        # o travessão sozinho não dizia nada; o title explica sem poluir a leitura
+        pt = esc(v.get("texto_pt","")) or (
+            '<span class="pt-missing" title="Diferença de numeração entre o hebraico '
+            'e a edição Almeida 1911 — tradução deste versículo em revisão.">'
+            'tradução em revisão</span>')
+        has_red = has_red or is_red_letter(v["referencia"])
         rows += f"""
     <div class="ch-verse verse-reveal" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body verse-tap">
         <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v.get('original',''))}</p>
         <p class="translit">{esc(v.get('transliteracao',''))}</p>
-        <p class="pt">{pt}</p>
+        <p class="{pt_class(v)}">{pt}</p>
       </div>
     </div>"""
     prev_html = (f'<a class="pg prev" href="../{ch-1}/"><span>← Capítulo</span><b>{livro} {ch-1}</b></a>'
@@ -1561,7 +1616,7 @@ def build_chapter_page(livro, ch, verses, n_chapters):
     <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
   </header>
   <div class="plan-context" data-plan-context hidden></div>
-  {ref_picker_row(prefix, livro, ch)}
+  {ref_picker_row(prefix, livro, ch)}{red_letter_note() if has_red else ""}
   {study_fraction_module(prefix, livro, ch, vnums)}
   <div class="chapter"{swipe_attrs}>{rows}
   </div>
@@ -1582,9 +1637,12 @@ def build_search_index(verses, articles, topics):
     # referência e tradução inteiras dentro do próprio índice.
     index = []
     for v in verses:
+        # "k" saía daqui como contexto + palavras, mas os dois campos estão
+        # vazios nos 31.173 versículos: o índice carregava 31 mil strings em
+        # branco. O cliente já lê k como opcional (i.k||''), então o versículo
+        # simplesmente não traz o campo.
         index.append({"t":"Versículo","titulo":v["referencia"],"desc":v.get("texto_pt",""),
-                      "url":f"versiculos/{v['slug']}/",
-                      "k":(v.get("contexto","")+" "+" ".join(v.get("palavras",[]))).lower()})
+                      "url":f"versiculos/{v['slug']}/"})
     for a in articles:
         index.append({"t":"Artigo","titulo":a["titulo"],"desc":a.get("resumo",""),
                       "url":f"artigos/{a['slug']}/","k":a.get("versiculo","").lower()})
@@ -2007,6 +2065,8 @@ class BuildInputs:
     topic_refs: dict
     glossary: list
     places: list
+    red_letters: dict
+    commentary: dict
 
 
 @dataclass
@@ -2044,6 +2104,11 @@ def load_build_inputs():
         topic_refs=load_optional("topic-refs.json", {}),
         glossary=load_optional("glossary.json", []),
         places=load_optional("places.json", []),
+        # Ambos estavam no repositório sem nenhum leitor: red-letters.json
+        # (2.033 versículos) e commentary.json (o único comentário que existe,
+        # já que contexto/origem/judaismo saem vazios em todos os 31.173).
+        red_letters=load_optional("red-letters.json", {}),
+        commentary=load_optional("commentary.json", {}),
     )
 
 
@@ -2070,6 +2135,11 @@ def build_site(context):
     verses = context.verses
     order = context.order
     struct = context.struct
+
+    # tabela de palavras de Jesus, consultada pelo leitor e pela página do
+    # versículo sem ter de atravessar todas as assinaturas até lá
+    global RED_LETTERS
+    RED_LETTERS = inputs.red_letters or {}
 
     clean_generated_output()
     build_home(inputs.topics, verses, inputs.articles, inputs.sources, order, struct)
@@ -2106,7 +2176,7 @@ def build_site(context):
     for i, v in enumerate(verses):
         prev_v = verses[i - 1] if i > 0 else None
         next_v = verses[i + 1] if i < n - 1 else None
-        build_verse_page(v, context.articles_by_slug, prev_v, next_v)
+        build_verse_page(v, context.articles_by_slug, prev_v, next_v, inputs.commentary)
     for article in inputs.articles:
         build_article_page(article)
 

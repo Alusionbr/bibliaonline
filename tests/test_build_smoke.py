@@ -73,6 +73,13 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "topic-refs.json").write_text(json.dumps(topic_refs, ensure_ascii=False), "utf-8")
     (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
     (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
+    # João 1:1 marcado como fala de Jesus só para exercitar o destaque; Gênesis
+    # fica de fora para provar que o resto do texto não vira vermelho
+    (data_dir / "red-letters.json").write_text(
+        json.dumps({"João 1:1": True}, ensure_ascii=False), "utf-8")
+    (data_dir / "commentary.json").write_text(json.dumps(
+        {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Abre a Torá."}]},
+        ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -488,6 +495,26 @@ def test_seletor_de_livro_e_capitulo_abre_do_leitor(site):
     assert '"cap":' in app and '"t":' in app
 
 
+def test_palavras_de_jesus_saem_em_vermelho_com_legenda(site):
+    cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
+    assert 'class="pt jesus"' in cap
+    # texto vermelho sem explicação é só uma cor: o capítulo traz a legenda
+    assert "palavras de Jesus" in cap and "red-dot" in cap
+    verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'class="pt jesus"' in verso and "Em vermelho: palavras de Jesus" in verso
+    # o Antigo Testamento não é marcado
+    gen = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "jesus" not in gen and "red-note" not in gen
+
+
+def test_comentario_curado_aparece_no_versiculo(site):
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "cmt-block" in gen and "Abre a Torá." in gen and "Contexto" in gen
+    # versículo sem comentário não ganha a seção vazia
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "cmt-block" not in joao
+
+
 def test_lista_de_livros_tem_filtro_e_progresso(site):
     ler = (site / "ler" / "index.html").read_text("utf-8")
     assert "data-book-filter" in ler
@@ -537,8 +564,12 @@ def test_indice_de_busca_e_json_valido(site):
     titulos = {i["titulo"] for i in index}
     assert "Gênesis 1:1" in titulos
     assert "Sobre o logos" in titulos
-    # cada entrada tem a chave de busca usada pelo app.js
-    assert all("k" in i and "url" in i for i in index)
+    assert all("url" in i for i in index)
+    # "k" é o texto extra de busca e só existe quando há o que acrescentar:
+    # no versículo saía sempre em branco (contexto/palavras estão vazios em
+    # todo o dataset) e o cliente já lê o campo como opcional.
+    assert not any("k" in i for i in index if i["t"] == "Versículo")
+    assert all("k" in i for i in index if i["t"] == "Artigo")
 
 
 def test_sitemap_lista_todas_as_urls(site):

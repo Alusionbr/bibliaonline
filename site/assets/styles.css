@@ -392,6 +392,29 @@ html.dark .reader-fab-panel,html.dark .reader-fab .rfb{background:var(--paper)}
   border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .specimen .frame{background:#2a2218;display:grid;place-items:center;min-height:120px}
 .specimen .frame img{width:100%;height:auto;object-fit:cover;max-height:420px}
+/* palavras de Jesus (red-letters.json, 2.033 versículos) — a tradição das
+   Bíblias de letras vermelhas. O tom é escuro o bastante para manter o
+   contraste de leitura sobre o papel claro, não o vermelho puro. */
+.pt.jesus{color:#a3242b}
+.red-note{max-width:var(--read);margin:10px auto 0;display:flex;align-items:center;gap:8px;
+  font-family:"Inter",system-ui,sans-serif;font-size:.8rem;color:var(--muted)}
+.red-note b{color:#a3242b;font-weight:600}
+.red-note-inline{margin-top:12px}
+.red-dot{width:9px;height:9px;border-radius:50%;background:#a3242b;flex:0 0 auto}
+html.dark .pt.jesus{color:#f29a9a}
+html.dark .red-note b{color:#f29a9a}
+html.dark .red-dot{background:#f29a9a}
+html.sepia .pt.jesus{color:#96201f}
+html.sepia .red-note b{color:#96201f}
+html.sepia .red-dot{background:#96201f}
+
+/* comentário curado por versículo (commentary.json) */
+.cmt-list{display:grid;gap:14px}
+.cmt-item{border-left:3px solid var(--gold);padding-left:14px}
+.cmt-item b{display:block;font-family:"Inter",system-ui,sans-serif;font-size:.72rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:4px}
+.cmt-item p{margin:0}
+
 /* sem imagem, o versículo mostra só a procedência numa linha — a moldura
    vazia com aviso de licença saía em todas as 31 mil páginas */
 .facsimile-line{max-width:var(--read);margin:22px auto 0;font-family:"Inter",sans-serif;
