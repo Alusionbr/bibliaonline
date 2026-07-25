@@ -341,7 +341,7 @@ def footer(prefix):
 </footer>
 <script src="{prefix}assets/core.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/supabase-config.js?v={ASSET_VER}" defer></script>
-<script src="{prefix}assets/vendor-supabase.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/vendor-supabase-2.45.4.min.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/auth.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>

@@ -1,5 +1,5 @@
 /* Service worker do Bíblia em Contexto — gerado por build.py. Não editar à mão. */
-var VERSION = 'a4c50bfa';
+var VERSION = 'be1f69f5';
 var SHELL_CACHE = 'bec-shell-' + VERSION;
 var PAGE_CACHE  = 'bec-pages-'  + VERSION;
 // app-shell mínimo (relativo ao escopo do SW = raiz do site)
@@ -21,7 +21,7 @@ var SHELL = [
   './assets/icons/icon-192.png',
   './assets/core.js?v=' + VERSION,
   './assets/supabase-config.js?v=' + VERSION,
-  './assets/vendor-supabase.js?v=' + VERSION,
+  './assets/vendor-supabase-2.45.4.min.js?v=' + VERSION,
   './assets/auth.js?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
   './assets/study.js?v=' + VERSION,

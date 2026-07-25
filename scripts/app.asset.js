@@ -594,8 +594,16 @@ window.BEC = window.BEC || {};
     wire();
   }
 
+  // O slug sai de BEC_BOOKS (gerado no build), mas o capítulo vem do que a
+  // pessoa digitou na caixa: só entra na URL depois de virar inteiro dentro da
+  // faixa do livro. Mesmo padrão de allowlist já usado no gesto de deslizar —
+  // fecha o caminho da entrada até location.href em vez de confiar na origem.
   function bookHref(b){ return PREFIX+'ler/'+b.slug+'/'; }
-  function chapterHref(b, ch){ return bookHref(b)+ch+'/'; }
+  function chapterHref(b, ch){
+    var n=Math.trunc(Number(ch));
+    if(!(n>=1 && n<=b.cap)) return bookHref(b);
+    return bookHref(b)+n+'/';
+  }
 
   function renderBooks(){
     listEl.innerHTML=shown.map(function(b,i){
@@ -644,11 +652,11 @@ window.BEC = window.BEC || {};
     renderChapters(parsed.ch && shown[active] && parsed.ch<=shown[active].cap ? parsed.ch : null);
   }
 
-  // Enter: se a consulta trouxe capítulo válido vai direto nele; senão abre o livro.
+  // Enter: se a consulta trouxe capítulo válido vai direto nele; senão abre o
+  // livro. chapterHref é quem valida — capítulo fora da faixa cai no livro.
   function go(){
     var b=shown[active]; if(!b) return;
-    var ch=api.parseQuery(input.value).ch;
-    location.href=(ch && ch>=1 && ch<=b.cap) ? chapterHref(b,ch) : bookHref(b);
+    location.href=chapterHref(b, api.parseQuery(input.value).ch);
   }
 
   function open(trigger){

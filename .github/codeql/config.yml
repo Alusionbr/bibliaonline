@@ -1,0 +1,21 @@
+name: "CodeQL — Bíblia em Contexto"
+
+# Bundles de terceiros ficam fora da análise. Não é para esconder alerta: é
+# código minificado que não escrevemos, não podemos corrigir na origem e cuja
+# atualização é troca de versão, não patch local. A vigilância dele é o
+# scripts/fetch_vendor.py, que fixa a versão no nome do arquivo.
+#
+# site/assets/*.js são cópias geradas de scripts/*.asset.js — analisar as duas
+# faria cada alerta nosso aparecer em dobro. A análise fica na fonte, que é
+# onde a correção acontece.
+paths-ignore:
+  - "site/assets/vendor-*.min.js"
+  - "site/assets/app.js"
+  - "site/assets/auth.js"
+  - "site/assets/core.js"
+  - "site/assets/game.js"
+  - "site/assets/library.js"
+  - "site/assets/lexicon.js"
+  - "site/assets/report.js"
+  - "site/assets/study.js"
+  - "site/sw.js"
