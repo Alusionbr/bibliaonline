@@ -1804,7 +1804,9 @@ window.BEC = window.BEC || {};
   if(!box) return;
   var core=window.BEC && window.BEC.core;
   if(!core) return;
-  var PREFIX=core.prefix, esc=core.esc;
+  // sem PREFIX nem esc: os links saem de bec.lastRead, que já guarda o caminho
+  // pronto, e o bloco é montado por DOM (textContent), então não há string de
+  // HTML para escapar.
   var body=box.querySelector('[data-ws-focus-body]');
   var sub=box.querySelector('[data-ws-focus-sub]');
 
