@@ -26,8 +26,8 @@
 <meta name="twitter:description" content="Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca e anotações em um só lugar.">
 <meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../manifest.webmanifest">
-<link rel="stylesheet" href="../assets/fonts.css?v=5f53f1d4">
-<link rel="stylesheet" href="../assets/styles.css?v=5f53f1d4">
+<link rel="stylesheet" href="../assets/fonts.css?v=d2700d57">
+<link rel="stylesheet" href="../assets/styles.css?v=d2700d57">
 </head>
 <body data-prefix="../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -88,6 +88,10 @@
       <a class="btn green" href="#estudar">Minhas anotações</a>
     </div>
   </header>
+  <section class="ws-focus" data-ws-focus hidden aria-live="polite">
+    <div class="section-title"><h2>Onde você parou</h2><span data-ws-focus-sub></span></div>
+    <div class="ws-focus-body" data-ws-focus-body></div>
+  </section>
   <nav class="ws-sections" aria-label="Seções do Workspace">
     <a href="#estudar">Estudar</a>
     <a href="#progresso">Progresso</a>
@@ -126,13 +130,13 @@
       <div id="anotacoes" class="anot-list"></div>
       <p class="map-actions"><a class="btn ghost" href="../anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
     </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
+    <div class="ws-panel" role="tabpanel" id="favoritos" data-ws-panel="favoritos" hidden>
       <div class="library-rows" data-fav-full-list></div>
     </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
+    <div class="ws-panel" role="tabpanel" id="colecoes" data-ws-panel="colecoes" hidden>
       <div class="collections-app" data-collections-app></div>
     </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
+    <div class="ws-panel" role="tabpanel" id="cadernos" data-ws-panel="cadernos" hidden>
       <div class="notebooks-app" data-notebooks-app></div>
     </div>
   </section>
@@ -231,7 +235,7 @@
         <a href="../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../biblioteca/">Biblioteca</a>
+        <a href="../workspace/#estudar">Minhas anotações</a>
         <a href="../index.html#fontes">Fontes e licenças</a>
         <!-- saiu do nav principal: reportar um erro é manutenção, não uma
              área do site, e um 🐞 no topo de toda página parece obra -->
@@ -247,14 +251,14 @@
     </div>
   </div>
 </footer>
-<script src="../assets/core.js?v=5f53f1d4"></script>
-<script src="../assets/supabase-config.js?v=5f53f1d4" defer></script>
-<script src="../assets/vendor-supabase-2.45.4.min.js?v=5f53f1d4" defer></script>
-<script src="../assets/auth.js?v=5f53f1d4" defer></script>
-<script src="../assets/app.js?v=5f53f1d4"></script>
-<script src="../assets/study.js?v=5f53f1d4" defer></script>
-<script src="../assets/lexicon.js?v=5f53f1d4" defer></script>
-<script src="../assets/game.js?v=5f53f1d4" defer></script>
-<script src="../assets/library.js?v=5f53f1d4" defer></script>
-<script src="../assets/report.js?v=5f53f1d4" defer></script>
+<script src="../assets/core.js?v=d2700d57"></script>
+<script src="../assets/supabase-config.js?v=d2700d57" defer></script>
+<script src="../assets/vendor-supabase-2.45.4.min.js?v=d2700d57" defer></script>
+<script src="../assets/auth.js?v=d2700d57" defer></script>
+<script src="../assets/app.js?v=d2700d57"></script>
+<script src="../assets/study.js?v=d2700d57" defer></script>
+<script src="../assets/lexicon.js?v=d2700d57" defer></script>
+<script src="../assets/game.js?v=d2700d57" defer></script>
+<script src="../assets/library.js?v=d2700d57" defer></script>
+<script src="../assets/report.js?v=d2700d57" defer></script>
 </body></html>

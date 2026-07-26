@@ -323,7 +323,7 @@ def footer(prefix):
         <a href="{prefix}workspace/">Workspace</a>
       </div>
       <div>
-        <a href="{prefix}biblioteca/">Biblioteca</a>
+        <a href="{prefix}workspace/#estudar">Minhas anotações</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
         <!-- saiu do nav principal: reportar um erro é manutenção, não uma
              área do site, e um 🐞 no topo de toda página parece obra -->
@@ -515,7 +515,7 @@ def study_continue_module(prefix, livro, ch=None, vs=None):
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="{prefix}anotacoes/">🗒 Minhas notas</a>
-      <a href="{prefix}colecoes/">🗂 Coleções</a>
+      <a href="{prefix}workspace/#colecoes">🗂 Coleções</a>
       <a href="{prefix}planos/">🗓 Planos</a>
       <a href="{prefix}dicionario/">📖 Dicionário</a>
     </div>
@@ -620,6 +620,15 @@ def build_redirect_page(out_path, prefix, target, title):
 
 def build_merged_redirects():
     build_redirect_page(SITE / "estudar" / "index.html", "../", "workspace/#estudar", "Estudar")
+    # Biblioteca, Coleções e Cadernos eram duplicatas literais das abas do
+    # Workspace: /colecoes/ tinha só data-collections-app e /cadernos/ só
+    # data-notebooks-app, os mesmos containers das abas. E /biblioteca/ era
+    # um portal de 7 cartões, cinco deles apenas apontando para outro lugar —
+    # o único conteúdo próprio era a lista de favoritos, que a aba Favoritos
+    # já mostra pelo mesmo data-fav-full-list. Duas portas para a mesma coisa.
+    build_redirect_page(SITE / "biblioteca" / "index.html", "../", "workspace/#favoritos", "Biblioteca")
+    build_redirect_page(SITE / "colecoes" / "index.html", "../", "workspace/#colecoes", "Coleções")
+    build_redirect_page(SITE / "cadernos" / "index.html", "../", "workspace/#cadernos", "Cadernos")
     # Comunidade/Salas de Estudo está pausada (será reformulada antes de
     # voltar) — os endereços antigos continuam existindo, mas levam ao
     # Workspace em vez de uma seção que não existe mais.
@@ -657,6 +666,10 @@ def build_workspace_page():
       <a class="btn green" href="#estudar">Minhas anotações</a>
     </div>
   </header>
+  <section class="ws-focus" data-ws-focus hidden aria-live="polite">
+    <div class="section-title"><h2>Onde você parou</h2><span data-ws-focus-sub></span></div>
+    <div class="ws-focus-body" data-ws-focus-body></div>
+  </section>
   <nav class="ws-sections" aria-label="Seções do Workspace">
     <a href="#estudar">Estudar</a>
     <a href="#progresso">Progresso</a>
@@ -695,13 +708,13 @@ def build_workspace_page():
       <div id="anotacoes" class="anot-list"></div>
       <p class="map-actions"><a class="btn ghost" href="{prefix}anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
     </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
+    <div class="ws-panel" role="tabpanel" id="favoritos" data-ws-panel="favoritos" hidden>
       <div class="library-rows" data-fav-full-list></div>
     </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
+    <div class="ws-panel" role="tabpanel" id="colecoes" data-ws-panel="colecoes" hidden>
       <div class="collections-app" data-collections-app></div>
     </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
+    <div class="ws-panel" role="tabpanel" id="cadernos" data-ws-panel="cadernos" hidden>
       <div class="notebooks-app" data-notebooks-app></div>
     </div>
   </section>
@@ -843,68 +856,6 @@ def build_account_page():
   </section>
 </main>"""
     out = SITE / "conta" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
-
-
-def build_library_page():
-    prefix = "../"
-    title = f"Biblioteca | {SITE_NAME}"
-    desc = "Biblioteca pessoal com notas, grifos, favoritos, planos, artigos, coleções e cadernos."
-    canonical = f"{BASE_URL}/biblioteca/"
-    cards = action_cards([
-        ("Notas", "Notas", "Anotações por versículo, capítulo e tema.", f"{prefix}anotacoes/"),
-        ("Grifos", "Grifos", "Marcações por palavra e por versículo.", f"{prefix}anotacoes/"),
-        ("Favoritos", "Favoritos", "Versículos salvos para revisão.", "#favoritos"),
-        ("Planos", "Planos", "Leituras estruturadas e progresso.", f"{prefix}planos/"),
-        ("Artigos", "Artigos", "Estudos contextuais e materiais de apoio.", f"{prefix}index.html#artigos"),
-        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
-        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
-    ])
-    body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Biblioteca</p>
-  <header class="hub-hero"><p class="eyebrow">Biblioteca</p><h1>Biblioteca</h1><p>Guarde e organize tudo que nasce do estudo bíblico.</p></header>
-  <section class="hub-section"><div class="study-card-grid">{cards}</div></section>
-  <section class="hub-section" id="favoritos">
-    <div class="section-title"><h2>Favoritos</h2><span>Versículos salvos para revisão</span></div>
-    <div class="library-rows" data-fav-full-list><p class="muted-line">Carregando favoritos…</p></div>
-  </section>
-</main>"""
-    out = SITE / "biblioteca" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
-
-
-def build_collections_page():
-    prefix = "../"
-    title = f"Coleções | {SITE_NAME}"
-    desc = "Coleções para guardar versículos, capítulos, artigos, mapas, manuscritos, planos e discussões."
-    canonical = f"{BASE_URL}/colecoes/"
-    body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Coleções</p>
-  <header class="hub-hero"><p class="eyebrow">Coleções</p><h1>Coleções</h1><p>Reúna versículos favoritos em coleções por tema. Tudo fica salvo neste navegador e sincroniza quando você entra na conta.</p></header>
-  <section class="hub-section">
-    <div class="library-app" data-collections-app><p class="muted-line">Carregando coleções…</p></div>
-  </section>
-</main>"""
-    out = SITE / "colecoes" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
-
-
-def build_notebooks_page():
-    prefix = "../"
-    title = f"Cadernos | {SITE_NAME}"
-    desc = "Cadernos para organizar notas, perguntas, grifos, coleções, planos e referências."
-    canonical = f"{BASE_URL}/cadernos/"
-    body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Cadernos</p>
-  <header class="hub-hero"><p class="eyebrow">Cadernos</p><h1>Cadernos</h1><p>Escreva estudos em texto livre: notas, perguntas e referências. Tudo fica salvo neste navegador e sincroniza quando você entra na conta.</p></header>
-  <section class="hub-section">
-    <div class="library-app" data-notebooks-app><p class="muted-line">Carregando cadernos…</p></div>
-  </section>
-</main>"""
-    out = SITE / "cadernos" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 
@@ -1980,9 +1931,6 @@ def build_meta(verses, articles, order, struct, plan_slugs=(),
         BASE_URL + "/",
         f"{BASE_URL}/ler/",
         f"{BASE_URL}/workspace/",
-        f"{BASE_URL}/biblioteca/",
-        f"{BASE_URL}/colecoes/",
-        f"{BASE_URL}/cadernos/",
         f"{BASE_URL}/anotacoes/",
         f"{BASE_URL}/privacidade/",
         f"{BASE_URL}/conta/",
@@ -2184,9 +2132,6 @@ def build_site(context):
     build_workspace_page()
     build_account_page()
     build_merged_redirects()
-    build_library_page()
-    build_collections_page()
-    build_notebooks_page()
     topic_slugs = build_topics_pages(inputs.topics, inputs.topic_refs, inputs.articles,
                                      context.verses_by_ref)
     gloss_slugs = build_dictionary_pages(inputs.glossary, inputs.articles, context.verses_by_ref)

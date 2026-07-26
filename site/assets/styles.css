@@ -1261,6 +1261,22 @@ html.dark .search-overlay-in{background:var(--surface-raised)}
 html.dark .search-overlay-head input{background:var(--paper)}
 body.search-open{overflow:hidden}
 
+/* "Onde você parou": o Workspace era a mesma página para todo mundo. Este
+   bloco cruza o último capítulo com o que já existe sobre ele. */
+.ws-focus{max-width:var(--max);margin:0 auto 14px;background:var(--vellum);
+  border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:var(--radius);padding:16px 18px}
+.ws-focus[hidden]{display:none}
+.ws-focus .section-title{margin-bottom:8px}
+.ws-focus-ref{margin:0 0 8px;font-family:"Fraunces",serif;font-size:1.3rem}
+.ws-focus-ref a{color:var(--ink);text-decoration:none}
+.ws-focus-ref a:hover{color:var(--gold-deep)}
+.ws-focus-facts{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;
+  font-family:"Inter",system-ui,sans-serif;font-size:.84rem;color:var(--muted)}
+.ws-focus-actions{display:flex;flex-wrap:wrap;gap:8px}
+.ws-focus-plan{margin:12px 0 0;font-family:"Inter",system-ui,sans-serif;
+  font-size:.82rem;color:var(--muted)}
+html.dark .ws-focus{background:var(--surface-raised)}
+
 /* índice das seções do Workspace: a página tem várias telas de altura e não
    oferecia nenhuma forma de pular para o que se procura */
 .ws-sections{display:flex;gap:8px;flex-wrap:wrap;margin:0 auto 6px;max-width:var(--max);

@@ -1794,6 +1794,109 @@ window.BEC = window.BEC || {};
   document.addEventListener('bec:study-sync', syncUI);
 })();
 
+// "Onde você parou": cruza o último capítulo aberto com o que já existe sobre
+// ELE — trecho estudado, notas daquele capítulo e o dia do plano que o contém.
+// Os dados sempre estiveram todos aqui (bec.lastRead, bec.readingRanges,
+// bec.notes, planData); ninguém os juntava, e por isso o Workspace era a mesma
+// página para todo mundo, um índice em vez de um espaço de trabalho.
+(function(){
+  var box=document.querySelector('[data-ws-focus]');
+  if(!box) return;
+  var core=window.BEC && window.BEC.core;
+  if(!core) return;
+  var PREFIX=core.prefix, esc=core.esc;
+  var body=box.querySelector('[data-ws-focus-body]');
+  var sub=box.querySelector('[data-ws-focus-sub]');
+
+  function loadJSON(k, fb){ try{ return JSON.parse(localStorage.getItem(k)||'null')||fb; }catch(e){ return fb; } }
+
+  // "/ler/joao/3/" -> {slug:'joao', ch:3}; ignora página de versículo e afins
+  function parseChapter(url){
+    var m=(url||'').match(/ler\/([a-z0-9-]+)\/(\d+)\/?$/);
+    return m ? {slug:m[1], ch:+m[2]} : null;
+  }
+
+  function chip(href, texto, cls){
+    var a=document.createElement('a');
+    a.className='btn tiny '+(cls||'ghost');
+    a.href=href; a.textContent=texto;
+    return a;
+  }
+
+  function render(){
+    var lr=loadJSON('bec.lastRead', null);
+    if(!lr || !lr.url || !lr.label){ box.hidden=true; return; }
+    var loc=parseChapter(lr.url);
+    body.textContent='';
+
+    var head=document.createElement('p');
+    head.className='ws-focus-ref';
+    var link=document.createElement('a');
+    link.href=lr.url; link.textContent=lr.label;
+    head.appendChild(link);
+    body.appendChild(head);
+
+    var linha=document.createElement('div');
+    linha.className='ws-focus-facts';
+
+    // trecho já estudado neste capítulo
+    var ranges=loadJSON('bec.readingRanges', {});
+    var salvos=ranges[lr.label];
+    if(Array.isArray(salvos) && salvos.length){
+      var vers=0;
+      salvos.forEach(function(r){ vers+=(Math.abs(r.e-r.s)+1); });
+      var f=document.createElement('span');
+      f.className='ws-focus-fact';
+      f.textContent='✓ '+vers+' versículo'+(vers!==1?'s':'')+' marcado'+(vers!==1?'s':'');
+      linha.appendChild(f);
+    }
+
+    // notas escritas neste capítulo (bec.notes é {referência: texto})
+    var notes=loadJSON('bec.notes', {});
+    var doCap=Object.keys(notes).filter(function(ref){
+      return ref.indexOf(lr.label+':')===0;
+    });
+    if(doCap.length){
+      var n=document.createElement('span');
+      n.className='ws-focus-fact';
+      n.textContent='🗒 '+doCap.length+' nota'+(doCap.length!==1?'s':'')+' neste capítulo';
+      linha.appendChild(n);
+    }
+    if(linha.children.length) body.appendChild(linha);
+
+    var acoes=document.createElement('div');
+    acoes.className='ws-focus-actions';
+    acoes.appendChild(chip(lr.url, 'Voltar à leitura', 'primary'));
+    if(doCap.length) acoes.appendChild(chip('#estudar', 'Ver anotações'));
+    body.appendChild(acoes);
+
+    sub.textContent = loc ? 'Seu capítulo mais recente' : 'Sua última página aberta';
+    box.hidden=false;
+
+    // dia do plano que contém este capítulo — assíncrono, entra quando chegar
+    var pd=window.BEC.planData;
+    if(loc && pd && pd.allPlans){
+      pd.allPlans().then(function(plans){
+        var key=loc.slug+'/'+loc.ch;
+        for(var i=0;i<plans.length;i++){
+          var dia=pd.findDay(plans[i], key);
+          if(dia<0) continue;
+          var feitos=pd.progressFor(plans[i].slug);
+          var p=document.createElement('p');
+          p.className='ws-focus-plan';
+          p.textContent='📖 Dia '+(dia+1)+' de '+plans[i].dias.length+' · '+plans[i].titulo+
+            ' — '+feitos.length+' dia'+(feitos.length!==1?'s':'')+' concluído'+(feitos.length!==1?'s':'');
+          body.appendChild(p);
+          return;
+        }
+      }).catch(function(){});
+    }
+  }
+
+  render();
+  document.addEventListener('bec:study-sync', render);
+})();
+
 // Dashboard de estatísticas do Workspace: números derivados dos dados já
 // salvos neste navegador (sem contagem no servidor).
 (function(){

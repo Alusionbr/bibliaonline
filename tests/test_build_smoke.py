@@ -247,26 +247,30 @@ def test_sem_ancoras_mortas_nem_metricas_falsas(site):
     assert "Dados demonstrativos" not in verso
 
 
-def test_ferramentas_pessoais_reais(site):
-    # Coleções e Cadernos deixam de ser cards de exemplo e viram apps locais.
-    colecoes = (site / "colecoes" / "index.html").read_text("utf-8")
-    assert "data-collections-app" in colecoes
-    assert "Exemplo" not in colecoes
-    cadernos = (site / "cadernos" / "index.html").read_text("utf-8")
-    assert "data-notebooks-app" in cadernos
-    assert "Caderno Romanos" not in cadernos
-    # Biblioteca tem a seção de favoritos; Workspace tem o histórico.
-    biblioteca = (site / "biblioteca" / "index.html").read_text("utf-8")
-    assert 'id="favoritos"' in biblioteca
-    assert "data-fav-full-list" in biblioteca
+def test_ferramentas_pessoais_vivem_no_workspace(site):
+    # Coleções, cadernos e favoritos são apps locais reais — e existem em um
+    # lugar só. /colecoes/ e /cadernos/ eram duplicatas literais das abas
+    # (mesmos containers), e /biblioteca/ era um portal cujo único conteúdo
+    # próprio, a lista de favoritos, a aba Favoritos já mostra.
     ws = (site / "workspace" / "index.html").read_text("utf-8")
-    assert 'id="historico"' in ws
-    assert "data-history-list" in ws
-    # O asset da biblioteca é gerado e referenciado nas páginas.
+    for marca in ("data-collections-app", "data-notebooks-app", "data-fav-full-list",
+                  'id="historico"', "data-history-list"):
+        assert marca in ws, marca
+    assert "Exemplo" not in ws and "Caderno Romanos" not in ws
+    # os endereços antigos continuam existindo, agora como ponte (noindex)
+    for pasta, destino in (("biblioteca", "workspace/#favoritos"),
+                           ("colecoes", "workspace/#colecoes"),
+                           ("cadernos", "workspace/#cadernos")):
+        page = (site / pasta / "index.html").read_text("utf-8")
+        assert destino in page, pasta
+        assert 'name="robots" content="noindex"' in page, pasta
+    # o hash precisa achar a aba: sem id, o redirect chegaria e não rolaria
+    for tab in ("favoritos", "colecoes", "cadernos"):
+        assert f'id="{tab}"' in ws, tab
     library = (site / "assets" / "library.js").read_text("utf-8")
     for key in ("bec.collections", "bec.notebooks"):
         assert key in library
-    assert "assets/library.js" in colecoes
+    assert "assets/library.js" in ws
     app = (site / "assets" / "app.js").read_text("utf-8")
     assert "bec.history" in app
 
@@ -509,6 +513,20 @@ def test_workspace_poe_ferramentas_antes_do_placar(site):
     assert 'data-ws-continue' in ws and 'class="btn primary"' in ws
 
 
+def test_workspace_sabe_onde_a_pessoa_parou(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    # o bloco nasce oculto: sem leitura salva não há o que dizer
+    assert "data-ws-focus" in ws and "Onde você parou" in ws
+    assert "ws-focus" in ws and "hidden" in ws.split("data-ws-focus")[1][:40]
+    # ele cruza último capítulo, trecho estudado, notas daquele capítulo e plano
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert '"Onde você parou"' in app, "módulo não encontrado no app.js"
+    modulo = app.split('"Onde você parou"', 1)[1].split("\n})();", 1)[0]
+    for chave in ("bec.lastRead", "bec.readingRanges", "bec.notes", "planData",
+                  "ws-focus-facts"):
+        assert chave in modulo, chave
+
+
 def test_conta_sai_do_workspace(site):
     ws = (site / "workspace" / "index.html").read_text("utf-8")
     conta = (site / "conta" / "index.html").read_text("utf-8")
@@ -613,15 +631,12 @@ def test_sitemap_lista_todas_as_urls(site):
     assert "/versiculos/genesis-1-1/" in sitemap
     assert "/versiculos/joao-1-1/" in sitemap
     assert "/artigos/meu-artigo/" in sitemap
-    for path in (
-        "/workspace/",
-        "/biblioteca/",
-        "/colecoes/",
-        "/cadernos/",
-    ):
+    for path in ("/workspace/", "/conta/"):
         assert path in sitemap
-    # Redirects (noindex) ficam fora do sitemap.
-    for path in ("/estudar/</loc>", "/comunidade/</loc>", "/comunidade/salas/</loc>"):
+    # Redirects (noindex) ficam fora do sitemap — incluindo os três que foram
+    # consolidados no Workspace.
+    for path in ("/estudar/</loc>", "/comunidade/</loc>", "/comunidade/salas/</loc>",
+                 "/biblioteca/</loc>", "/colecoes/</loc>", "/cadernos/</loc>"):
         assert path not in sitemap
 
 
