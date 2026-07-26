@@ -513,6 +513,20 @@ def test_workspace_poe_ferramentas_antes_do_placar(site):
     assert 'data-ws-continue' in ws and 'class="btn primary"' in ws
 
 
+def test_referencias_cruzadas_vem_em_shard_por_capitulo(site):
+    # O consumidor busca data/xrefs/<livro>/<cap>.json, não um arquivo único:
+    # eram 39 versículos em 3 KB, agora são ~93 mil ligações, e carregar tudo
+    # de uma vez repetiria o erro do índice de busca (6,3 MB por consulta).
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "data/xrefs/" in study
+    assert "cross-references.json" not in study.replace(
+        "cross-references.json de 3 KB", "")
+    # a chave do capítulo sai do helper que já existe no core
+    assert "bookSlugFromRef" in study
+    # e o arquivo único antigo não é mais publicado
+    assert not (site / "data" / "cross-references.json").exists()
+
+
 def test_workspace_sabe_onde_a_pessoa_parou(site):
     ws = (site / "workspace" / "index.html").read_text("utf-8")
     # o bloco nasce oculto: sem leitura salva não há o que dizer
