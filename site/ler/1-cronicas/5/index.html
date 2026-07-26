@@ -16,14 +16,18 @@
 <meta property="og:description" content="1 Crônicas 5: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/1-cronicas/5/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="1 Crônicas 5 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="1 Crônicas 5: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,12 +86,8 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/" selected>1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/">João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="1-cronicas" data-refp-chapter="5" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">1 Crônicas 5</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="1 Crônicas 5" data-total="41">
@@ -120,7 +119,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבְנֵי רְאוּבֵן בְּכֽוֹר יִשְׂרָאֵל כִּי הוּא הַבְּכוֹר וּֽבְחַלְּלוֹ יְצוּעֵי אָבִיו נִתְּנָה בְּכֹרָתוֹ לִבְנֵי יוֹסֵף בֶּן יִשְׂרָאֵל וְלֹא לְהִתְיַחֵשׂ לַבְּכֹרָֽה</p>
         <p class="translit">uveney reuven bekhor yiserael kiy hu habekhor uvechalelo yetsuey aviyv nitenah bekhorato liveney yosef ben yiserael velo lehiteyaches labekhorah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v2" data-ref="1 Crônicas 5:2">
@@ -128,7 +127,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">כִּי יְהוּדָה גָּבַר בְּאֶחָיו וּלְנָגִיד מִמֶּנּוּ וְהַבְּכֹרָה לְיוֹסֵֽף</p>
         <p class="translit">kiy yehudah gavar beechayv ulenagiyd mimenu vehabekhorah leyosef</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v3" data-ref="1 Crônicas 5:3">
@@ -136,7 +135,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">בְּנֵי רְאוּבֵן בְּכוֹר יִשְׂרָאֵל חֲנוֹךְ וּפַלּוּא חֶצְרוֹן וְכַרְמִֽי</p>
         <p class="translit">beney reuven bekhor yiserael chanokhe ufalu chetseron vekharemiy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v4" data-ref="1 Crônicas 5:4">
@@ -144,7 +143,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">בְּנֵי יוֹאֵל שְׁמַֽעְיָה בְנוֹ גּוֹג בְּנוֹ שִׁמְעִי בְנֽוֹ</p>
         <p class="translit">beney yoel shemaeyah veno gog beno shimeiy veno</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v5" data-ref="1 Crônicas 5:5">
@@ -152,7 +151,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">מִיכָה בְנוֹ רְאָיָה בְנוֹ בַּעַל בְּנֽוֹ</p>
         <p class="translit">miykhah veno reayah veno baal beno</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v6" data-ref="1 Crônicas 5:6">
@@ -160,7 +159,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">בְּאֵרָה בְנוֹ אֲשֶׁר הֶגְלָה תִּלְּגַת פִּלְנְאֶסֶר מֶלֶךְ אַשֻּׁר הוּא נָשִׂיא לָרֽאוּבֵנִֽי</p>
         <p class="translit">beerah veno asher hegelah tilegat pileneeser melekhe ashur hu nasiy laruveniy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v7" data-ref="1 Crônicas 5:7">
@@ -168,7 +167,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְאֶחָיו לְמִשְׁפְּחֹתָיו בְּהִתְיַחֵשׂ לְתֹלְדוֹתָם הָרֹאשׁ יְעִיאֵל וּזְכַרְיָֽהוּ</p>
         <p class="translit">veechayv lemishepechotayv behiteyaches letoledotam harosh yeiyel uzekhareyahu</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v8" data-ref="1 Crônicas 5:8">
@@ -176,7 +175,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבֶלַע בֶּן עָזָז בֶּן שֶׁמַע בֶּן יוֹאֵל הוּא יוֹשֵׁב בַּעֲרֹעֵר וְעַד נְבוֹ וּבַעַל מְעֽוֹן</p>
         <p class="translit">uvela ben azaz ben shema ben yoel hu yoshev baaroer vead nevo uvaal meon</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v9" data-ref="1 Crônicas 5:9">
@@ -184,7 +183,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְלַמִּזְרָח יָשַׁב עַד לְבוֹא מִדְבָּרָה לְמִן הַנָּהָר פְּרָת כִּי מִקְנֵיהֶם רָבוּ בְּאֶרֶץ גִּלְעָֽד</p>
         <p class="translit">velamizerach yashav ad levo midebarah lemin hanahar perat kiy miqeneyhem ravu beerets gilead</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v10" data-ref="1 Crônicas 5:10">
@@ -192,7 +191,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבִימֵי שָׁאוּל עָשׂוּ מִלְחָמָה עִם הַֽהַגְרִאִים וַֽיִּפְּלוּ בְּיָדָם וַיֵּשְׁבוּ בְּאָהֳלֵיהֶם עַֽל כָּל פְּנֵי מִזְרָח לַגִּלְעָֽד</p>
         <p class="translit">uviymey shaul asu milechamah im hahageriiym vayipelu beyadam vayeshevu beaholeyhem al kal peney mizerach lagilead</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="1 Crônicas 5:11">
@@ -200,7 +199,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבְנֵי גָד לְנֶגְדָּם יָֽשְׁבוּ בְּאֶרֶץ הַבָּשָׁן עַד סַלְכָֽה</p>
         <p class="translit">uveney gad lenegedam yashevu beerets habashan ad salekhah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v12" data-ref="1 Crônicas 5:12">
@@ -208,7 +207,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">יוֹאֵל הָרֹאשׁ וְשָׁפָם הַמִּשְׁנֶה וְיַעְנַי וְשָׁפָט בַּבָּשָֽׁן</p>
         <p class="translit">yoel harosh veshafam hamisheneh veyaenay veshafat babashan</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v13" data-ref="1 Crônicas 5:13">
@@ -216,7 +215,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַאֲחֵיהֶם לְבֵית אֲבוֹתֵיהֶם מִֽיכָאֵל וּמְשֻׁלָּם וְשֶׁבַע וְיוֹרַי וְיַעְכָּן וְזִיעַ וָעֵבֶר שִׁבְעָֽה</p>
         <p class="translit">vaacheyhem leveyt avoteyhem miykhael umeshulam vesheva veyoray veyaekan veziya vaever shiveah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v14" data-ref="1 Crônicas 5:14">
@@ -224,7 +223,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">אֵלֶּה בְּנֵי אֲבִיחַיִל בֶּן חוּרִי בֶּן יָרוֹחַ בֶּן גִּלְעָד בֶּן מִיכָאֵל בֶּן יְשִׁישַׁי בֶּן יַחְדּוֹ בֶּן בּֽוּז</p>
         <p class="translit">eleh beney aviychayil ben churiy ben yarocha ben gilead ben miykhael ben yeshiyshay ben yachedo ben buz</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v15" data-ref="1 Crônicas 5:15">
@@ -232,7 +231,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">אֲחִי בֶּן עַבְדִּיאֵל בֶּן גּוּנִי רֹאשׁ לְבֵית אֲבוֹתָֽם</p>
         <p class="translit">achiy ben avediyel ben guniy rosh leveyt avotam</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="1 Crônicas 5:16">
@@ -240,7 +239,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיֵּֽשְׁבוּ בַּגִּלְעָד בַּבָּשָׁן וּבִבְנֹתֶיהָ וּבְכָֽל מִגְרְשֵׁי שָׁרוֹן עַל תּוֹצְאוֹתָֽם</p>
         <p class="translit">vayeshevu bagilead babashan uvivenoteyha uvekhal migereshey sharon al totseotam</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="1 Crônicas 5:17">
@@ -248,7 +247,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">כֻּלָּם הִתְיַחְשׂוּ בִּימֵי יוֹתָם מֶֽלֶךְ יְהוּדָה וּבִימֵי יָרָבְעָם מֶֽלֶךְ יִשְׂרָאֵֽל</p>
         <p class="translit">kulam hiteyachesu biymey yotam melekhe yehudah uviymey yaraveam melekhe yiserael</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="1 Crônicas 5:18">
@@ -256,7 +255,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">בְּנֵֽי רְאוּבֵן וְגָדִי וַחֲצִי שֵֽׁבֶט מְנַשֶּׁה מִן בְּנֵי חַיִל אֲנָשִׁים נֹשְׂאֵי מָגֵן וְחֶרֶב וְדֹרְכֵי קֶשֶׁת וּלְמוּדֵי מִלְחָמָה אַרְבָּעִים וְאַרְבָּעָה אֶלֶף וּשְׁבַע מֵאוֹת וְשִׁשִּׁים יֹצְאֵי צָבָֽא</p>
         <p class="translit">beney reuven vegadiy vachatsiy shevet menasheh min beney chayil anashiym noseey magen vecherev vedorekhey qeshet ulemudey milechamah arebaiym vearebaah elef usheva meot veshishiym yotseey tsava</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="1 Crônicas 5:19">
@@ -264,7 +263,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיַּעֲשׂוּ מִלְחָמָה עִם הַֽהַגְרִיאִים וִיטוּר וְנָפִישׁ וְנוֹדָֽב</p>
         <p class="translit">vayaasu milechamah im hahageriyiym viytur venafiysh venodav</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="1 Crônicas 5:20">
@@ -272,7 +271,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיֵּעָזְרוּ עֲלֵיהֶם וַיִּנָּתְנוּ בְיָדָם הַֽהַגְרִיאִים וְכֹל שֶׁעִמָּהֶם כִּי לֵאלֹהִים זָעֲקוּ בַּמִּלְחָמָה וְנַעְתּוֹר לָהֶם כִּי בָטְחוּ בֽוֹ</p>
         <p class="translit">vayeazeru aleyhem vayinatenu veyadam hahageriyiym vekhol sheimahem kiy lelohiym zaaqu bamilechamah venaetor lahem kiy vatechu vo</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="1 Crônicas 5:21">
@@ -280,7 +279,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיִּשְׁבּוּ מִקְנֵיהֶם גְּֽמַלֵּיהֶם חֲמִשִּׁים אֶלֶף וְצֹאן מָאתַיִם וַחֲמִשִּׁים אֶלֶף וַחֲמוֹרִים אַלְפָּיִם וְנֶפֶשׁ אָדָם מֵאָה אָֽלֶף</p>
         <p class="translit">vayishebu miqeneyhem gemaleyhem chamishiym elef vetson matayim vachamishiym elef vachamoriym alepayim venefesh adam meah alef</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="1 Crônicas 5:22">
@@ -288,7 +287,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">כִּֽי חֲלָלִים רַבִּים נָפָלוּ כִּי מֵהָאֱלֹהִים הַמִּלְחָמָה וַיֵּשְׁבוּ תַחְתֵּיהֶם עַד הַגֹּלָֽה</p>
         <p class="translit">kiy chalaliym rabiym nafalu kiy mehaelohiym hamilechamah vayeshevu tacheteyhem ad hagolah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="1 Crônicas 5:23">
@@ -296,7 +295,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבְנֵי חֲצִי שֵׁבֶט מְנַשֶּׁה יָשְׁבוּ בָּאָרֶץ מִבָּשָׁן עַד בַּעַל חֶרְמוֹן וּשְׂנִיר וְהַר חֶרְמוֹן הֵמָּה רָבֽוּ</p>
         <p class="translit">uveney chatsiy shevet menasheh yashevu baarets mibashan ad baal cheremon useniyr vehar cheremon hemah ravu</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v24" data-ref="1 Crônicas 5:24">
@@ -304,7 +303,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְאֵלֶּה רָאשֵׁי בֵית אֲבוֹתָם וְעֵפֶר וְיִשְׁעִי וֶאֱלִיאֵל וְעַזְרִיאֵל וְיִרְמְיָה וְהוֹדַוְיָה וְיַחְדִּיאֵל אֲנָשִׁים גִּבּוֹרֵי חַיִל אַנְשֵׁי שֵׁמוֹת רָאשִׁים לְבֵית אֲבוֹתָֽם</p>
         <p class="translit">veeleh rashey veyt avotam veefer veyisheiy veeliyel veazeriyel veyiremeyah vehodaveyah veyachediyel anashiym giborey chayil aneshey shemot rashiym leveyt avotam</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v25" data-ref="1 Crônicas 5:25">
@@ -312,7 +311,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיִּֽמְעֲלוּ בֵּאלֹהֵי אֲבוֹתֵיהֶם וַיִּזְנוּ אַחֲרֵי אֱלֹהֵי עַמֵּי הָאָרֶץ אֲשֶׁר הִשְׁמִיד אֱלֹהִים מִפְּנֵיהֶֽם</p>
         <p class="translit">vayimealu belohey avoteyhem vayizenu acharey elohey amey haarets asher hishemiyd elohiym mipeneyhem</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v26" data-ref="1 Crônicas 5:26">
@@ -320,7 +319,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיָּעַר אֱלֹהֵי יִשְׂרָאֵל אֶת רוּחַ פּוּל מֶֽלֶךְ אַשּׁוּר וְאֶת רוּחַ תִּלְּגַת פִּלְנֶסֶר מֶלֶךְ אַשּׁוּר וַיַּגְלֵם לָראוּבֵנִי וְלַגָּדִי וְלַחֲצִי שֵׁבֶט מְנַשֶּׁה וַיְבִיאֵם לַחְלַח וְחָבוֹר וְהָרָא וּנְהַר גּוֹזָן עַד הַיּוֹם הַזֶּֽה</p>
         <p class="translit">vayaar elohey yiserael et rucha pul melekhe ashur veet rucha tilegat pileneser melekhe ashur vayagelem laruveniy velagadiy velachatsiy shevet menasheh vayeviyem lachelach vechavor vehara unehar gozan ad hayom hazeh</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="1 Crônicas 5:27">
@@ -328,7 +327,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">בְּנֵי לֵוִי גֵּרְשׁוֹן קְהָת וּמְרָרִֽי</p>
         <p class="translit">beney leviy gereshon qehat umerariy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="1 Crônicas 5:28">
@@ -336,7 +335,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבְנֵי קְהָת עַמְרָם יִצְהָר וְחֶבְרוֹן וְעֻזִּיאֵֽל</p>
         <p class="translit">uveney qehat ameram yitsehar vecheveron veuziyel</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v29" data-ref="1 Crônicas 5:29">
@@ -344,7 +343,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּבְנֵי עַמְרָם אַהֲרֹן וּמֹשֶׁה וּמִרְיָם וּבְנֵי אַהֲרֹן נָדָב וַאֲבִיהוּא אֶלְעָזָר וְאִיתָמָֽר</p>
         <p class="translit">uveney ameram aharon umosheh umireyam uveney aharon nadav vaaviyhu eleazar veiytamar</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v30" data-ref="1 Crônicas 5:30">
@@ -352,7 +351,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">אֶלְעָזָר הוֹלִיד אֶת פִּֽינְחָס פִּֽינְחָס הֹלִיד אֶת אֲבִישֽׁוּעַ</p>
         <p class="translit">eleazar holiyd et piynechas piynechas holiyd et aviyshua</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v31" data-ref="1 Crônicas 5:31">
@@ -360,7 +359,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַאֲבִישׁוּעַ הוֹלִיד אֶת בֻּקִּי וּבֻקִּי הוֹלִיד אֶת עֻזִּֽי</p>
         <p class="translit">vaaviyshua holiyd et buqiy uvuqiy holiyd et uziy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v32" data-ref="1 Crônicas 5:32">
@@ -368,7 +367,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְעֻזִּי הוֹלִיד אֶת זְרַֽחְיָה וּֽזְרַֽחְיָה הוֹלִיד אֶת מְרָיֽוֹת</p>
         <p class="translit">veuziy holiyd et zeracheyah uzeracheyah holiyd et merayot</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v33" data-ref="1 Crônicas 5:33">
@@ -376,7 +375,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">מְרָיוֹת הוֹלִיד אֶת אֲמַרְיָה וַאֲמַרְיָה הוֹלִיד אֶת אֲחִיטֽוּב</p>
         <p class="translit">merayot holiyd et amareyah vaamareyah holiyd et achiytuv</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v34" data-ref="1 Crônicas 5:34">
@@ -384,7 +383,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַאֲחִיטוּב הוֹלִיד אֶת צָדוֹק וְצָדוֹק הוֹלִיד אֶת אֲחִימָֽעַץ</p>
         <p class="translit">vaachiytuv holiyd et tsadoq vetsadoq holiyd et achiymaats</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v35" data-ref="1 Crônicas 5:35">
@@ -392,7 +391,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַאֲחִימַעַץ הוֹלִיד אֶת עֲזַרְיָה וַעֲזַרְיָה הוֹלִיד אֶת יוֹחָנָֽן</p>
         <p class="translit">vaachiymaats holiyd et azareyah vaazareyah holiyd et yochanan</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v36" data-ref="1 Crônicas 5:36">
@@ -400,7 +399,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְיוֹחָנָן הוֹלִיד אֶת עֲזַרְיָה הוּא אֲשֶׁר כִּהֵן בַּבַּיִת אֲשֶׁר בָּנָה שְׁלֹמֹה בִּירוּשָׁלִָֽם</p>
         <p class="translit">veyochanan holiyd et azareyah hu asher kihen babayit asher banah shelomoh biyrushalaim</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v37" data-ref="1 Crônicas 5:37">
@@ -408,7 +407,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיּוֹלֶד עֲזַרְיָה אֶת אֲמַרְיָה וַאֲמַרְיָה הוֹלִיד אֶת אֲחִיטֽוּב</p>
         <p class="translit">vayoled azareyah et amareyah vaamareyah holiyd et achiytuv</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v38" data-ref="1 Crônicas 5:38">
@@ -416,7 +415,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַאֲחִיטוּב הוֹלִיד אֶת צָדוֹק וְצָדוֹק הוֹלִיד אֶת שַׁלּֽוּם</p>
         <p class="translit">vaachiytuv holiyd et tsadoq vetsadoq holiyd et shalum</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v39" data-ref="1 Crônicas 5:39">
@@ -424,7 +423,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְשַׁלּוּם הוֹלִיד אֶת חִלְקִיָּה וְחִלְקִיָּה הוֹלִיד אֶת עֲזַרְיָֽה</p>
         <p class="translit">veshalum holiyd et chileqiyah vechileqiyah holiyd et azareyah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v40" data-ref="1 Crônicas 5:40">
@@ -432,7 +431,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַעֲזַרְיָה הוֹלִיד אֶת שְׂרָיָה וּשְׂרָיָה הוֹלִיד אֶת יְהוֹצָדָֽק</p>
         <p class="translit">vaazareyah holiyd et serayah userayah holiyd et yehotsadaq</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v41" data-ref="1 Crônicas 5:41">
@@ -440,7 +439,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וִיהוֹצָדָק הָלַךְ בְּהַגְלוֹת יְהוָה אֶת יְהוּדָה וִירוּשָׁלִָם בְּיַד נְבֻכַדְנֶאצַּֽר</p>
         <p class="translit">viyhotsadaq halakhe behagelot yehvah et yehudah viyrushalaim beyad nevukhadenetsar</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
   </div>
@@ -452,7 +451,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -469,6 +468,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -496,10 +496,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -508,14 +512,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

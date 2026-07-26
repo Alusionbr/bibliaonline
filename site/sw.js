@@ -1,5 +1,5 @@
 /* Service worker do Bíblia em Contexto — gerado por build.py. Não editar à mão. */
-var VERSION = '4ea23780';
+var VERSION = '98d20b6b';
 var SHELL_CACHE = 'bec-shell-' + VERSION;
 var PAGE_CACHE  = 'bec-pages-'  + VERSION;
 // app-shell mínimo (relativo ao escopo do SW = raiz do site)
@@ -9,10 +9,19 @@ var SHELL = [
   './offline/',
   './manifest.webmanifest',
   './assets/styles.css?v=' + VERSION,
+  // as fontes agora vêm da própria origem; sem isto, offline cairia na fonte
+  // do sistema e o hebraico/grego perderia o desenho certo
+  './assets/fonts.css?v=' + VERSION,
+  './assets/fonts/frank-ruhl-libre-400-hebrew.woff2',
+  './assets/fonts/gentium-book-plus-400-greek.woff2',
+  './assets/fonts/spectral-400-latin.woff2',
+  './assets/fonts/inter-400-latin.woff2',
+  './assets/fonts/fraunces-600-latin.woff2',
   './assets/icons/icon.svg',
   './assets/icons/icon-192.png',
   './assets/core.js?v=' + VERSION,
   './assets/supabase-config.js?v=' + VERSION,
+  './assets/vendor-supabase-2.45.4.min.js?v=' + VERSION,
   './assets/auth.js?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
   './assets/study.js?v=' + VERSION,

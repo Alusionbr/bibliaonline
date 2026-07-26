@@ -16,14 +16,18 @@
 <meta property="og:description" content="João 14: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/joao/14/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="João 14 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="João 14: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/" selected>João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="joao" data-refp-chapter="14" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">João 14</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="João 14" data-total="31">
     <summary>
@@ -120,7 +120,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Μὴ ταρασσέσθω ὑμῶν ἡ καρδία· πιστεύετε εἰς τὸν Θεόν, καὶ εἰς ἐμὲ πιστεύετε.</p>
         <p class="translit"></p>
-        <p class="pt">Não se turbe o vosso coração; credes em Deus, crede também em mim.</p>
+        <p class="pt jesus">Não se turbe o vosso coração; credes em Deus, crede também em mim.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v2" data-ref="João 14:2">
@@ -128,7 +128,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐν τῇ οἰκίᾳ τοῦ Πατρός μου μοναὶ πολλαί εἰσιν· εἰ δὲ μή, εἶπον ἂν ὑμῖν· ὅτι πορεύομαι ἑτοιμάσαι τόπον ὑμῖν·</p>
         <p class="translit"></p>
-        <p class="pt">Na casa de meu Pai há muitas moradas; se não fosse assim, eu vo-lo teria dito; vou preparar-vos lugar.</p>
+        <p class="pt jesus">Na casa de meu Pai há muitas moradas; se não fosse assim, eu vo-lo teria dito; vou preparar-vos lugar.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v3" data-ref="João 14:3">
@@ -136,7 +136,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἐὰν πορευθῶ καὶ ἑτοιμάσω τόπον ὑμῖν, πάλιν ἔρχομαι καὶ παραλήμψομαι ὑμᾶς πρὸς ἐμαυτόν, ἵνα ὅπου εἰμὶ ἐγὼ καὶ ὑμεῖς ἦτε.</p>
         <p class="translit"></p>
-        <p class="pt">E, se eu for e vos preparar lugar, virei outra vez, e vos tomarei para mim mesmo, para que onde eu estiver estejais vós também.</p>
+        <p class="pt jesus">E, se eu for e vos preparar lugar, virei outra vez, e vos tomarei para mim mesmo, para que onde eu estiver estejais vós também.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v4" data-ref="João 14:4">
@@ -144,7 +144,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ὅπου ἐγὼ ὑπάγω οἴδατε τὴν ὁδόν.</p>
         <p class="translit"></p>
-        <p class="pt">E para onde eu vou vós conheceis o caminho.</p>
+        <p class="pt jesus">E para onde eu vou vós conheceis o caminho.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v5" data-ref="João 14:5">
@@ -152,7 +152,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Λέγει αὐτῷ Θωμᾶς Κύριε, οὐκ οἴδαμεν ποῦ ὑπάγεις· πῶς οἴδαμεν τὴν ὁδὸν;</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhe Tomé: Senhor, não sabemos para onde vais; e como podemos saber o caminho?</p>
+        <p class="pt jesus">Disse-lhe Tomé: Senhor, não sabemos para onde vais; e como podemos saber o caminho?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v6" data-ref="João 14:6">
@@ -160,7 +160,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">λέγει αὐτῷ Ἰησοῦς Ἐγώ εἰμι ἡ ὁδὸς καὶ ἡ ἀλήθεια καὶ ἡ ζωή· οὐδεὶς ἔρχεται πρὸς τὸν Πατέρα εἰ μὴ δι’ ἐμοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhe Jesus: Eu sou o caminho, e a verdade, e a vida; ninguém vem ao Pai, senão por mim.</p>
+        <p class="pt jesus">Respondeu-lhe Jesus: Eu sou o caminho, e a verdade, e a vida; ninguém vem ao Pai, senão por mim.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v7" data-ref="João 14:7">
@@ -168,7 +168,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἰ ἐγνώκειτέ με, καὶ τὸν Πατέρα μου ἂν ᾔδειτε· ἀπ’ ἄρτι γινώσκετε αὐτὸν καὶ ἑωράκατε.</p>
         <p class="translit"></p>
-        <p class="pt">Se vós me conhecêsseis a mim, também conheceríeis a meu Pai; e já desde agora o conheceis, e o tendes visto.</p>
+        <p class="pt jesus">Se vós me conhecêsseis a mim, também conheceríeis a meu Pai; e já desde agora o conheceis, e o tendes visto.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v8" data-ref="João 14:8">
@@ -176,7 +176,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Λέγει αὐτῷ Φίλιππος Κύριε, δεῖξον ἡμῖν τὸν Πατέρα, καὶ ἀρκεῖ ἡμῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhe Felipe: Senhor, mostra-nos o Pai, e isso nos basta.</p>
+        <p class="pt jesus">Disse-lhe Felipe: Senhor, mostra-nos o Pai, e isso nos basta.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v9" data-ref="João 14:9">
@@ -184,7 +184,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">λέγει αὐτῷ ὁ Ἰησοῦς Τοσοῦτον χρόνον μεθ’ ὑμῶν εἰμι καὶ οὐκ ἔγνωκάς με, Φίλιππε; ὁ ἑωρακὼς ἐμὲ ἑώρακεν τὸν Πατέρα· πῶς σὺ λέγεις Δεῖξον ἡμῖν τὸν Πατέρα;</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhe Jesus: Há tanto tempo que estou convosco, e ainda não me conheces, Felipe? Quem me viu a mim, viu o Pai; como dizes tu: Mostra-nos o Pai?</p>
+        <p class="pt jesus">Respondeu-lhe Jesus: Há tanto tempo que estou convosco, e ainda não me conheces, Felipe? Quem me viu a mim, viu o Pai; como dizes tu: Mostra-nos o Pai?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v10" data-ref="João 14:10">
@@ -192,7 +192,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐ πιστεύεις ὅτι ἐγὼ ἐν τῷ Πατρὶ καὶ ὁ Πατὴρ ἐν ἐμοί ἐστιν; τὰ ῥήματα ἃ ἐγὼ λέγω ὑμῖν ἀπ’ ἐμαυτοῦ οὐ λαλῶ· ὁ δὲ Πατὴρ ἐν ἐμοὶ μένων ποιεῖ τὰ ἔργα αὐτοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">Não crês tu que eu estou no Pai, e que o Pai está em mim? As palavras que eu vos digo, não as digo por mim mesmo; mas o Pai, que permanece em mim, é quem faz as suas obras.</p>
+        <p class="pt jesus">Não crês tu que eu estou no Pai, e que o Pai está em mim? As palavras que eu vos digo, não as digo por mim mesmo; mas o Pai, que permanece em mim, é quem faz as suas obras.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="João 14:11">
@@ -200,7 +200,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">πιστεύετέ μοι ὅτι ἐγὼ ἐν τῷ Πατρὶ καὶ ὁ Πατὴρ ἐν ἐμοί· εἰ δὲ μή, διὰ τὰ ἔργα αὐτὰ πιστεύετε.</p>
         <p class="translit"></p>
-        <p class="pt">Crede-me que eu estou no Pai, e que o Pai está em mim; crede ao menos por causa das mesmas obras.</p>
+        <p class="pt jesus">Crede-me que eu estou no Pai, e que o Pai está em mim; crede ao menos por causa das mesmas obras.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v12" data-ref="João 14:12">
@@ -208,7 +208,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀμὴν ἀμὴν λέγω ὑμῖν, ὁ πιστεύων εἰς ἐμὲ τὰ ἔργα ἃ ἐγὼ ποιῶ κἀκεῖνος ποιήσει, καὶ μείζονα τούτων ποιήσει, ὅτι ἐγὼ πρὸς τὸν Πατέρα πορεύομαι·</p>
         <p class="translit"></p>
-        <p class="pt">Em verdade, em verdade vos digo: Aquele que crê em mim, esse também fará as obras que eu faço, e as fará maiores do que estas; porque eu vou para o Pai;</p>
+        <p class="pt jesus">Em verdade, em verdade vos digo: Aquele que crê em mim, esse também fará as obras que eu faço, e as fará maiores do que estas; porque eu vou para o Pai;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v13" data-ref="João 14:13">
@@ -216,7 +216,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ὅ τι ἂν αἰτήσητε ἐν τῷ ὀνόματί μου, τοῦτο ποιήσω, ἵνα δοξασθῇ ὁ Πατὴρ ἐν τῷ Υἱῷ.</p>
         <p class="translit"></p>
-        <p class="pt">e tudo quanto pedirdes em meu nome, eu o farei, para que o Pai seja glorificado no Filho.</p>
+        <p class="pt jesus">e tudo quanto pedirdes em meu nome, eu o farei, para que o Pai seja glorificado no Filho.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v14" data-ref="João 14:14">
@@ -224,7 +224,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐάν τι αἰτήσητέ με ἐν τῷ ὀνόματί μου, ἐγὼ ποιήσω.</p>
         <p class="translit"></p>
-        <p class="pt">Se me pedirdes alguma coisa em meu nome, eu a farei.</p>
+        <p class="pt jesus">Se me pedirdes alguma coisa em meu nome, eu a farei.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v15" data-ref="João 14:15">
@@ -232,7 +232,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἐὰν ἀγαπᾶτέ με, τὰς ἐντολὰς τὰς ἐμὰς τηρήσετε.</p>
         <p class="translit"></p>
-        <p class="pt">Se me amardes, guardareis os meus mandamentos.</p>
+        <p class="pt jesus">Se me amardes, guardareis os meus mandamentos.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="João 14:16">
@@ -240,7 +240,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">κἀγὼ ἐρωτήσω τὸν Πατέρα καὶ ἄλλον Παράκλητον δώσει ὑμῖν ἵνα ᾖ μεθ’ ὑμῶν εἰς τὸν αἰῶνα,</p>
         <p class="translit"></p>
-        <p class="pt">E eu rogarei ao Pai, e ele vos dará outro Ajudador, para que fique convosco para sempre.</p>
+        <p class="pt jesus">E eu rogarei ao Pai, e ele vos dará outro Ajudador, para que fique convosco para sempre.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="João 14:17">
@@ -248,7 +248,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τὸ Πνεῦμα τῆς ἀληθείας, ὃ ὁ κόσμος οὐ δύναται λαβεῖν, ὅτι οὐ θεωρεῖ αὐτὸ οὐδὲ γινώσκει· ὑμεῖς γινώσκετε αὐτό, ὅτι παρ’ ὑμῖν μένει καὶ ἐν ὑμῖν ἔσται.</p>
         <p class="translit"></p>
-        <p class="pt">a saber, o Espírito da verdade, o qual o mundo não pode receber; porque não o vê nem o conhece; mas vós o conheceis, porque ele habita convosco, e estará em vós.</p>
+        <p class="pt jesus">a saber, o Espírito da verdade, o qual o mundo não pode receber; porque não o vê nem o conhece; mas vós o conheceis, porque ele habita convosco, e estará em vós.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="João 14:18">
@@ -256,7 +256,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐκ ἀφήσω ὑμᾶς ὀρφανούς, ἔρχομαι πρὸς ὑμᾶς.</p>
         <p class="translit"></p>
-        <p class="pt">Não vos deixarei órfãos; voltarei a vós.</p>
+        <p class="pt jesus">Não vos deixarei órfãos; voltarei a vós.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="João 14:19">
@@ -264,7 +264,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔτι μικρὸν καὶ ὁ κόσμος με οὐκέτι θεωρεῖ, ὑμεῖς δὲ θεωρεῖτέ με, ὅτι ἐγὼ ζῶ καὶ ὑμεῖς ζήσετε.</p>
         <p class="translit"></p>
-        <p class="pt">Ainda um pouco, e o mundo não me verá mais; mas vós me vereis, porque eu vivo, e vós vivereis.</p>
+        <p class="pt jesus">Ainda um pouco, e o mundo não me verá mais; mas vós me vereis, porque eu vivo, e vós vivereis.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="João 14:20">
@@ -272,7 +272,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐν ἐκείνῃ τῇ ἡμέρᾳ γνώσεσθε ὑμεῖς ὅτι ἐγὼ ἐν τῷ Πατρί μου καὶ ὑμεῖς ἐν ἐμοὶ κἀγὼ ἐν ὑμῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Naquele dia conhecereis que estou em meu Pai, e vós em mim, e eu em vós.</p>
+        <p class="pt jesus">Naquele dia conhecereis que estou em meu Pai, e vós em mim, e eu em vós.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="João 14:21">
@@ -280,7 +280,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ ἔχων τὰς ἐντολάς μου καὶ τηρῶν αὐτὰς, ἐκεῖνός ἐστιν ὁ ἀγαπῶν με· ὁ δὲ ἀγαπῶν με ἀγαπηθήσεται ὑπὸ τοῦ Πατρός μου, κἀγὼ ἀγαπήσω αὐτὸν καὶ ἐμφανίσω αὐτῷ ἐμαυτόν.</p>
         <p class="translit"></p>
-        <p class="pt">Aquele que tem os meus mandamentos e os guarda, esse é o que me ama; e aquele que me ama será amado de meu Pai, e eu o amarei, e me manifestarei a ele.</p>
+        <p class="pt jesus">Aquele que tem os meus mandamentos e os guarda, esse é o que me ama; e aquele que me ama será amado de meu Pai, e eu o amarei, e me manifestarei a ele.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="João 14:22">
@@ -288,7 +288,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Λέγει αὐτῷ Ἰούδας, οὐχ ὁ Ἰσκαριώτης Κύριε, καὶ τί γέγονεν ὅτι ἡμῖν μέλλεις ἐμφανίζειν σεαυτὸν καὶ οὐχὶ τῷ κόσμῳ;</p>
         <p class="translit"></p>
-        <p class="pt">Perguntou-lhe Judas {não o Iscariotes}: O que houve, Senhor, que te hás de manifestar a nós, e não ao mundo?</p>
+        <p class="pt jesus">Perguntou-lhe Judas {não o Iscariotes}: O que houve, Senhor, que te hás de manifestar a nós, e não ao mundo?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="João 14:23">
@@ -296,7 +296,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτῷ Ἐάν τις ἀγαπᾷ, με τὸν λόγον μου τηρήσει, καὶ ὁ Πατήρ μου ἀγαπήσει αὐτόν, καὶ πρὸς αὐτὸν ἐλευσόμεθα καὶ μονὴν παρ’ αὐτῷ ποιησόμεθα.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhe Jesus: Se alguém me amar, guardará a minha palavra; e meu Pai o amará, e viremos a ele, e faremos nele morada.</p>
+        <p class="pt jesus">Respondeu-lhe Jesus: Se alguém me amar, guardará a minha palavra; e meu Pai o amará, e viremos a ele, e faremos nele morada.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v24" data-ref="João 14:24">
@@ -304,7 +304,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ μὴ ἀγαπῶν με τοὺς λόγους μου οὐ τηρεῖ· καὶ ὁ λόγος ὃν ἀκούετε οὐκ ἔστιν ἐμὸς ἀλλὰ τοῦ πέμψαντός με Πατρός.</p>
         <p class="translit"></p>
-        <p class="pt">Quem não me ama, não guarda as minhas palavras; ora, a palavra que estais ouvindo não é minha, mas do Pai que me enviou.</p>
+        <p class="pt jesus">Quem não me ama, não guarda as minhas palavras; ora, a palavra que estais ouvindo não é minha, mas do Pai que me enviou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v25" data-ref="João 14:25">
@@ -312,7 +312,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ταῦτα λελάληκα ὑμῖν παρ’ ὑμῖν μένων·</p>
         <p class="translit"></p>
-        <p class="pt">Estas coisas vos tenho falado, estando ainda convosco.</p>
+        <p class="pt jesus">Estas coisas vos tenho falado, estando ainda convosco.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v26" data-ref="João 14:26">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ δὲ Παράκλητος, τὸ Πνεῦμα τὸ Ἅγιον ὃ πέμψει ὁ Πατὴρ ἐν τῷ ὀνόματί μου, ἐκεῖνος ὑμᾶς διδάξει πάντα καὶ ὑπομνήσει ὑμᾶς πάντα ἃ εἶπον ὑμῖν ἐγώ.</p>
         <p class="translit"></p>
-        <p class="pt">Mas o Ajudador, o Espírito Santo a quem o Pai enviará em meu nome, esse vos ensinará todas as coisas, e vos fará lembrar de tudo quanto eu vos tenho dito.</p>
+        <p class="pt jesus">Mas o Ajudador, o Espírito Santo a quem o Pai enviará em meu nome, esse vos ensinará todas as coisas, e vos fará lembrar de tudo quanto eu vos tenho dito.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="João 14:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Εἰρήνην ἀφίημι ὑμῖν, εἰρήνην τὴν ἐμὴν δίδωμι ὑμῖν· οὐ καθὼς ὁ κόσμος δίδωσιν ἐγὼ δίδωμι ὑμῖν. μὴ ταρασσέσθω ὑμῶν ἡ καρδία μηδὲ δειλιάτω.</p>
         <p class="translit"></p>
-        <p class="pt">Deixo-vos a paz, a minha paz vos dou; eu não vo-la dou como o mundo a dá. Não se turbe o vosso coração, nem se atemorize.</p>
+        <p class="pt jesus">Deixo-vos a paz, a minha paz vos dou; eu não vo-la dou como o mundo a dá. Não se turbe o vosso coração, nem se atemorize.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="João 14:28">
@@ -336,7 +336,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἠκούσατε ὅτι ἐγὼ εἶπον ὑμῖν Ὑπάγω καὶ ἔρχομαι πρὸς ὑμᾶς. εἰ ἠγαπᾶτέ με, ἐχάρητε ἄν ὅτι πορεύομαι πρὸς τὸν Πατέρα, ὅτι ὁ Πατὴρ μείζων μού ἐστιν.</p>
         <p class="translit"></p>
-        <p class="pt">Ouvistes que eu vos disse: Vou, e voltarei a vós. Se me amásseis, alegrar-vos-íeis de que eu vá para o Pai; porque o Pai é maior do que eu.</p>
+        <p class="pt jesus">Ouvistes que eu vos disse: Vou, e voltarei a vós. Se me amásseis, alegrar-vos-íeis de que eu vá para o Pai; porque o Pai é maior do que eu.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v29" data-ref="João 14:29">
@@ -344,7 +344,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ νῦν εἴρηκα ὑμῖν πρὶν γενέσθαι, ἵνα ὅταν γένηται πιστεύσητε.</p>
         <p class="translit"></p>
-        <p class="pt">Eu vo-lo disse agora, antes que aconteça, para que, quando acontecer, vós creiais.</p>
+        <p class="pt jesus">Eu vo-lo disse agora, antes que aconteça, para que, quando acontecer, vós creiais.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v30" data-ref="João 14:30">
@@ -352,7 +352,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐκέτι πολλὰ λαλήσω μεθ’ ὑμῶν, ἔρχεται γὰρ ὁ τοῦ κόσμου ἄρχων· καὶ ἐν ἐμοὶ οὐκ ἔχει οὐδέν,</p>
         <p class="translit"></p>
-        <p class="pt">Já não falarei muito convosco, porque vem o príncipe deste mundo, e ele nada tem em mim;</p>
+        <p class="pt jesus">Já não falarei muito convosco, porque vem o príncipe deste mundo, e ele nada tem em mim;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v31" data-ref="João 14:31">
@@ -360,7 +360,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλ’ ἵνα γνῷ ὁ κόσμος ὅτι ἀγαπῶ τὸν Πατέρα, καὶ καθὼς ἐνετείλατο μοι ὁ Πατὴρ, οὕτως ποιῶ. Ἐγείρεσθε, ἄγωμεν ἐντεῦθεν.</p>
         <p class="translit"></p>
-        <p class="pt">mas, assim como o Pai me ordenou, assim mesmo faço, para que o mundo saiba que eu amo o Pai. Levantai-vos, vamo-nos daqui.</p>
+        <p class="pt jesus">mas, assim como o Pai me ordenou, assim mesmo faço, para que o mundo saiba que eu amo o Pai. Levantai-vos, vamo-nos daqui.</p>
       </div>
     </div>
   </div>
@@ -372,7 +372,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -389,6 +389,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -416,10 +417,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -428,14 +433,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

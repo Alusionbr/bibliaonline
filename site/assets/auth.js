@@ -220,8 +220,8 @@
         '<button type="submit" class="btn primary" data-auth-submit>Entrar</button>'+
       '</form>'+
       '<div class="auth-actions" data-auth-actions hidden>'+
-        '<a class="btn ghost" href="'+rootPath()+'workspace/#perfil">Meu perfil</a>'+
-        '<a class="btn ghost" href="'+rootPath()+'workspace/#configuracoes">Configurações</a>'+
+        '<a class="btn ghost" href="'+rootPath()+'conta/#perfil">Meu perfil</a>'+
+        '<a class="btn ghost" href="'+rootPath()+'conta/#configuracoes">Configurações</a>'+
         '<button type="button" class="btn ghost" data-auth-sync>Sincronização</button>'+
         '<a class="btn ghost" href="'+rootPath()+'privacidade/">Privacidade</a>'+
         '<button type="button" class="btn ghost" data-auth-signout>Sair</button>'+

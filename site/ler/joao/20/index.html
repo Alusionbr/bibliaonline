@@ -16,14 +16,18 @@
 <meta property="og:description" content="João 20: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/joao/20/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="João 20 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="João 20: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/" selected>João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="joao" data-refp-chapter="20" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">João 20</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="João 20" data-total="31">
     <summary>
@@ -232,7 +232,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">λέγει αὐτῇ Ἰησοῦς Γύναι, τί κλαίεις; τίνα ζητεῖς; ἐκείνη δοκοῦσα ὅτι ὁ κηπουρός ἐστιν, λέγει αὐτῷ Κύριε, εἰ σὺ ἐβάστασας αὐτόν, εἰπέ μοι ποῦ ἔθηκας αὐτόν, κἀγὼ αὐτὸν ἀρῶ.</p>
         <p class="translit"></p>
-        <p class="pt">Perguntou-lhe Jesus: Mulher, por que choras? A quem procuras? Ela, julgando que fosse o jardineiro, respondeu-lhe: Senhor, se tu o levaste, dize-me onde o puseste, e eu o levarei.</p>
+        <p class="pt jesus">Perguntou-lhe Jesus: Mulher, por que choras? A quem procuras? Ela, julgando que fosse o jardineiro, respondeu-lhe: Senhor, se tu o levaste, dize-me onde o puseste, e eu o levarei.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="João 20:16">
@@ -240,7 +240,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">λέγει αὐτῇ Ἰησοῦς Μαριάμ. στραφεῖσα ἐκείνη λέγει αὐτῷ Ἑβραϊστί· Ῥαββουνεί (ὃ λέγεται Διδάσκαλε).</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhe Jesus: Maria! Ela, virando-se, disse-lhe em hebraico: Raboni!-que quer dizer, Mestre.</p>
+        <p class="pt jesus">Disse-lhe Jesus: Maria! Ela, virando-se, disse-lhe em hebraico: Raboni!-que quer dizer, Mestre.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="João 20:17">
@@ -248,7 +248,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">λέγει αὐτῇ Ἰησοῦς Μή μου ἅπτου, οὔπω γὰρ ἀναβέβηκα πρὸς τὸν Πατέρα· πορεύου δὲ πρὸς τοὺς ἀδελφούς μου καὶ εἰπὲ αὐτοῖς Ἀναβαίνω πρὸς τὸν Πατέρα μου καὶ Πατέρα ὑμῶν καὶ Θεόν μου καὶ Θεὸν ὑμῶν.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhe Jesus: Deixa de me tocar, porque ainda não subi ao Pai; mas vai a meus irmãos e dize-lhes que eu subo para meu Pai e vosso Pai, meu Deus e vosso Deus.</p>
+        <p class="pt jesus">Disse-lhe Jesus: Deixa de me tocar, porque ainda não subi ao Pai; mas vai a meus irmãos e dize-lhes que eu subo para meu Pai e vosso Pai, meu Deus e vosso Deus.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="João 20:18">
@@ -264,7 +264,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Οὔσης οὖν ὀψίας τῇ ἡμέρᾳ ἐκείνῃ τῇ μιᾷ σαββάτων, καὶ τῶν θυρῶν κεκλεισμένων ὅπου ἦσαν οἱ μαθηταὶ διὰ τὸν φόβον τῶν Ἰουδαίων, ἦλθεν ὁ Ἰησοῦς καὶ ἔστη εἰς τὸ μέσον, καὶ λέγει αὐτοῖς Εἰρήνη ὑμῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Chegada, pois, a tarde, naquele dia, o primeiro da semana, e estando os discípulos reunidos com as portas cerradas por medo dos judeus, chegou Jesus, pôs-se no meio e disse-lhes: Paz seja convosco.</p>
+        <p class="pt jesus">Chegada, pois, a tarde, naquele dia, o primeiro da semana, e estando os discípulos reunidos com as portas cerradas por medo dos judeus, chegou Jesus, pôs-se no meio e disse-lhes: Paz seja convosco.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="João 20:20">
@@ -280,7 +280,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν οὖν αὐτοῖς ὁ Ἰησοῦς πάλιν Εἰρήνη ὑμῖν· καθὼς ἀπέσταλκέν με ὁ Πατήρ, κἀγὼ πέμπω ὑμᾶς.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhes, então, Jesus segunda vez: Paz seja convosco; assim como o Pai me enviou, também eu vos envio a vós.</p>
+        <p class="pt jesus">Disse-lhes, então, Jesus segunda vez: Paz seja convosco; assim como o Pai me enviou, também eu vos envio a vós.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="João 20:22">
@@ -288,7 +288,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ τοῦτο εἰπὼν ἐνεφύσησεν καὶ λέγει αὐτοῖς Λάβετε Πνεῦμα Ἅγιον.</p>
         <p class="translit"></p>
-        <p class="pt">E havendo dito isso, assoprou sobre eles, e disse-lhes: Recebei o Espírito Santo.</p>
+        <p class="pt jesus">E havendo dito isso, assoprou sobre eles, e disse-lhes: Recebei o Espírito Santo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="João 20:23">
@@ -296,7 +296,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἄν τινων ἀφῆτε τὰς ἁμαρτίας, ἀφέωνται αὐτοῖς· ἄν τινων κρατῆτε, κεκράτηνται.</p>
         <p class="translit"></p>
-        <p class="pt">Àqueles a quem perdoardes os pecados, são-lhes perdoados; e àqueles a quem os retiverdes, são-lhes retidos.</p>
+        <p class="pt jesus">Àqueles a quem perdoardes os pecados, são-lhes perdoados; e àqueles a quem os retiverdes, são-lhes retidos.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v24" data-ref="João 20:24">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Καὶ μεθ’ ἡμέρας ὀκτὼ πάλιν ἦσαν ἔσω οἱ μαθηταὶ αὐτοῦ, καὶ Θωμᾶς μετ’ αὐτῶν. ἔρχεται ὁ Ἰησοῦς τῶν θυρῶν κεκλεισμένων, καὶ ἔστη εἰς τὸ μέσον καὶ εἶπεν Εἰρήνη ὑμῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Oito dias depois estavam os discípulos outra vez ali reunidos, e Tomé com eles. Chegou Jesus, estando as portas fechadas, pôs-se no meio deles e disse: Paz seja convosco.</p>
+        <p class="pt jesus">Oito dias depois estavam os discípulos outra vez ali reunidos, e Tomé com eles. Chegou Jesus, estando as portas fechadas, pôs-se no meio deles e disse: Paz seja convosco.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="João 20:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶτα λέγει τῷ Θωμᾷ Φέρε τὸν δάκτυλόν σου ὧδε καὶ ἴδε τὰς χεῖράς μου, καὶ φέρε τὴν χεῖρά σου καὶ βάλε εἰς τὴν πλευράν μου, καὶ μὴ γίνου ἄπιστος ἀλλὰ πιστός.</p>
         <p class="translit"></p>
-        <p class="pt">Depois disse a Tomé: Chega aqui o teu dedo, e vê as minhas mãos; chega a tua mão, e mete-a no meu lado; e não mais sejas incrédulo, mas crente.</p>
+        <p class="pt jesus">Depois disse a Tomé: Chega aqui o teu dedo, e vê as minhas mãos; chega a tua mão, e mete-a no meu lado; e não mais sejas incrédulo, mas crente.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="João 20:28">
@@ -344,7 +344,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">λέγει αὐτῷ ὁ Ἰησοῦς Ὅτι ἑώρακάς με, πεπίστευκας; μακάριοι οἱ μὴ ἰδόντες καὶ πιστεύσαντες.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhe Jesus: Porque me viste, creste? Bem-aventurados os que não viram e creram.</p>
+        <p class="pt jesus">Disse-lhe Jesus: Porque me viste, creste? Bem-aventurados os que não viram e creram.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v30" data-ref="João 20:30">
@@ -372,7 +372,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -389,6 +389,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -416,10 +417,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -428,14 +433,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

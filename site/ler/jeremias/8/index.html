@@ -16,14 +16,18 @@
 <meta property="og:description" content="Jeremias 8: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/jeremias/8/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Jeremias 8 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="Jeremias 8: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,12 +86,8 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/" selected>Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/">João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="jeremias" data-refp-chapter="8" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">Jeremias 8</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="Jeremias 8" data-total="23">
@@ -120,7 +119,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">בָּעֵת הַהִיא נְאֻם יְהוָה ויציאו יוֹצִיאוּ אֶת עַצְמוֹת מַלְכֵֽי יְהוּדָה וְאֶת עַצְמוֹת שָׂרָיו וְאֶת עַצְמוֹת הַכֹּהֲנִים וְאֵת עַצְמוֹת הַנְּבִיאִים וְאֵת עַצְמוֹת יוֹשְׁבֵֽי יְרוּשָׁלִָם מִקִּבְרֵיהֶֽם</p>
         <p class="translit">baet hahiy neum yehvah vytsyv yotsiyu et atsemot malekhey yehudah veet atsemot sarayv veet atsemot hakohaniym veet atsemot haneviyiym veet atsemot yoshevey yerushalaim miqivereyhem</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v2" data-ref="Jeremias 8:2">
@@ -128,7 +127,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וּשְׁטָחוּם לַשֶּׁמֶשׁ וְלַיָּרֵחַ וּלְכֹל צְבָא הַשָּׁמַיִם אֲשֶׁר אֲהֵבוּם וַאֲשֶׁר עֲבָדוּם וַֽאֲשֶׁר הָלְכוּ אַֽחֲרֵיהֶם וַאֲשֶׁר דְּרָשׁוּם וַאֲשֶׁר הִֽשְׁתַּחֲווּ לָהֶם לֹא יֵאָֽסְפוּ וְלֹא יִקָּבֵרוּ לְדֹמֶן עַל פְּנֵי הָאֲדָמָה יִֽהְיֽוּ</p>
         <p class="translit">ushetachum lashemesh velayarecha ulekhol tseva hashamayim asher ahevum vaasher avadum vaasher halekhu achareyhem vaasher derashum vaasher hishetachavu lahem lo yeasefu velo yiqaveru ledomen al peney haadamah yiheyu</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v3" data-ref="Jeremias 8:3">
@@ -136,7 +135,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְנִבְחַר מָוֶת מֵֽחַיִּים לְכֹל הַשְּׁאֵרִית הַנִּשְׁאָרִים מִן הַמִּשְׁפָּחָה הָֽרָעָה הַזֹּאת בְּכָל הַמְּקֹמוֹת הַנִּשְׁאָרִים אֲשֶׁר הִדַּחְתִּים שָׁם נְאֻם יְהוָה צְבָאֽוֹת</p>
         <p class="translit">venivechar mavet mechayiym lekhol hasheeriyt hanisheariym min hamishepachah haraah hazot bekhal hameqomot hanisheariym asher hidachetiym sham neum yehvah tsevaot</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v4" data-ref="Jeremias 8:4">
@@ -144,7 +143,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וְאָמַרְתָּ אֲלֵיהֶם כֹּה אָמַר יְהוָה הֲיִפְּלוּ וְלֹא יָקוּמוּ אִם יָשׁוּב וְלֹא יָשֽׁוּב</p>
         <p class="translit">veamareta aleyhem koh amar yehvah hayipelu velo yaqumu im yashuv velo yashuv</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v5" data-ref="Jeremias 8:5">
@@ -152,7 +151,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">מַדּוּעַ שׁוֹבְבָה הָעָם הַזֶּה יְרוּשָׁלִַם מְשֻׁבָה נִצַּחַת הֶחֱזִיקוּ בַּתַּרְמִית מֵאֲנוּ לָשֽׁוּב</p>
         <p class="translit">madua shovevah haam hazeh yerushalaim meshuvah nitsachat hecheziyqu bataremiyt meanu lashuv</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v6" data-ref="Jeremias 8:6">
@@ -160,7 +159,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">הִקְשַׁבְתִּי וָֽאֶשְׁמָע לוֹא כֵן יְדַבֵּרוּ אֵין אִישׁ נִחָם עַל רָעָתוֹ לֵאמֹר מֶה עָשִׂיתִי כֻּלֹּה שָׁב במרצותם בִּמְרוּצָתָם כְּסוּס שׁוֹטֵף בַּמִּלְחָמָֽה</p>
         <p class="translit">hiqeshavetiy vaeshema lo khen yedaberu eyn iysh nicham al raato lemor meh asiytiy kuloh shav vmrtsvtm bimerutsatam kesus shotef bamilechamah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v7" data-ref="Jeremias 8:7">
@@ -168,7 +167,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">גַּם חֲסִידָה בַשָּׁמַיִם יָֽדְעָה מֽוֹעֲדֶיהָ וְתֹר וסוס וְסִיס וְעָגוּר שָׁמְרוּ אֶת עֵת בֹּאָנָה וְעַמִּי לֹא יָֽדְעוּ אֵת מִשְׁפַּט יְהוָֽה</p>
         <p class="translit">gam chasiydah vashamayim yadeah moadeyha vetor vsvs vesiys veagur shameru et et boanah veamiy lo yadeu et mishepat yehvah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v8" data-ref="Jeremias 8:8">
@@ -176,7 +175,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">אֵיכָה תֹֽאמְרוּ חֲכָמִים אֲנַחְנוּ וְתוֹרַת יְהוָה אִתָּנוּ אָכֵן הִנֵּה לַשֶּׁקֶר עָשָׂה עֵט שֶׁקֶר סֹפְרִֽים</p>
         <p class="translit">eykhah tomeru chakhamiym anachenu vetorat yehvah itanu akhen hineh lasheqer asah et sheqer soferiym</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v9" data-ref="Jeremias 8:9">
@@ -184,7 +183,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">הֹבִישׁוּ חֲכָמִים חַתּוּ וַיִּלָּכֵדוּ הִנֵּה בִדְבַר יְהוָה מָאָסוּ וְחָכְמַֽת מֶה לָהֶֽם</p>
         <p class="translit">hoviyshu chakhamiym chatu vayilakhedu hineh videvar yehvah maasu vechakhemat meh lahem</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v10" data-ref="Jeremias 8:10">
@@ -192,7 +191,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">לָכֵן אֶתֵּן אֶת נְשֵׁיהֶם לַאֲחֵרִים שְׂדֽוֹתֵיהֶם לְיוֹרְשִׁים כִּי מִקָּטֹן וְעַד גָּדוֹל כֻּלֹּה בֹּצֵעַ בָּצַע מִנָּבִיא וְעַד כֹּהֵן כֻּלֹּה עֹשֶׂה שָּֽׁקֶר</p>
         <p class="translit">lakhen eten et nesheyhem laacheriym sedoteyhem leyoreshiym kiy miqaton vead gadol kuloh botsea batsa minaviy vead kohen kuloh oseh shaqer</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="Jeremias 8:11">
@@ -200,7 +199,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">וַיְרַפּוּ אֶת שֶׁבֶר בַּת עַמִּי עַל נְקַלָּה לֵאמֹר שָׁלוֹם שָׁלוֹם וְאֵין שָׁלֽוֹם</p>
         <p class="translit">vayerapu et shever bat amiy al neqalah lemor shalom shalom veeyn shalom</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v12" data-ref="Jeremias 8:12">
@@ -208,7 +207,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">הֹבִשׁוּ כִּי תוֹעֵבָה עָשׂוּ גַּם בּוֹשׁ לֹֽא יֵבֹשׁוּ וְהִכָּלֵם לֹא יָדָעוּ לָכֵן יִפְּלוּ בַנֹּפְלִים בְּעֵת פְּקֻדָּתָם יִכָּשְׁלוּ אָמַר יְהוָֽה</p>
         <p class="translit">hovishu kiy toevah asu gam bosh lo yevoshu vehikalem lo yadau lakhen yipelu vanofeliym beet pequdatam yikashelu amar yehvah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v13" data-ref="Jeremias 8:13">
@@ -216,7 +215,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">אָסֹף אֲסִיפֵם נְאֻם יְהֹוָה אֵין עֲנָבִים בַּגֶּפֶן וְאֵין תְּאֵנִים בַּתְּאֵנָה וְהֶֽעָלֶה נָבֵל וָאֶתֵּן לָהֶם יַעַבְרֽוּם</p>
         <p class="translit">asof asiyfem neum yehovah eyn anaviym bagefen veeyn teeniym bateenah vehealeh navel vaeten lahem yaaverum</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v14" data-ref="Jeremias 8:14">
@@ -224,7 +223,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">עַל מָה אֲנַחְנוּ יֹֽשְׁבִים הֵֽאָסְפוּ וְנָבוֹא אֶל עָרֵי הַמִּבְצָר וְנִדְּמָה שָּׁם כִּי יְהוָה אֱלֹהֵינוּ הֲדִמָּנוּ וַיַּשְׁקֵנוּ מֵי רֹאשׁ כִּי חָטָאנוּ לַיהוָֽה</p>
         <p class="translit">al mah anachenu yosheviym heasefu venavo el arey hamivetsar venidemah sham kiy yehvah eloheynu hadimanu vayasheqenu mey rosh kiy chatanu layhvah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v15" data-ref="Jeremias 8:15">
@@ -232,7 +231,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">קַוֵּה לְשָׁלוֹם וְאֵין טוֹב לְעֵת מַרְפֵּה וְהִנֵּה בְעָתָֽה</p>
         <p class="translit">qaveh leshalom veeyn tov leet marepeh vehineh veatah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="Jeremias 8:16">
@@ -240,7 +239,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">מִדָּן נִשְׁמַע נַחְרַת סוּסָיו מִקּוֹל מִצְהֲלוֹת אַבִּירָיו רָעֲשָׁה כָּל הָאָרֶץ וַיָּבוֹאוּ וַיֹּֽאכְלוּ אֶרֶץ וּמְלוֹאָהּ עִיר וְיֹשְׁבֵי בָֽהּ</p>
         <p class="translit">midan nishema nacherat susayv miqol mitsehalot abiyrayv raashah kal haarets vayavou vayokhelu erets umeloah iyr veyoshevey vah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="Jeremias 8:17">
@@ -248,7 +247,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">כִּי הִנְנִי מְשַׁלֵּחַ בָּכֶם נְחָשִׁים צִפְעֹנִים אֲשֶׁר אֵין לָהֶם לָחַשׁ וְנִשְּׁכוּ אֶתְכֶם נְאֻם יְהוָֽה</p>
         <p class="translit">kiy hineniy meshalecha bakhem nechashiym tsifeoniym asher eyn lahem lachash venishekhu etekhem neum yehvah</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="Jeremias 8:18">
@@ -256,7 +255,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">מַבְלִיגִיתִי עֲלֵי יָגוֹן עָלַי לִבִּי דַוָּֽי</p>
         <p class="translit">maveliygiytiy aley yagon alay libiy davay</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="Jeremias 8:19">
@@ -264,7 +263,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">הִנֵּה קוֹל שַֽׁוְעַת בַּת עַמִּי מֵאֶרֶץ מַרְחַקִּים הַֽיהוָה אֵין בְּצִיּוֹן אִם מַלְכָּהּ אֵין בָּהּ מַדּוּעַ הִכְעִסוּנִי בִּפְסִלֵיהֶם בְּהַבְלֵי נֵכָֽר</p>
         <p class="translit">hineh qol shaveat bat amiy meerets marechaqiym hayhvah eyn betsiyon im malekah eyn bah madua hikheisuniy bifesileyhem behaveley nekhar</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="Jeremias 8:20">
@@ -272,7 +271,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">עָבַר קָצִיר כָּלָה קָיִץ וַאֲנַחְנוּ לוֹא נוֹשָֽׁעְנוּ</p>
         <p class="translit">avar qatsiyr kalah qayits vaanachenu lo noshaenu</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="Jeremias 8:21">
@@ -280,7 +279,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">עַל שֶׁבֶר בַּת עַמִּי הָשְׁבָּרְתִּי קָדַרְתִּי שַׁמָּה הֶחֱזִקָֽתְנִי</p>
         <p class="translit">al shever bat amiy hashebaretiy qadaretiy shamah hecheziqateniy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="Jeremias 8:22">
@@ -288,7 +287,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">הַצֳרִי אֵין בְּגִלְעָד אִם רֹפֵא אֵין שָׁם כִּי מַדּוּעַ לֹא עָֽלְתָה אֲרֻכַת בַּת עַמִּֽי</p>
         <p class="translit">hatsoriy eyn begilead im rofe eyn sham kiy madua lo aletah arukhat bat amiy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="Jeremias 8:23">
@@ -296,7 +295,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-hebrew" dir="rtl" data-lang="he-IL">מִֽי יִתֵּן רֹאשִׁי מַיִם וְעֵינִי מְקוֹר דִּמְעָה וְאֶבְכֶּה יוֹמָם וָלַיְלָה אֵת חַֽלְלֵי בַת עַמִּֽי</p>
         <p class="translit">miy yiten roshiy mayim veeyniy meqor dimeah veevekeh yomam valayelah et chaleley vat amiy</p>
-        <p class="pt"><span class="pt-missing">—</span></p>
+        <p class="pt"><span class="pt-missing" title="Diferença de numeração entre o hebraico e a edição Almeida 1911 — tradução deste versículo em revisão.">tradução em revisão</span></p>
       </div>
     </div>
   </div>
@@ -308,7 +307,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -325,6 +324,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -352,10 +352,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -364,14 +368,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

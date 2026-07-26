@@ -16,14 +16,18 @@
 <meta property="og:description" content="Apocalipse 2: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/apocalipse/2/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Apocalipse 2 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="Apocalipse 2: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/">João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/" selected>Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="apocalipse" data-refp-chapter="2" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">Apocalipse 2</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="Apocalipse 2" data-total="29">
     <summary>
@@ -120,7 +120,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Τῷ ἀγγέλῳ τῆς ἐν Ἐφέσῳ ἐκκλησίας γράψον Τάδε λέγει ὁ κρατῶν τοὺς ἑπτὰ ἀστέρας ἐν τῇ δεξιᾷ αὐτοῦ, ὁ περιπατῶν ἐν μέσῳ τῶν ἑπτὰ λυχνιῶν τῶν χρυσῶν</p>
         <p class="translit"></p>
-        <p class="pt">Ao anjo da igreja em Éfeso escreve: Isto diz aquele que tem na sua destra as sete estrelas, que anda no meio dos sete candeeiros de ouro:</p>
+        <p class="pt jesus">Ao anjo da igreja em Éfeso escreve: Isto diz aquele que tem na sua destra as sete estrelas, que anda no meio dos sete candeeiros de ouro:</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v2" data-ref="Apocalipse 2:2">
@@ -128,7 +128,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Οἶδα τὰ ἔργα σου καὶ τὸν κόπον καὶ τὴν ὑπομονήν σου, καὶ ὅτι οὐ δύνῃ βαστάσαι κακούς, καὶ ἐπείρασας τοὺς λέγοντας ἑαυτοὺς ἀποστόλους καὶ οὐκ εἰσίν, καὶ εὗρες αὐτοὺς ψευδεῖς·</p>
         <p class="translit"></p>
-        <p class="pt">Conheço as tuas obras, e o teu trabalho, e a tua perseverança; sei que não podes suportar os maus, e que puseste à prova os que se dizem apóstolos e não o são, e os achaste mentirosos;</p>
+        <p class="pt jesus">Conheço as tuas obras, e o teu trabalho, e a tua perseverança; sei que não podes suportar os maus, e que puseste à prova os que se dizem apóstolos e não o são, e os achaste mentirosos;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v3" data-ref="Apocalipse 2:3">
@@ -136,7 +136,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ὑπομονὴν ἔχεις, καὶ ἐβάστασας διὰ τὸ ὄνομά μου, καὶ οὐ κεκοπίακες.</p>
         <p class="translit"></p>
-        <p class="pt">e tens perseverança e por amor do meu nome sofreste, e não desfaleceste.</p>
+        <p class="pt jesus">e tens perseverança e por amor do meu nome sofreste, e não desfaleceste.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v4" data-ref="Apocalipse 2:4">
@@ -144,7 +144,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλὰ ἔχω κατὰ σοῦ ὅτι τὴν ἀγάπην σου τὴν πρώτην ἀφῆκες.</p>
         <p class="translit"></p>
-        <p class="pt">Tenho, porém, contra ti que deixaste o teu primeiro amor.</p>
+        <p class="pt jesus">Tenho, porém, contra ti que deixaste o teu primeiro amor.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v5" data-ref="Apocalipse 2:5">
@@ -152,7 +152,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">μνημόνευε οὖν πόθεν πέπτωκες, καὶ μετανόησον καὶ τὰ πρῶτα ἔργα ποίησον· εἰ δὲ μή, ἔρχομαί σοι καὶ κινήσω τὴν λυχνίαν σου ἐκ τοῦ τόπου αὐτῆς, ἐὰν μὴ μετανοήσῃς.</p>
         <p class="translit"></p>
-        <p class="pt">Lembra-te, pois, donde caíste, e arrepende-te, e pratica as primeiras obras; e se não, brevemente virei a ti, e removerei do seu lugar o teu candeeiro, se não te arrependeres.</p>
+        <p class="pt jesus">Lembra-te, pois, donde caíste, e arrepende-te, e pratica as primeiras obras; e se não, brevemente virei a ti, e removerei do seu lugar o teu candeeiro, se não te arrependeres.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v6" data-ref="Apocalipse 2:6">
@@ -160,7 +160,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλὰ τοῦτο ἔχεις, ὅτι μισεῖς τὰ ἔργα τῶν Νικολαϊτῶν, ἃ κἀγὼ μισῶ.</p>
         <p class="translit"></p>
-        <p class="pt">Tens, porém, isto, que aborreces as obras dos nicolaítas, as quais eu também aborreço.</p>
+        <p class="pt jesus">Tens, porém, isto, que aborreces as obras dos nicolaítas, as quais eu também aborreço.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v7" data-ref="Apocalipse 2:7">
@@ -168,7 +168,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ὁ ἔχων οὖς ἀκουσάτω τί τὸ Πνεῦμα λέγει ταῖς ἐκκλησίαις. Τῷ νικῶντι δώσω αὐτῷ φαγεῖν ἐκ τοῦ ξύλου τῆς ζωῆς, ὅ ἐστιν ἐν τῷ Παραδείσῳ τοῦ Θεοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">Quem tem ouvidos, ouça o que o Espírito diz às igrejas. Ao que vencer, dar-lhe-ei a comer da árvore da vida, que está no paraíso de Deus.</p>
+        <p class="pt jesus">Quem tem ouvidos, ouça o que o Espírito diz às igrejas. Ao que vencer, dar-lhe-ei a comer da árvore da vida, que está no paraíso de Deus.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v8" data-ref="Apocalipse 2:8">
@@ -176,7 +176,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Καὶ τῷ ἀγγέλῳ τῆς ἐν Σμύρνῃ ἐκκλησίας γράψον Τάδε λέγει ὁ πρῶτος καὶ ὁ ἔσχατος, ὃς ἐγένετο νεκρὸς καὶ ἔζησεν</p>
         <p class="translit"></p>
-        <p class="pt">Ao anjo da igreja em Esmirna escreve: Isto diz o primeiro e o último, que foi morto e reviveu:</p>
+        <p class="pt jesus">Ao anjo da igreja em Esmirna escreve: Isto diz o primeiro e o último, que foi morto e reviveu:</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v9" data-ref="Apocalipse 2:9">
@@ -184,7 +184,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Οἶδά σου τὴν θλῖψιν καὶ τὴν πτωχείαν, ἀλλὰ πλούσιος εἶ, καὶ τὴν βλασφημίαν ἐκ τῶν λεγόντων Ἰουδαίους εἶναι ἑαυτούς, καὶ οὐκ εἰσίν ἀλλὰ συναγωγὴ τοῦ Σατανᾶ.</p>
         <p class="translit"></p>
-        <p class="pt">Conheço a tua tribulação e a tua pobreza {mas tu és rico}, e a blasfêmia dos que dizem ser judeus, e não o são, porém são sinagoga de Satanás.</p>
+        <p class="pt jesus">Conheço a tua tribulação e a tua pobreza {mas tu és rico}, e a blasfêmia dos que dizem ser judeus, e não o são, porém são sinagoga de Satanás.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v10" data-ref="Apocalipse 2:10">
@@ -192,7 +192,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">μὴ φοβοῦ ἃ μέλλεις πάσχειν. ἰδοὺ μέλλει βάλλειν ὁ διάβολος ἐξ ὑμῶν εἰς φυλακὴν ἵνα πειρασθῆτε, καὶ ἕξετε θλῖψιν ἡμερῶν δέκα. γίνου πιστὸς ἄχρι θανάτου, καὶ δώσω σοι τὸν στέφανον τῆς ζωῆς.</p>
         <p class="translit"></p>
-        <p class="pt">Não temas o que hás de padecer. Eis que o Diabo está para lançar alguns de vós na prisão, para que sejais provados; e tereis uma tribulação de dez dias. Sê fiel até a morte, e dar-te-ei a coroa da vida.</p>
+        <p class="pt jesus">Não temas o que hás de padecer. Eis que o Diabo está para lançar alguns de vós na prisão, para que sejais provados; e tereis uma tribulação de dez dias. Sê fiel até a morte, e dar-te-ei a coroa da vida.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="Apocalipse 2:11">
@@ -200,7 +200,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ὁ ἔχων οὖς ἀκουσάτω τί τὸ Πνεῦμα λέγει ταῖς ἐκκλησίαις. Ὁ νικῶν οὐ μὴ ἀδικηθῇ ἐκ τοῦ θανάτου τοῦ δευτέρου.</p>
         <p class="translit"></p>
-        <p class="pt">Quem tem ouvidos, ouça o que o Espírito diz às igrejas. O que vencer, de modo algum sofrerá o dado da segunda morte.</p>
+        <p class="pt jesus">Quem tem ouvidos, ouça o que o Espírito diz às igrejas. O que vencer, de modo algum sofrerá o dado da segunda morte.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v12" data-ref="Apocalipse 2:12">
@@ -208,7 +208,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Καὶ τῷ ἀγγέλῳ τῆς ἐν Περγάμῳ ἐκκλησίας γράψον Τάδε λέγει ὁ ἔχων τὴν ῥομφαίαν τὴν δίστομον τὴν ὀξεῖαν</p>
         <p class="translit"></p>
-        <p class="pt">Ao anjo da igreja em Pérgamo escreve: Isto diz aquele que tem a espada aguda de dois gumes:</p>
+        <p class="pt jesus">Ao anjo da igreja em Pérgamo escreve: Isto diz aquele que tem a espada aguda de dois gumes:</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v13" data-ref="Apocalipse 2:13">
@@ -216,7 +216,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Οἶδα ποῦ κατοικεῖς· ὅπου ὁ θρόνος τοῦ Σατανᾶ· καὶ κρατεῖς τὸ ὄνομά μου, καὶ οὐκ ἠρνήσω τὴν πίστιν μου καὶ ἐν ταῖς ἡμέραις Ἀντιπᾶς ὁ μάρτυς μου ὁ πιστός μου, ὃς ἀπεκτάνθη παρ’ ὑμῖν, ὅπου ὁ Σατανᾶς κατοικεῖ.</p>
         <p class="translit"></p>
-        <p class="pt">Sei onde habitas, que é onde está o trono de Satanás; mas reténs o meu nome e não negaste a minha fé, mesmo nos dias de Antipas, minha fiel testemunha, o qual foi morto entre vós, onde Satanás habita.</p>
+        <p class="pt jesus">Sei onde habitas, que é onde está o trono de Satanás; mas reténs o meu nome e não negaste a minha fé, mesmo nos dias de Antipas, minha fiel testemunha, o qual foi morto entre vós, onde Satanás habita.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v14" data-ref="Apocalipse 2:14">
@@ -224,7 +224,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλ’ ἔχω κατὰ σοῦ ὀλίγα, ὅτι ἔχεις ἐκεῖ κρατοῦντας τὴν διδαχὴν Βαλαάμ, ὃς ἐδίδασκεν τῷ Βαλὰκ βαλεῖν σκάνδαλον ἐνώπιον τῶν υἱῶν Ἰσραήλ, φαγεῖν εἰδωλόθυτα καὶ πορνεῦσαι.</p>
         <p class="translit"></p>
-        <p class="pt">entretanto, algumas coisas tenho contra ti; porque tens aí os que seguem a doutrina de Balaão, o qual ensinava Balaque a lançar tropeços diante dos filhos de Israel, introduzindo-os a comerem das coisas sacrificadas a ídolos e a se prostituírem.</p>
+        <p class="pt jesus">entretanto, algumas coisas tenho contra ti; porque tens aí os que seguem a doutrina de Balaão, o qual ensinava Balaque a lançar tropeços diante dos filhos de Israel, introduzindo-os a comerem das coisas sacrificadas a ídolos e a se prostituírem.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v15" data-ref="Apocalipse 2:15">
@@ -232,7 +232,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὕτως ἔχεις καὶ σὺ κρατοῦντας τὴν διδαχὴν τῶν Νικολαϊτῶν ὁμοίως.</p>
         <p class="translit"></p>
-        <p class="pt">Assim tens também alguns que de igual modo seguem a doutrina dos nicolaítas.</p>
+        <p class="pt jesus">Assim tens também alguns que de igual modo seguem a doutrina dos nicolaítas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="Apocalipse 2:16">
@@ -240,7 +240,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">μετανόησον οὖν· εἰ δὲ μή, ἔρχομαί σοι ταχύ καὶ πολεμήσω μετ’ αὐτῶν ἐν τῇ ῥομφαίᾳ τοῦ στόματός μου.</p>
         <p class="translit"></p>
-        <p class="pt">Arrepende-te, pois; ou se não, virei a ti em breve, e contra eles batalharei com a espada da minha boca.</p>
+        <p class="pt jesus">Arrepende-te, pois; ou se não, virei a ti em breve, e contra eles batalharei com a espada da minha boca.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="Apocalipse 2:17">
@@ -248,7 +248,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ὁ ἔχων οὖς ἀκουσάτω τί τὸ Πνεῦμα λέγει ταῖς ἐκκλησίαις. Τῷ νικῶντι δώσω αὐτῷ τοῦ μάννα τοῦ κεκρυμμένου, καὶ δώσω αὐτῷ ψῆφον λευκήν, καὶ ἐπὶ τὴν ψῆφον ὄνομα καινὸν γεγραμμένον, ὃ οὐδεὶς οἶδεν εἰ μὴ ὁ λαμβάνων.</p>
         <p class="translit"></p>
-        <p class="pt">Quem tem ouvidos, ouça o que o Espírito diz às igrejas. Ao que vencer darei do maná escondido, e lhe darei uma pedra branca, e na pedra um novo nome escrito, o qual ninguém conhece senão aquele que o recebe.</p>
+        <p class="pt jesus">Quem tem ouvidos, ouça o que o Espírito diz às igrejas. Ao que vencer darei do maná escondido, e lhe darei uma pedra branca, e na pedra um novo nome escrito, o qual ninguém conhece senão aquele que o recebe.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="Apocalipse 2:18">
@@ -256,7 +256,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Καὶ τῷ ἀγγέλῳ τῆς ἐν Θυατείροις ἐκκλησίας γράψον Τάδε λέγει ὁ Υἱὸς τοῦ Θεοῦ, ὁ ἔχων τοὺς ὀφθαλμοὺς αὐτοῦ ὡς φλόγα πυρός, καὶ οἱ πόδες αὐτοῦ ὅμοιοι χαλκολιβάνῳ</p>
         <p class="translit"></p>
-        <p class="pt">Ao anjo da igreja em Tiatira escreve: Isto diz o Filho de Deus, que tem os olhos como chama de fogo, e os pés semelhantes a latão reluzente:</p>
+        <p class="pt jesus">Ao anjo da igreja em Tiatira escreve: Isto diz o Filho de Deus, que tem os olhos como chama de fogo, e os pés semelhantes a latão reluzente:</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="Apocalipse 2:19">
@@ -264,7 +264,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Οἶδά σου τὰ ἔργα καὶ τὴν ἀγάπην καὶ τὴν πίστιν καὶ τὴν διακονίαν καὶ τὴν ὑπομονήν σου, καὶ τὰ ἔργα σου τὰ ἔσχατα πλείονα τῶν πρώτων.</p>
         <p class="translit"></p>
-        <p class="pt">Conheço as tuas obras, e o teu amor, e a tua fé, e o teu serviço, e a tua perseverança, e sei que as tuas últimas obras são mais numerosas que as primeiras.</p>
+        <p class="pt jesus">Conheço as tuas obras, e o teu amor, e a tua fé, e o teu serviço, e a tua perseverança, e sei que as tuas últimas obras são mais numerosas que as primeiras.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="Apocalipse 2:20">
@@ -272,7 +272,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλὰ ἔχω κατὰ σοῦ ὅτι ἀφεῖς τὴν γυναῖκα Ἰεζάβελ, ἡ λέγουσα ἑαυτὴν προφῆτιν, καὶ διδάσκει καὶ πλανᾷ τοὺς ἐμοὺς δούλους πορνεῦσαι καὶ φαγεῖν εἰδωλόθυτα·</p>
         <p class="translit"></p>
-        <p class="pt">Mas tenho contra ti que toleras a mulher Jezabel, que se diz profetisa; ela ensina e seduz os meus servos a se prostituírem e a comerem das coisas sacrificadas a ídolos;</p>
+        <p class="pt jesus">Mas tenho contra ti que toleras a mulher Jezabel, que se diz profetisa; ela ensina e seduz os meus servos a se prostituírem e a comerem das coisas sacrificadas a ídolos;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="Apocalipse 2:21">
@@ -280,7 +280,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἔδωκα αὐτῇ χρόνον ἵνα μετανοήσῃ, καὶ οὐ θέλει μετανοῆσαι ἐκ τῆς πορνείας αὐτῆς.</p>
         <p class="translit"></p>
-        <p class="pt">e dei-lhe tempo para que se arrependesse; e ela não quer arrepender-se da sua prostituição.</p>
+        <p class="pt jesus">e dei-lhe tempo para que se arrependesse; e ela não quer arrepender-se da sua prostituição.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="Apocalipse 2:22">
@@ -288,7 +288,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἰδοὺ βάλλω αὐτὴν εἰς κλίνην, καὶ τοὺς μοιχεύοντας μετ’ αὐτῆς εἰς θλῖψιν μεγάλην, ἐὰν μὴ μετανοήσουσιν ἐκ τῶν ἔργων αὐτῆς·</p>
         <p class="translit"></p>
-        <p class="pt">Eis que a lanço num leito de dores, e numa grande tribulação os que cometem adultério com ela, se não se arrependerem das obras dela;</p>
+        <p class="pt jesus">Eis que a lanço num leito de dores, e numa grande tribulação os que cometem adultério com ela, se não se arrependerem das obras dela;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="Apocalipse 2:23">
@@ -296,7 +296,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ τὰ τέκνα αὐτῆς ἀποκτενῶ ἐν θανάτῳ· καὶ γνώσονται πᾶσαι αἱ ἐκκλησίαι ὅτι ἐγώ εἰμι ὁ ἐραυνῶν νεφροὺς καὶ καρδίας, καὶ δώσω ὑμῖν ἑκάστῳ κατὰ τὰ ἔργα ὑμῶν.</p>
         <p class="translit"></p>
-        <p class="pt">e ferirei de morte a seus filhos, e todas as igrejas saberão que eu sou aquele que esquadrinha os rins e os corações; e darei a cada um de vós segundo as suas obras.</p>
+        <p class="pt jesus">e ferirei de morte a seus filhos, e todas as igrejas saberão que eu sou aquele que esquadrinha os rins e os corações; e darei a cada um de vós segundo as suas obras.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v24" data-ref="Apocalipse 2:24">
@@ -304,7 +304,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὑμῖν δὲ λέγω τοῖς λοιποῖς τοῖς ἐν Θυατείροις, ὅσοι οὐκ ἔχουσιν τὴν διδαχὴν ταύτην, οἵτινες οὐκ ἔγνωσαν τὰ βαθέα τοῦ Σατανᾶ, ὡς λέγουσιν, οὐ βάλλω ἐφ’ ὑμᾶς ἄλλο βάρος·</p>
         <p class="translit"></p>
-        <p class="pt">Digo-vos, porém, a vós os demais que estão em Tiatira, a todos quantos não têm esta doutrina, e não conhecem as chamadas profundezas de Satanás, que outra carga vos não porei;</p>
+        <p class="pt jesus">Digo-vos, porém, a vós os demais que estão em Tiatira, a todos quantos não têm esta doutrina, e não conhecem as chamadas profundezas de Satanás, que outra carga vos não porei;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v25" data-ref="Apocalipse 2:25">
@@ -312,7 +312,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">πλὴν ὃ ἔχετε κρατήσατε ἄχρι οὗ ἂν ἥξω.</p>
         <p class="translit"></p>
-        <p class="pt">mas o que tendes, retende-o até que eu venha.</p>
+        <p class="pt jesus">mas o que tendes, retende-o até que eu venha.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v26" data-ref="Apocalipse 2:26">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Καὶ ὁ νικῶν καὶ ὁ τηρῶν ἄχρι τέλους τὰ ἔργα μου, δώσω αὐτῷ ἐξουσίαν ἐπὶ τῶν ἐθνῶν,</p>
         <p class="translit"></p>
-        <p class="pt">Ao que vencer, e ao que guardar as minhas obras até o fim, eu lhe darei autoridade sobre as nações,</p>
+        <p class="pt jesus">Ao que vencer, e ao que guardar as minhas obras até o fim, eu lhe darei autoridade sobre as nações,</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="Apocalipse 2:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ποιμανεῖ αὐτοὺς ἐν ῥάβδῳ σιδηρᾷ, ὡς τὰ σκεύη τὰ κεραμικὰ συντρίβεται,</p>
         <p class="translit"></p>
-        <p class="pt">e com vara de ferro as regerá, quebrando-as do modo como são quebrados os vasos do oleiro, assim como eu recebi autoridade de meu Pai;</p>
+        <p class="pt jesus">e com vara de ferro as regerá, quebrando-as do modo como são quebrados os vasos do oleiro, assim como eu recebi autoridade de meu Pai;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="Apocalipse 2:28">
@@ -336,7 +336,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὡς κἀγὼ εἴληφα παρὰ τοῦ Πατρός μου, καὶ δώσω αὐτῷ τὸν ἀστέρα τὸν πρωϊνόν.</p>
         <p class="translit"></p>
-        <p class="pt">também lhe darei a estrela da manhã.</p>
+        <p class="pt jesus">também lhe darei a estrela da manhã.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v29" data-ref="Apocalipse 2:29">
@@ -344,7 +344,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ὁ ἔχων οὖς ἀκουσάτω τί τὸ Πνεῦμα λέγει ταῖς ἐκκλησίαις.</p>
         <p class="translit"></p>
-        <p class="pt">Quem tem ouvidos, ouça o que o Espírito dia às igrejas.</p>
+        <p class="pt jesus">Quem tem ouvidos, ouça o que o Espírito dia às igrejas.</p>
       </div>
     </div>
   </div>
@@ -356,7 +356,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -373,6 +373,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -400,10 +401,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -412,14 +417,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

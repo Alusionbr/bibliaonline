@@ -64,6 +64,7 @@ def asset_ver():
         SCRIPTS_DIR / "sw.asset.js",
         *(SCRIPTS_DIR / name for name in SOURCE_ASSETS),
         SITE / "assets" / "styles.css",
+        SITE / "assets" / "fonts.css",
     ]:
         if path.exists():
             h.update(path.read_bytes())
@@ -73,6 +74,19 @@ ASSET_VER = asset_ver()
 
 def load(name):
     return json.loads((DATA / name).read_text(encoding="utf-8"))
+
+
+def load_optional(name, default):
+    """Dados curados que podem não existir (o teste de fumaça monta um site/
+    mínimo). Ausência ou JSON quebrado devolve o padrão em vez de derrubar o
+    build inteiro."""
+    path = DATA / name
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return default
 
 
 def read_asset(name):
@@ -141,6 +155,19 @@ def book_data_attrs(livro):
     return (f' data-pos="{pos}" data-name="{esc(nome)}" data-chron="{CHRON_INDEX.get(livro, 999)}"'
             f' data-testament="{book_testament(livro)}"')
 
+def book_progress_badge(livro, n_caps, compact=False):
+    """Selo de progresso de leitura do livro.
+
+    Sai vazio do gerador e é preenchido no cliente a partir de
+    bec.readingRanges — o avanço pertence ao navegador/conta, não ao HTML
+    publicado. Enquanto não houver nada lido, fica oculto.
+    """
+    cls = "book-prog compact" if compact else "book-prog"
+    return (f'<span class="{cls}" data-book-prog="{esc(livro)}" data-caps="{n_caps}" hidden>'
+            f'<span class="bp-bar" aria-hidden="true"><span class="bp-fill"></span></span>'
+            f'<span class="bp-txt"></span></span>')
+
+
 def order_toggle(prefix):
     # controle de ordenação no topo da grade de livros (cliente, persistido)
     return f"""
@@ -173,13 +200,17 @@ def head(title, description, canonical, prefix, jsonld=None):
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:site_name" content="{SITE_NAME}">
 <meta property="og:url" content="{esc(canonical)}">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="{BASE_URL}/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{esc(title)}">
 <meta name="twitter:description" content="{esc(description)}">
+<meta name="twitter:image" content="{BASE_URL}/assets/og-default.png">
 <link rel="manifest" href="{prefix}manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{prefix}assets/fonts.css?v={ASSET_VER}">
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body data-prefix="{esc(prefix)}">
@@ -199,6 +230,10 @@ MNAV_ICONS = {
     "book": ('<path d="M4 6c2.2-1.1 5.4-1.1 8 1c2.6-2.1 5.8-2.1 8-1v13c-2.2-1.1-5.4-1.1-8 1'
               'c-2.6-2.1-5.8-2.1-8-1z"/><path d="M12 7v13"/>'),
     "search": '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/>',
+    # ferramentas de leitura do nav de desktop — antes eram emoji (🔍 🌙 🐞),
+    # que mudam de desenho a cada sistema e destoam do resto do chrome.
+    # "א/A" e "A−/A+" continuam texto: dizem o que fazem melhor que um símbolo.
+    "moon": '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
     "grid": ('<rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2"/>'
              '<rect x="13" y="3.5" width="7.5" height="7.5" rx="2"/>'
              '<rect x="3.5" y="13" width="7.5" height="7.5" rx="2"/>'
@@ -243,12 +278,11 @@ def nav(prefix):
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">{mnav_icon("search")}</button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">{mnav_icon("moon")}</button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -289,10 +323,14 @@ def footer(prefix):
         <a href="{prefix}workspace/">Workspace</a>
       </div>
       <div>
-        <a href="{prefix}biblioteca/">Biblioteca</a>
+        <a href="{prefix}workspace/#estudar">Minhas anotações</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="{prefix}temas/">Temas</a>
         <a href="{prefix}dicionario/">Dicionário</a>
         <a href="{prefix}mapas/">Mapas</a>
         <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
@@ -303,7 +341,7 @@ def footer(prefix):
 </footer>
 <script src="{prefix}assets/core.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/supabase-config.js?v={ASSET_VER}" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
+<script src="{prefix}assets/vendor-supabase-2.45.4.min.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/auth.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/app.js?v={ASSET_VER}"></script>
 <script src="{prefix}assets/study.js?v={ASSET_VER}" defer></script>
@@ -322,34 +360,122 @@ def verse_stack(v, big=False):
     <p class="translit">{esc(v['transliteracao'])}</p>
     <p class="pt">{esc(v['texto_pt'])}</p>"""
 
+# Palavras de Jesus (red-letters.json). O arquivo marca versículos inteiros,
+# não trechos, então o destaque vai na tradução toda. Preenchido em build_site.
+RED_LETTERS = {}
+
+
+def is_red_letter(referencia):
+    return bool(RED_LETTERS.get(referencia))
+
+
+def pt_class(v, extra=""):
+    """Classes do parágrafo em português, incluindo o destaque de fala de Jesus."""
+    cls = ["pt"]
+    if extra:
+        cls.append(extra)
+    if is_red_letter(v.get("referencia", "")):
+        cls.append("jesus")
+    return " ".join(cls)
+
+
+def red_letter_note():
+    """Legenda do destaque. Sem ela, texto vermelho no meio do capítulo é só
+    uma cor sem explicação para quem nunca viu uma Bíblia com letras vermelhas."""
+    return ('\n  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>'
+            'As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>')
+
+
+def commentary_block(referencia, commentary):
+    """Comentário curado por versículo (commentary.json)."""
+    entries = commentary.get(referencia) or []
+    if not entries:
+        return ""
+    items = "".join(
+        f'<div class="cmt-item"><b>{esc(e.get("perspectiva",""))}</b>'
+        f'<p>{esc(e.get("texto",""))}</p></div>'
+        for e in entries if e.get("texto"))
+    if not items:
+        return ""
+    return f"""
+  <section class="block cmt-block">
+    <h2><span class="dot"></span>Comentário</h2>
+    <div class="cmt-list">{items}</div>
+  </section>"""
+
+
 def specimen_block(v):
+    """Manuscrito do versículo.
+
+    Nenhum dos 31.173 versículos tem imagem: o campo `manuscrito.imagem` é
+    null em todos, e o bloco publicava "pendente de licença" com o selo
+    "Verificar licença — A confirmar" — estado interno de trabalho exposto em
+    toda a superfície pública do site. Agora, sem imagem, sai só a linha
+    honesta: o fac-símile do códice correspondente ao idioma do versículo. A
+    moldura com imagem continua pronta para quando algum versículo receber uma
+    com licença confirmada.
+    """
     m = v.get("manuscrito") or {}
     img = m.get("imagem")
-    cap = esc(m.get("legenda",""))
-    lic = esc(m.get("licenca",""))
-    fonte_nome = esc(m.get("fonte_nome",""))
-    fonte_url = esc(m.get("fonte_url",""))
-    seal = "Domínio público" if "domínio público" in (m.get("licenca","").lower()) else "Verificar licença"
-    if img:
-        frame = (f'<div class="frame"><img loading="lazy" alt="{cap}" src="{esc(img)}" '
-                 f'onerror="this.closest(\'.specimen\').querySelector(\'.frame\').innerHTML=\'<div class=&quot;ph&quot;><b>✶</b>Imagem indisponível no momento. Veja no acervo da fonte.</div>\'"></div>')
-    else:
-        frame = ('<div class="frame"><div class="ph"><b>✶</b>'
-                 'Manuscritos são fotografados por página, não por versículo. '
-                 'Veja o fac-símile completo do códice-fonte.</div></div>')
+    lic = m.get("licenca", "")
+    nome, url = MANUSCRITO_FACSIMILE.get(
+        v.get("idioma", ""), MANUSCRITO_FACSIMILE["hebraico"])
+    if not img:
+        return f"""
+  <p class="facsimile-line">Este versículo vem do <a class="ext-link" href="{esc(url)}" target="_blank" rel="noopener">{esc(nome)} ↗</a>, fotografado por página no acervo da fonte.</p>"""
+    cap = esc(m.get("legenda", "")) or f"Manuscrito: {esc(nome)}."
+    fonte_nome = esc(m.get("fonte_nome", ""))
+    fonte_url = esc(m.get("fonte_url", ""))
     link = f' · <a href="{fonte_url}" target="_blank" rel="noopener">{fonte_nome} ↗</a>' if fonte_url else ""
-    cap_txt = cap or "Texto hebraico do Códice de Leningrado (Westminster Leningrad Codex)."
-    fac = (f'<div class="lic"><a class="ext-link" href="{MANUSCRITO_FACSIMILE}" target="_blank" '
-           f'rel="noopener">Ver o manuscrito (Códice de Leningrado) ↗</a></div>') if not img else ""
     return f"""
   <figure class="specimen">
-    {frame}
+    <div class="frame"><img loading="lazy" alt="{cap}" src="{esc(img)}"></div>
     <figcaption class="cap">
-      <p>{cap_txt}</p>
-      <div class="lic"><span class="seal">{esc(seal)}</span> {lic}{link}</div>
-      {fac}
+      <p>{cap}</p>
+      <div class="lic"><span class="seal">Domínio público</span> {esc(lic)}{link}</div>
     </figcaption>
   </figure>"""
+
+def ref_results(prefix, refs, verses_by_ref):
+    """Lista de versículos a partir de referências curadas ("João 3:16").
+    Referência que não existe no dataset é ignorada em silêncio — os JSON de
+    temas/léxico/lugares são curados à mão e podem citar trecho ainda sem
+    tradução."""
+    out = []
+    for ref in refs or ():
+        v = verses_by_ref.get(ref)
+        if not v:
+            continue
+        out.append(
+            f'<a class="result" href="{prefix}versiculos/{esc(v["slug"])}/">'
+            f'<span class="kind">Versículo</span><h4>{esc(v["referencia"])}</h4>'
+            f'<p>{esc(v.get("texto_pt", ""))}</p></a>'
+        )
+    return "".join(out)
+
+
+def article_results(prefix, articles):
+    return "".join(
+        f'<a class="result" href="{prefix}artigos/{esc(a["slug"])}/">'
+        f'<span class="kind">Artigo</span><h4>{esc(a["titulo"])}</h4>'
+        f'<p>{esc(a.get("resumo", ""))}</p></a>'
+        for a in articles
+    )
+
+
+def deepen_block(prefix, articles):
+    if not articles:
+        return ""
+    return f"""
+  <section class="block">
+    <h2><span class="dot"></span>Para aprofundar</h2>
+    <div class="related-list">{article_results(prefix, articles)}</div>
+  </section>"""
+
+
+def topic_slug(topic):
+    return topic.get("slug") or book_slug(topic.get("titulo", ""))
+
 
 def mini_cards(items):
     return "".join(
@@ -389,7 +515,7 @@ def study_continue_module(prefix, livro, ch=None, vs=None):
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="{prefix}anotacoes/">🗒 Minhas notas</a>
-      <a href="{prefix}colecoes/">🗂 Coleções</a>
+      <a href="{prefix}workspace/#colecoes">🗂 Coleções</a>
       <a href="{prefix}planos/">🗓 Planos</a>
       <a href="{prefix}dicionario/">📖 Dicionário</a>
     </div>
@@ -451,6 +577,7 @@ def reader_fab(prefix, has_fraction=True):
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="{prefix}ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     {mark}<a class="rfb" data-tool="study-notes" href="{prefix}anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -493,6 +620,15 @@ def build_redirect_page(out_path, prefix, target, title):
 
 def build_merged_redirects():
     build_redirect_page(SITE / "estudar" / "index.html", "../", "workspace/#estudar", "Estudar")
+    # Biblioteca, Coleções e Cadernos eram duplicatas literais das abas do
+    # Workspace: /colecoes/ tinha só data-collections-app e /cadernos/ só
+    # data-notebooks-app, os mesmos containers das abas. E /biblioteca/ era
+    # um portal de 7 cartões, cinco deles apenas apontando para outro lugar —
+    # o único conteúdo próprio era a lista de favoritos, que a aba Favoritos
+    # já mostra pelo mesmo data-fav-full-list. Duas portas para a mesma coisa.
+    build_redirect_page(SITE / "biblioteca" / "index.html", "../", "workspace/#favoritos", "Biblioteca")
+    build_redirect_page(SITE / "colecoes" / "index.html", "../", "workspace/#colecoes", "Coleções")
+    build_redirect_page(SITE / "cadernos" / "index.html", "../", "workspace/#cadernos", "Cadernos")
     # Comunidade/Salas de Estudo está pausada (será reformulada antes de
     # voltar) — os endereços antigos continuam existindo, mas levam ao
     # Workspace em vez de uma seção que não existe mais.
@@ -505,18 +641,18 @@ def build_workspace_page():
     title = f"Workspace | {SITE_NAME}"
     desc = "Seu espaço de estudo: leitura, progresso, missões, planos, biblioteca e anotações em um só lugar."
     canonical = f"{BASE_URL}/workspace/"
-    cards = action_cards([
-        ("Leitura", "Continuar leitura", "Retome o último capítulo ou versículo aberto.", f"{prefix}ler/", " data-ws-continue"),
-        ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
-        ("Biblioteca", "Minha biblioteca", "Tudo junto: notas, grifos, favoritos, planos e artigos.", f"{prefix}biblioteca/"),
-        ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
-        ("Histórico", "Histórico", "Continue a leitura recente.", "#historico"),
-    ])
+    # A aba "Atalhos" saiu: era uma grade de links dentro de uma aba dentro de
+    # uma seção, e abria por padrão — a seção "Estudar" apresentava links em
+    # vez do trabalho da pessoa. Os destinos que valiam continuam aqui em
+    # Explorar; "Continuar leitura" virou o botão principal do hero, que é
+    # onde alguém procura por ele.
     explore_cards = action_cards([
+        ("Planos", "Planos de leitura", "Acompanhe leituras guiadas dia a dia.", f"{prefix}planos/"),
         ("Léxico", "Dicionário", "Palavras-chave do hebraico e do grego, com significado.", f"{prefix}dicionario/"),
         ("Geografia", "Mapas", "Lugares bíblicos e os versículos ligados a eles.", f"{prefix}mapas/"),
-        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}index.html#temas"),
+        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}temas/"),
         ("Contexto", "Artigos", "Estudos originais sobre palavras, traduções e história do texto.", f"{prefix}index.html#artigos"),
+        ("Explorar", "Linha do tempo", "Os livros na ordem histórica dos acontecimentos.", f"{prefix}linha-do-tempo/"),
     ])
     body = f"""
 <main id="main" class="wrap hub-page">
@@ -526,10 +662,62 @@ def build_workspace_page():
     <h1>Workspace</h1>
     <p>Leitura, progresso e ferramentas de estudo — tudo ao redor do texto, em um só lugar.</p>
     <div class="hub-cta">
-      <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
-      <a class="btn green" href="#progresso">Ver progresso</a>
+      <a class="btn primary" href="{prefix}ler/" data-ws-continue>Continuar leitura</a>
+      <a class="btn green" href="#estudar">Minhas anotações</a>
     </div>
   </header>
+  <section class="ws-focus" data-ws-focus hidden aria-live="polite">
+    <div class="section-title"><h2>Onde você parou</h2><span data-ws-focus-sub></span></div>
+    <div class="ws-focus-body" data-ws-focus-body></div>
+  </section>
+  <nav class="ws-sections" aria-label="Seções do Workspace">
+    <a href="#estudar">Estudar</a>
+    <a href="#progresso">Progresso</a>
+    <a href="#explorar">Explorar</a>
+    <a href="#historico">Histórico</a>
+  </nav>
+  <section class="hub-section" id="estudar">
+    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
+    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
+      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="anotacoes">Anotações</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
+      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
+    </div>
+    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
+      <form class="plan-form" data-plan-form>
+        <label>O que deseja estudar?
+          <select name="tipo" data-plan-tipo>
+            <option value="livro">Um livro da Bíblia</option>
+            <option value="tema">Um tema</option>
+          </select>
+        </label>
+        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
+        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
+        <label>Duração
+          <select name="duracao">
+            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
+          </select>
+        </label>
+        <button type="submit" class="btn primary">Gerar plano</button>
+      </form>
+      <div class="saved-plans" data-plan-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes">
+      <div id="anotacoes" class="anot-list"></div>
+      <p class="map-actions"><a class="btn ghost" href="{prefix}anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
+    </div>
+    <div class="ws-panel" role="tabpanel" id="favoritos" data-ws-panel="favoritos" hidden>
+      <div class="library-rows" data-fav-full-list></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" id="colecoes" data-ws-panel="colecoes" hidden>
+      <div class="collections-app" data-collections-app></div>
+    </div>
+    <div class="ws-panel" role="tabpanel" id="cadernos" data-ws-panel="cadernos" hidden>
+      <div class="notebooks-app" data-notebooks-app></div>
+    </div>
+  </section>
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
     <div class="level-card">
@@ -567,53 +755,6 @@ def build_workspace_page():
       <div class="medal-grid" data-medal-grid></div>
     </details>
   </section>
-  <section class="hub-section" id="estudar">
-    <div class="section-title"><h2>Estudar</h2><span>Ferramentas de estudo e planos de leitura</span></div>
-    <div class="ws-tabs" role="tablist" aria-label="Ferramentas de estudo" data-ws-tabs>
-      <button type="button" class="ws-tab on" role="tab" aria-selected="true" data-ws-tab="atalhos">Atalhos</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="criar-plano">Criar plano</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="anotacoes">Anotações</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="favoritos">Favoritos</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="colecoes">Coleções</button>
-      <button type="button" class="ws-tab" role="tab" aria-selected="false" data-ws-tab="cadernos">Cadernos</button>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="atalhos">
-      <div class="study-card-grid">{cards}
-      </div>
-    </div>
-    <div class="ws-panel plan-builder" role="tabpanel" data-ws-panel="criar-plano" id="criar-plano" hidden>
-      <form class="plan-form" data-plan-form>
-        <label>O que deseja estudar?
-          <select name="tipo" data-plan-tipo>
-            <option value="livro">Um livro da Bíblia</option>
-            <option value="tema">Um tema</option>
-          </select>
-        </label>
-        <label data-plan-field="livro">Livro <select name="livro" data-plan-book-select></select></label>
-        <label data-plan-field="tema" hidden>Tema <input name="conteudo" placeholder="oração, fé, aliança, sofrimento..."></label>
-        <label>Duração
-          <select name="duracao">
-            <option value="7">7 dias</option><option value="14">14 dias</option><option value="21">21 dias</option><option value="30" selected>30 dias</option>
-          </select>
-        </label>
-        <button type="submit" class="btn primary">Gerar plano</button>
-      </form>
-      <div class="saved-plans" data-plan-list></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="anotacoes" hidden>
-      <div id="anotacoes" class="anot-list"></div>
-      <p class="map-actions"><a class="btn ghost" href="{prefix}anotacoes/">Abrir página completa (copiar, baixar, importar) →</a></p>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="favoritos" hidden>
-      <div class="library-rows" data-fav-full-list></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="colecoes" hidden>
-      <div class="collections-app" data-collections-app></div>
-    </div>
-    <div class="ws-panel" role="tabpanel" data-ws-panel="cadernos" hidden>
-      <div class="notebooks-app" data-notebooks-app></div>
-    </div>
-  </section>
   <section class="hub-section" id="explorar">
     <div class="section-title"><h2>Explorar</h2><span>Léxico, mapas, temas e artigos de contexto</span></div>
     <div class="study-card-grid">{explore_cards}
@@ -623,6 +764,35 @@ def build_workspace_page():
     <div class="section-title"><h2>Histórico de leitura</h2><span>Últimas páginas abertas</span></div>
     <div class="library-rows" data-history-list><p class="muted-line">Carregando histórico…</p></div>
   </section>
+  <section class="hub-section" id="reportes" data-admin-reports hidden>
+    <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
+    <div class="library-rows" data-admin-reports-list><p class="muted-line">Carregando reportes…</p></div>
+  </section>
+</main>"""
+    out = SITE / "workspace" / "index.html"
+    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
+
+
+def build_account_page():
+    """Conta: perfil, preferências e sincronização.
+
+    Perfil e Configurações ocupavam 1.457px do Workspace — 27% da página — e
+    não são estudo. Saíram para cá, que é onde o menu da conta já os anuncia
+    (Meu perfil, Configurações, Sincronização, Privacidade, Sair). O Workspace
+    fica com leitura, ferramentas e progresso; a conta fica com a conta.
+    """
+    prefix = "../"
+    title = f"Minha conta | {SITE_NAME}"
+    desc = "Perfil de estudo, preferências de leitura e sincronização da sua conta."
+    canonical = f"{BASE_URL}/conta/"
+    body = f"""
+<main id="main" class="wrap hub-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Minha conta</p>
+  <header class="hub-hero">
+    <p class="eyebrow">Sua conta</p>
+    <h1>Minha conta</h1>
+    <p>Perfil, preferências de leitura e seus dados. O estudo em si fica no <a href="{prefix}workspace/">Workspace</a>.</p>
+  </header>
   <section class="hub-section profile-study" id="perfil">
     <div class="section-title"><h2>Perfil de estudo</h2><span>Sem seguidores ou ranking</span></div>
     <div class="profile-grid">
@@ -684,75 +854,265 @@ def build_workspace_page():
       </div>
     </div>
   </section>
-  <section class="hub-section" id="reportes" data-admin-reports hidden>
-    <div class="section-title"><h2>Reportes recebidos</h2><span>Somente administradores</span></div>
-    <div class="library-rows" data-admin-reports-list><p class="muted-line">Carregando reportes…</p></div>
-  </section>
 </main>"""
-    out = SITE / "workspace" / "index.html"
+    out = SITE / "conta" / "index.html"
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 
-def build_library_page():
+def build_topics_pages(topics, topic_refs, articles, verses_by_ref):
+    """Índice temático (/temas/) e uma página por tema.
+
+    Voltou ao build: as páginas existiam no site publicado, mas congeladas com
+    a navegação antiga porque o gerador tinha sido removido. Os chips da home
+    apontavam todos para /ler/ — 12 rótulos e um destino só."""
+    if not topics:
+        return []
     prefix = "../"
-    title = f"Biblioteca | {SITE_NAME}"
-    desc = "Biblioteca pessoal com notas, grifos, favoritos, planos, artigos, coleções e cadernos."
-    canonical = f"{BASE_URL}/biblioteca/"
-    cards = action_cards([
-        ("Notas", "Notas", "Anotações por versículo, capítulo e tema.", f"{prefix}anotacoes/"),
-        ("Grifos", "Grifos", "Marcações por palavra e por versículo.", f"{prefix}anotacoes/"),
-        ("Favoritos", "Favoritos", "Versículos salvos para revisão.", "#favoritos"),
-        ("Planos", "Planos", "Leituras estruturadas e progresso.", f"{prefix}planos/"),
-        ("Artigos", "Artigos", "Estudos contextuais e materiais de apoio.", f"{prefix}index.html#artigos"),
-        ("Coleções", "Coleções", "Agrupe versículos favoritos por tema.", f"{prefix}colecoes/"),
-        ("Cadernos", "Cadernos", "Estudos em texto livre: notas, perguntas e referências.", f"{prefix}cadernos/"),
-    ])
+    cards = ""
+    slugs = []
+    for t in topics:
+        slug = topic_slug(t)
+        if not slug:
+            continue
+        slugs.append(slug)
+        refs = [r for r in topic_refs.get(slug, []) if r in verses_by_ref]
+        count = f'<span class="topic-count">{len(refs)} versículo{"s" if len(refs) != 1 else ""}</span>' if refs else ""
+        icone = f'<span class="gl">{esc(t.get("icone", ""))}</span> ' if t.get("icone") else ""
+        cards += f"""
+    <a class="card topic-card" href="{esc(slug)}/">
+      <div class="ref-row"><h3>{icone}{esc(t.get('titulo', ''))}</h3></div>
+      <p class="pt-mini">{esc(t.get('descricao', ''))}</p>
+      {count}
+    </a>"""
     body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Biblioteca</p>
-  <header class="hub-hero"><p class="eyebrow">Biblioteca</p><h1>Biblioteca</h1><p>Guarde e organize tudo que nasce do estudo bíblico.</p></header>
-  <section class="hub-section"><div class="study-card-grid">{cards}</div></section>
-  <section class="hub-section" id="favoritos">
-    <div class="section-title"><h2>Favoritos</h2><span>Versículos salvos para revisão</span></div>
-    <div class="library-rows" data-fav-full-list><p class="muted-line">Carregando favoritos…</p></div>
-  </section>
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Temas</p>
+  <header class="verse-head"><h1>Temas de estudo</h1></header>
+  <p class="read" style="color:var(--muted)">Pontos de entrada para quem busca um assunto, não uma referência exata. Cada tema reúne versículos curados; clique para ler cada um no idioma original, com contexto.</p>
+  <div class="cards verses">{cards}
+  </div>
+  <p class="backline"><a href="{prefix}ler/">← Ler a Bíblia livro a livro</a></p>
 </main>"""
-    out = SITE / "biblioteca" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
+    write_file(
+        SITE / "temas" / "index.html",
+        head(f"Temas de estudo | {SITE_NAME}",
+             "Versículos agrupados por assunto: ansiedade, medo, fé, oração, perdão, sofrimento e mais.",
+             f"{BASE_URL}/temas/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+
+    inner = "../../"
+    for t in topics:
+        slug = topic_slug(t)
+        if not slug:
+            continue
+        refs = topic_refs.get(slug, [])
+        results = ref_results(inner, refs, verses_by_ref)
+        lista = (f'<div class="related-list">{results}</div>' if results
+                 else '<p class="muted-line">Versículos deste tema em curadoria.</p>')
+        rel = deepen_block(inner, [a for a in articles if a.get("tema") == slug])
+        icone = f'<span class="gl">{esc(t.get("icone", ""))}</span> ' if t.get("icone") else ""
+        tbody = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{inner}index.html">Início</a> · <a href="../">Temas</a> · {esc(t.get('titulo', ''))}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-hebraico">Tema</span>
+    <h1>{icone}{esc(t.get('titulo', ''))}</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">{esc(t.get('descricao', ''))}</p>
+  {lista}
+  {rel}
+  <p class="backline"><a href="../">← Todos os temas</a></p>
+</main>"""
+        write_file(
+            SITE / "temas" / slug / "index.html",
+            head(f"{t.get('titulo', '')} — versículos e contexto | {SITE_NAME}",
+                 t.get("descricao", ""), f"{BASE_URL}/temas/{slug}/", inner,
+                 {"@context": "https://schema.org", "@type": "CollectionPage",
+                  "name": t.get("titulo", ""), "inLanguage": "pt-BR",
+                  "isPartOf": {"@type": "WebSite", "name": SITE_NAME, "url": BASE_URL}})
+            + nav(inner) + tbody + footer(inner),
+        )
+    return slugs
 
 
-def build_collections_page():
+def build_dictionary_pages(glossary, articles, verses_by_ref):
+    """Dicionário (/dicionario/) a partir de glossary.json — mesma situação de
+    /temas/: dado curado no repositório, página publicada, gerador perdido."""
+    if not glossary:
+        return []
     prefix = "../"
-    title = f"Coleções | {SITE_NAME}"
-    desc = "Coleções para guardar versículos, capítulos, artigos, mapas, manuscritos, planos e discussões."
-    canonical = f"{BASE_URL}/colecoes/"
+    grupos = {}
+    for g in glossary:
+        grupos.setdefault(g.get("idioma", "hebraico"), []).append(g)
+    secoes = ""
+    for idioma in ("hebraico", "grego", "aramaico"):
+        termos = grupos.get(idioma)
+        if not termos:
+            continue
+        cards = ""
+        for g in termos:
+            dir_attr = ' dir="rtl"' if g.get("dir") == "rtl" else ' dir="ltr"'
+            sc = script_class(idioma, g.get("dir", "ltr"))
+            cards += f"""
+    <a class="card gloss-card" href="{esc(g['slug'])}/">
+      <div class="ref-row"><h3>{esc(g['termo'])}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
+      <p class="gloss-orig {sc}"{dir_attr}>{esc(g.get('original', ''))}</p>
+      <p class="pt-mini">{esc(g.get('definicao', ''))}</p>
+    </a>"""
+        secoes += f"""
+  <h2 class="gloss-group">{lang_label(idioma)}</h2>
+  <div class="cards verses">{cards}
+  </div>"""
     body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Coleções</p>
-  <header class="hub-hero"><p class="eyebrow">Coleções</p><h1>Coleções</h1><p>Reúna versículos favoritos em coleções por tema. Tudo fica salvo neste navegador e sincroniza quando você entra na conta.</p></header>
-  <section class="hub-section">
-    <div class="library-app" data-collections-app><p class="muted-line">Carregando coleções…</p></div>
-  </section>
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Dicionário</p>
+  <header class="verse-head"><h1>Dicionário bíblico</h1></header>
+  <p class="read" style="color:var(--muted)">Palavras-chave no idioma original, com o sentido por trás da tradução e versículos onde aparecem. Conjunto inicial, em expansão.</p>
+  {secoes}
+  <p class="backline"><a href="{prefix}ler/">← Ler a Bíblia livro a livro</a></p>
 </main>"""
-    out = SITE / "colecoes" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
+    write_file(
+        SITE / "dicionario" / "index.html",
+        head(f"Dicionário bíblico — hebraico, grego e aramaico | {SITE_NAME}",
+             "Palavras-chave da Bíblia no idioma original (shalom, hesed, logos, ágape, abba e mais) com significado e versículos de exemplo.",
+             f"{BASE_URL}/dicionario/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+
+    inner = "../../"
+    for g in glossary:
+        idioma = g.get("idioma", "hebraico")
+        dir_attr = ' dir="rtl"' if g.get("dir") == "rtl" else ' dir="ltr"'
+        sc = script_class(idioma, g.get("dir", "ltr"))
+        results = ref_results(inner, g.get("refs", []), verses_by_ref)
+        onde = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Onde aparece</h2>
+    <div class="related-list">{results}</div>
+  </section>""" if results else ""
+        # artigo do mesmo termo, quando existe (shalom -> shalom-significado-hebraico)
+        rel = deepen_block(inner, [a for a in articles
+                                   if a["slug"].split("-")[0] == g["slug"]])
+        gbody = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{inner}index.html">Início</a> · <a href="../">Dicionário</a> · {esc(g['termo'])}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
+    <h1>{esc(g['termo'])}</h1>
+  </header>
+  <div class="verse-hero gloss-hero">
+    <p class="gloss-orig gloss-big {sc}"{dir_attr}>{esc(g.get('original', ''))}</p>
+    <p class="translit">{esc(g.get('translit', ''))}</p>
+    <p class="pt">{esc(g.get('definicao', ''))}</p>
+  </div>
+  {onde}
+  {rel}
+  <p class="backline"><a href="../">← Todo o dicionário</a></p>
+</main>"""
+        write_file(
+            SITE / "dicionario" / g["slug"] / "index.html",
+            head(f"{g['termo']} ({g.get('translit', '')}) — significado no {lang_label(idioma).lower()} bíblico | {SITE_NAME}",
+                 g.get("definicao", ""), f"{BASE_URL}/dicionario/{g['slug']}/", inner,
+                 {"@context": "https://schema.org", "@type": "DefinedTerm",
+                  "name": g["termo"], "description": g.get("definicao", ""),
+                  "inLanguage": "pt-BR"})
+            + nav(inner) + gbody + footer(inner),
+        )
+    return [g["slug"] for g in glossary]
 
 
-def build_notebooks_page():
+def build_maps_pages(places, verses_by_ref):
+    """Atlas (/mapas/) a partir de places.json, agrupado por região na ordem em
+    que aparece no arquivo (a curadoria segue a cronologia da narrativa)."""
+    if not places:
+        return []
     prefix = "../"
-    title = f"Cadernos | {SITE_NAME}"
-    desc = "Cadernos para organizar notas, perguntas, grifos, coleções, planos e referências."
-    canonical = f"{BASE_URL}/cadernos/"
+    regioes = {}
+    for p in places:
+        regioes.setdefault(p.get("regiao", "Outros"), []).append(p)
+    secoes = ""
+    for regiao, lugares in regioes.items():
+        cards = "".join(f"""
+    <a class="card place-card" href="{esc(p['slug'])}/">
+      <div class="ref-row"><h3>{esc(p['nome'])}</h3><span class="place-type">{esc(p.get('tipo', ''))}</span></div>
+      <p class="pt-mini">{esc(p.get('descricao', ''))}</p>
+    </a>""" for p in lugares)
+        secoes += f"""
+  <h2 class="place-group">{esc(regiao)}</h2>
+  <div class="cards verses">{cards}
+  </div>"""
     body = f"""
-<main id="main" class="wrap hub-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · Cadernos</p>
-  <header class="hub-hero"><p class="eyebrow">Cadernos</p><h1>Cadernos</h1><p>Escreva estudos em texto livre: notas, perguntas e referências. Tudo fica salvo neste navegador e sincroniza quando você entra na conta.</p></header>
-  <section class="hub-section">
-    <div class="library-app" data-notebooks-app><p class="muted-line">Carregando cadernos…</p></div>
-  </section>
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Mapas</p>
+  <header class="verse-head"><h1>Atlas bíblico</h1></header>
+  <p class="read" style="color:var(--muted)">Os lugares onde a história aconteceu, por região. Cada lugar abre com os versículos em que aparece e um link para o mapa. Conjunto inicial, em expansão.</p>
+  {secoes}
+  <p class="backline"><a href="{prefix}linha-do-tempo/">← Ver a linha do tempo</a></p>
 </main>"""
-    out = SITE / "cadernos" / "index.html"
-    write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
+    write_file(
+        SITE / "mapas" / "index.html",
+        head(f"Atlas bíblico — lugares da Bíblia | {SITE_NAME}",
+             "Os lugares da Bíblia por região: cidades, montes e rios, com os versículos em que aparecem.",
+             f"{BASE_URL}/mapas/", prefix) + nav(prefix) + body + footer(prefix),
+    )
+
+    inner = "../../"
+    for p in places:
+        results = ref_results(inner, p.get("refs", []), verses_by_ref)
+        onde = f"""
+  <section class="block">
+    <h2><span class="dot"></span>Onde aparece</h2>
+    <div class="related-list">{results}</div>
+  </section>""" if results else ""
+        mapa = ""
+        if p.get("lat") is not None and p.get("lon") is not None:
+            osm = (f"https://www.openstreetmap.org/?mlat={p['lat']}&mlon={p['lon']}"
+                   f"#map=8/{p['lat']}/{p['lon']}")
+            mapa = f'\n  <p class="read"><a class="ext-link" href="{esc(osm)}" target="_blank" rel="noopener">Ver no mapa (OpenStreetMap) ↗</a></p>'
+        pbody = f"""
+<main id="main" class="wrap verse-page">
+  <p class="crumb"><a href="{inner}index.html">Início</a> · <a href="../">Mapas</a> · {esc(p['nome'])}</p>
+  <header class="verse-head">
+    <span class="lang-tag lang-hebraico">{esc(p.get('tipo', 'Lugar'))}</span>
+    <h1>{esc(p['nome'])}</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">{esc(p.get('descricao', ''))}</p>{mapa}
+  {onde}
+  <p class="backline"><a href="../">← Todo o atlas</a></p>
+</main>"""
+        write_file(
+            SITE / "mapas" / p["slug"] / "index.html",
+            head(f"{p['nome']} na Bíblia — lugar e versículos | {SITE_NAME}",
+                 p.get("descricao", ""), f"{BASE_URL}/mapas/{p['slug']}/", inner,
+                 {"@context": "https://schema.org", "@type": "Place",
+                  "name": p["nome"], "description": p.get("descricao", "")})
+            + nav(inner) + pbody + footer(inner),
+        )
+    return [p["slug"] for p in places]
+
+
+def build_offline_page():
+    """Página servida pelo service worker quando não há rede. Precisa da
+    navegação atual: é o único caminho de volta que o usuário tem offline."""
+    prefix = "../"
+    body = f"""
+<main id="main" class="wrap verse-page" style="text-align:center">
+  <header class="verse-head" style="margin-top:30px">
+    <span class="lang-tag lang-hebraico">Sem conexão</span>
+    <h1>Você está offline</h1>
+  </header>
+  <p class="read" style="color:var(--muted)">Sem internet no momento. Os capítulos que você já abriu continuam disponíveis, e suas anotações, grifos e favoritos ficam salvos neste navegador — nada se perde.</p>
+  <p class="map-actions">
+    <a class="btn primary" href="{prefix}ler/">Ir para a Bíblia</a>
+    <a class="btn ghost" href="{prefix}workspace/">Abrir o Workspace</a>
+    <a class="btn ghost" href="{prefix}anotacoes/">Minhas anotações</a>
+  </p>
+  <p class="backline"><a href="{prefix}index.html">← Voltar ao início</a></p>
+</main>"""
+    write_file(
+        SITE / "offline" / "index.html",
+        head(f"Sem conexão | {SITE_NAME}", "Você está offline.",
+             f"{BASE_URL}/offline/", prefix, None) + nav(prefix) + body + footer(prefix),
+    )
 
 
 def load_reading_plans():
@@ -893,7 +1253,7 @@ def build_privacy_page():
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 # ---------- páginas ----------
-def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
+def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, commentary=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -965,7 +1325,11 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
 
     next_url = f"../{next_v['slug']}/" if next_v else ""
     if v.get("texto_pt","").strip():
-        pt_html = f'<p class="pt">{esc(v["texto_pt"])}</p>'
+        pt_html = f'<p class="{pt_class(v)}">{esc(v["texto_pt"])}</p>'
+        if is_red_letter(v["referencia"]):
+            pt_html += ('<p class="red-note red-note-inline">'
+                        '<span class="red-dot" aria-hidden="true"></span>'
+                        'Em vermelho: palavras de Jesus.</p>')
     else:
         pt_html = ('<p class="pt pt-missing">Tradução em português deste trecho em revisão '
                    '(diferença de numeração entre o hebraico e a edição Almeida 1911).</p>')
@@ -973,7 +1337,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
     body = f"""
 <main id="main" class="wrap verse-page" data-next="{next_url}">
   <article class="verse-cont" data-slug="{esc(v['slug'])}" data-ref="{esc(v['referencia'])}" data-title="{esc(title)}">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · {esc(v['referencia'])}</p>
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · <a href="{prefix}ler/{book_slug(v['livro'])}/">{esc(v['livro'])}</a> · <a href="{prefix}ler/{book_slug(v['livro'])}/{ch}/">{ch}</a> · {vs}</p>
   <header class="verse-head">
     <span class="lang-tag lang-{esc(v['idioma'])}">{lang_label(v['idioma'])}</span>
     <h1>{esc(v['referencia'])}</h1>
@@ -982,12 +1346,13 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <div class="verse-hero verse-tap reveal">
     <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v['original'])}</p>
     <p class="translit">{esc(v['transliteracao'])}</p>
-    {pt_html}
-    <p class="src-line">{esc(v.get('contexto',''))}</p>
+    {pt_html}{f'''
+    <p class="src-line">{esc(v["contexto"])}</p>''' if v.get("contexto", "").strip() else ""}
   </div>
   <p class="verse-tap-hint">Toque no texto para grifar, anotar, favoritar, ouvir ou compartilhar.</p>
 
   {specimen_block(v)}
+  {commentary_block(v['referencia'], commentary or {})}
   {blocks}
   {kw_html}
   {rel}
@@ -1001,7 +1366,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </article>
   <div class="vs-sentinel" aria-hidden="true"></div>
   <p class="vs-loading" aria-live="polite"></p>
-  <p class="backline"><a href="{prefix}ler/">← Todos os livros</a></p>
+  <p class="backline"><a href="{prefix}ler/{book_slug(v['livro'])}/{ch}/">← Ler {esc(v['livro'])} {ch} inteiro</a></p>
 </main>"""
     out = SITE / "versiculos" / v["slug"] / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1054,15 +1419,33 @@ def build_books_index(order, struct):
       <div class="ref-row"><h3>{esc(livro)}</h3><span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span></div>
       <p class="pt-mini">{n_caps} capítulo{'s' if n_caps!=1 else ''}</p>
       {era_tag}
+      {book_progress_badge(livro, n_caps, compact=True)}
     </a>"""
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Livros</p>
   <header class="verse-head"><h1>Livros da Bíblia</h1></header>
   <p class="read" style="color:var(--muted)">{n_at} livros do Antigo Testamento e {n_nt} do Novo — escolha um para ler capítulo a capítulo. Cada versículo abre a página completa com manuscrito e contexto.</p>
-  {order_toggle(prefix)}
-  <div class="cards verses" data-booklist>{cards}
+  <a class="continue-read" id="continue-read" href="#" hidden></a>
+  <div class="booklist-tools">
+    <div class="booklist-find">
+      <input type="search" data-book-filter autocomplete="off"
+             placeholder="Filtrar livro — ex.: joão, sl, 1co"
+             aria-label="Filtrar livros pelo nome" aria-controls="booklist">
+      {ref_picker_trigger(prefix, extra_class="compact")}
+    </div>
   </div>
+  <div class="booklist-filters">
+    <div class="testament-toggle" role="group" aria-label="Filtrar por testamento">
+      <button type="button" class="ot on" data-testament="all">Todos</button>
+      <button type="button" class="ot" data-testament="at">Antigo</button>
+      <button type="button" class="ot" data-testament="nt">Novo</button>
+    </div>
+    {order_toggle(prefix)}
+  </div>
+  <div class="cards verses" id="booklist" data-booklist>{cards}
+  </div>
+  <p class="booklist-empty" data-booklist-empty hidden>Nenhum livro com esse nome. Limpe o filtro para ver os {len(order)}.</p>
 </main>"""
     out = SITE / "ler" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -1107,39 +1490,53 @@ def build_timeline_page(order, struct):
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def book_jump(prefix, order, current):
-    # seletor "Ir para livro" (Antigo/Novo Testamento) para pular entre livros sem voltar ao menu
-    at, nt = [], []
-    for b in order:
-        idx = BOOK_ORDER.index(b) if b in BOOK_ORDER else 999
-        (at if idx < 39 else nt).append(b)
-    def opts(books):
-        return "".join(
-            f'<option value="{prefix}ler/{book_slug(b)}/"{" selected" if b==current else ""}>{esc(b)}</option>'
-            for b in books)
+def ref_picker_trigger(prefix, livro=None, ch=None, extra_class=""):
+    """Gatilho do seletor de livro *e* capítulo.
+
+    Antes daqui só saía um <select> de livros: escolher "Salmos 119" custava
+    duas páginas (livro, depois a grade de capítulos). O gatilho abre um painel
+    único — o mesmo no celular e no desktop — com filtro por nome e a grade de
+    capítulos ao lado. Sem JavaScript ele continua sendo um link comum para a
+    lista de livros, então nunca vira um controle morto.
+    """
+    label = f"{livro} {ch}" if livro and ch else (livro or "Escolher livro")
+    attrs = f' data-refp-book="{esc(book_slug(livro))}"' if livro else ""
+    if ch:
+        attrs += f' data-refp-chapter="{ch}"'
+    cls = ("ref-jump " + extra_class).strip()
+    return (f'<a class="{cls}" href="{prefix}ler/" data-ref-picker{attrs}'
+            f' aria-label="Escolher livro e capítulo">'
+            f'<span class="rj-ic" aria-hidden="true">📖</span>'
+            f'<span class="rj-label">{esc(label)}</span>'
+            f'<span class="rj-chev" aria-hidden="true">▾</span></a>')
+
+
+def ref_picker_row(prefix, livro=None, ch=None):
     return f"""
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento">{opts(at)}</optgroup>
-      <optgroup label="Novo Testamento">{opts(nt)}</optgroup>
-    </select>
+  <div class="book-jump-wrap">{ref_picker_trigger(prefix, livro, ch)}
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>"""
 
-def build_book_page(livro, chapters, order):
+def build_book_page(livro, chapters):
     prefix = "../../"
     title = f"{livro} — capítulos | {SITE_NAME}"
     desc = f"Leia {livro} capítulo por capítulo: texto no idioma original, transliteração e tradução Almeida 1911."
     canonical = f"{BASE_URL}/ler/{book_slug(livro)}/"
+    # data-ch deixa o JS pintar no chip o que já foi lido (bec.readingRanges),
+    # para a grade de capítulos mostrar o avanço do estudo, não só os números.
     chips = "".join(
-        f'<a class="chip chapter-chip" href="{ch}/">{ch}</a>' for ch in sorted(chapters))
+        f'<a class="chip chapter-chip" href="{ch}/" data-ch="{ch}">{ch}</a>'
+        for ch in sorted(chapters))
     body = f"""
 <main id="main" class="wrap verse-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="../">Livros</a> · {esc(livro)}</p>
   <header class="verse-head"><h1>{esc(livro)}</h1></header>
-  {book_jump(prefix, order, livro)}
-  <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
-  <div class="chips chapter-grid">{chips}
+  {ref_picker_row(prefix, livro)}
+  <div class="chapter-grid-head">
+    <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
+    {book_progress_badge(livro, len(chapters))}
+  </div>
+  <div class="chips chapter-grid" data-chapter-grid data-book="{esc(livro)}">{chips}
   </div>
   {study_continue_module(prefix, livro)}
 </main>"""
@@ -1147,7 +1544,7 @@ def build_book_page(livro, chapters, order):
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_chapter_page(livro, ch, verses, n_chapters, order):
+def build_chapter_page(livro, ch, verses, n_chapters):
     prefix = "../../../"
     bslug = book_slug(livro)
     title = f"{livro} {ch} — original, transliteração e tradução | {SITE_NAME}"
@@ -1157,18 +1554,24 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     sc = script_class(idioma, verses[0].get("dir","ltr") if verses else "ltr")
     vnums = []
     rows = ""
+    has_red = False
     for v in verses:
         _, vs = ref_chvs(v["referencia"])
         vnums.append(vs)
         dir_attr = ' dir="rtl"' if v.get("dir")=="rtl" else ' dir="ltr"'
-        pt = esc(v.get("texto_pt","")) or '<span class="pt-missing">—</span>'
+        # o travessão sozinho não dizia nada; o title explica sem poluir a leitura
+        pt = esc(v.get("texto_pt","")) or (
+            '<span class="pt-missing" title="Diferença de numeração entre o hebraico '
+            'e a edição Almeida 1911 — tradução deste versículo em revisão.">'
+            'tradução em revisão</span>')
+        has_red = has_red or is_red_letter(v["referencia"])
         rows += f"""
     <div class="ch-verse verse-reveal" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body verse-tap">
         <p class="orig {sc}"{dir_attr} data-lang="{esc(speech_lang(v.get('idioma','')))}">{esc(v.get('original',''))}</p>
         <p class="translit">{esc(v.get('transliteracao',''))}</p>
-        <p class="pt">{pt}</p>
+        <p class="{pt_class(v)}">{pt}</p>
       </div>
     </div>"""
     prev_html = (f'<a class="pg prev" href="../{ch-1}/"><span>← Capítulo</span><b>{livro} {ch-1}</b></a>'
@@ -1190,7 +1593,7 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
   </header>
   <div class="plan-context" data-plan-context hidden></div>
-  {book_jump(prefix, order, livro)}
+  {ref_picker_row(prefix, livro, ch)}{red_letter_note() if has_red else ""}
   {study_fraction_module(prefix, livro, ch, vnums)}
   <div class="chapter"{swipe_attrs}>{rows}
   </div>
@@ -1211,15 +1614,18 @@ def build_search_index(verses, articles, topics):
     # referência e tradução inteiras dentro do próprio índice.
     index = []
     for v in verses:
+        # "k" saía daqui como contexto + palavras, mas os dois campos estão
+        # vazios nos 31.173 versículos: o índice carregava 31 mil strings em
+        # branco. O cliente já lê k como opcional (i.k||''), então o versículo
+        # simplesmente não traz o campo.
         index.append({"t":"Versículo","titulo":v["referencia"],"desc":v.get("texto_pt",""),
-                      "url":f"versiculos/{v['slug']}/",
-                      "k":(v.get("contexto","")+" "+" ".join(v.get("palavras",[]))).lower()})
+                      "url":f"versiculos/{v['slug']}/"})
     for a in articles:
         index.append({"t":"Artigo","titulo":a["titulo"],"desc":a.get("resumo",""),
                       "url":f"artigos/{a['slug']}/","k":a.get("versiculo","").lower()})
     for t in topics:
         index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
-                      "url":"ler/","k":""})
+                      "url":f"temas/{topic_slug(t)}/","k":""})
     write_file(DATA / "search-index.json", json.dumps(index, ensure_ascii=False))
     return len(index)
 
@@ -1232,9 +1638,11 @@ def build_home(topics, verses, articles, sources, order, struct):
     featured = next(v for v in verses if v["slug"]=="genesis-1-1")
     fsc = script_class(featured["idioma"], featured.get("dir","ltr"))
 
-    # temas (os livros saíram da home e vivem na seção própria em /ler/)
+    # temas (os livros saíram da home e vivem na seção própria em /ler/).
+    # Cada chip leva ao seu próprio tema — antes os 12 apontavam todos para /ler/.
     chips = "".join(
-        f'<a class="chip" href="ler/"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
+        f'<a class="chip" href="temas/{esc(topic_slug(t))}/">'
+        f'<span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
         for t in topics)
 
     n_books = len(order)
@@ -1364,6 +1772,9 @@ def build_home(topics, verses, articles, sources, order, struct):
     </div>
     <div class="chips wrap">{chips}
     </div>
+    <div class="wrap home-books-cta">
+      <a class="btn ghost" href="temas/">Ver todos os temas</a>
+    </div>
   </section>
 
   <section id="artigos">
@@ -1428,7 +1839,10 @@ def build_core_js():
     write_asset("core.asset.js", "core.js")
 
 def build_app_js(order, struct):
-    books = [{"nome": livro, "slug": book_slug(livro), "cap": len(struct[livro])} for livro in order]
+    # "t" (testamento) alimenta os grupos Antigo/Novo no seletor de livro e
+    # capítulo, sem o cliente precisar reconstruir a ordem canônica.
+    books = [{"nome": livro, "slug": book_slug(livro), "cap": len(struct[livro]),
+              "t": book_testament(livro)} for livro in order]
     js = read_asset("app.asset.js")
     write_file(SITE / "assets" / "app.js", f"var BEC_BOOKS={json.dumps(books, ensure_ascii=False)};\n" + js)
 
@@ -1507,23 +1921,28 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_meta(verses, articles, order, struct, plan_slugs=()):
+def build_meta(verses, articles, order, struct, plan_slugs=(),
+               topic_slugs=(), gloss_slugs=(), place_slugs=()):
     # sitemap
     # /estudar/ e /comunidade/ viraram redirects (noindex) para o Workspace e
-    # por isso ficam fora do sitemap.
+    # por isso ficam fora do sitemap. /offline/ também fica de fora: é a página
+    # de fallback do service worker, não conteúdo.
     urls = [
         BASE_URL + "/",
         f"{BASE_URL}/ler/",
         f"{BASE_URL}/workspace/",
-        f"{BASE_URL}/biblioteca/",
-        f"{BASE_URL}/colecoes/",
-        f"{BASE_URL}/cadernos/",
+        f"{BASE_URL}/anotacoes/",
         f"{BASE_URL}/privacidade/",
+        f"{BASE_URL}/conta/",
         f"{BASE_URL}/linha-do-tempo/",
     ]
     if plan_slugs:
         urls.append(f"{BASE_URL}/planos/")
         urls += [f"{BASE_URL}/planos/{slug}/" for slug in plan_slugs]
+    for base, slugs in (("temas", topic_slugs), ("dicionario", gloss_slugs), ("mapas", place_slugs)):
+        if slugs:
+            urls.append(f"{BASE_URL}/{base}/")
+            urls += [f"{BASE_URL}/{base}/{slug}/" for slug in slugs]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/" for livro in order]
     urls += [f"{BASE_URL}/ler/{book_slug(livro)}/{ch}/" for livro in order for ch in sorted(struct[livro])]
     urls += [f"{BASE_URL}/versiculos/{v['slug']}/" for v in verses]
@@ -1561,13 +1980,25 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
 
 def build_404():
     prefix = ""
+    # A busca usa os mesmos ids da home (#q/#results): o app.js já liga os dois
+    # em qualquer página, então o 404 vira uma saída útil em vez de um beco.
     body = """
 <main id="main" class="wrap verse-page" style="text-align:center">
   <header class="verse-head" style="margin-top:30px">
     <span class="lang-tag lang-hebraico">404</span>
     <h1>Página não encontrada</h1>
   </header>
-  <p class="read" style="color:var(--muted)">O versículo ou a página que você procura não está aqui. Talvez tenha mudado de lugar.</p>
+  <p class="read" style="color:var(--muted)">O versículo ou a página que você procura não está aqui. Talvez tenha mudado de lugar — procure abaixo pela referência.</p>
+  <div class="searchbox">
+    <span class="ico">⌕</span>
+    <input id="q" type="search" placeholder="Buscar: João 3:16, Salmo 23, shalom…" autocomplete="off" aria-label="Buscar na Bíblia">
+  </div>
+  <div id="results" class="search-results"></div>
+  <p class="map-actions">
+    <a class="btn primary" href="ler/">Ler a Bíblia</a>
+    <a class="btn ghost" href="temas/">Temas de estudo</a>
+    <a class="btn ghost" href="workspace/">Workspace</a>
+  </p>
   <p class="backline" style="text-align:center"><a href="index.html">← Voltar ao início</a></p>
 </main>"""
     out = SITE / "404.html"
@@ -1606,6 +2037,11 @@ class BuildInputs:
     verses: list
     articles: list
     sources: list
+    topic_refs: dict
+    glossary: list
+    places: list
+    red_letters: dict
+    commentary: dict
 
 
 @dataclass
@@ -1615,6 +2051,7 @@ class BuildContext:
     order: list
     struct: dict
     articles_by_slug: dict
+    verses_by_ref: dict
 
 
 @dataclass
@@ -1639,6 +2076,14 @@ def load_build_inputs():
         verses=load("verses.json"),
         articles=load("articles.json"),
         sources=load("sources.json"),
+        topic_refs=load_optional("topic-refs.json", {}),
+        glossary=load_optional("glossary.json", []),
+        places=load_optional("places.json", []),
+        # Ambos estavam no repositório sem nenhum leitor: red-letters.json
+        # (2.033 versículos) e commentary.json (o único comentário que existe,
+        # já que contexto/origem/judaismo saem vazios em todos os 31.173).
+        red_letters=load_optional("red-letters.json", {}),
+        commentary=load_optional("commentary.json", {}),
     )
 
 
@@ -1651,6 +2096,7 @@ def prepare_build_context(inputs):
         order=order,
         struct=struct,
         articles_by_slug={a["slug"]: a for a in inputs.articles},
+        verses_by_ref={v["referencia"]: v for v in verses},
     )
 
 
@@ -1664,6 +2110,11 @@ def build_site(context):
     verses = context.verses
     order = context.order
     struct = context.struct
+
+    # tabela de palavras de Jesus, consultada pelo leitor e pela página do
+    # versículo sem ter de atravessar todas as assinaturas até lá
+    global RED_LETTERS
+    RED_LETTERS = inputs.red_letters or {}
 
     clean_generated_output()
     build_home(inputs.topics, verses, inputs.articles, inputs.sources, order, struct)
@@ -1679,10 +2130,13 @@ def build_site(context):
     build_sw_js()
     build_annotations_page()
     build_workspace_page()
+    build_account_page()
     build_merged_redirects()
-    build_library_page()
-    build_collections_page()
-    build_notebooks_page()
+    topic_slugs = build_topics_pages(inputs.topics, inputs.topic_refs, inputs.articles,
+                                     context.verses_by_ref)
+    gloss_slugs = build_dictionary_pages(inputs.glossary, inputs.articles, context.verses_by_ref)
+    place_slugs = build_maps_pages(inputs.places, context.verses_by_ref)
+    build_offline_page()
     plan_slugs = build_reading_plans_pages()
     build_plan_index()
     build_chapter_verse_counts(order, struct)
@@ -1695,7 +2149,7 @@ def build_site(context):
     for i, v in enumerate(verses):
         prev_v = verses[i - 1] if i > 0 else None
         next_v = verses[i + 1] if i < n - 1 else None
-        build_verse_page(v, context.articles_by_slug, prev_v, next_v)
+        build_verse_page(v, context.articles_by_slug, prev_v, next_v, inputs.commentary)
     for article in inputs.articles:
         build_article_page(article)
 
@@ -1704,13 +2158,14 @@ def build_site(context):
     n_chapters = 0
     for livro in order:
         chapters = struct[livro]
-        build_book_page(livro, chapters, order)
+        build_book_page(livro, chapters)
         total_caps = max(chapters)
         for ch in sorted(chapters):
-            build_chapter_page(livro, ch, chapters[ch], total_caps, order)
+            build_chapter_page(livro, ch, chapters[ch], total_caps)
             n_chapters += 1
 
-    build_meta(verses, inputs.articles, order, struct, plan_slugs)
+    build_meta(verses, inputs.articles, order, struct, plan_slugs,
+               topic_slugs, gloss_slugs, place_slugs)
     build_404()
     return BuildSummary(
         verses=len(verses),

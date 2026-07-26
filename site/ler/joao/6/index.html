@@ -16,14 +16,18 @@
 <meta property="og:description" content="João 6: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/joao/6/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="João 6 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="João 6: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/" selected>João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="joao" data-refp-chapter="6" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">João 6</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="João 6" data-total="71">
     <summary>
@@ -152,7 +152,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐπάρας οὖν τοὺς ὀφθαλμοὺς ὁ Ἰησοῦς καὶ θεασάμενος ὅτι πολὺς ὄχλος ἔρχεται πρὸς αὐτὸν, λέγει πρὸς Φίλιππον Πόθεν ἀγοράσωμεν ἄρτους ἵνα φάγωσιν οὗτοι;</p>
         <p class="translit"></p>
-        <p class="pt">Então Jesus, levantando os olhos, e vendo que uma grande multidão vinha ter com ele, disse a Felipe: Onde compraremos pão, para estes comerem?</p>
+        <p class="pt jesus">Então Jesus, levantando os olhos, e vendo que uma grande multidão vinha ter com ele, disse a Felipe: Onde compraremos pão, para estes comerem?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v6" data-ref="João 6:6">
@@ -192,7 +192,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν ὁ Ἰησοῦς Ποιήσατε τοὺς ἀνθρώπους ἀναπεσεῖν. ἦν δὲ χόρτος πολὺς ἐν τῷ τόπῳ. ἀνέπεσαν οὖν οἱ ἄνδρες τὸν ἀριθμὸν ὡς πεντακισχίλιοι.</p>
         <p class="translit"></p>
-        <p class="pt">Disse Jesus: Fazei reclinar-se o povo. Ora, naquele lugar havia muita relva. Reclinaram-se aí, pois, os homens em número de quase cinco mil.</p>
+        <p class="pt jesus">Disse Jesus: Fazei reclinar-se o povo. Ora, naquele lugar havia muita relva. Reclinaram-se aí, pois, os homens em número de quase cinco mil.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="João 6:11">
@@ -272,7 +272,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ δὲ λέγει αὐτοῖς Ἐγώ εἰμι, μὴ φοβεῖσθε.</p>
         <p class="translit"></p>
-        <p class="pt">Mas ele lhes disse: Sou eu; não temais.</p>
+        <p class="pt jesus">Mas ele lhes disse: Sou eu; não temais.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="João 6:21">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη αὐτοῖς ὁ Ἰησοῦς καὶ εἶπεν Ἀμὴν ἀμὴν λέγω ὑμῖν, ζητεῖτέ με οὐχ ὅτι εἴδετε σημεῖα, ἀλλ’ ὅτι ἐφάγετε ἐκ τῶν ἄρτων καὶ ἐχορτάσθητε.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Em verdade, em verdade vos digo que me buscais, não porque vistes sinais, mas porque comestes do pão e vos saciastes.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Em verdade, em verdade vos digo que me buscais, não porque vistes sinais, mas porque comestes do pão e vos saciastes.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="João 6:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐργάζεσθε μὴ τὴν βρῶσιν τὴν ἀπολλυμένην, ἀλλὰ τὴν βρῶσιν τὴν μένουσαν εἰς ζωὴν αἰώνιον, ἣν ὁ Υἱὸς τοῦ ἀνθρώπου ὑμῖν δώσει· τοῦτον γὰρ ὁ Πατὴρ ἐσφράγισεν ὁ Θεός.</p>
         <p class="translit"></p>
-        <p class="pt">Trabalhai, não pela comida que perece, mas pela comida que permanece para a vida eterna, a qual o Filho do homem vos dará; pois neste, Deus, o Pai, imprimiu o seu selo.</p>
+        <p class="pt jesus">Trabalhai, não pela comida que perece, mas pela comida que permanece para a vida eterna, a qual o Filho do homem vos dará; pois neste, Deus, o Pai, imprimiu o seu selo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="João 6:28">
@@ -344,7 +344,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτοῖς Τοῦτό ἐστιν τὸ ἔργον τοῦ Θεοῦ, ἵνα πιστεύητε εἰς ὃν ἀπέστειλεν ἐκεῖνος.</p>
         <p class="translit"></p>
-        <p class="pt">Jesus lhes respondeu: A obra de Deus é esta: Que creiais naquele que ele enviou.</p>
+        <p class="pt jesus">Jesus lhes respondeu: A obra de Deus é esta: Que creiais naquele que ele enviou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v30" data-ref="João 6:30">
@@ -368,7 +368,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν οὖν αὐτοῖς ὁ Ἰησοῦς Ἀμὴν ἀμὴν λέγω ὑμῖν, οὐ Μωϋσῆς δέδωκεν ὑμῖν τὸν ἄρτον ἐκ τοῦ οὐρανοῦ, ἀλλ’ ὁ Πατήρ μου δίδωσιν ὑμῖν τὸν ἄρτον ἐκ τοῦ οὐρανοῦ τὸν ἀληθινόν·</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Em verdade, em verdade vos digo: Não foi Moisés que vos deu o pão do céu; mas meu Pai vos dá o verdadeiro pão do céu.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Em verdade, em verdade vos digo: Não foi Moisés que vos deu o pão do céu; mas meu Pai vos dá o verdadeiro pão do céu.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v33" data-ref="João 6:33">
@@ -376,7 +376,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ γὰρ ἄρτος τοῦ Θεοῦ ἐστιν ὁ καταβαίνων ἐκ τοῦ οὐρανοῦ καὶ ζωὴν διδοὺς τῷ κόσμῳ.</p>
         <p class="translit"></p>
-        <p class="pt">Porque o pão de Deus é aquele que desce do céu e dá vida ao mundo.</p>
+        <p class="pt jesus">Porque o pão de Deus é aquele que desce do céu e dá vida ao mundo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v34" data-ref="João 6:34">
@@ -384,7 +384,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπον οὖν πρὸς αὐτόν Κύριε, πάντοτε δὸς ἡμῖν τὸν ἄρτον τοῦτον.</p>
         <p class="translit"></p>
-        <p class="pt">Disseram-lhe, pois: Senhor, dá-nos sempre desse pão.</p>
+        <p class="pt jesus">Disseram-lhe, pois: Senhor, dá-nos sempre desse pão.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v35" data-ref="João 6:35">
@@ -392,7 +392,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν αὐτοῖς ὁ Ἰησοῦς Ἐγώ εἰμι ὁ ἄρτος τῆς ζωῆς· ὁ ἐρχόμενος πρὸς ἐμὲ οὐ μὴ πεινάσῃ, καὶ ὁ πιστεύων εἰς ἐμὲ οὐ μὴ διψήσει πώποτε.</p>
         <p class="translit"></p>
-        <p class="pt">Declarou-lhes Jesus. Eu sou o pão da vida; aquele que vem a mim, de modo algum terá fome, e quem crê em mim jamais terá sede.</p>
+        <p class="pt jesus">Declarou-lhes Jesus. Eu sou o pão da vida; aquele que vem a mim, de modo algum terá fome, e quem crê em mim jamais terá sede.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v36" data-ref="João 6:36">
@@ -400,7 +400,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλ’ εἶπον ὑμῖν ὅτι καὶ ἑωράκατέ με καὶ οὐ πιστεύετε.</p>
         <p class="translit"></p>
-        <p class="pt">Mas como já vos disse, vós me tendes visto, e contudo não credes.</p>
+        <p class="pt jesus">Mas como já vos disse, vós me tendes visto, e contudo não credes.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v37" data-ref="João 6:37">
@@ -408,7 +408,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Πᾶν ὃ δίδωσίν μοι ὁ Πατὴρ πρὸς ἐμὲ ἥξει, καὶ τὸν ἐρχόμενον πρός με οὐ μὴ ἐκβάλω ἔξω,</p>
         <p class="translit"></p>
-        <p class="pt">Todo o que o Pai me dá virá a mim; e o que vem a mim de maneira nenhuma o lançarei fora.</p>
+        <p class="pt jesus">Todo o que o Pai me dá virá a mim; e o que vem a mim de maneira nenhuma o lançarei fora.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v38" data-ref="João 6:38">
@@ -416,7 +416,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὅτι καταβέβηκα ἀπὸ τοῦ οὐρανοῦ οὐχ ἵνα ποιῶ τὸ θέλημα τὸ ἐμὸν ἀλλὰ τὸ θέλημα τοῦ πέμψαντός με.</p>
         <p class="translit"></p>
-        <p class="pt">Porque eu desci do céu, não para fazer a minha vontade, mas a vontade daquele que me enviou.</p>
+        <p class="pt jesus">Porque eu desci do céu, não para fazer a minha vontade, mas a vontade daquele que me enviou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v39" data-ref="João 6:39">
@@ -424,7 +424,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τοῦτο δέ ἐστιν τὸ θέλημα τοῦ πέμψαντός με, ἵνα πᾶν ὃ δέδωκέν μοι μὴ ἀπολέσω ἐξ αὐτοῦ, ἀλλὰ ἀναστήσω αὐτὸ ἐν τῇ ἐσχάτῃ ἡμέρᾳ.</p>
         <p class="translit"></p>
-        <p class="pt">E a vontade do que me enviou é esta: Que eu não perca nenhum de todos aqueles que me deu, mas que eu o ressuscite no último dia.</p>
+        <p class="pt jesus">E a vontade do que me enviou é esta: Que eu não perca nenhum de todos aqueles que me deu, mas que eu o ressuscite no último dia.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v40" data-ref="João 6:40">
@@ -432,7 +432,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τοῦτο γάρ ἐστιν τὸ θέλημα τοῦ Πατρός μου, ἵνα πᾶς ὁ θεωρῶν τὸν Υἱὸν καὶ πιστεύων εἰς αὐτὸν ἔχῃ ζωὴν αἰώνιον, καὶ ἀναστήσω αὐτὸν ἐγὼ ἐν τῇ ἐσχάτῃ ἡμέρᾳ.</p>
         <p class="translit"></p>
-        <p class="pt">Porquanto esta é a vontade de meu Pai: Que todo aquele que vê o Filho e crê nele, tenha a vida eterna; e eu o ressuscitarei no último dia.</p>
+        <p class="pt jesus">Porquanto esta é a vontade de meu Pai: Que todo aquele que vê o Filho e crê nele, tenha a vida eterna; e eu o ressuscitarei no último dia.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v41" data-ref="João 6:41">
@@ -440,7 +440,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἐγόγγυζον οὖν οἱ Ἰουδαῖοι περὶ αὐτοῦ ὅτι εἶπεν Ἐγώ εἰμι ὁ ἄρτος ὁ καταβὰς ἐκ τοῦ οὐρανοῦ,</p>
         <p class="translit"></p>
-        <p class="pt">Murmuravam, pois, dele os judeus, porque dissera: Eu sou o pão que desceu do céu;</p>
+        <p class="pt jesus">Murmuravam, pois, dele os judeus, porque dissera: Eu sou o pão que desceu do céu;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v42" data-ref="João 6:42">
@@ -448,7 +448,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἔλεγον Οὐχ οὗτός ἐστιν Ἰησοῦς ὁ υἱὸς Ἰωσήφ, οὗ ἡμεῖς οἴδαμεν τὸν πατέρα καὶ τὴν μητέρα; πῶς νῦν λέγει ὅτι Ἐκ τοῦ οὐρανοῦ καταβέβηκα;</p>
         <p class="translit"></p>
-        <p class="pt">e perguntavam: Não é Jesus, o filho de José, cujo pai e mãe nós conhecemos? Como, pois, diz agora: Desci do céu?</p>
+        <p class="pt jesus">e perguntavam: Não é Jesus, o filho de José, cujo pai e mãe nós conhecemos? Como, pois, diz agora: Desci do céu?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v43" data-ref="João 6:43">
@@ -456,7 +456,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτοῖς Μὴ γογγύζετε μετ’ ἀλλήλων.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Não murmureis entre vós.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Não murmureis entre vós.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v44" data-ref="João 6:44">
@@ -464,7 +464,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐδεὶς δύναται ἐλθεῖν πρός με ἐὰν μὴ ὁ Πατὴρ ὁ πέμψας με ἑλκύσῃ αὐτόν, κἀγὼ ἀναστήσω αὐτὸν ἐν τῇ ἐσχάτῃ ἡμέρᾳ.</p>
         <p class="translit"></p>
-        <p class="pt">Ninguém pode vir a mim, se o Pai que me enviou não o trouxer; e eu o ressuscitarei no último dia.</p>
+        <p class="pt jesus">Ninguém pode vir a mim, se o Pai que me enviou não o trouxer; e eu o ressuscitarei no último dia.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v45" data-ref="João 6:45">
@@ -472,7 +472,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔστιν γεγραμμένον ἐν τοῖς προφήταις Καὶ ἔσονται πάντες διδακτοὶ Θεοῦ· πᾶς ὁ ἀκούσας παρὰ τοῦ Πατρὸς καὶ μαθὼν ἔρχεται πρὸς ἐμέ.</p>
         <p class="translit"></p>
-        <p class="pt">Está escrito nos profetas: E serão todos ensinados por Deus. Portanto todo aquele que do Pai ouviu e aprendeu vem a mim.</p>
+        <p class="pt jesus">Está escrito nos profetas: E serão todos ensinados por Deus. Portanto todo aquele que do Pai ouviu e aprendeu vem a mim.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v46" data-ref="João 6:46">
@@ -480,7 +480,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐχ ὅτι τὸν Πατέρα ἑώρακέν τις, εἰ μὴ ὁ ὢν παρὰ τοῦ Θεοῦ, οὗτος ἑώρακεν τὸν Πατέρα.</p>
         <p class="translit"></p>
-        <p class="pt">Não que alguém tenha visto o Pai, senão aquele que é vindo de Deus; só ele tem visto o Pai.</p>
+        <p class="pt jesus">Não que alguém tenha visto o Pai, senão aquele que é vindo de Deus; só ele tem visto o Pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v47" data-ref="João 6:47">
@@ -488,7 +488,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀμὴν ἀμὴν λέγω ὑμῖν, ὁ πιστεύων ἔχει ζωὴν αἰώνιον.</p>
         <p class="translit"></p>
-        <p class="pt">Em verdade, em verdade vos digo: Aquele que crê tem a vida eterna.</p>
+        <p class="pt jesus">Em verdade, em verdade vos digo: Aquele que crê tem a vida eterna.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v48" data-ref="João 6:48">
@@ -496,7 +496,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγώ εἰμι ὁ ἄρτος τῆς ζωῆς.</p>
         <p class="translit"></p>
-        <p class="pt">Eu sou o pão da vida.</p>
+        <p class="pt jesus">Eu sou o pão da vida.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v49" data-ref="João 6:49">
@@ -504,7 +504,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οἱ πατέρες ὑμῶν ἔφαγον ἐν τῇ ἐρήμῳ τὸ μάννα καὶ ἀπέθανον·</p>
         <p class="translit"></p>
-        <p class="pt">Vossos pais comeram o maná no deserto e morreram.</p>
+        <p class="pt jesus">Vossos pais comeram o maná no deserto e morreram.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v50" data-ref="João 6:50">
@@ -512,7 +512,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὗτός ἐστιν ὁ ἄρτος ὁ ἐκ τοῦ οὐρανοῦ καταβαίνων, ἵνα τις ἐξ αὐτοῦ φάγῃ καὶ μὴ ἀποθάνῃ.</p>
         <p class="translit"></p>
-        <p class="pt">Este é o pão que desce do céu, para que o que dele comer não morra.</p>
+        <p class="pt jesus">Este é o pão que desce do céu, para que o que dele comer não morra.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v51" data-ref="João 6:51">
@@ -520,7 +520,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγώ εἰμι ὁ ἄρτος ὁ ζῶν ὁ ἐκ τοῦ οὐρανοῦ καταβάς· ἐάν τις φάγῃ ἐκ τούτου τοῦ ἄρτου, ζήσει εἰς τὸν αἰῶνα· καὶ ὁ ἄρτος δὲ ὃν ἐγὼ δώσω ἡ σάρξ μού ἐστιν ὑπὲρ τῆς τοῦ κόσμου ζωῆς.</p>
         <p class="translit"></p>
-        <p class="pt">Eu sou o pão vivo que desceu do céu; se alguém comer deste pão, viverá para sempre; e o pão que eu darei pela vida do mundo é a minha carne.</p>
+        <p class="pt jesus">Eu sou o pão vivo que desceu do céu; se alguém comer deste pão, viverá para sempre; e o pão que eu darei pela vida do mundo é a minha carne.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v52" data-ref="João 6:52">
@@ -528,7 +528,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἐμάχοντο οὖν πρὸς ἀλλήλους οἱ Ἰουδαῖοι λέγοντες Πῶς δύναται οὗτος ἡμῖν δοῦναι τὴν σάρκα φαγεῖν;</p>
         <p class="translit"></p>
-        <p class="pt">Disputavam, pois, os judeus entre si, dizendo: Como pode este dar-nos a sua carne a comer?</p>
+        <p class="pt jesus">Disputavam, pois, os judeus entre si, dizendo: Como pode este dar-nos a sua carne a comer?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v53" data-ref="João 6:53">
@@ -536,7 +536,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν οὖν αὐτοῖς ὁ Ἰησοῦς Ἀμὴν ἀμὴν λέγω ὑμῖν, ἐὰν μὴ φάγητε τὴν σάρκα τοῦ Υἱοῦ τοῦ ἀνθρώπου καὶ πίητε αὐτοῦ τὸ αἷμα, οὐκ ἔχετε ζωὴν ἐν ἑαυτοῖς.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhes Jesus: Em verdade, em verdade vos digo: Se não comerdes a carne do Filho do homem, e não beberdes o seu sangue, não tereis vida em vós mesmos.</p>
+        <p class="pt jesus">Disse-lhes Jesus: Em verdade, em verdade vos digo: Se não comerdes a carne do Filho do homem, e não beberdes o seu sangue, não tereis vida em vós mesmos.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v54" data-ref="João 6:54">
@@ -544,7 +544,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ τρώγων μου τὴν σάρκα καὶ πίνων μου τὸ αἷμα ἔχει ζωὴν αἰώνιον, κἀγὼ ἀναστήσω αὐτὸν τῇ ἐσχάτῃ ἡμέρᾳ.</p>
         <p class="translit"></p>
-        <p class="pt">Quem come a minha carne e bebe o meu sangue tem a vida eterna; e eu o ressuscitarei no último dia.</p>
+        <p class="pt jesus">Quem come a minha carne e bebe o meu sangue tem a vida eterna; e eu o ressuscitarei no último dia.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v55" data-ref="João 6:55">
@@ -552,7 +552,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἡ γὰρ σάρξ μου ἀληθής ἐστιν βρῶσις, καὶ τὸ αἷμά μου ἀληθής ἐστιν πόσις.</p>
         <p class="translit"></p>
-        <p class="pt">Porque a minha carne verdadeiramente é comida, e o meu sangue verdadeiramente é bebida.</p>
+        <p class="pt jesus">Porque a minha carne verdadeiramente é comida, e o meu sangue verdadeiramente é bebida.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v56" data-ref="João 6:56">
@@ -560,7 +560,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ τρώγων μου τὴν σάρκα καὶ πίνων μου τὸ αἷμα ἐν ἐμοὶ μένει κἀγὼ ἐν αὐτῷ.</p>
         <p class="translit"></p>
-        <p class="pt">Quem come a minha carne e bebe o meu sangue permanece em mim e eu nele.</p>
+        <p class="pt jesus">Quem come a minha carne e bebe o meu sangue permanece em mim e eu nele.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v57" data-ref="João 6:57">
@@ -568,7 +568,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καθὼς ἀπέστειλέν με ὁ ζῶν Πατὴρ κἀγὼ ζῶ διὰ τὸν Πατέρα, καὶ ὁ τρώγων με κἀκεῖνος ζήσει δι’ ἐμέ.</p>
         <p class="translit"></p>
-        <p class="pt">Assim como o Pai, que vive, me enviou, e eu vivo pelo Pai, assim, quem de mim se alimenta, também viverá por mim.</p>
+        <p class="pt jesus">Assim como o Pai, que vive, me enviou, e eu vivo pelo Pai, assim, quem de mim se alimenta, também viverá por mim.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v58" data-ref="João 6:58">
@@ -576,7 +576,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὗτός ἐστιν ὁ ἄρτος ὁ ἐξ οὐρανοῦ καταβάς, οὐ καθὼς ἔφαγον οἱ πατέρες καὶ ἀπέθανον· ὁ τρώγων τοῦτον τὸν ἄρτον ζήσει εἰς τὸν αἰῶνα.</p>
         <p class="translit"></p>
-        <p class="pt">Este é o pão que desceu do céu; não é como o caso de vossos pais, que comeram o maná e morreram; quem comer este pão viverá para sempre.</p>
+        <p class="pt jesus">Este é o pão que desceu do céu; não é como o caso de vossos pais, que comeram o maná e morreram; quem comer este pão viverá para sempre.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v59" data-ref="João 6:59">
@@ -600,7 +600,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἰδὼς δὲ ὁ Ἰησοῦς ἐν ἑαυτῷ ὅτι γογγύζουσιν περὶ τούτου οἱ μαθηταὶ αὐτοῦ, εἶπεν αὐτοῖς Τοῦτο ὑμᾶς σκανδαλίζει;</p>
         <p class="translit"></p>
-        <p class="pt">Mas, sabendo Jesus em si mesmo que murmuravam disto os seus discípulos, disse-lhes: Isto vos escandaliza?</p>
+        <p class="pt jesus">Mas, sabendo Jesus em si mesmo que murmuravam disto os seus discípulos, disse-lhes: Isto vos escandaliza?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v62" data-ref="João 6:62">
@@ -608,7 +608,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐὰν οὖν θεωρῆτε τὸν Υἱὸν τοῦ ἀνθρώπου ἀναβαίνοντα ὅπου ἦν τὸ πρότερον;</p>
         <p class="translit"></p>
-        <p class="pt">Que seria, pois, se vísseis subir o Filho do homem para onde primeiro estava?</p>
+        <p class="pt jesus">Que seria, pois, se vísseis subir o Filho do homem para onde primeiro estava?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v63" data-ref="João 6:63">
@@ -616,7 +616,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τὸ πνεῦμά ἐστιν τὸ ζωοποιοῦν, ἡ σὰρξ οὐκ ὠφελεῖ οὐδέν· τὰ ῥήματα ἃ ἐγὼ λελάληκα ὑμῖν πνεῦμά ἐστιν καὶ ζωή ἐστιν.</p>
         <p class="translit"></p>
-        <p class="pt">O espírito é o que vivifica, a carne para nada aproveita; as palavras que eu vos tenho dito são espírito e são vida.</p>
+        <p class="pt jesus">O espírito é o que vivifica, a carne para nada aproveita; as palavras que eu vos tenho dito são espírito e são vida.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v64" data-ref="João 6:64">
@@ -624,7 +624,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλ’ εἰσὶν ἐξ ὑμῶν τινες οἳ οὐ πιστεύουσιν. ᾔδει γὰρ ἐξ ἀρχῆς ὁ Ἰησοῦς τίνες εἰσὶν οἱ μὴ πιστεύοντες καὶ τίς ἐστιν ὁ παραδώσων αὐτόν.</p>
         <p class="translit"></p>
-        <p class="pt">Mas há alguns de vós que não crêem. Pois Jesus sabia, desde o princípio, quem eram os que não criam, e quem era o que o havia de entregar.</p>
+        <p class="pt jesus">Mas há alguns de vós que não crêem. Pois Jesus sabia, desde o princípio, quem eram os que não criam, e quem era o que o havia de entregar.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v65" data-ref="João 6:65">
@@ -632,7 +632,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἔλεγεν Διὰ τοῦτο εἴρηκα ὑμῖν ὅτι οὐδεὶς δύναται ἐλθεῖν πρός με ἐὰν μὴ ᾖ δεδομένον αὐτῷ ἐκ τοῦ Πατρός.</p>
         <p class="translit"></p>
-        <p class="pt">E continuou: Por isso vos disse que ninguém pode vir a mim, se pelo Pai lhe não for concedido.</p>
+        <p class="pt jesus">E continuou: Por isso vos disse que ninguém pode vir a mim, se pelo Pai lhe não for concedido.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v66" data-ref="João 6:66">
@@ -648,7 +648,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν οὖν ὁ Ἰησοῦς τοῖς δώδεκα Μὴ καὶ ὑμεῖς θέλετε ὑπάγειν;</p>
         <p class="translit"></p>
-        <p class="pt">Perguntou então Jesus aos doze: Quereis vós também retirar-vos?</p>
+        <p class="pt jesus">Perguntou então Jesus aos doze: Quereis vós também retirar-vos?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v68" data-ref="João 6:68">
@@ -672,7 +672,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη αὐτοῖς ὁ Ἰησοῦς Οὐκ ἐγὼ ὑμᾶς τοὺς δώδεκα ἐξελεξάμην; καὶ ἐξ ὑμῶν εἷς διάβολός ἐστιν.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Não vos escolhi a vós os doze? Contudo um de vós é o diabo.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Não vos escolhi a vós os doze? Contudo um de vós é o diabo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v71" data-ref="João 6:71">
@@ -680,7 +680,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔλεγεν δὲ τὸν Ἰούδαν Σίμωνος Ἰσκαριώτου· οὗτος γὰρ ἔμελλεν παραδιδόναι αὐτόν, εἷς ἐκ τῶν δώδεκα.</p>
         <p class="translit"></p>
-        <p class="pt">Referia-se a Judas, filho de Simão Iscariotes; porque era ele o que o havia de entregar, sendo um dos doze.</p>
+        <p class="pt jesus">Referia-se a Judas, filho de Simão Iscariotes; porque era ele o que o havia de entregar, sendo um dos doze.</p>
       </div>
     </div>
   </div>
@@ -692,7 +692,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -709,6 +709,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -736,10 +737,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -748,14 +753,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

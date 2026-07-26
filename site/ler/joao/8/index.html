@@ -16,14 +16,18 @@
 <meta property="og:description" content="João 8: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/joao/8/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="João 8 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="João 8: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/" selected>João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="joao" data-refp-chapter="8" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">João 8</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="João 8" data-total="59">
     <summary>
@@ -168,7 +168,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὡς δὲ ἐπέμενον ἐρωτῶντες αὐτόν, ἀνάκυψας εἶπε πρὸς αὐτοὺς, Ὁ ἀναμάρτητος ὑμῶν πρῶτος τὸν λίθον ἐπ’ αὐτῇ βαλέτω.</p>
         <p class="translit"></p>
-        <p class="pt">Mas, como insistissem em perguntar-lhe, ergueu-se e disse-lhes: Aquele dentre vós que está sem pecado seja o primeiro que lhe atire uma pedra.</p>
+        <p class="pt jesus">Mas, como insistissem em perguntar-lhe, ergueu-se e disse-lhes: Aquele dentre vós que está sem pecado seja o primeiro que lhe atire uma pedra.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v8" data-ref="João 8:8">
@@ -192,7 +192,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀνακύψας δὲ ὁ Ἰησοῦς, καὶ μηδένα θεασάμενος πλὴν τῆς γυναικὸς, εἶπεν αὐτῇ, Ἡ γυνὴ, ποῦ εἰσιν ἐκεῖνοι οἱ κατήγοροί σου; οὐδείς σε κατέκρινεν;</p>
         <p class="translit"></p>
-        <p class="pt">Então, erguendo-se Jesus e não vendo a ninguém senão a mulher, perguntou-lhe: Mulher, onde estão aqueles teus acusadores? Ninguém te condenou?</p>
+        <p class="pt jesus">Então, erguendo-se Jesus e não vendo a ninguém senão a mulher, perguntou-lhe: Mulher, onde estão aqueles teus acusadores? Ninguém te condenou?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="João 8:11">
@@ -200,7 +200,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἡ δὲ εἶπεν, Οὐδείς, κύριε. εἶπε δὲ αὐτῇ ὁ Ἰησοῦς, Οὐδὲ ἐγώ σε κατακρίνω· πορεύου καὶ μηκέτι ἁμάρτανε.)</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu ela: Ninguém, Senhor. E disse-lhe Jesus: Nem eu te condeno; vai-te, e não peques mais.</p>
+        <p class="pt jesus">Respondeu ela: Ninguém, Senhor. E disse-lhe Jesus: Nem eu te condeno; vai-te, e não peques mais.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v12" data-ref="João 8:12">
@@ -208,7 +208,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Πάλιν οὖν αὐτοῖς ἐλάλησεν ὁ Ἰησοῦς λέγων Ἐγώ εἰμι τὸ φῶς τοῦ κόσμου· ὁ ἀκολουθῶν μοι οὐ μὴ περιπατήσῃ ἐν τῇ σκοτίᾳ, ἀλλ’ ἕξει τὸ φῶς τῆς ζωῆς.</p>
         <p class="translit"></p>
-        <p class="pt">Então Jesus tornou a falar-lhes, dizendo: Eu sou a luz do mundo; quem me segue de modo algum andará em trevas, mas terá a luz da vida.</p>
+        <p class="pt jesus">Então Jesus tornou a falar-lhes, dizendo: Eu sou a luz do mundo; quem me segue de modo algum andará em trevas, mas terá a luz da vida.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v13" data-ref="João 8:13">
@@ -224,7 +224,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη Ἰησοῦς καὶ εἶπεν αὐτοῖς Κἂν ἐγὼ μαρτυρῶ περὶ ἐμαυτοῦ, ἀληθής ἐστιν ἡ μαρτυρία μου, ὅτι οἶδα πόθεν ἦλθον καὶ ποῦ ὑπάγω· ὑμεῖς δὲ οὐκ οἴδατε πόθεν ἔρχομαι ἢ ποῦ ὑπάγω.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Ainda que eu dou testemunho de mim mesmo, o meu testemunho é verdadeiro; porque sei donde vim, e para onde vou; mas vós não sabeis donde venho, nem para onde vou.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Ainda que eu dou testemunho de mim mesmo, o meu testemunho é verdadeiro; porque sei donde vim, e para onde vou; mas vós não sabeis donde venho, nem para onde vou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v15" data-ref="João 8:15">
@@ -232,7 +232,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὑμεῖς κατὰ τὴν σάρκα κρίνετε, ἐγὼ οὐ κρίνω οὐδένα.</p>
         <p class="translit"></p>
-        <p class="pt">Vós julgais segundo a carne; eu a ninguém julgo.</p>
+        <p class="pt jesus">Vós julgais segundo a carne; eu a ninguém julgo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="João 8:16">
@@ -240,7 +240,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἐὰν κρίνω δὲ ἐγώ, ἡ κρίσις ἡ ἐμὴ ἀληθινή ἐστιν, ὅτι μόνος οὐκ εἰμί, ἀλλ’ ἐγὼ καὶ ὁ πέμψας με.</p>
         <p class="translit"></p>
-        <p class="pt">E, mesmo que eu julgue, o meu juízo é verdadeiro; porque não sou eu só, mas eu e o Pai que me enviou.</p>
+        <p class="pt jesus">E, mesmo que eu julgue, o meu juízo é verdadeiro; porque não sou eu só, mas eu e o Pai que me enviou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="João 8:17">
@@ -248,7 +248,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἐν τῷ νόμῳ δὲ τῷ ὑμετέρῳ γέγραπται ὅτι δύο ἀνθρώπων ἡ μαρτυρία ἀληθής ἐστιν.</p>
         <p class="translit"></p>
-        <p class="pt">Ora, na vossa lei está escrito que o testemunho de dois homens é verdadeiro.</p>
+        <p class="pt jesus">Ora, na vossa lei está escrito que o testemunho de dois homens é verdadeiro.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="João 8:18">
@@ -256,7 +256,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγώ εἰμι ὁ μαρτυρῶν περὶ ἐμαυτοῦ, καὶ μαρτυρεῖ περὶ ἐμοῦ ὁ πέμψας με Πατήρ.</p>
         <p class="translit"></p>
-        <p class="pt">Sou eu que dou testemunho de mim mesmo, e o Pai que me enviou, também dá testemunho de mim.</p>
+        <p class="pt jesus">Sou eu que dou testemunho de mim mesmo, e o Pai que me enviou, também dá testemunho de mim.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="João 8:19">
@@ -264,7 +264,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔλεγον οὖν αὐτῷ Ποῦ ἐστιν ὁ Πατήρ σου; ἀπεκρίθη Ἰησοῦς Οὔτε ἐμὲ οἴδατε οὔτε τὸν Πατέρα μου· εἰ ἐμὲ ᾔδειτε, καὶ τὸν Πατέρα μου ἂν ᾔδειτε.</p>
         <p class="translit"></p>
-        <p class="pt">Perguntavam-lhe, pois: Onde está teu pai? Jesus respondeu: Não me conheceis a mim, nem a meu Pai; se vós me conhecêsseis a mim, também conheceríeis a meu Pai.</p>
+        <p class="pt jesus">Perguntavam-lhe, pois: Onde está teu pai? Jesus respondeu: Não me conheceis a mim, nem a meu Pai; se vós me conhecêsseis a mim, também conheceríeis a meu Pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="João 8:20">
@@ -272,7 +272,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ταῦτα τὰ ῥήματα ἐλάλησεν ἐν τῷ γαζοφυλακίῳ διδάσκων ἐν τῷ ἱερῷ· καὶ οὐδεὶς ἐπίασεν αὐτόν, ὅτι οὔπω ἐληλύθει ἡ ὥρα αὐτοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">Essas palavras proferiu Jesus no lugar do tesouro, quando ensinava no templo; e ninguém o prendeu, porque ainda não era chegada a sua hora.</p>
+        <p class="pt jesus">Essas palavras proferiu Jesus no lugar do tesouro, quando ensinava no templo; e ninguém o prendeu, porque ainda não era chegada a sua hora.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="João 8:21">
@@ -280,7 +280,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Εἶπεν οὖν πάλιν αὐτοῖς Ἐγὼ ὑπάγω καὶ ζητήσετέ με, καὶ ἐν τῇ ἁμαρτίᾳ ὑμῶν ἀποθανεῖσθε· ὅπου ἐγὼ ὑπάγω ὑμεῖς οὐ δύνασθε ἐλθεῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhes, pois, Jesus outra vez: Eu me retiro; buscar-me-eis, e morrereis no vosso pecado. Para onde eu vou, vós não podeis ir.</p>
+        <p class="pt jesus">Disse-lhes, pois, Jesus outra vez: Eu me retiro; buscar-me-eis, e morrereis no vosso pecado. Para onde eu vou, vós não podeis ir.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="João 8:22">
@@ -288,7 +288,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔλεγον οὖν οἱ Ἰουδαῖοι Μήτι ἀποκτενεῖ ἑαυτὸν, ὅτι λέγει Ὅπου ἐγὼ ὑπάγω ὑμεῖς οὐ δύνασθε ἐλθεῖν;</p>
         <p class="translit"></p>
-        <p class="pt">Então diziam os judeus: Será que ele vai suicidar-se, pois diz: Para onde eu vou, vós não podeis ir?</p>
+        <p class="pt jesus">Então diziam os judeus: Será que ele vai suicidar-se, pois diz: Para onde eu vou, vós não podeis ir?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="João 8:23">
@@ -296,7 +296,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἔλεγεν αὐτοῖς Ὑμεῖς ἐκ τῶν κάτω ἐστέ, ἐγὼ ἐκ τῶν ἄνω εἰμί· ὑμεῖς ἐκ τούτου τοῦ κόσμου ἐστέ, ἐγὼ οὐκ εἰμὶ ἐκ τοῦ κόσμου τούτου.</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhes ele: Vós sois de baixo, eu sou de cima; vós sois deste mundo, eu não sou deste mundo.</p>
+        <p class="pt jesus">Disse-lhes ele: Vós sois de baixo, eu sou de cima; vós sois deste mundo, eu não sou deste mundo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v24" data-ref="João 8:24">
@@ -304,7 +304,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπον οὖν ὑμῖν ὅτι ἀποθανεῖσθε ἐν ταῖς ἁμαρτίαις ὑμῶν· ἐὰν γὰρ μὴ πιστεύσητε ὅτι ἐγώ εἰμι, ἀποθανεῖσθε ἐν ταῖς ἁμαρτίαις ὑμῶν.</p>
         <p class="translit"></p>
-        <p class="pt">Por isso vos disse que morrereis em vossos pecados; porque, se não crerdes que eu sou, morrereis em vossos pecados.</p>
+        <p class="pt jesus">Por isso vos disse que morrereis em vossos pecados; porque, se não crerdes que eu sou, morrereis em vossos pecados.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v25" data-ref="João 8:25">
@@ -312,7 +312,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔλεγον οὖν αὐτῷ Σὺ τίς εἶ; εἶπεν αὐτοῖς ὁ Ἰησοῦς Τὴν ἀρχὴν ὅ τι καὶ λαλῶ ὑμῖν;</p>
         <p class="translit"></p>
-        <p class="pt">Perguntavam-lhe então: Quem és tu? Respondeu-lhes Jesus: Exatamente o que venho dizendo que sou.</p>
+        <p class="pt jesus">Perguntavam-lhe então: Quem és tu? Respondeu-lhes Jesus: Exatamente o que venho dizendo que sou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v26" data-ref="João 8:26">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">πολλὰ ἔχω περὶ ὑμῶν λαλεῖν καὶ κρίνειν· ἀλλ’ ὁ πέμψας με ἀληθής ἐστιν, κἀγὼ ἃ ἤκουσα παρ’ αὐτοῦ, ταῦτα λαλῶ εἰς τὸν κόσμον.</p>
         <p class="translit"></p>
-        <p class="pt">Muitas coisas tenho que dizer e julgar acerca de vós; mas aquele que me enviou é verdadeiro; e o que dele ouvi, isso falo ao mundo.</p>
+        <p class="pt jesus">Muitas coisas tenho que dizer e julgar acerca de vós; mas aquele que me enviou é verdadeiro; e o que dele ouvi, isso falo ao mundo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="João 8:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐκ ἔγνωσαν ὅτι τὸν Πατέρα αὐτοῖς ἔλεγεν.</p>
         <p class="translit"></p>
-        <p class="pt">Eles não perceberam que lhes falava do Pai.</p>
+        <p class="pt jesus">Eles não perceberam que lhes falava do Pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="João 8:28">
@@ -336,7 +336,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν οὖν ὁ Ἰησοῦς Ὅταν ὑψώσητε τὸν Υἱὸν τοῦ ἀνθρώπου, τότε γνώσεσθε ὅτι ἐγώ εἰμι, καὶ ἀπ’ ἐμαυτοῦ ποιῶ οὐδέν, ἀλλὰ καθὼς ἐδίδαξέν με ὁ Πατὴρ, ταῦτα λαλῶ.</p>
         <p class="translit"></p>
-        <p class="pt">Prosseguiu, pois, Jesus: Quando tiverdes levantado o Filho do homem, então conhecereis que eu sou, e que nada faço de mim mesmo; mas como o Pai me ensinou, assim falo.</p>
+        <p class="pt jesus">Prosseguiu, pois, Jesus: Quando tiverdes levantado o Filho do homem, então conhecereis que eu sou, e que nada faço de mim mesmo; mas como o Pai me ensinou, assim falo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v29" data-ref="João 8:29">
@@ -344,7 +344,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ὁ πέμψας με μετ’ ἐμοῦ ἐστιν· οὐκ ἀφῆκέν με μόνον, ὅτι ἐγὼ τὰ ἀρεστὰ αὐτῷ ποιῶ πάντοτε.</p>
         <p class="translit"></p>
-        <p class="pt">E aquele que me enviou está comigo; não me tem deixado só; porque faço sempre o que é do seu agrado.</p>
+        <p class="pt jesus">E aquele que me enviou está comigo; não me tem deixado só; porque faço sempre o que é do seu agrado.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v30" data-ref="João 8:30">
@@ -352,7 +352,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ταῦτα αὐτοῦ λαλοῦντος πολλοὶ ἐπίστευσαν εἰς αὐτόν.</p>
         <p class="translit"></p>
-        <p class="pt">Falando ele estas coisas, muitos creram nele.</p>
+        <p class="pt jesus">Falando ele estas coisas, muitos creram nele.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v31" data-ref="João 8:31">
@@ -360,7 +360,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἔλεγεν οὖν ὁ Ἰησοῦς πρὸς τοὺς πεπιστευκότας αὐτῷ Ἰουδαίους Ἐὰν ὑμεῖς μείνητε ἐν τῷ λόγῳ τῷ ἐμῷ, ἀληθῶς μαθηταί μού ἐστε,</p>
         <p class="translit"></p>
-        <p class="pt">Dizia, pois, Jesus aos judeus que nele creram: Se vós permanecerdes na minha palavra, verdadeiramente sois meus discípulos;</p>
+        <p class="pt jesus">Dizia, pois, Jesus aos judeus que nele creram: Se vós permanecerdes na minha palavra, verdadeiramente sois meus discípulos;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v32" data-ref="João 8:32">
@@ -368,7 +368,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ γνώσεσθε τὴν ἀλήθειαν, καὶ ἡ ἀλήθεια ἐλευθερώσει ὑμᾶς.</p>
         <p class="translit"></p>
-        <p class="pt">e conhecereis a verdade, e a verdade vos libertará.</p>
+        <p class="pt jesus">e conhecereis a verdade, e a verdade vos libertará.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v33" data-ref="João 8:33">
@@ -376,7 +376,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθησαν πρὸς αὐτόν Σπέρμα Ἀβραάμ ἐσμεν, καὶ οὐδενὶ δεδουλεύκαμεν πώποτε· πῶς σὺ λέγεις ὅτι Ἐλεύθεροι γενήσεσθε;</p>
         <p class="translit"></p>
-        <p class="pt">Responderam-lhe: Somos descendentes de Abraão, e nunca fomos escravos de ninguém; como dizes tu: Sereis livres?</p>
+        <p class="pt jesus">Responderam-lhe: Somos descendentes de Abraão, e nunca fomos escravos de ninguém; como dizes tu: Sereis livres?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v34" data-ref="João 8:34">
@@ -384,7 +384,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη αὐτοῖς ὁ Ἰησοῦς Ἀμὴν ἀμὴν λέγω ὑμῖν ὅτι πᾶς ὁ ποιῶν τὴν ἁμαρτίαν δοῦλός ἐστιν τῆς ἁμαρτίας.</p>
         <p class="translit"></p>
-        <p class="pt">Replicou-lhes Jesus: Em verdade, em verdade vos digo que todo aquele que comete pecado é escravo do pecado.</p>
+        <p class="pt jesus">Replicou-lhes Jesus: Em verdade, em verdade vos digo que todo aquele que comete pecado é escravo do pecado.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v35" data-ref="João 8:35">
@@ -392,7 +392,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ δὲ δοῦλος οὐ μένει ἐν τῇ οἰκίᾳ εἰς τὸν αἰῶνα· ὁ υἱὸς μένει εἰς τὸν αἰῶνα.</p>
         <p class="translit"></p>
-        <p class="pt">Ora, o escravo não fica para sempre na casa; o filho fica para sempre.</p>
+        <p class="pt jesus">Ora, o escravo não fica para sempre na casa; o filho fica para sempre.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v36" data-ref="João 8:36">
@@ -400,7 +400,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐὰν οὖν ὁ Υἱὸς ὑμᾶς ἐλευθερώσῃ, ὄντως ἐλεύθεροι ἔσεσθε.</p>
         <p class="translit"></p>
-        <p class="pt">Se, pois, o Filho vos libertar, verdadeiramente sereis livres.</p>
+        <p class="pt jesus">Se, pois, o Filho vos libertar, verdadeiramente sereis livres.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v37" data-ref="João 8:37">
@@ -408,7 +408,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οἶδα ὅτι σπέρμα Ἀβραάμ ἐστε· ἀλλὰ ζητεῖτέ με ἀποκτεῖναι, ὅτι ὁ λόγος ὁ ἐμὸς οὐ χωρεῖ ἐν ὑμῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Bem sei que sois descendência de Abraão; contudo, procurais matar-me, porque a minha palavra não encontra lugar em vós.</p>
+        <p class="pt jesus">Bem sei que sois descendência de Abraão; contudo, procurais matar-me, porque a minha palavra não encontra lugar em vós.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v38" data-ref="João 8:38">
@@ -416,7 +416,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἃ ἐγὼ ἑώρακα παρὰ τῷ Πατρὶ λαλῶ· καὶ ὑμεῖς οὖν ἃ ἠκούσατε παρὰ τοῦ πατρὸς ποιεῖτε.</p>
         <p class="translit"></p>
-        <p class="pt">Eu falo do que vi junto de meu Pai; e vós fazeis o que também ouvistes de vosso pai.</p>
+        <p class="pt jesus">Eu falo do que vi junto de meu Pai; e vós fazeis o que também ouvistes de vosso pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v39" data-ref="João 8:39">
@@ -424,7 +424,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθησαν καὶ εἶπαν αὐτῷ Ὁ πατὴρ ἡμῶν Ἀβραάμ ἐστιν. λέγει αὐτοῖς ὁ Ἰησοῦς Εἰ τέκνα τοῦ Ἀβραάμ ἐστε, τὰ ἔργα τοῦ Ἀβραὰμ ποιεῖτε·</p>
         <p class="translit"></p>
-        <p class="pt">Responderam-lhe: Nosso pai é Abraão. Disse-lhes Jesus: Se sois filhos de Abraão, fazei as obras de Abraão.</p>
+        <p class="pt jesus">Responderam-lhe: Nosso pai é Abraão. Disse-lhes Jesus: Se sois filhos de Abraão, fazei as obras de Abraão.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v40" data-ref="João 8:40">
@@ -432,7 +432,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">νῦν δὲ ζητεῖτέ με ἀποκτεῖναι, ἄνθρωπον ὃς τὴν ἀλήθειαν ὑμῖν λελάληκα, ἣν ἤκουσα παρὰ τοῦ Θεοῦ· τοῦτο Ἀβραὰμ οὐκ ἐποίησεν.</p>
         <p class="translit"></p>
-        <p class="pt">Mas agora procurais matar-me, a mim que vos falei a verdade que de Deus ouvi; isso Abraão não fez.</p>
+        <p class="pt jesus">Mas agora procurais matar-me, a mim que vos falei a verdade que de Deus ouvi; isso Abraão não fez.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v41" data-ref="João 8:41">
@@ -440,7 +440,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὑμεῖς ποιεῖτε τὰ ἔργα τοῦ πατρὸς ὑμῶν. εἶπαν αὐτῷ Ἡμεῖς ἐκ πορνείας οὐκ ἐγεννήθημεν, ἕνα Πατέρα ἔχομεν τὸν Θεόν.</p>
         <p class="translit"></p>
-        <p class="pt">Vós fazeis as obras de vosso pai. Replicaram-lhe eles: Nós não somos nascidos de prostituição; temos um Pai, que é Deus.</p>
+        <p class="pt jesus">Vós fazeis as obras de vosso pai. Replicaram-lhe eles: Nós não somos nascidos de prostituição; temos um Pai, que é Deus.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v42" data-ref="João 8:42">
@@ -448,7 +448,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν αὐτοῖς ὁ Ἰησοῦς Εἰ ὁ Θεὸς Πατὴρ ὑμῶν ἦν, ἠγαπᾶτε ἂν ἐμέ· ἐγὼ γὰρ ἐκ τοῦ Θεοῦ ἐξῆλθον καὶ ἥκω· οὐδὲ γὰρ ἀπ’ ἐμαυτοῦ ἐλήλυθα, ἀλλ’ ἐκεῖνός με ἀπέστειλεν.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Se Deus fosse o vosso Pai, vós me amaríeis, porque eu saí e vim de Deus; pois não vim de mim mesmo, mas ele me enviou.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Se Deus fosse o vosso Pai, vós me amaríeis, porque eu saí e vim de Deus; pois não vim de mim mesmo, mas ele me enviou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v43" data-ref="João 8:43">
@@ -456,7 +456,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">διὰ τί τὴν λαλιὰν τὴν ἐμὴν οὐ γινώσκετε; ὅτι οὐ δύνασθε ἀκούειν τὸν λόγον τὸν ἐμόν.</p>
         <p class="translit"></p>
-        <p class="pt">Por que não compreendeis a minha linguagem? é porque não podeis ouvir a minha palavra.</p>
+        <p class="pt jesus">Por que não compreendeis a minha linguagem? é porque não podeis ouvir a minha palavra.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v44" data-ref="João 8:44">
@@ -464,7 +464,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὑμεῖς ἐκ τοῦ πατρὸς τοῦ διαβόλου ἐστὲ καὶ τὰς ἐπιθυμίας τοῦ πατρὸς ὑμῶν θέλετε ποιεῖν. ἐκεῖνος ἀνθρωποκτόνος ἦν ἀπ’ ἀρχῆς, καὶ ἐν τῇ ἀληθείᾳ οὐκ ἔστηκεν, ὅτι οὐκ ἔστιν ἀλήθεια ἐν αὐτῷ. ὅταν λαλῇ τὸ ψεῦδος, ἐκ τῶν ἰδίων λαλεῖ, ὅτι ψεύστης ἐστὶν καὶ ὁ πατὴρ αὐτοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">Vós tendes por pai o Diabo, e quereis satisfazer os desejos de vosso pai; ele é homicida desde o princípio, e nunca se firmou na verdade, porque nele não há verdade; quando ele profere mentira, fala do que lhe é próprio; porque é mentiroso, e pai da mentira.</p>
+        <p class="pt jesus">Vós tendes por pai o Diabo, e quereis satisfazer os desejos de vosso pai; ele é homicida desde o princípio, e nunca se firmou na verdade, porque nele não há verdade; quando ele profere mentira, fala do que lhe é próprio; porque é mentiroso, e pai da mentira.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v45" data-ref="João 8:45">
@@ -472,7 +472,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγὼ δὲ ὅτι τὴν ἀλήθειαν λέγω, οὐ πιστεύετέ μοι.</p>
         <p class="translit"></p>
-        <p class="pt">Mas porque eu digo a verdade, não me credes.</p>
+        <p class="pt jesus">Mas porque eu digo a verdade, não me credes.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v46" data-ref="João 8:46">
@@ -480,7 +480,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τίς ἐξ ὑμῶν ἐλέγχει με περὶ ἁμαρτίας; εἰ ἀλήθειαν λέγω, διὰ τί ὑμεῖς οὐ πιστεύετέ μοι;</p>
         <p class="translit"></p>
-        <p class="pt">Quem dentre vós me convence de pecado? Se digo a verdade, por que não me credes?</p>
+        <p class="pt jesus">Quem dentre vós me convence de pecado? Se digo a verdade, por que não me credes?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v47" data-ref="João 8:47">
@@ -488,7 +488,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ ὢν ἐκ τοῦ Θεοῦ τὰ ῥήματα τοῦ Θεοῦ ἀκούει· διὰ τοῦτο ὑμεῖς οὐκ ἀκούετε, ὅτι ἐκ τοῦ Θεοῦ οὐκ ἐστέ.</p>
         <p class="translit"></p>
-        <p class="pt">Quem é de Deus ouve as palavras de Deus; por isso vós não as ouvis, porque não sois de Deus.</p>
+        <p class="pt jesus">Quem é de Deus ouve as palavras de Deus; por isso vós não as ouvis, porque não sois de Deus.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v48" data-ref="João 8:48">
@@ -496,7 +496,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἀπεκρίθησαν οἱ Ἰουδαῖοι καὶ εἶπαν αὐτῷ Οὐ καλῶς λέγομεν ἡμεῖς ὅτι Σαμαρείτης εἶ σὺ καὶ δαιμόνιον ἔχεις;</p>
         <p class="translit"></p>
-        <p class="pt">Responderam-lhe os judeus: Não dizemos com razão que és samaritano, e que tens demônio?</p>
+        <p class="pt jesus">Responderam-lhe os judeus: Não dizemos com razão que és samaritano, e que tens demônio?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v49" data-ref="João 8:49">
@@ -504,7 +504,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη Ἰησοῦς Ἐγὼ δαιμόνιον οὐκ ἔχω, ἀλλὰ τιμῶ τὸν Πατέρα μου, καὶ ὑμεῖς ἀτιμάζετέ με.</p>
         <p class="translit"></p>
-        <p class="pt">Jesus respondeu: Eu não tenho demônio; antes honro a meu Pai, e vós me desonrais.</p>
+        <p class="pt jesus">Jesus respondeu: Eu não tenho demônio; antes honro a meu Pai, e vós me desonrais.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v50" data-ref="João 8:50">
@@ -512,7 +512,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγὼ δὲ οὐ ζητῶ τὴν δόξαν μου· ἔστιν ὁ ζητῶν καὶ κρίνων.</p>
         <p class="translit"></p>
-        <p class="pt">Eu não busco a minha glória; há quem a busque, e julgue.</p>
+        <p class="pt jesus">Eu não busco a minha glória; há quem a busque, e julgue.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v51" data-ref="João 8:51">
@@ -520,7 +520,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀμὴν ἀμὴν λέγω ὑμῖν, ἐάν τις τὸν ἐμὸν λόγον τηρήσῃ, θάνατον οὐ μὴ θεωρήσῃ εἰς τὸν αἰῶνα.</p>
         <p class="translit"></p>
-        <p class="pt">Em verdade, em verdade vos digo que, se alguém guardar a minha palavra, nunca verá a morte.</p>
+        <p class="pt jesus">Em verdade, em verdade vos digo que, se alguém guardar a minha palavra, nunca verá a morte.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v52" data-ref="João 8:52">
@@ -528,7 +528,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπαν αὐτῷ οἱ Ἰουδαῖοι Νῦν ἐγνώκαμεν ὅτι δαιμόνιον ἔχεις. Ἀβραὰμ ἀπέθανεν καὶ οἱ προφῆται, καὶ σὺ λέγεις Ἐάν τις τὸν λόγον μου τηρήσῃ, οὐ μὴ γεύσηται θανάτου εἰς τὸν αἰῶνα.</p>
         <p class="translit"></p>
-        <p class="pt">Disseram-lhe os judeus: Agora sabemos que tens demônios. Abraão morreu, e também os profetas; e tu dizes: Se alguém guardar a minha palavra, nunca provará a morte!</p>
+        <p class="pt jesus">Disseram-lhe os judeus: Agora sabemos que tens demônios. Abraão morreu, e também os profetas; e tu dizes: Se alguém guardar a minha palavra, nunca provará a morte!</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v53" data-ref="João 8:53">
@@ -536,7 +536,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">μὴ σὺ μείζων εἶ τοῦ πατρὸς ἡμῶν Ἀβραάμ, ὅστις ἀπέθανεν; καὶ οἱ προφῆται ἀπέθανον· τίνα σεαυτὸν ποιεῖς;</p>
         <p class="translit"></p>
-        <p class="pt">Porventura és tu maior do que nosso pai Abraão, que morreu? Também os profetas morreram; quem pretendes tu ser?</p>
+        <p class="pt jesus">Porventura és tu maior do que nosso pai Abraão, que morreu? Também os profetas morreram; quem pretendes tu ser?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v54" data-ref="João 8:54">
@@ -544,7 +544,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη Ἰησοῦς Ἐὰν ἐγὼ δοξάσω ἐμαυτόν, ἡ δόξα μου οὐδέν ἐστιν· ἔστιν ὁ Πατήρ μου ὁ δοξάζων με, ὃν ὑμεῖς λέγετε ὅτι Θεὸς ἡμῶν ἐστιν,</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu Jesus: Se eu me glorificar a mim mesmo, a minha glória não é nada; quem me glorifica é meu Pai, do qual vós dizeis que é o vosso Deus;</p>
+        <p class="pt jesus">Respondeu Jesus: Se eu me glorificar a mim mesmo, a minha glória não é nada; quem me glorifica é meu Pai, do qual vós dizeis que é o vosso Deus;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v55" data-ref="João 8:55">
@@ -552,7 +552,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ οὐκ ἐγνώκατε αὐτόν, ἐγὼ δὲ οἶδα αὐτόν. κἂν εἴπω ὅτι οὐκ οἶδα αὐτόν, ἔσομαι ὅμοιος ὑμῖν ψεύστης· ἀλλὰ οἶδα αὐτὸν καὶ τὸν λόγον αὐτοῦ τηρῶ.</p>
         <p class="translit"></p>
-        <p class="pt">e vós não o conheceis; mas eu o conheço; e se disser que não o conheço, serei mentiroso como vós; mas eu o conheço, e guardo a sua palavra.</p>
+        <p class="pt jesus">e vós não o conheceis; mas eu o conheço; e se disser que não o conheço, serei mentiroso como vós; mas eu o conheço, e guardo a sua palavra.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v56" data-ref="João 8:56">
@@ -560,7 +560,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἀβραὰμ ὁ πατὴρ ὑμῶν ἠγαλλιάσατο ἵνα ἴδῃ τὴν ἡμέραν τὴν ἐμήν, καὶ εἶδεν καὶ ἐχάρη.</p>
         <p class="translit"></p>
-        <p class="pt">Abraão, vosso pai, exultou por ver o meu dia; viu-o, e alegrou-se.</p>
+        <p class="pt jesus">Abraão, vosso pai, exultou por ver o meu dia; viu-o, e alegrou-se.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v57" data-ref="João 8:57">
@@ -568,7 +568,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπαν οὖν οἱ Ἰουδαῖοι πρὸς αὐτόν Πεντήκοντα ἔτη οὔπω ἔχεις καὶ Ἀβραὰμ ἑώρακας;</p>
         <p class="translit"></p>
-        <p class="pt">Disseram-lhe, pois, os judeus: Ainda não tens cinqüenta anos, e viste Abraão?</p>
+        <p class="pt jesus">Disseram-lhe, pois, os judeus: Ainda não tens cinqüenta anos, e viste Abraão?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v58" data-ref="João 8:58">
@@ -576,7 +576,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν αὐτοῖς Ἰησοῦς Ἀμὴν ἀμὴν λέγω ὑμῖν, πρὶν Ἀβραὰμ γενέσθαι ἐγὼ εἰμί.</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Em verdade, em verdade vos digo que antes que Abraão existisse, eu sou.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Em verdade, em verdade vos digo que antes que Abraão existisse, eu sou.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v59" data-ref="João 8:59">
@@ -596,7 +596,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -613,6 +613,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -640,10 +641,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -652,14 +657,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

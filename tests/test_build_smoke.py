@@ -45,6 +45,20 @@ def site(tmp_path, build, monkeypatch):
     topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
 
+    # temas, léxico e atlas: dados curados, cada um com uma referência que
+    # existe e uma que não existe (para checar que o build ignora a que falta)
+    topic_refs = {"criacao": ["Gênesis 1:1", "Ageu 9:9"]}
+    glossary = [{
+        "slug": "logos", "termo": "Logos", "original": "λόγος", "translit": "logos",
+        "idioma": "grego", "dir": "ltr", "definicao": "Palavra, razão, discurso.",
+        "refs": ["João 1:1", "Ageu 9:9"],
+    }]
+    places = [{
+        "slug": "eden", "nome": "Éden", "tipo": "Região", "regiao": "Origens",
+        "descricao": "O jardim da criação.", "lat": 33.1, "lon": 44.2,
+        "refs": ["Gênesis 1:1"],
+    }]
+
     plans = [{
         "slug": "joao-2-dias", "titulo": "João em 2 dias",
         "descricao": "Leitura curta de exemplo.",
@@ -56,6 +70,16 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
+    (data_dir / "topic-refs.json").write_text(json.dumps(topic_refs, ensure_ascii=False), "utf-8")
+    (data_dir / "glossary.json").write_text(json.dumps(glossary, ensure_ascii=False), "utf-8")
+    (data_dir / "places.json").write_text(json.dumps(places, ensure_ascii=False), "utf-8")
+    # João 1:1 marcado como fala de Jesus só para exercitar o destaque; Gênesis
+    # fica de fora para provar que o resto do texto não vira vermelho
+    (data_dir / "red-letters.json").write_text(
+        json.dumps({"João 1:1": True}, ensure_ascii=False), "utf-8")
+    (data_dir / "commentary.json").write_text(json.dumps(
+        {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Abre a Torá."}]},
+        ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -223,26 +247,30 @@ def test_sem_ancoras_mortas_nem_metricas_falsas(site):
     assert "Dados demonstrativos" not in verso
 
 
-def test_ferramentas_pessoais_reais(site):
-    # Coleções e Cadernos deixam de ser cards de exemplo e viram apps locais.
-    colecoes = (site / "colecoes" / "index.html").read_text("utf-8")
-    assert "data-collections-app" in colecoes
-    assert "Exemplo" not in colecoes
-    cadernos = (site / "cadernos" / "index.html").read_text("utf-8")
-    assert "data-notebooks-app" in cadernos
-    assert "Caderno Romanos" not in cadernos
-    # Biblioteca tem a seção de favoritos; Workspace tem o histórico.
-    biblioteca = (site / "biblioteca" / "index.html").read_text("utf-8")
-    assert 'id="favoritos"' in biblioteca
-    assert "data-fav-full-list" in biblioteca
+def test_ferramentas_pessoais_vivem_no_workspace(site):
+    # Coleções, cadernos e favoritos são apps locais reais — e existem em um
+    # lugar só. /colecoes/ e /cadernos/ eram duplicatas literais das abas
+    # (mesmos containers), e /biblioteca/ era um portal cujo único conteúdo
+    # próprio, a lista de favoritos, a aba Favoritos já mostra.
     ws = (site / "workspace" / "index.html").read_text("utf-8")
-    assert 'id="historico"' in ws
-    assert "data-history-list" in ws
-    # O asset da biblioteca é gerado e referenciado nas páginas.
+    for marca in ("data-collections-app", "data-notebooks-app", "data-fav-full-list",
+                  'id="historico"', "data-history-list"):
+        assert marca in ws, marca
+    assert "Exemplo" not in ws and "Caderno Romanos" not in ws
+    # os endereços antigos continuam existindo, agora como ponte (noindex)
+    for pasta, destino in (("biblioteca", "workspace/#favoritos"),
+                           ("colecoes", "workspace/#colecoes"),
+                           ("cadernos", "workspace/#cadernos")):
+        page = (site / pasta / "index.html").read_text("utf-8")
+        assert destino in page, pasta
+        assert 'name="robots" content="noindex"' in page, pasta
+    # o hash precisa achar a aba: sem id, o redirect chegaria e não rolaria
+    for tab in ("favoritos", "colecoes", "cadernos"):
+        assert f'id="{tab}"' in ws, tab
     library = (site / "assets" / "library.js").read_text("utf-8")
     for key in ("bec.collections", "bec.notebooks"):
         assert key in library
-    assert "assets/library.js" in colecoes
+    assert "assets/library.js" in ws
     app = (site / "assets" / "app.js").read_text("utf-8")
     assert "bec.history" in app
 
@@ -252,8 +280,12 @@ def test_workspace_abas_biblioteca_embutida(site):
     # Workspace (além de continuarem existindo como páginas próprias).
     ws = (site / "workspace" / "index.html").read_text("utf-8")
     assert "data-ws-tabs" in ws
-    for tab in ("atalhos", "anotacoes", "favoritos", "colecoes", "cadernos"):
+    for tab in ("anotacoes", "favoritos", "colecoes", "cadernos", "criar-plano"):
         assert f'data-ws-tab="{tab}"' in ws and f'data-ws-panel="{tab}"' in ws
+    # "Atalhos" era uma grade de links dentro de uma aba, e abria por padrão:
+    # a seção Estudar apresentava links em vez do trabalho da pessoa.
+    assert 'data-ws-tab="atalhos"' not in ws
+    assert 'data-ws-tab="anotacoes">Anotações' in ws.replace('class="ws-tab on" role="tab" aria-selected="true" ', '')
     assert 'id="anotacoes"' in ws
     assert "data-fav-full-list" in ws
     assert "data-collections-app" in ws
@@ -455,18 +487,116 @@ def test_lote2_cartao_ferramentas_modal(site):
     assert "data-study-export" in cap and "data-study-share" in cap and "data-study-clear" in cap
 
 
-def test_lote2_seletor_ir_para_livro(site):
+def test_seletor_de_livro_e_capitulo_abre_do_leitor(site):
+    # o gatilho aparece nas duas páginas do leitor, já sabendo onde o leitor está
     cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
-    assert 'class="book-jump"' in cap
-    assert "Antigo Testamento" in cap and "Novo Testamento" in cap
-    # o seletor leva a outros livros (valor com caminho de leitura)
-    assert "ler/genesis/" in cap
-    # também presente na página do livro
+    assert 'data-refp-book="joao"' in cap and 'data-refp-chapter="1"' in cap
     book = (site / "ler" / "joao" / "index.html").read_text("utf-8")
-    assert 'class="book-jump"' in book
-    # wiring no app.js
+    assert 'data-ref-picker' in book and 'data-refp-chapter' not in book
+    # sem JavaScript continua sendo um link para a lista de livros
+    assert 'href="../../ler/"' in book
+    # e também está entre as ferramentas do leitor
+    assert 'data-tool="goto"' in cap
+    # o painel é montado no cliente a partir de BEC_BOOKS (livro + nº de capítulos)
     app = (site / "assets" / "app.js").read_text("utf-8")
-    assert "book-jump" in app
+    assert "data-ref-picker" in app and "refp-chapters" in app
+    assert '"cap":' in app and '"t":' in app
+
+
+def test_workspace_poe_ferramentas_antes_do_placar(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    # Estudar vinha depois de quase duas telas de gamificação; agora abre a página
+    assert ws.index('id="estudar"') < ws.index('id="progresso"')
+    # e a página ganhou índice, porque tinha várias telas sem forma de pular
+    assert "ws-sections" in ws
+    # o botão principal é o que sabe onde a pessoa parou
+    assert 'data-ws-continue' in ws and 'class="btn primary"' in ws
+
+
+def test_referencias_cruzadas_vem_em_shard_por_capitulo(site):
+    # O consumidor busca data/xrefs/<livro>/<cap>.json, não um arquivo único:
+    # eram 39 versículos em 3 KB, agora são ~93 mil ligações, e carregar tudo
+    # de uma vez repetiria o erro do índice de busca (6,3 MB por consulta).
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    assert "data/xrefs/" in study
+    assert "cross-references.json" not in study.replace(
+        "cross-references.json de 3 KB", "")
+    # a chave do capítulo sai do helper que já existe no core
+    assert "bookSlugFromRef" in study
+    # e o arquivo único antigo não é mais publicado
+    assert not (site / "data" / "cross-references.json").exists()
+
+
+def test_workspace_sabe_onde_a_pessoa_parou(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    # o bloco nasce oculto: sem leitura salva não há o que dizer
+    assert "data-ws-focus" in ws and "Onde você parou" in ws
+    assert "ws-focus" in ws and "hidden" in ws.split("data-ws-focus")[1][:40]
+    # ele cruza último capítulo, trecho estudado, notas daquele capítulo e plano
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert '"Onde você parou"' in app, "módulo não encontrado no app.js"
+    modulo = app.split('"Onde você parou"', 1)[1].split("\n})();", 1)[0]
+    for chave in ("bec.lastRead", "bec.readingRanges", "bec.notes", "planData",
+                  "ws-focus-facts"):
+        assert chave in modulo, chave
+
+
+def test_conta_sai_do_workspace(site):
+    ws = (site / "workspace" / "index.html").read_text("utf-8")
+    conta = (site / "conta" / "index.html").read_text("utf-8")
+    # perfil e configurações ocupavam 27% do Workspace e não são estudo
+    for marca in ('id="perfil"', 'id="configuracoes"', "data-settings-panel", "data-profile-name"):
+        assert marca not in ws, marca
+        assert marca in conta, marca
+    # a conta tem o shell atual e volta para o Workspace
+    assert "mobile-primary-nav" in conta and 'href="../workspace/"' in conta
+    # o menu da conta aponta para o novo endereço
+    auth = (site / "assets" / "auth.js").read_text("utf-8")
+    assert "conta/#perfil" in auth and "conta/#configuracoes" in auth
+    assert "workspace/#perfil" not in auth
+
+
+def test_progresso_nao_aparece_zerado_para_quem_nunca_leu(site):
+    game = (site / "assets" / "game.js").read_text("utf-8")
+    # o painel só é revelado quando há atividade real, não incondicionalmente
+    assert "panel.hidden=true; return;" in game
+    assert "bec.readingRanges" in game
+
+
+def test_palavras_de_jesus_saem_em_vermelho_com_legenda(site):
+    cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
+    assert 'class="pt jesus"' in cap
+    # texto vermelho sem explicação é só uma cor: o capítulo traz a legenda
+    assert "palavras de Jesus" in cap and "red-dot" in cap
+    verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'class="pt jesus"' in verso and "Em vermelho: palavras de Jesus" in verso
+    # o Antigo Testamento não é marcado
+    gen = (site / "ler" / "genesis" / "1" / "index.html").read_text("utf-8")
+    assert "jesus" not in gen and "red-note" not in gen
+
+
+def test_comentario_curado_aparece_no_versiculo(site):
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert "cmt-block" in gen and "Abre a Torá." in gen and "Contexto" in gen
+    # versículo sem comentário não ganha a seção vazia
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert "cmt-block" not in joao
+
+
+def test_lista_de_livros_tem_filtro_e_progresso(site):
+    ler = (site / "ler" / "index.html").read_text("utf-8")
+    assert "data-book-filter" in ler
+    assert 'data-testament="at"' in ler and 'data-testament="nt"' in ler
+    # cada cartão traz o selo de progresso, oculto até haver leitura marcada
+    assert 'data-book-prog="João"' in ler
+    assert "data-booklist-empty" in ler
+    # a grade de capítulos expõe o número para o cliente marcar o que já foi lido
+    book = (site / "ler" / "joao" / "index.html").read_text("utf-8")
+    assert 'data-chapter-grid data-book="João"' in book
+    assert 'data-ch="1"' in book
+    # o progresso vem de bec.readingRanges, não do HTML publicado
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "data-book-prog" in app and "readingRanges" in app
 
 
 def test_lote2_bloqueio_de_ias(site):
@@ -502,8 +632,12 @@ def test_indice_de_busca_e_json_valido(site):
     titulos = {i["titulo"] for i in index}
     assert "Gênesis 1:1" in titulos
     assert "Sobre o logos" in titulos
-    # cada entrada tem a chave de busca usada pelo app.js
-    assert all("k" in i and "url" in i for i in index)
+    assert all("url" in i for i in index)
+    # "k" é o texto extra de busca e só existe quando há o que acrescentar:
+    # no versículo saía sempre em branco (contexto/palavras estão vazios em
+    # todo o dataset) e o cliente já lê o campo como opcional.
+    assert not any("k" in i for i in index if i["t"] == "Versículo")
+    assert all("k" in i for i in index if i["t"] == "Artigo")
 
 
 def test_sitemap_lista_todas_as_urls(site):
@@ -511,15 +645,12 @@ def test_sitemap_lista_todas_as_urls(site):
     assert "/versiculos/genesis-1-1/" in sitemap
     assert "/versiculos/joao-1-1/" in sitemap
     assert "/artigos/meu-artigo/" in sitemap
-    for path in (
-        "/workspace/",
-        "/biblioteca/",
-        "/colecoes/",
-        "/cadernos/",
-    ):
+    for path in ("/workspace/", "/conta/"):
         assert path in sitemap
-    # Redirects (noindex) ficam fora do sitemap.
-    for path in ("/estudar/</loc>", "/comunidade/</loc>", "/comunidade/salas/</loc>"):
+    # Redirects (noindex) ficam fora do sitemap — incluindo os três que foram
+    # consolidados no Workspace.
+    for path in ("/estudar/</loc>", "/comunidade/</loc>", "/comunidade/salas/</loc>",
+                 "/biblioteca/</loc>", "/colecoes/</loc>", "/cadernos/</loc>"):
         assert path not in sitemap
 
 
@@ -631,3 +762,75 @@ def test_leitor_conectado_ao_plano(site):
         assert token in app, token
     # o link enganoso "Meu plano" (que levava ao criador, não à leitura) saiu
     assert "🗓 Meu plano" not in cap
+
+
+def test_temas_dicionario_e_mapas_voltam_ao_build(site):
+    """As três seções ficaram fora do gerador e congelaram com a navegação
+    antiga (sem Workspace, sem barra inferior). Agora são geradas com o mesmo
+    shell das demais páginas."""
+    for path in (
+        ("temas", "index.html"), ("temas", "criacao", "index.html"),
+        ("dicionario", "index.html"), ("dicionario", "logos", "index.html"),
+        ("mapas", "index.html"), ("mapas", "eden", "index.html"),
+        ("offline", "index.html"),
+    ):
+        page = site.joinpath(*path)
+        assert page.exists(), path
+        html = page.read_text("utf-8")
+        # shell atual: navegação de 3 áreas, barra inferior e overlay de busca
+        assert 'class="mobile-primary-nav"' in html
+        assert "workspace/" in html
+        assert "data-search-overlay" in html
+        # nada da navegação velha
+        assert ">Linha do tempo</a>\n      <a" not in html
+        assert 'data-rt="context"' not in html
+
+
+def test_temas_ligam_versiculos_e_nao_caem_todos_em_ler(site):
+    # Antes: os 12 chips da home apontavam todos para /ler/.
+    home = (site / "index.html").read_text("utf-8")
+    assert 'class="chip" href="temas/criacao/"' in home
+    assert 'class="chip" href="ler/"' not in home
+    tema = (site / "temas" / "criacao" / "index.html").read_text("utf-8")
+    assert "versiculos/genesis-1-1/" in tema
+    # referência curada que não existe no dataset é ignorada, não quebra o build
+    assert "Ageu 9:9" not in tema
+    # a busca também leva ao tema, não a /ler/
+    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
+    temas = [i for i in index if i["t"] == "Tema"]
+    assert temas and all(i["url"].startswith("temas/") for i in temas)
+
+
+def test_dicionario_e_mapas_ligam_versiculos_e_fontes(site):
+    gloss = (site / "dicionario" / "logos" / "index.html").read_text("utf-8")
+    assert "versiculos/joao-1-1/" in gloss
+    assert "λόγος" in gloss
+    # artigo do mesmo termo entra em "Para aprofundar" quando existe
+    mapa = (site / "mapas" / "eden" / "index.html").read_text("utf-8")
+    assert "openstreetmap.org" in mapa
+    assert "versiculos/genesis-1-1/" in mapa
+
+
+def test_versiculo_volta_para_o_capitulo(site):
+    # Antes o caminho versículo -> capítulo não existia: a trilha ia de
+    # "Livros" direto para a referência.
+    verso = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'href="../../ler/joao/">João</a>' in verso
+    assert 'href="../../ler/joao/1/">1</a>' in verso
+    assert "Ler João 1 inteiro" in verso
+
+
+def test_404_oferece_busca_e_saidas(site):
+    html = (site / "404.html").read_text("utf-8")
+    assert 'id="q"' in html and 'id="results"' in html
+    for destino in ('href="ler/"', 'href="temas/"', 'href="workspace/"'):
+        assert destino in html
+
+
+def test_sitemap_inclui_temas_dicionario_e_mapas(site):
+    sitemap = (site / "sitemap.xml").read_text("utf-8")
+    for path in ("/temas/", "/temas/criacao/", "/dicionario/", "/dicionario/logos/",
+                 "/mapas/", "/mapas/eden/", "/anotacoes/"):
+        assert f"{path}</loc>" in sitemap
+    # a página de fallback do service worker não é conteúdo indexável
+    assert "/offline/</loc>" not in sitemap

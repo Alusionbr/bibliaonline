@@ -132,8 +132,17 @@ def main():
         H = hlen[(livro, ch)]
         txt = resolve_pt(livro, ch, vs, amap, A, H)
 
-        v["texto_pt"] = txt
+        # NUNCA apagar tradução já existente. A atribuição era incondicional e
+        # gravava "" por cima de texto bom sempre que o casamento automático
+        # não resolvia aquele versículo — rodar --write custava 243 traduções
+        # que alguém já tinha fechado à mão nos capítulos de numeração
+        # divergente. O preenchimento só acrescenta.
         if txt:
+            v["texto_pt"] = txt
+        elif not v.get("texto_pt"):
+            v["texto_pt"] = ""
+
+        if v.get("texto_pt"):
             filled += 1
         else:
             empty_chaps[f"{livro} {ch}"] += 1

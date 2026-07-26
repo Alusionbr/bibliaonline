@@ -16,14 +16,18 @@
 <meta property="og:description" content="Lucas 24: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/lucas/24/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Lucas 24 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="Lucas 24: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/" selected>Lucas</option><option value="../../../ler/joao/">João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="lucas" data-refp-chapter="24" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">Lucas 24</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="Lucas 24" data-total="53">
     <summary>
@@ -248,7 +248,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἶπεν δὲ πρὸς αὐτούς Τίνες οἱ λόγοι οὗτοι οὓς ἀντιβάλλετε πρὸς ἀλλήλους περιπατοῦντες; καὶ ἐστάθησαν σκυθρωποί.</p>
         <p class="translit"></p>
-        <p class="pt">Então ele lhes perguntou: Que palavras são essas que, caminhando, trocais entre vós? Eles então pararam tristes.</p>
+        <p class="pt jesus">Então ele lhes perguntou: Que palavras são essas que, caminhando, trocais entre vós? Eles então pararam tristes.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="Lucas 24:18">
@@ -256,7 +256,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀποκριθεὶς δὲ εἷς ὀνόματι Κλεοπᾶς εἶπεν πρὸς αὐτόν Σὺ μόνος παροικεῖς Ἱερουσαλὴμ καὶ οὐκ ἔγνως τὰ γενόμενα ἐν αὐτῇ ἐν ταῖς ἡμέραις ταύταις;</p>
         <p class="translit"></p>
-        <p class="pt">E um deles, chamado Cleopas, respondeu-lhe: És tu o único peregrino em Jerusalém que não soube das coisas que nela têm sucedido nestes dias?</p>
+        <p class="pt jesus">E um deles, chamado Cleopas, respondeu-lhe: És tu o único peregrino em Jerusalém que não soube das coisas que nela têm sucedido nestes dias?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="Lucas 24:19">
@@ -264,7 +264,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ εἶπεν αὐτοῖς Ποῖα; οἱ δὲ εἶπαν αὐτῷ Τὰ περὶ Ἰησοῦ τοῦ Ναζαρηνοῦ, ὃς ἐγένετο ἀνὴρ προφήτης δυνατὸς ἐν ἔργῳ καὶ λόγῳ ἐναντίον τοῦ Θεοῦ καὶ παντὸς τοῦ λαοῦ,</p>
         <p class="translit"></p>
-        <p class="pt">Ao que ele lhes perguntou: Quais? Disseram-lhe: As que dizem respeito a Jesus, o nazareno, que foi profeta, poderoso em obras e palavras diante de Deus e de todo o povo.</p>
+        <p class="pt jesus">Ao que ele lhes perguntou: Quais? Disseram-lhe: As que dizem respeito a Jesus, o nazareno, que foi profeta, poderoso em obras e palavras diante de Deus e de todo o povo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v20" data-ref="Lucas 24:20">
@@ -272,7 +272,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὅπως τε παρέδωκαν αὐτὸν οἱ ἀρχιερεῖς καὶ οἱ ἄρχοντες ἡμῶν εἰς κρίμα θανάτου καὶ ἐσταύρωσαν αὐτόν.</p>
         <p class="translit"></p>
-        <p class="pt">e como os principais sacerdotes e as nossas autoridades e entregaram para ser condenado à morte, e o crucificaram.</p>
+        <p class="pt jesus">e como os principais sacerdotes e as nossas autoridades e entregaram para ser condenado à morte, e o crucificaram.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v21" data-ref="Lucas 24:21">
@@ -280,7 +280,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἡμεῖς δὲ ἠλπίζομεν ὅτι αὐτός ἐστιν ὁ μέλλων λυτροῦσθαι τὸν Ἰσραήλ· ἀλλά γε καὶ σὺν πᾶσιν τούτοις τρίτην ταύτην ἡμέραν ἄγει ἀφ’ οὗ ταῦτα ἐγένετο.</p>
         <p class="translit"></p>
-        <p class="pt">Ora, nós esperávamos que fosse ele quem havia de remir Israel; e, além de tudo isso, é já hoje o terceiro dia desde que essas coisas aconteceram.</p>
+        <p class="pt jesus">Ora, nós esperávamos que fosse ele quem havia de remir Israel; e, além de tudo isso, é já hoje o terceiro dia desde que essas coisas aconteceram.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v22" data-ref="Lucas 24:22">
@@ -288,7 +288,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλὰ καὶ γυναῖκές τινες ἐξ ἡμῶν ἐξέστησαν ἡμᾶς, γενόμεναι ὀρθριναὶ ἐπὶ τὸ μνημεῖον,</p>
         <p class="translit"></p>
-        <p class="pt">Verdade é, também, que algumas mulheres do nosso meio nos encheram de espanto; pois foram de madrugada ao sepulcro</p>
+        <p class="pt jesus">Verdade é, também, que algumas mulheres do nosso meio nos encheram de espanto; pois foram de madrugada ao sepulcro</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v23" data-ref="Lucas 24:23">
@@ -296,7 +296,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ μὴ εὑροῦσαι τὸ σῶμα αὐτοῦ ἦλθον λέγουσαι καὶ ὀπτασίαν ἀγγέλων ἑωρακέναι, οἳ λέγουσιν αὐτὸν ζῆν.</p>
         <p class="translit"></p>
-        <p class="pt">e, não achando o corpo dele voltaram, declarando que tinham tido uma visão de anjos que diziam estar ele vivo.</p>
+        <p class="pt jesus">e, não achando o corpo dele voltaram, declarando que tinham tido uma visão de anjos que diziam estar ele vivo.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v24" data-ref="Lucas 24:24">
@@ -304,7 +304,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἀπῆλθόν τινες τῶν σὺν ἡμῖν ἐπὶ τὸ μνημεῖον, καὶ εὗρον οὕτως καθὼς καὶ αἱ γυναῖκες εἶπον, αὐτὸν δὲ οὐκ εἶδον.</p>
         <p class="translit"></p>
-        <p class="pt">Além disso, alguns dos que estavam conosco foram ao sepulcro, e acharam ser assim como as mulheres haviam dito; a ele, porém, não o viram.</p>
+        <p class="pt jesus">Além disso, alguns dos que estavam conosco foram ao sepulcro, e acharam ser assim como as mulheres haviam dito; a ele, porém, não o viram.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v25" data-ref="Lucas 24:25">
@@ -312,7 +312,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ αὐτὸς εἶπεν πρὸς αὐτούς Ὦ ἀνόητοι καὶ βραδεῖς τῇ καρδίᾳ τοῦ πιστεύειν ἐπὶ πᾶσιν οἷς ἐλάλησαν οἱ προφῆται·</p>
         <p class="translit"></p>
-        <p class="pt">Então ele lhes disse: ó néscios, e tardos de coração para crerdes tudo o que os profetas disseram!</p>
+        <p class="pt jesus">Então ele lhes disse: ó néscios, e tardos de coração para crerdes tudo o que os profetas disseram!</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v26" data-ref="Lucas 24:26">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐχὶ ταῦτα ἔδει παθεῖν τὸν Χριστὸν καὶ εἰσελθεῖν εἰς τὴν δόξαν αὐτοῦ;</p>
         <p class="translit"></p>
-        <p class="pt">Porventura não importa que o Cristo padecesse essas coisas e entrasse na sua glória?</p>
+        <p class="pt jesus">Porventura não importa que o Cristo padecesse essas coisas e entrasse na sua glória?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="Lucas 24:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἀρξάμενος ἀπὸ Μωϋσέως καὶ ἀπὸ πάντων τῶν προφητῶν διερμήνευσεν αὐτοῖς ἐν πάσαις ταῖς γραφαῖς τὰ περὶ ἑαυτοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">E, começando por Moisés, e por todos os profetas, explicou-lhes o que dele se achava em todas as Escrituras.</p>
+        <p class="pt jesus">E, começando por Moisés, e por todos os profetas, explicou-lhes o que dele se achava em todas as Escrituras.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="Lucas 24:28">
@@ -400,7 +400,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ταῦτα δὲ αὐτῶν λαλούντων αὐτὸς ἔστη ἐν μέσῳ αὐτῶν [[καὶ λέγει αὐτοῖς Εἰρήνη ὑμῖν]].</p>
         <p class="translit"></p>
-        <p class="pt">Enquanto ainda falavam nisso, o próprio Jesus se apresentou no meio deles, e disse-lhes: Paz seja convosco.</p>
+        <p class="pt jesus">Enquanto ainda falavam nisso, o próprio Jesus se apresentou no meio deles, e disse-lhes: Paz seja convosco.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v37" data-ref="Lucas 24:37">
@@ -408,7 +408,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">πτοηθέντες δὲ καὶ ἔμφοβοι γενόμενοι ἐδόκουν πνεῦμα θεωρεῖν.</p>
         <p class="translit"></p>
-        <p class="pt">Mas eles, espantados e atemorizados, pensavam que viam algum espírito.</p>
+        <p class="pt jesus">Mas eles, espantados e atemorizados, pensavam que viam algum espírito.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v38" data-ref="Lucas 24:38">
@@ -416,7 +416,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ εἶπεν αὐτοῖς Τί τεταραγμένοι ἐστέ, καὶ διὰ τί διαλογισμοὶ ἀναβαίνουσιν ἐν τῇ καρδίᾳ ὑμῶν;</p>
         <p class="translit"></p>
-        <p class="pt">Ele, porém, lhes disse: Por que estais perturbados? e por que surgem dúvidas em vossos corações?</p>
+        <p class="pt jesus">Ele, porém, lhes disse: Por que estais perturbados? e por que surgem dúvidas em vossos corações?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v39" data-ref="Lucas 24:39">
@@ -424,7 +424,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἴδετε τὰς χεῖράς μου καὶ τοὺς πόδας μου, ὅτι ἐγώ εἰμι αὐτός· ψηλαφήσατέ με καὶ ἴδετε, ὅτι πνεῦμα σάρκα καὶ ὀστέα οὐκ ἔχει καθὼς ἐμὲ θεωρεῖτε ἔχοντα.</p>
         <p class="translit"></p>
-        <p class="pt">Olhai as minhas mãos e os meus pés, que sou eu mesmo; apalpai-me e vede; porque um espírito não tem carne nem ossos, como percebeis que eu tenho.</p>
+        <p class="pt jesus">Olhai as minhas mãos e os meus pés, que sou eu mesmo; apalpai-me e vede; porque um espírito não tem carne nem ossos, como percebeis que eu tenho.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v40" data-ref="Lucas 24:40">
@@ -432,7 +432,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">[[καὶ τοῦτο εἰπὼν ἔδειξεν αὐτοῖς τὰς χεῖρας καὶ τοὺς πόδας.]]</p>
         <p class="translit"></p>
-        <p class="pt">E, dizendo isso, mostrou-lhes as mãos e os pés.</p>
+        <p class="pt jesus">E, dizendo isso, mostrou-lhes as mãos e os pés.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v41" data-ref="Lucas 24:41">
@@ -440,7 +440,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἔτι δὲ ἀπιστούντων αὐτῶν ἀπὸ τῆς χαρᾶς καὶ θαυμαζόντων, εἶπεν αὐτοῖς Ἔχετέ τι βρώσιμον ἐνθάδε;</p>
         <p class="translit"></p>
-        <p class="pt">Não acreditando eles ainda por causa da alegria, e estando admirados, perguntou-lhes Jesus: Tendes aqui alguma coisa que comer?</p>
+        <p class="pt jesus">Não acreditando eles ainda por causa da alegria, e estando admirados, perguntou-lhes Jesus: Tendes aqui alguma coisa que comer?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v42" data-ref="Lucas 24:42">
@@ -448,7 +448,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οἱ δὲ ἐπέδωκαν αὐτῷ ἰχθύος ὀπτοῦ μέρος·</p>
         <p class="translit"></p>
-        <p class="pt">Então lhe deram um pedaço de peixe assado,</p>
+        <p class="pt jesus">Então lhe deram um pedaço de peixe assado,</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v43" data-ref="Lucas 24:43">
@@ -456,7 +456,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ λαβὼν ἐνώπιον αὐτῶν ἔφαγεν.</p>
         <p class="translit"></p>
-        <p class="pt">o qual ele tomou e comeu diante deles.</p>
+        <p class="pt jesus">o qual ele tomou e comeu diante deles.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v44" data-ref="Lucas 24:44">
@@ -464,7 +464,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Εἶπεν δὲ πρὸς αὐτούς Οὗτοι οἱ λόγοι μου οὓς ἐλάλησα πρὸς ὑμᾶς ἔτι ὢν σὺν ὑμῖν, ὅτι δεῖ πληρωθῆναι πάντα τὰ γεγραμμένα ἐν τῷ νόμῳ Μωϋσέως καὶ τοῖς προφήταις καὶ ψαλμοῖς περὶ ἐμοῦ.</p>
         <p class="translit"></p>
-        <p class="pt">Depois lhe disse: São estas as palavras que vos falei, estando ainda convosco, que importava que se cumprisse tudo o que de mim estava escrito na Lei de Moisés, nos Profetas e nos Salmos.</p>
+        <p class="pt jesus">Depois lhe disse: São estas as palavras que vos falei, estando ainda convosco, que importava que se cumprisse tudo o que de mim estava escrito na Lei de Moisés, nos Profetas e nos Salmos.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v45" data-ref="Lucas 24:45">
@@ -472,7 +472,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τότε διήνοιξεν αὐτῶν τὸν νοῦν τοῦ συνιέναι τὰς γραφάς· καὶ εἶπεν αὐτοῖς</p>
         <p class="translit"></p>
-        <p class="pt">Então lhes abriu o entendimento para compreenderem as Escrituras;</p>
+        <p class="pt jesus">Então lhes abriu o entendimento para compreenderem as Escrituras;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v46" data-ref="Lucas 24:46">
@@ -480,7 +480,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὅτι οὕτως γέγραπται παθεῖν τὸν Χριστὸν καὶ ἀναστῆναι ἐκ νεκρῶν τῇ τρίτῃ ἡμέρᾳ,</p>
         <p class="translit"></p>
-        <p class="pt">e disse-lhes: Assim está escrito que o Cristo padecesse, e ao terceiro dia ressurgisse dentre os mortos;</p>
+        <p class="pt jesus">e disse-lhes: Assim está escrito que o Cristo padecesse, e ao terceiro dia ressurgisse dentre os mortos;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v47" data-ref="Lucas 24:47">
@@ -488,7 +488,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ κηρυχθῆναι ἐπὶ τῷ ὀνόματι αὐτοῦ μετάνοιαν εἰς ἄφεσιν ἁμαρτιῶν εἰς πάντα τὰ ἔθνη,— ἀρξάμενοι ἀπὸ Ἱερουσαλήμ.</p>
         <p class="translit"></p>
-        <p class="pt">e que em seu nome se pregasse o arrependimento para remissão dos pecados, a todas as nações, começando por Jerusalém.</p>
+        <p class="pt jesus">e que em seu nome se pregasse o arrependimento para remissão dos pecados, a todas as nações, começando por Jerusalém.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v48" data-ref="Lucas 24:48">
@@ -496,7 +496,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὑμεῖς μάρτυρες τούτων.</p>
         <p class="translit"></p>
-        <p class="pt">Vós sois testemunhas destas coisas.</p>
+        <p class="pt jesus">Vós sois testemunhas destas coisas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v49" data-ref="Lucas 24:49">
@@ -504,7 +504,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἰδοὺ ἐγὼ ἐξαποστέλλω τὴν ἐπαγγελίαν τοῦ Πατρός μου ἐφ’ ὑμᾶς· ὑμεῖς δὲ καθίσατε ἐν τῇ πόλει ἕως οὗ ἐνδύσησθε ἐξ ὕψους δύναμιν.</p>
         <p class="translit"></p>
-        <p class="pt">E eis que sobre vós envio a promessa de meu Pai; ficai porém, na cidade, até que do alto sejais revestidos de poder.</p>
+        <p class="pt jesus">E eis que sobre vós envio a promessa de meu Pai; ficai porém, na cidade, até que do alto sejais revestidos de poder.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v50" data-ref="Lucas 24:50">
@@ -548,7 +548,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -565,6 +565,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -592,10 +593,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -604,14 +609,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

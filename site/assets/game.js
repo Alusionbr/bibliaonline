@@ -367,6 +367,22 @@
     renderHomeSummary(s);
 
     if(!panel) return;
+    // Placar zerado não é boas-vindas: para quem nunca leu nada, "Nível 1,
+    // 0 capítulos, 0/4 missões" é a primeira impressão da plataforma. O painel
+    // só aparece quando existe atividade de verdade — capítulo estudado, nota,
+    // grifo, favorito ou sequência iniciada.
+    // Só conta o que a pessoa de fato fez com o texto. Sequência, XP e a
+    // medalha "primeiro passo" são concedidos por abrir a página — na primeira
+    // visita o estado já vem streak:1, xp:10, chaptersReadTotal:0. Usar
+    // qualquer um deles como sinal traria o painel vazio de volta.
+    var ativo = countKeys('bec.readingRanges') > 0 || c.notes > 0 ||
+                c.highlights > 0 || c.favorites > 0 ||
+                (s.chaptersReadTotal||0) > 0;
+    // o índice do Workspace não pode oferecer um atalho para uma seção que
+    // não está na página
+    var atalho=qs('.ws-sections a[href="#progresso"]');
+    if(atalho) atalho.hidden=!ativo;
+    if(!ativo){ panel.hidden=true; return; }
     panel.hidden=false;
     var level=levelFromXp(s.xp);
     set('[data-progress-streak]', s.streak||0);

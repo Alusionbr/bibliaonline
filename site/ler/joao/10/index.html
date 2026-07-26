@@ -16,14 +16,18 @@
 <meta property="og:description" content="João 10: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
 <meta property="og:site_name" content="Bíblia em Contexto">
 <meta property="og:url" content="https://alusionbr.github.io/bibliaonline/ler/joao/10/">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bíblia em Contexto — o texto na língua em que foi escrito">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="João 10 — original, transliteração e tradução | Bíblia em Contexto">
 <meta name="twitter:description" content="João 10: capítulo completo no idioma original, com transliteração e tradução Almeida 1911.">
+<meta name="twitter:image" content="https://alusionbr.github.io/bibliaonline/assets/og-default.png">
 <link rel="manifest" href="../../../manifest.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Spectral:wght@400;500;600&family=Inter:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Gentium+Book+Plus:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../assets/styles.css?v=4ea23780">
+<link rel="stylesheet" href="../../../assets/fonts.css?v=98d20b6b">
+<link rel="stylesheet" href="../../../assets/styles.css?v=98d20b6b">
 </head>
 <body data-prefix="../../../">
 <script>(function(){try{var d=document.documentElement;var t=localStorage.getItem('bec.theme');if(t==='dark')d.classList.add('dark');else if(t==='sepia')d.classList.add('sepia');else if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');t='dark';}var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.origmode')==='1')d.classList.add('orig-on');if(localStorage.getItem('bec.reveal')==='0')d.classList.add('no-reveal');var tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',t==='dark'?'#07111f':(t==='sepia'?'#d6c09b':'#efe4d0'));}catch(e){}})();</script>
@@ -40,12 +44,11 @@
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
-      <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
-      <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
-      <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
-      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)">🌙</button>
-      <button type="button" class="rt" data-report-open aria-label="Reportar um problema" title="Reportar um problema">🐞</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/></svg></button>
+      <button type="button" class="rt rt-txt" data-rt="font-dec" aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>
+      <button type="button" class="rt rt-txt" data-rt="font-inc" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+      <button type="button" class="rt rt-txt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
+      <button type="button" class="rt" data-rt="theme" aria-label="Tema: claro, sépia ou escuro" title="Tema (claro/sépia/escuro)"><svg class="mnav-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     </div>
     <span class="account-wrap">
       <button type="button" class="auth-trigger" data-auth-open>Entrar</button>
@@ -83,13 +86,10 @@
   </header>
   <div class="plan-context" data-plan-context hidden></div>
 
-  <div class="book-jump-wrap">
-    <label class="book-jump-lbl" for="book-jump">📖 Ir para livro:</label>
-    <select class="book-jump" id="book-jump" aria-label="Ir para outro livro da Bíblia">
-      <optgroup label="Antigo Testamento"><option value="../../../ler/genesis/">Gênesis</option><option value="../../../ler/exodo/">Êxodo</option><option value="../../../ler/levitico/">Levítico</option><option value="../../../ler/numeros/">Números</option><option value="../../../ler/deuteronomio/">Deuteronômio</option><option value="../../../ler/josue/">Josué</option><option value="../../../ler/juizes/">Juízes</option><option value="../../../ler/rute/">Rute</option><option value="../../../ler/1-samuel/">1 Samuel</option><option value="../../../ler/2-samuel/">2 Samuel</option><option value="../../../ler/1-reis/">1 Reis</option><option value="../../../ler/2-reis/">2 Reis</option><option value="../../../ler/1-cronicas/">1 Crônicas</option><option value="../../../ler/2-cronicas/">2 Crônicas</option><option value="../../../ler/esdras/">Esdras</option><option value="../../../ler/neemias/">Neemias</option><option value="../../../ler/ester/">Ester</option><option value="../../../ler/jo/">Jó</option><option value="../../../ler/salmos/">Salmos</option><option value="../../../ler/proverbios/">Provérbios</option><option value="../../../ler/eclesiastes/">Eclesiastes</option><option value="../../../ler/canticos/">Cânticos</option><option value="../../../ler/isaias/">Isaías</option><option value="../../../ler/jeremias/">Jeremias</option><option value="../../../ler/lamentacoes/">Lamentações</option><option value="../../../ler/ezequiel/">Ezequiel</option><option value="../../../ler/daniel/">Daniel</option><option value="../../../ler/oseias/">Oseias</option><option value="../../../ler/joel/">Joel</option><option value="../../../ler/amos/">Amós</option><option value="../../../ler/obadias/">Obadias</option><option value="../../../ler/jonas/">Jonas</option><option value="../../../ler/miqueias/">Miquéias</option><option value="../../../ler/naum/">Naum</option><option value="../../../ler/habacuque/">Habacuque</option><option value="../../../ler/sofonias/">Sofonias</option><option value="../../../ler/ageu/">Ageu</option><option value="../../../ler/zacarias/">Zacarias</option><option value="../../../ler/malaquias/">Malaquias</option></optgroup>
-      <optgroup label="Novo Testamento"><option value="../../../ler/mateus/">Mateus</option><option value="../../../ler/marcos/">Marcos</option><option value="../../../ler/lucas/">Lucas</option><option value="../../../ler/joao/" selected>João</option><option value="../../../ler/atos/">Atos</option><option value="../../../ler/romanos/">Romanos</option><option value="../../../ler/1-corintios/">1 Coríntios</option><option value="../../../ler/2-corintios/">2 Coríntios</option><option value="../../../ler/galatas/">Gálatas</option><option value="../../../ler/efesios/">Efésios</option><option value="../../../ler/filipenses/">Filipenses</option><option value="../../../ler/colossenses/">Colossenses</option><option value="../../../ler/1-tessalonicenses/">1 Tessalonicenses</option><option value="../../../ler/2-tessalonicenses/">2 Tessalonicenses</option><option value="../../../ler/1-timoteo/">1 Timóteo</option><option value="../../../ler/2-timoteo/">2 Timóteo</option><option value="../../../ler/tito/">Tito</option><option value="../../../ler/filemom/">Filemom</option><option value="../../../ler/hebreus/">Hebreus</option><option value="../../../ler/tiago/">Tiago</option><option value="../../../ler/1-pedro/">1 Pedro</option><option value="../../../ler/2-pedro/">2 Pedro</option><option value="../../../ler/1-joao/">1 João</option><option value="../../../ler/2-joao/">2 João</option><option value="../../../ler/3-joao/">3 João</option><option value="../../../ler/judas/">Judas</option><option value="../../../ler/apocalipse/">Apocalipse</option></optgroup>
-    </select>
+  <div class="book-jump-wrap"><a class="ref-jump" href="../../../ler/" data-ref-picker data-refp-book="joao" data-refp-chapter="10" aria-label="Escolher livro e capítulo"><span class="rj-ic" aria-hidden="true">📖</span><span class="rj-label">João 10</span><span class="rj-chev" aria-hidden="true">▾</span></a>
+    <span class="book-jump-hint">Atalho: tecle <kbd>g</kbd> para ir a uma referência.</span>
   </div>
+  <p class="red-note"><span class="red-dot" aria-hidden="true"></span>As <b>palavras de Jesus</b> aparecem em vermelho neste capítulo.</p>
 
   <details class="collap study-frac" data-study-frac data-chapter-ref="João 10" data-total="42">
     <summary>
@@ -120,7 +120,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἀμὴν ἀμὴν λέγω ὑμῖν, ὁ μὴ εἰσερχόμενος διὰ τῆς θύρας εἰς τὴν αὐλὴν τῶν προβάτων ἀλλὰ ἀναβαίνων ἀλλαχόθεν, ἐκεῖνος κλέπτης ἐστὶν καὶ λῃστής·</p>
         <p class="translit"></p>
-        <p class="pt">Em verdade, em verdade vos digo: quem não entra pela porta no aprisco das ovelhas, mas sobe por outra parte, esse é ladrão e salteador.</p>
+        <p class="pt jesus">Em verdade, em verdade vos digo: quem não entra pela porta no aprisco das ovelhas, mas sobe por outra parte, esse é ladrão e salteador.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v2" data-ref="João 10:2">
@@ -128,7 +128,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ δὲ εἰσερχόμενος διὰ τῆς θύρας ποιμήν ἐστιν τῶν προβάτων.</p>
         <p class="translit"></p>
-        <p class="pt">Mas o que entra pela porta é o pastor das ovelhas.</p>
+        <p class="pt jesus">Mas o que entra pela porta é o pastor das ovelhas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v3" data-ref="João 10:3">
@@ -136,7 +136,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τούτῳ ὁ θυρωρὸς ἀνοίγει, καὶ τὰ πρόβατα τῆς φωνῆς αὐτοῦ ἀκούει, καὶ τὰ ἴδια πρόβατα φωνεῖ κατ’ ὄνομα καὶ ἐξάγει αὐτά.</p>
         <p class="translit"></p>
-        <p class="pt">A este o porteiro abre; e as ovelhas ouvem a sua voz; e ele chama pelo nome as suas ovelhas, e as conduz para fora.</p>
+        <p class="pt jesus">A este o porteiro abre; e as ovelhas ouvem a sua voz; e ele chama pelo nome as suas ovelhas, e as conduz para fora.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v4" data-ref="João 10:4">
@@ -144,7 +144,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὅταν τὰ ἴδια πάντα ἐκβάλῃ, ἔμπροσθεν αὐτῶν πορεύεται, καὶ τὰ πρόβατα αὐτῷ ἀκολουθεῖ, ὅτι οἴδασιν τὴν φωνὴν αὐτοῦ·</p>
         <p class="translit"></p>
-        <p class="pt">Depois de conduzir para fora todas as que lhe pertencem, vai adiante delas, e as ovelhas o seguem, porque conhecem a sua voz;</p>
+        <p class="pt jesus">Depois de conduzir para fora todas as que lhe pertencem, vai adiante delas, e as ovelhas o seguem, porque conhecem a sua voz;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v5" data-ref="João 10:5">
@@ -152,7 +152,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλοτρίῳ δὲ οὐ μὴ ἀκολουθήσουσιν, ἀλλὰ φεύξονται ἀπ’ αὐτοῦ, ὅτι οὐκ οἴδασιν τῶν ἀλλοτρίων τὴν φωνήν.</p>
         <p class="translit"></p>
-        <p class="pt">mas de modo algum seguirão o estranho, antes fugirão dele, porque não conhecem a voz dos estranhos.</p>
+        <p class="pt jesus">mas de modo algum seguirão o estranho, antes fugirão dele, porque não conhecem a voz dos estranhos.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v6" data-ref="João 10:6">
@@ -160,7 +160,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ταύτην τὴν παροιμίαν εἶπεν αὐτοῖς ὁ Ἰησοῦς· ἐκεῖνοι δὲ οὐκ ἔγνωσαν τίνα ἦν ἃ ἐλάλει αὐτοῖς.</p>
         <p class="translit"></p>
-        <p class="pt">Jesus propôs-lhes esta parábola, mas eles não entenderam o que era que lhes dizia.</p>
+        <p class="pt jesus">Jesus propôs-lhes esta parábola, mas eles não entenderam o que era que lhes dizia.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v7" data-ref="João 10:7">
@@ -168,7 +168,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Εἶπεν οὖν πάλιν ὁ Ἰησοῦς Ἀμὴν ἀμὴν λέγω ὑμῖν ὅτι ἐγώ εἰμι ἡ θύρα τῶν προβάτων.</p>
         <p class="translit"></p>
-        <p class="pt">Tornou, pois, Jesus a dizer-lhes: Em verdade, em verdade vos digo: eu sou a porta das ovelhas.</p>
+        <p class="pt jesus">Tornou, pois, Jesus a dizer-lhes: Em verdade, em verdade vos digo: eu sou a porta das ovelhas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v8" data-ref="João 10:8">
@@ -176,7 +176,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">πάντες ὅσοι ἦλθον πρὸ ἐμοῦ κλέπται εἰσὶν καὶ λῃσταί· ἀλλ’ οὐκ ἤκουσαν αὐτῶν τὰ πρόβατα.</p>
         <p class="translit"></p>
-        <p class="pt">Todos quantos vieram antes de mim são ladrões e salteadores; mas as ovelhas não os ouviram.</p>
+        <p class="pt jesus">Todos quantos vieram antes de mim são ladrões e salteadores; mas as ovelhas não os ouviram.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v9" data-ref="João 10:9">
@@ -184,7 +184,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγώ εἰμι ἡ θύρα· δι’ ἐμοῦ ἐάν τις εἰσέλθῃ, σωθήσεται, καὶ εἰσελεύσεται καὶ ἐξελεύσεται καὶ νομὴν εὑρήσει.</p>
         <p class="translit"></p>
-        <p class="pt">Eu sou a porta; se alguém entrar a casa; o filho fica entrará e sairá, e achará pastagens.</p>
+        <p class="pt jesus">Eu sou a porta; se alguém entrar a casa; o filho fica entrará e sairá, e achará pastagens.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v10" data-ref="João 10:10">
@@ -192,7 +192,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ κλέπτης οὐκ ἔρχεται εἰ μὴ ἵνα κλέψῃ καὶ θύσῃ καὶ ἀπολέσῃ· ἐγὼ ἦλθον ἵνα ζωὴν ἔχωσιν καὶ περισσὸν ἔχωσιν.</p>
         <p class="translit"></p>
-        <p class="pt">O ladrão não vem senão para roubar, matar e destruir; eu vim para que tenham vida e a tenham em abundância.</p>
+        <p class="pt jesus">O ladrão não vem senão para roubar, matar e destruir; eu vim para que tenham vida e a tenham em abundância.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v11" data-ref="João 10:11">
@@ -200,7 +200,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγώ εἰμι ὁ ποιμὴν ὁ καλός. ὁ ποιμὴν ὁ καλὸς τὴν ψυχὴν αὐτοῦ τίθησιν ὑπὲρ τῶν προβάτων·</p>
         <p class="translit"></p>
-        <p class="pt">Eu sou o bom pastor; o bom pastor dá a sua vida pelas ovelhas.</p>
+        <p class="pt jesus">Eu sou o bom pastor; o bom pastor dá a sua vida pelas ovelhas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v12" data-ref="João 10:12">
@@ -208,7 +208,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ μισθωτὸς καὶ οὐκ ὢν ποιμήν, οὗ οὐκ ἔστιν τὰ πρόβατα ἴδια, θεωρεῖ τὸν λύκον ἐρχόμενον καὶ ἀφίησιν τὰ πρόβατα καὶ φεύγει,— καὶ ὁ λύκος ἁρπάζει αὐτὰ καὶ σκορπίζει·—</p>
         <p class="translit"></p>
-        <p class="pt">Mas o que é mercenário, e não pastor, de quem não são as ovelhas, vendo vir o lobo, deixa as ovelhas e foge; e o lobo as arrebata e dispersa.</p>
+        <p class="pt jesus">Mas o que é mercenário, e não pastor, de quem não são as ovelhas, vendo vir o lobo, deixa as ovelhas e foge; e o lobo as arrebata e dispersa.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v13" data-ref="João 10:13">
@@ -216,7 +216,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὅτι μισθωτός ἐστιν καὶ οὐ μέλει αὐτῷ περὶ τῶν προβάτων.</p>
         <p class="translit"></p>
-        <p class="pt">Ora, o mercenário foge porque é mercenário, e não se importa com as ovelhas.</p>
+        <p class="pt jesus">Ora, o mercenário foge porque é mercenário, e não se importa com as ovelhas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v14" data-ref="João 10:14">
@@ -224,7 +224,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγώ εἰμι ὁ ποιμὴν ὁ καλός, καὶ γινώσκω τὰ ἐμὰ καὶ γινώσκουσί με τὰ ἐμά,</p>
         <p class="translit"></p>
-        <p class="pt">Eu sou o bom pastor; conheço as minhas ovelhas, e elas me conhecem,</p>
+        <p class="pt jesus">Eu sou o bom pastor; conheço as minhas ovelhas, e elas me conhecem,</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v15" data-ref="João 10:15">
@@ -232,7 +232,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καθὼς γινώσκει με ὁ Πατὴρ κἀγὼ γινώσκω τὸν Πατέρα, καὶ τὴν ψυχήν μου τίθημι ὑπὲρ τῶν προβάτων.</p>
         <p class="translit"></p>
-        <p class="pt">assim como o Pai me conhece e eu conheço o Pai; e dou a minha vida pelas ovelhas.</p>
+        <p class="pt jesus">assim como o Pai me conhece e eu conheço o Pai; e dou a minha vida pelas ovelhas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v16" data-ref="João 10:16">
@@ -240,7 +240,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">καὶ ἄλλα πρόβατα ἔχω ἃ οὐκ ἔστιν ἐκ τῆς αὐλῆς ταύτης· κἀκεῖνα δεῖ με ἀγαγεῖν, καὶ τῆς φωνῆς μου ἀκούσουσιν, καὶ γενήσεται μία ποίμνη, εἷς ποιμήν.</p>
         <p class="translit"></p>
-        <p class="pt">Tenho ainda outras ovelhas que não são deste aprisco; a essas também me importa conduzir, e elas ouvirão a minha voz; e haverá um rebanho e um pastor.</p>
+        <p class="pt jesus">Tenho ainda outras ovelhas que não são deste aprisco; a essas também me importa conduzir, e elas ouvirão a minha voz; e haverá um rebanho e um pastor.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v17" data-ref="João 10:17">
@@ -248,7 +248,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">διὰ τοῦτό με ὁ Πατὴρ ἀγαπᾷ ὅτι ἐγὼ τίθημι τὴν ψυχήν μου, ἵνα πάλιν λάβω αὐτήν.</p>
         <p class="translit"></p>
-        <p class="pt">Por isto o Pai me ama, porque dou a minha vida para a retomar.</p>
+        <p class="pt jesus">Por isto o Pai me ama, porque dou a minha vida para a retomar.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v18" data-ref="João 10:18">
@@ -256,7 +256,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">οὐδεὶς ἦρεν αὐτὴν ἀπ’ ἐμοῦ, ἀλλ’ ἐγὼ τίθημι αὐτὴν ἀπ’ ἐμαυτοῦ. ἐξουσίαν ἔχω θεῖναι αὐτήν, καὶ ἐξουσίαν ἔχω πάλιν λαβεῖν αὐτήν· ταύτην τὴν ἐντολὴν ἔλαβον παρὰ τοῦ Πατρός μου.</p>
         <p class="translit"></p>
-        <p class="pt">Ninguém ma tira de mim, mas eu de mim mesmo a dou; tenho autoridade para a dar, e tenho autoridade para retomá-la. Este mandamento recebi de meu Pai.</p>
+        <p class="pt jesus">Ninguém ma tira de mim, mas eu de mim mesmo a dou; tenho autoridade para a dar, e tenho autoridade para retomá-la. Este mandamento recebi de meu Pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v19" data-ref="João 10:19">
@@ -312,7 +312,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη αὐτοῖς ὁ Ἰησοῦς Εἶπον ὑμῖν, καὶ οὐ πιστεύετε· τὰ ἔργα ἃ ἐγὼ ποιῶ ἐν τῷ ὀνόματι τοῦ Πατρός μου, ταῦτα μαρτυρεῖ περὶ ἐμοῦ·</p>
         <p class="translit"></p>
-        <p class="pt">Respondeu-lhes Jesus: Já vo-lo disse, e não credes. As obras que eu faço em nome de meu Pai, essas dão testemunho de mim.</p>
+        <p class="pt jesus">Respondeu-lhes Jesus: Já vo-lo disse, e não credes. As obras que eu faço em nome de meu Pai, essas dão testemunho de mim.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v26" data-ref="João 10:26">
@@ -320,7 +320,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀλλὰ ὑμεῖς οὐ πιστεύετε, ὅτι οὐκ ἐστὲ ἐκ τῶν προβάτων τῶν ἐμῶν.</p>
         <p class="translit"></p>
-        <p class="pt">Mas vós não credes, porque não sois das minhas ovelhas.</p>
+        <p class="pt jesus">Mas vós não credes, porque não sois das minhas ovelhas.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v27" data-ref="João 10:27">
@@ -328,7 +328,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">τὰ πρόβατα τὰ ἐμὰ τῆς φωνῆς μου ἀκούουσιν, κἀγὼ γινώσκω αὐτά, καὶ ἀκολουθοῦσίν μοι,</p>
         <p class="translit"></p>
-        <p class="pt">As minhas ovelhas ouvem a minha voz, e eu as conheço, e elas me seguem;</p>
+        <p class="pt jesus">As minhas ovelhas ouvem a minha voz, e eu as conheço, e elas me seguem;</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v28" data-ref="João 10:28">
@@ -336,7 +336,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">κἀγὼ δίδωμι αὐτοῖς ζωὴν αἰώνιον, καὶ οὐ μὴ ἀπόλωνται εἰς τὸν αἰῶνα, καὶ οὐχ ἁρπάσει τις αὐτὰ ἐκ τῆς χειρός μου.</p>
         <p class="translit"></p>
-        <p class="pt">eu lhes dou a vida eterna, e jamais perecerão; e ninguém as arrebatará da minha mão.</p>
+        <p class="pt jesus">eu lhes dou a vida eterna, e jamais perecerão; e ninguém as arrebatará da minha mão.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v29" data-ref="João 10:29">
@@ -344,7 +344,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὁ Πατήρ μου ὃ δέδωκέν μοι πάντων μεῖζόν ἐστιν, καὶ οὐδεὶς δύναται ἁρπάζειν ἐκ τῆς χειρὸς τοῦ Πατρός.</p>
         <p class="translit"></p>
-        <p class="pt">Meu Pai, que mas deu, é maior do que todos; e ninguém pode arrebatá-las da mão de meu Pai.</p>
+        <p class="pt jesus">Meu Pai, que mas deu, é maior do que todos; e ninguém pode arrebatá-las da mão de meu Pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v30" data-ref="João 10:30">
@@ -352,7 +352,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἐγὼ καὶ ὁ Πατὴρ ἕν ἐσμεν.</p>
         <p class="translit"></p>
-        <p class="pt">Eu e o Pai somos um.</p>
+        <p class="pt jesus">Eu e o Pai somos um.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v31" data-ref="João 10:31">
@@ -360,7 +360,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">Ἐβάστασαν πάλιν λίθους οἱ Ἰουδαῖοι ἵνα λιθάσωσιν αὐτόν.</p>
         <p class="translit"></p>
-        <p class="pt">Os judeus pegaram então outra vez em pedras para o apedrejar.</p>
+        <p class="pt jesus">Os judeus pegaram então outra vez em pedras para o apedrejar.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v32" data-ref="João 10:32">
@@ -368,7 +368,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη αὐτοῖς ὁ Ἰησοῦς Πολλὰ ἔργα ἔδειξα ὑμῖν καλὰ ἐκ τοῦ Πατρός· διὰ ποῖον αὐτῶν ἔργον ἐμὲ λιθάζετε;</p>
         <p class="translit"></p>
-        <p class="pt">Disse-lhes Jesus: Muitas obras boas da parte de meu Pai vos tenho mostrado; por qual destas obras ides apedrejar-me?</p>
+        <p class="pt jesus">Disse-lhes Jesus: Muitas obras boas da parte de meu Pai vos tenho mostrado; por qual destas obras ides apedrejar-me?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v33" data-ref="João 10:33">
@@ -376,7 +376,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθησαν αὐτῷ οἱ Ἰουδαῖοι Περὶ καλοῦ ἔργου οὐ λιθάζομέν σε ἀλλὰ περὶ βλασφημίας, καὶ ὅτι σὺ ἄνθρωπος ὢν ποιεῖς σεαυτὸν Θεόν.</p>
         <p class="translit"></p>
-        <p class="pt">Responderam-lhe os judeus: Não é por nenhuma obra boa que vamos apedrejar-te, mas por blasfêmia; e porque, sendo tu homem, te fazes Deus.</p>
+        <p class="pt jesus">Responderam-lhe os judeus: Não é por nenhuma obra boa que vamos apedrejar-te, mas por blasfêmia; e porque, sendo tu homem, te fazes Deus.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v34" data-ref="João 10:34">
@@ -384,7 +384,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ἀπεκρίθη αὐτοῖς ὁ Ἰησοῦς Οὐκ ἔστιν γεγραμμένον ἐν τῷ νόμῳ ὑμῶν ὅτι Ἐγὼ εἶπα Θεοί ἐστε;</p>
         <p class="translit"></p>
-        <p class="pt">Tornou-lhes Jesus: Não está escrito na vossa lei: Eu disse: Vós sois deuses?</p>
+        <p class="pt jesus">Tornou-lhes Jesus: Não está escrito na vossa lei: Eu disse: Vós sois deuses?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v35" data-ref="João 10:35">
@@ -392,7 +392,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἰ ἐκείνους εἶπεν θεοὺς πρὸς οὓς ὁ λόγος τοῦ Θεοῦ ἐγένετο, καὶ οὐ δύναται λυθῆναι ἡ γραφή,</p>
         <p class="translit"></p>
-        <p class="pt">Se a lei chamou deuses àqueles a quem a palavra de Deus foi dirigida {e a Escritura não pode ser anulada},</p>
+        <p class="pt jesus">Se a lei chamou deuses àqueles a quem a palavra de Deus foi dirigida {e a Escritura não pode ser anulada},</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v36" data-ref="João 10:36">
@@ -400,7 +400,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">ὃν ὁ Πατὴρ ἡγίασεν καὶ ἀπέστειλεν εἰς τὸν κόσμον ὑμεῖς λέγετε ὅτι Βλασφημεῖς, ὅτι εἶπον Υἱὸς τοῦ Θεοῦ εἰμι;</p>
         <p class="translit"></p>
-        <p class="pt">àquele a quem o Pai santificou, e enviou ao mundo, dizeis vós: Blasfemas; porque eu disse: Sou Filho de Deus?</p>
+        <p class="pt jesus">àquele a quem o Pai santificou, e enviou ao mundo, dizeis vós: Blasfemas; porque eu disse: Sou Filho de Deus?</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v37" data-ref="João 10:37">
@@ -408,7 +408,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἰ οὐ ποιῶ τὰ ἔργα τοῦ Πατρός μου, μὴ πιστεύετέ μοι·</p>
         <p class="translit"></p>
-        <p class="pt">Se não faço as obras de meu Pai, não me acrediteis.</p>
+        <p class="pt jesus">Se não faço as obras de meu Pai, não me acrediteis.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v38" data-ref="João 10:38">
@@ -416,7 +416,7 @@
       <div class="ch-body verse-tap">
         <p class="orig scr-greek" dir="ltr" data-lang="el-GR">εἰ δὲ ποιῶ, κἂν ἐμοὶ μὴ πιστεύητε, τοῖς ἔργοις πιστεύετε, ἵνα γνῶτε καὶ γινώσκητε ὅτι ἐν ἐμοὶ ὁ Πατὴρ κἀγὼ ἐν τῷ Πατρί.</p>
         <p class="translit"></p>
-        <p class="pt">Mas se as faço, embora não me creiais a mim, crede nas obras; para que entendais e saibais que o Pai está em mim e eu no Pai.</p>
+        <p class="pt jesus">Mas se as faço, embora não me creiais a mim, crede nas obras; para que entendais e saibais que o Pai está em mim e eu no Pai.</p>
       </div>
     </div>
     <div class="ch-verse verse-reveal" id="v39" data-ref="João 10:39">
@@ -460,7 +460,7 @@
     </div>
     <div class="desk-tabs" aria-label="Continuar o estudo">
       <a href="../../../anotacoes/">🗒 Minhas notas</a>
-      <a href="../../../colecoes/">🗂 Coleções</a>
+      <a href="../../../workspace/#colecoes">🗂 Coleções</a>
       <a href="../../../planos/">🗓 Planos</a>
       <a href="../../../dicionario/">📖 Dicionário</a>
     </div>
@@ -477,6 +477,7 @@
     <button type="button" class="rfb" data-tool="listen" data-listen-chapter>🔊<span>Ouvir capítulo</span></button>
     <button type="button" class="rfb" data-tool="theme" data-rt="theme">🌙<span>Tema</span></button>
     <button type="button" class="rfb" data-tool="search" data-search-open>🔍<span>Buscar</span></button>
+    <a class="rfb" data-tool="goto" data-ref-picker href="../../../ler/">📖<span>Ir para</span></a>
     <button type="button" class="rfb" data-tool="focus" data-focus-toggle>☉<span>Foco</span></button>
     <button type="button" class="rfb" data-tool="mark-start" data-fab-mark="start">⇢<span>Início</span></button><button type="button" class="rfb" data-tool="mark-end" data-fab-mark="end">✓<span>Fim</span></button><button type="button" class="rfb" data-tool="save" data-fab-save>★<span>Salvar</span></button><a class="rfb" data-tool="study-notes" href="../../../anotacoes/">🗒<span>Anotações</span></a>
     <button type="button" class="rfb" data-tool="study-share" data-study-share>📝<span>Compartilhar estudo</span></button>
@@ -504,10 +505,14 @@
         <a href="../../../workspace/">Workspace</a>
       </div>
       <div>
-        <a href="../../../biblioteca/">Biblioteca</a>
+        <a href="../../../workspace/#estudar">Minhas anotações</a>
         <a href="../../../index.html#fontes">Fontes e licenças</a>
+        <!-- saiu do nav principal: reportar um erro é manutenção, não uma
+             área do site, e um 🐞 no topo de toda página parece obra -->
+        <button type="button" class="footer-link" data-report-open>Reportar um problema</button>
       </div>
       <div>
+        <a href="../../../temas/">Temas</a>
         <a href="../../../dicionario/">Dicionário</a>
         <a href="../../../mapas/">Mapas</a>
         <a href="../../../linha-do-tempo/">Linha do tempo</a>
@@ -516,14 +521,14 @@
     </div>
   </div>
 </footer>
-<script src="../../../assets/core.js?v=4ea23780"></script>
-<script src="../../../assets/supabase-config.js?v=4ea23780" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
-<script src="../../../assets/auth.js?v=4ea23780" defer></script>
-<script src="../../../assets/app.js?v=4ea23780"></script>
-<script src="../../../assets/study.js?v=4ea23780" defer></script>
-<script src="../../../assets/lexicon.js?v=4ea23780" defer></script>
-<script src="../../../assets/game.js?v=4ea23780" defer></script>
-<script src="../../../assets/library.js?v=4ea23780" defer></script>
-<script src="../../../assets/report.js?v=4ea23780" defer></script>
+<script src="../../../assets/core.js?v=98d20b6b"></script>
+<script src="../../../assets/supabase-config.js?v=98d20b6b" defer></script>
+<script src="../../../assets/vendor-supabase-2.45.4.min.js?v=98d20b6b" defer></script>
+<script src="../../../assets/auth.js?v=98d20b6b" defer></script>
+<script src="../../../assets/app.js?v=98d20b6b"></script>
+<script src="../../../assets/study.js?v=98d20b6b" defer></script>
+<script src="../../../assets/lexicon.js?v=98d20b6b" defer></script>
+<script src="../../../assets/game.js?v=98d20b6b" defer></script>
+<script src="../../../assets/library.js?v=98d20b6b" defer></script>
+<script src="../../../assets/report.js?v=98d20b6b" defer></script>
 </body></html>

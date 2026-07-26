@@ -50,18 +50,32 @@
     });
   }
 
-  // ---------- referências cruzadas (dataset curado, ~poucos KB) ----------
-  var xrefPromise=null;
-  function xrefData(){
-    if(!core) return Promise.resolve({});
-    if(!xrefPromise) xrefPromise=core.fetchData('data/cross-references.json').catch(function(){return {};});
-    return xrefPromise;
+  // ---------- referências cruzadas (OpenBible.info, CC BY) ----------
+  // Um arquivo por capítulo (data/xrefs/<livro>/<cap>.json). Era um único
+  // cross-references.json de 3 KB cobrindo 39 versículos; agora são ~93 mil
+  // ligações em 19.790 versículos, e carregar tudo de uma vez repetiria o erro
+  // do índice de busca. Cada capítulo é buscado uma vez e fica em cache.
+  var xrefCache={};
+  // "João 3:16" -> "joao/3" (o slug do livro sai do core, que já faz isso)
+  function chapterKey(ref){
+    var m=(ref||'').match(/\s(\d+):\d+$/);
+    var slug=core && core.bookSlugFromRef(ref);
+    return (m && slug) ? (slug+'/'+m[1]) : null;
+  }
+  function xrefData(ref){
+    var key=chapterKey(ref);
+    if(!core || !key) return Promise.resolve({});
+    if(!xrefCache[key]){
+      xrefCache[key]=core.fetchData('data/xrefs/'+key+'.json')
+        .catch(function(){ return {}; });
+    }
+    return xrefCache[key];
   }
   function fillXrefBlocks(root){
     (root||document).querySelectorAll('[data-xref]').forEach(function(sec){
       if(sec.dataset.xrefDone) return;
       var ref=sec.getAttribute('data-xref-ref');
-      xrefData().then(function(map){
+      xrefData(ref).then(function(map){
         sec.dataset.xrefDone='1';
         var refs=map[ref];
         if(!refs || !refs.length) return;
