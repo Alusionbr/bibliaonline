@@ -550,11 +550,26 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
   box-shadow:var(--shadow);display:grid;place-items:center}
 .tools-panel{position:fixed;left:16px;bottom:74px;z-index:60;display:flex;flex-direction:column;gap:6px;
   background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow);
-  max-width:78vw}
+  max-width:78vw;max-height:70vh;overflow-y:auto}
 .tools-panel[hidden]{display:none}  /* o atributo hidden precisa vencer o display:flex acima */
 .tools-panel button,.tools-panel a{font-family:"Inter",system-ui,sans-serif;font-size:.9rem;text-align:left;
   background:transparent;border:0;color:var(--ink);padding:9px 12px;border-radius:9px;cursor:pointer;text-decoration:none;white-space:nowrap}
 .tools-panel button:hover,.tools-panel a:hover{background:var(--vellum-2)}
+.tools-sep{border-top:1px solid var(--line);margin:2px 4px}
+html.dark .tools-panel [data-rt="theme"],
+html.compare-mode .tools-panel [data-rt="compare"]{background:var(--vellum-2);font-weight:600}
+
+/* gaveta de leitura: comparar original / transliteração / português lado a lado */
+html.compare-mode .verse-langs{display:grid;grid-template-columns:1fr;gap:12px}
+html.compare-mode .verse-langs p{margin:0}
+html.compare-mode .verse-langs p::before{display:block;font-family:"Inter",system-ui,sans-serif;
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+html.compare-mode .verse-langs .orig::before{content:"Original"}
+html.compare-mode .verse-langs .translit::before{content:"Transliteração"}
+html.compare-mode .verse-langs .pt::before{content:"Português"}
+@media (min-width:640px){
+  html.compare-mode .verse-langs{grid-template-columns:repeat(3,1fr);align-items:start}
+}
 
 /* modal de confirmação */
 .bec-modal{position:fixed;inset:0;z-index:80;background:rgba(20,16,8,.55);display:grid;place-items:center;padding:20px}

@@ -138,12 +138,14 @@ if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
   function applyFont(i){ d.classList.remove('fs-0','fs-1','fs-2','fs-3'); d.classList.add('fs-'+i); try{localStorage.setItem('bec.fontscale',i);}catch(e){} }
   function curFont(){ var f=parseInt(localStorage.getItem('bec.fontscale'),10); return isNaN(f)?1:f; }
   function setTheme(dark){ d.classList.toggle('dark',dark); try{localStorage.setItem('bec.theme',dark?'dark':'light');}catch(e){} }
+  function setCompare(on){ d.classList.toggle('compare-mode',on); try{localStorage.setItem('bec.compare',on?'1':'0');}catch(e){} }
   document.addEventListener('click',function(e){
     var b=e.target.closest && e.target.closest('[data-rt]'); if(!b) return;
     var rt=b.getAttribute('data-rt');
     if(rt==='font-inc') applyFont(Math.min(3,curFont()+1));
     else if(rt==='font-dec') applyFont(Math.max(0,curFont()-1));
     else if(rt==='theme') setTheme(!d.classList.contains('dark'));
+    else if(rt==='compare') setCompare(!d.classList.contains('compare-mode'));
   });
   // seletor "Ir para livro": navega ao escolher outro livro
   document.addEventListener('change',function(e){

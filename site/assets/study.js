@@ -1,5 +1,6 @@
 var BEC_BASE="https://alusionbr.github.io/bibliaonline";
 ﻿// Ferramentas de estudo (offline): grifar palavra/versículo, anotar, exportar.
+// Gaveta de leitura (mesmo botão ↥): fonte, tema e comparar lado a lado (data-rt, tratado em app.asset.js).
 // Tudo salvo no localStorage deste navegador. Nada vai para servidor.
 (function(){
   function load(k){try{return JSON.parse(localStorage.getItem('bec.'+k)||'{}');}catch(e){return{};}}
@@ -151,9 +152,14 @@ var BEC_BASE="https://alusionbr.github.io/bibliaonline";
   function makeToolsMenu(){
     if(document.querySelector('.tools-fab')) return;
     var fab=document.createElement('button'); fab.type='button'; fab.className='tools-fab';
-    fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de estudo'; fab.textContent='↥';
+    fab.setAttribute('aria-expanded','false'); fab.title='Ferramentas de leitura'; fab.textContent='↥';
     var panel=document.createElement('div'); panel.className='tools-panel'; panel.hidden=true;
-    panel.innerHTML='<button type="button" data-t="share">📝 Salvar nas Notas / Compartilhar</button>'+
+    panel.innerHTML='<button type="button" data-rt="font-dec">A− Diminuir fonte</button>'+
+      '<button type="button" data-rt="font-inc">A+ Aumentar fonte</button>'+
+      '<button type="button" data-rt="theme">🌙 Modo noturno</button>'+
+      '<button type="button" data-rt="compare">🔀 Comparar lado a lado</button>'+
+      '<div class="tools-sep" role="separator"></div>'+
+      '<button type="button" data-t="share">📝 Salvar nas Notas / Compartilhar</button>'+
       '<button type="button" data-t="txt">📄 Baixar .txt</button>'+
       '<a href="'+BEC_BASE+'/anotacoes/" data-t="notes">🗒 Minhas anotações</a>'+
       '<button type="button" data-t="clear">🗑 Apagar tudo</button>';

@@ -338,6 +338,29 @@ def test_lote2_seletor_ir_para_livro(site):
     assert "book-jump" in app
 
 
+def test_gaveta_de_leitura(site):
+    # painel do fab de ferramentas ganhou fonte/tema/comparar, além do que já existia
+    study = (site / "assets" / "study.js").read_text("utf-8")
+    for gancho in ('data-rt="font-dec"', 'data-rt="font-inc"', 'data-rt="theme"',
+                   'data-rt="compare"', "tools-sep", "Ferramentas de leitura"):
+        assert gancho in study, gancho
+    # app.js sabe alternar o modo comparar (lado a lado) e persistir
+    app = (site / "assets" / "app.js").read_text("utf-8")
+    assert "compare-mode" in app and "bec.compare" in app
+    # script anti-flash aplica compare-mode antes da pintura
+    home = (site / "index.html").read_text("utf-8")
+    assert "bec.compare" in home and "compare-mode" in home
+    # marcação: original/transliteração/tradução agrupados p/ virar grid no modo comparar
+    cap = (site / "ler" / "joao" / "1" / "index.html").read_text("utf-8")
+    assert cap.count('<div class="verse-langs">') >= 1
+    vp = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert '<div class="verse-langs">' in vp
+    # CSS do modo comparar (styles.css é editado manualmente, não gerado pelo build)
+    from pathlib import Path
+    css = (Path(__file__).resolve().parents[1] / "site" / "assets" / "styles.css").read_text("utf-8")
+    assert "compare-mode .verse-langs" in css
+
+
 def test_lote2_bloqueio_de_ias(site):
     robots = (site / "robots.txt").read_text("utf-8")
     assert "GPTBot" in robots and "Disallow: /" in robots

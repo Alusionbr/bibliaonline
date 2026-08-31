@@ -187,7 +187,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <link rel="stylesheet" href="{prefix}assets/styles.css?v={ASSET_VER}">{ld}
 </head>
 <body>
-<script>(function(){{try{{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);}}catch(e){{}}}})();</script>
+<script>(function(){{try{{var d=document.documentElement;if(localStorage.getItem('bec.theme')==='dark')d.classList.add('dark');var f=localStorage.getItem('bec.fontscale');if(f)d.classList.add('fs-'+f);if(localStorage.getItem('bec.compare')==='1')d.classList.add('compare-mode');}}catch(e){{}}}})();</script>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
@@ -811,9 +811,11 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   </header>
 
   <div class="verse-hero reveal">
-    <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
-    <p class="translit">{esc(v['transliteracao'])}</p>
-    {pt_html}
+    <div class="verse-langs">
+      <p class="orig {sc}"{dir_attr}>{esc(v['original'])}</p>
+      <p class="translit">{esc(v['transliteracao'])}</p>
+      {pt_html}
+    </div>
     {verse_tools(v, prefix)}
     <p class="src-line">{esc(v.get('contexto',''))}</p>
   </div>
@@ -982,9 +984,11 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     <div class="ch-verse" id="v{vs}" data-ref="{esc(v['referencia'])}">
       <a class="ch-num" href="{prefix}versiculos/{esc(v['slug'])}/" aria-label="Versículo {vs}">{vs}</a>
       <div class="ch-body">
-        <p class="orig {sc}"{dir_attr}>{esc(v.get('original',''))}</p>
-        <p class="translit">{esc(v.get('transliteracao',''))}</p>
-        <p class="pt">{pt}</p>
+        <div class="verse-langs">
+          <p class="orig {sc}"{dir_attr}>{esc(v.get('original',''))}</p>
+          <p class="translit">{esc(v.get('transliteracao',''))}</p>
+          <p class="pt">{pt}</p>
+        </div>
         {verse_tools(v, prefix)}
       </div>
     </div>"""
