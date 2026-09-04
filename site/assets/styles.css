@@ -623,13 +623,6 @@ body.hl-mode .pt,body.hl-mode .orig{-webkit-user-select:none;user-select:none;-w
 .w-hl[data-c="b"]{background-image:linear-gradient(transparent 6%, #8ecbff 6%, #8ecbff 92%, transparent 92%)}
 .w-hl[data-c="p"]{background-image:linear-gradient(transparent 6%, #ffb3d1 6%, #ffb3d1 92%, transparent 92%)}
 
-/* cartão de doação (protótipo) */
-.donate{position:fixed;left:16px;bottom:84px;z-index:60;display:flex;align-items:center;gap:8px;
-  background:var(--dark-2);color:var(--gold-soft);border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);
-  max-width:78vw}
-.donate a{color:var(--gold-soft);font-family:"Inter",system-ui,sans-serif;font-size:.9rem;text-decoration:none}
-.donate .x{background:transparent;border:0;color:var(--gold-soft);font-size:1.2rem;cursor:pointer;line-height:1;padding:0 2px}
-
 /* controles de leitura no nav */
 .reader-tools{display:inline-flex;gap:4px;margin-left:auto;margin-right:8px}
 .reader-tools .rt{font-family:"Inter",system-ui,sans-serif;font-size:.85rem;min-width:38px;min-height:38px;
@@ -703,18 +696,6 @@ html.dark .menu-btn{background:var(--paper);color:var(--ink)}
 .book-jump-lbl{font-size:.92rem;color:var(--muted)}
 .book-jump{font-family:inherit;font-size:.95rem;padding:9px 12px;border-radius:10px;
   border:1px solid var(--line);background:var(--paper);color:var(--ink);min-height:40px;cursor:pointer;max-width:100%}
-
-/* seta de ferramentas ocultas (canto inferior esquerdo) */
-.tools-fab{position:fixed;left:16px;bottom:16px;z-index:60;width:48px;height:48px;border-radius:50%;
-  border:1px solid var(--line);background:var(--paper);color:var(--ink-soft);font-size:1.25rem;cursor:pointer;
-  box-shadow:var(--shadow);display:grid;place-items:center}
-.tools-panel{position:fixed;left:16px;bottom:74px;z-index:60;display:flex;flex-direction:column;gap:6px;
-  background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow);
-  max-width:78vw}
-.tools-panel[hidden]{display:none}  /* o atributo hidden precisa vencer o display:flex acima */
-.tools-panel button,.tools-panel a{font-family:"Inter",system-ui,sans-serif;font-size:.9rem;text-align:left;
-  background:transparent;border:0;color:var(--ink);padding:9px 12px;border-radius:9px;cursor:pointer;text-decoration:none;white-space:nowrap}
-.tools-panel button:hover,.tools-panel a:hover{background:var(--vellum-2)}
 
 /* modal de confirmação */
 .bec-modal{position:fixed;inset:0;z-index:80;background:rgba(20,16,8,.55);display:grid;place-items:center;padding:20px}
@@ -878,14 +859,7 @@ html.dark .nav-links a.active{background:rgba(255,255,255,.12);color:var(--ink-s
 html.dark .mobile-primary-nav a.active{color:var(--accent-soft,#e2c26a)}
 html.dark .mobile-primary-nav a.active .mnav-ic{background:rgba(239,208,138,.28);color:var(--accent-soft,#e2c26a)}
 
-/* Reportar bug: botão flutuante + modal + linhas de admin */
-.report-fab{position:fixed;right:14px;bottom:78px;z-index:60;display:inline-flex;align-items:center;gap:6px;
-  background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:999px;
-  padding:8px 13px;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;
-  box-shadow:0 3px 12px rgba(20,16,8,.16)}
-.report-fab:hover{border-color:var(--gold);color:var(--gold-deep)}
-html.dark .report-fab{background:var(--surface-raised);color:var(--ink-strong)}
-@media (min-width:760px){ .report-fab{bottom:20px} }
+/* Reportar bug: modal (acionado pelo botão 🐞 do reader-fab/nav) + linhas de admin */
 .report-box{max-width:460px;text-align:left}
 .report-box form{display:grid;gap:11px;margin-top:6px}
 .report-box label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
@@ -939,8 +913,8 @@ html.dark .collap-count{background:var(--surface-hover);color:var(--accent-soft)
 html.focus-read .nav,html.focus-read .mobile-primary-nav,html.focus-read .footer,
 html.focus-read .crumb,html.focus-read .book-jump-wrap,html.focus-read .study-frac,
 html.focus-read .study-map,html.focus-read .study-desk,html.focus-read .backline,
-html.focus-read [data-beta-banner],html.focus-read .report-fab,html.focus-read .verse-tools,
-html.focus-read .focus-btn,html.focus-read .tools-fab,html.focus-read .study,
+html.focus-read [data-beta-banner],html.focus-read .verse-tools,
+html.focus-read .focus-btn,html.focus-read .study,
 html.focus-read .note-box{display:none!important}
 html.focus-read .chapter{max-width:66ch;margin:0 auto;font-size:1.05em;line-height:1.85}
 html.focus-read .verse-head{text-align:center;margin-top:18px}
