@@ -1268,12 +1268,27 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
   });
 
   // --- Posição arrastável do FAB (salva por usuário) -----------------------
+  // Posição salva em px a partir da borda; sincroniza entre aparelhos (é uma
+  // das bec.PREF_KEYS). Sem o clamp abaixo, uma posição arrastada numa tela
+  // larga (ex.: desktop) pode cair fora da área visível numa tela menor
+  // (celular) — inclusive só ao redimensionar a MESMA janela — deixando o
+  // painel inteiro de ferramentas de leitura inacessível.
+  function clampPos(right, bottom){
+    return {
+      right: Math.max(6, Math.min(window.innerWidth-58, right)),
+      bottom: Math.max(6, Math.min(window.innerHeight-58, bottom))
+    };
+  }
   function applyPos(){
     try{var p=JSON.parse(localStorage.getItem(POS_KEY)||'null');
-      if(p&&isFinite(p.right)&&isFinite(p.bottom)){ fab.style.right=p.right+'px'; fab.style.bottom=p.bottom+'px'; }
+      if(p&&isFinite(p.right)&&isFinite(p.bottom)){
+        var c=clampPos(p.right,p.bottom);
+        fab.style.right=c.right+'px'; fab.style.bottom=c.bottom+'px';
+      }
     }catch(e){}
   }
   applyPos();
+  window.addEventListener('resize', applyPos);
 
   var drag=null, suppressClick=false;
   toggle.addEventListener('pointerdown',function(ev){
@@ -1287,10 +1302,9 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
     var dx=ev.clientX-drag.x, dy=ev.clientY-drag.y;
     if(!drag.moved && Math.abs(dx)+Math.abs(dy)>6) drag.moved=true;
     if(drag.moved){
-      var right=Math.max(6, Math.min(window.innerWidth-58, drag.right-dx));
-      var bottom=Math.max(6, Math.min(window.innerHeight-58, drag.bottom-dy));
-      fab.style.right=right+'px'; fab.style.bottom=bottom+'px';
-      drag.curR=right; drag.curB=bottom;
+      var c=clampPos(drag.right-dx, drag.bottom-dy);
+      fab.style.right=c.right+'px'; fab.style.bottom=c.bottom+'px';
+      drag.curR=c.right; drag.curB=c.bottom;
     }
   });
   toggle.addEventListener('pointerup',function(){

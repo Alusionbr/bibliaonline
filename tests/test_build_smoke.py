@@ -419,6 +419,10 @@ def test_ferramentas_de_leitura_e_versiculo_aleatorio(site):
         assert hook in cap, hook
     for token in ("bec.readerTools", "bec.fabPos", "pointerdown", "setPointerCapture"):
         assert token in app, token
+    # posição salva do FAB é limitada ao viewport atual (carregar e redimensionar),
+    # senão uma posição arrastada numa tela larga soma fora da área visível numa
+    # tela menor (ex.: sincronizada de desktop para celular) e o painel some.
+    assert "clampPos" in app and "addEventListener('resize', applyPos)" in app
 
 
 def test_audio_e_favoritos(site):
