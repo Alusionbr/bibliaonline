@@ -1103,16 +1103,18 @@ if(!document.documentElement.classList.contains('no-reveal') && !window.matchMed
     }
   }
 
-  var wsContinue=document.querySelector('[data-ws-continue]');
-  if(wsContinue){
+  document.querySelectorAll('[data-ws-continue], [data-resume-reading]').forEach(function(wsContinue){
     try{
       var lr=JSON.parse(localStorage.getItem('bec.lastRead')||'null');
       if(lr && lr.url){
-        wsContinue.href=lr.url;
-        wsContinue.querySelector('h3').textContent='Continuar: '+lr.label;
+        var target=new URL(lr.url,location.href);
+        if(target.origin!==location.origin) return;
+        wsContinue.href=target.href;
+        var title=wsContinue.querySelector('h3');
+        (title||wsContinue).textContent='Continuar: '+lr.label;
       }
     }catch(e){}
-  }
+  });
 })();
 
 // Modo leitura (foco): esconde menus, módulos e ferramentas, deixando só o
