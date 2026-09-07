@@ -51,6 +51,7 @@ SOURCE_ASSETS = {
     "gamification.asset.js": "game.js",
     "library.asset.js": "library.js",
     "report.asset.js": "report.js",
+    "journey.asset.js": "journey.js",
 }
 
 
@@ -187,7 +188,7 @@ def head(title, description, canonical, prefix, jsonld=None):
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="beta-banner" data-beta-banner hidden role="status">
   <span class="beta-tag">Beta</span>
-  <span class="beta-text">Você está numa versão de testes. Seu estudo é salvo e sincronizado neste navegador.</span>
+  <span class="beta-text">Você está numa versão de testes. Seu estudo fica salvo neste aparelho. Entre para sincronizar.</span>
   <button type="button" class="beta-dismiss" data-beta-dismiss aria-label="Ocultar aviso beta">×</button>
 </div>"""
 
@@ -227,7 +228,6 @@ def nav(prefix):
     mobile_items = [
         ("home", "Início", f"{prefix}index.html", "a"),
         ("book", "Bíblia", f"{prefix}ler/", "a"),
-        ("search", "Buscar", None, "button"),
         ("grid", "Workspace", f"{prefix}workspace/", "a"),
     ]
     mobile_links = "\n  ".join(
@@ -243,7 +243,7 @@ def nav(prefix):
       <span class="brand-name">Bíblia em Contexto</span>
     </a>
     <div class="reader-tools">
-      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">🔍</button>
+      <button type="button" class="rt" data-search-open aria-label="Buscar na Bíblia" title="Buscar">{mnav_icon("search")}</button>
       <button type="button" class="rt" data-rt="font-dec" aria-label="Diminuir fonte">A−</button>
       <button type="button" class="rt" data-rt="font-inc" aria-label="Aumentar fonte">A+</button>
       <button type="button" class="rt" data-rt="orig" aria-pressed="false" aria-label="Mostrar idioma original e transliteração" title="Idioma original">א/A</button>
@@ -311,6 +311,7 @@ def footer(prefix):
 <script src="{prefix}assets/game.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/library.js?v={ASSET_VER}" defer></script>
 <script src="{prefix}assets/report.js?v={ASSET_VER}" defer></script>
+<script src="{prefix}assets/journey.js?v={ASSET_VER}" defer></script>
 </body></html>"""
 
 # ---------- componentes ----------
@@ -500,6 +501,20 @@ def build_merged_redirects():
     build_redirect_page(SITE / "comunidade" / "salas" / "index.html", "../../", "workspace/", "Salas de Estudo")
 
 
+def journey_module(prefix):
+    return f"""
+  <section class="journey" aria-label="Sua jornada de leitura" data-journey>
+    <div class="journey-heading">
+      <div><p class="eyebrow">Seu plano de leitura</p><h2>Sua próxima descoberta</h2></div>
+      <a class="journey-all" href="{prefix}planos/">Explorar planos</a>
+    </div>
+    <div data-journey-content>
+      <p>Escolha uma leitura e avance no seu ritmo, um dia de cada vez.</p>
+      <a class="btn primary" href="{prefix}planos/">Encontrar meu plano</a>
+    </div>
+  </section>"""
+
+
 def build_workspace_page():
     prefix = "../"
     title = f"Workspace | {SITE_NAME}"
@@ -519,17 +534,18 @@ def build_workspace_page():
         ("Contexto", "Artigos", "Estudos originais sobre palavras, traduções e história do texto.", f"{prefix}index.html#artigos"),
     ])
     body = f"""
-<main id="main" class="wrap hub-page">
+<main id="main" class="wrap hub-page workspace-page">
   <p class="crumb"><a href="{prefix}index.html">Início</a> · Workspace</p>
   <header class="hub-hero">
     <p class="eyebrow">Seu espaço de estudo</p>
-    <h1>Workspace</h1>
-    <p>Leitura, progresso e ferramentas de estudo — tudo ao redor do texto, em um só lugar.</p>
+    <h1>Uma jornada, um dia de cada vez.</h1>
+    <p>Leia, descubra e guarde o que faz sentido para você.</p>
     <div class="hub-cta">
-      <a class="btn primary" href="{prefix}ler/">Continuar leitura</a>
+      <a class="btn primary" data-resume-reading href="{prefix}ler/">Continuar leitura</a>
       <a class="btn green" href="#progresso">Ver progresso</a>
     </div>
   </header>
+  {journey_module(prefix)}
   <section class="hub-section progresso" id="progresso" data-progress-panel hidden>
     <div class="section-title"><h2>Seu progresso</h2><span data-progress-note>Entre na conta para salvar entre aparelhos</span></div>
     <div class="level-card">
@@ -1182,17 +1198,35 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     if ch < n_chapters:
         swipe_attrs += f' data-next-chapter="../{ch+1}/"'
     body = f"""
-<main id="main" class="wrap verse-page">
-  <p class="crumb"><a href="{prefix}index.html">Início</a> · <a href="{prefix}ler/">Livros</a> · <a href="../">{esc(livro)}</a> · {ch}</p>
+<main id="main" class="wrap verse-page chapter-page">
+  <p class="crumb"><a href="{prefix}ler/">Bíblia</a> · <a href="../">{esc(livro)}</a> · Capítulo {ch}</p>
   <header class="verse-head">
     <span class="lang-tag lang-{esc(idioma)}">{lang_label(idioma)}</span>
     <h1>{esc(livro)} {ch}</h1>
     <button type="button" class="btn quiet focus-btn" data-focus-toggle title="Esconde menus e ferramentas para focar só no texto">☉ Modo leitura</button>
   </header>
-  <div class="plan-context" data-plan-context hidden></div>
-  {book_jump(prefix, order, livro)}
-  {study_fraction_module(prefix, livro, ch, vnums)}
+  <p class="reader-edition">Almeida 1911 <span>·</span> Texto e contexto, no seu ritmo.</p>
+  <div class="reader-layout">
+  <details class="reader-companion" open>
+    <summary>Meu estudo <span>Plano e ferramentas</span></summary>
+    <div class="companion-body">
+      <div class="plan-context" data-plan-context hidden></div>
+      {book_jump(prefix, order, livro)}
+      {study_fraction_module(prefix, livro, ch, vnums)}
+      <p class="eyebrow">Para refletir</p>
+      <p class="reflection-prompt">O que esta passagem revela? O que você quer guardar desta leitura?</p>
+      <a class="btn quiet" href="{prefix}anotacoes/">Abrir minhas anotações</a>
+      <p class="companion-tip">Toque em um versículo para grifar, anotar ou explorar o original.</p>
+    </div>
+  </details>
+  <div class="reader-text">
   <div class="chapter"{swipe_attrs}>{rows}
+  </div>
+  <div class="reading-finish">
+    <p data-reading-feedback role="status">Cada leitura conta. Continue no seu tempo.</p>
+    <button class="btn primary" type="button" data-complete-chapter>Concluir leitura</button>
+  </div>
+  </div>
   </div>
   {study_continue_module(prefix, livro, ch)}
   <nav class="pager" aria-label="Folhear capítulos">{prev_html}{next_html}</nav>
@@ -1263,27 +1297,15 @@ def build_home(topics, verses, articles, sources, order, struct):
     </div>"""
 
     body = f"""
-<header class="hero home-top" id="topo">
-  <div class="hero-in">
-    <div>
-      <p class="eyebrow on-dark">Hebraico · Grego · Manuscritos · Sem anúncios</p>
-      <h1>Estude a Bíblia na língua em que foi escrita.</h1>
-      <p class="lead">Cada versículo com o original palavra por palavra, léxico com número de Strong, manuscritos reais e planos de leitura — salvo neste navegador, no celular e no computador, até offline.</p>
-      <div class="hero-cta">
-        <a class="btn primary" href="ler/">Ler a Bíblia</a>
-        <a class="btn ghost" href="workspace/">Abrir o Workspace</a>
-      </div>
-      <ul class="hero-feats">
-        <li>Palavra a palavra</li>
-        <li>Manuscritos reais</li>
-        <li>Funciona offline</li>
-        <li>Planos de leitura</li>
-      </ul>
-    </div>
-  </div>
+<header class="home-welcome wrap" id="topo">
+  <p class="eyebrow">Seu encontro com a Palavra</p>
+  <h1>Um pouco a cada dia.<br>Um caminho de descobertas.</h1>
+  <p>Retome sua leitura e encontre espaço para refletir.</p>
+  <a class="resume-link" data-resume-reading href="ler/">Explorar a Bíblia</a>
 </header>
 
-<main id="main">
+<main id="main" class="home-main">
+  <div class="wrap">{journey_module(prefix)}</div>
   <section class="search-section">
     <div class="searchbox">
       <span class="ico">⌕</span>
@@ -1431,6 +1453,7 @@ def build_app_js(order, struct):
     books = [{"nome": livro, "slug": book_slug(livro), "cap": len(struct[livro])} for livro in order]
     js = read_asset("app.asset.js")
     write_file(SITE / "assets" / "app.js", f"var BEC_BOOKS={json.dumps(books, ensure_ascii=False)};\n" + js)
+    write_asset("journey.asset.js", "journey.js")
 
 def build_auth_js():
     write_asset("auth.asset.js", "auth.js")

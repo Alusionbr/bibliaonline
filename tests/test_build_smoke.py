@@ -572,7 +572,8 @@ def test_home_reorganizada(site):
     assert ordem == sorted(ordem)
     # O topo convida direto para a leitura e o Workspace.
     assert home.index('href="ler/"') < home.index('id="biblia"')
-    assert "Abrir o Workspace" in home
+    assert home.index('data-journey') < home.index('id="biblia"')
+    assert 'data-resume-reading' in home
     # A apresentação mantém o versículo-assinatura (specimen).
     apres = home[home.index('id="apresentacao"'):home.index('id="fontes"')]
     assert "specimen-card" in apres and "Ver fontes e licenças" in apres

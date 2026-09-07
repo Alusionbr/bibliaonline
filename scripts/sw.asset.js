@@ -15,6 +15,8 @@ var SHELL = [
   './assets/supabase-config.js?v=' + VERSION,
   './assets/auth.js?v=' + VERSION,
   './assets/app.js?v=' + VERSION,
+  './assets/journey.js?v=' + VERSION,
+  './data/plan-index.json',
   './assets/study.js?v=' + VERSION,
   './assets/lexicon.js?v=' + VERSION,
   './assets/game.js?v=' + VERSION,
