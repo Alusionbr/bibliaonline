@@ -13,8 +13,12 @@ Nao adicionar recursos de IA para o usuario final. Evitar nomes como "IA Biblica
 - `scripts/build.py`: estrutura HTML, rotas estaticas, navegacao e comportamento gerado.
 - `scripts/app.asset.js`: JavaScript fonte copiado para `site/assets/app.js`.
 - `scripts/auth.asset.js`: conta, login e sincronizacao Supabase.
+- `scripts/build_reference.py`: paginas de referencia da Biblioteca (`/temas/`, `/dicionario/`, `/mapas/`, `/lexico/hebraico/`) e o "Panorama do livro" exibido em `/ler/<livro>/`.
+- `site/data/book-intros.json`: panorama curado de cada livro (validado por `scripts/validate_data.py`).
 - `site/assets/styles.css`: estilos editados manualmente.
-- `site/`: saida publicada. Nao editar manualmente arquivos gerados em `site/ler/`, `site/versiculos/`, `site/assets/app.js`, `site/assets/study.js` ou `site/sw.js`.
+- `site/`: saida publicada. As paginas e JS gerados pelo build NAO sao mais versionados (ver `.gitignore`); o deploy gera tudo a partir das fontes. Rode `python scripts/build.py` antes de abrir o site localmente.
+- `docs/PLANO_PLATAFORMA.md`: plano estrategico e roadmap por fases. Ao concluir um item, marcar `[x]` e atualizar a secao "Estado do plano".
+- `docs/GUIA_EDITORIAL.md`: regras para escrever conteudo (verbetes, panoramas, artigos).
 
 ## Areas de navegacao
 

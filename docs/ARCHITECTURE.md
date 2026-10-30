@@ -30,6 +30,7 @@ Considere como fonte revisavel:
 - `site/data/articles.json`
 - `site/data/topics.json`
 - `site/data/sources.json`
+- `site/data/book-intros.json`, `glossary.json`, `places.json`, `topic-refs.json`, `hebrew-lexicon.json`
 - `tests/*.py`
 - documentacao em `README.md`, `docs/`, `scripts/README.md` e `site/data/README.md`
 
@@ -41,11 +42,21 @@ Considere como artefato gerado:
 - `site/sitemap.xml`
 - `site/robots.txt`
 - `site/manifest.webmanifest`
-- `site/data/search-index.json`
-- `site/data/random.json`
+- `site/data/search-index.json`, `random.json`, `daily.json`, `plan-index.json`,
+  `chapter-verses.json` e `site/data/tokens/`
 
-Os artefatos gerados podem ser versionados para facilitar deploy estatico, mas
-devem ser revisados a partir do codigo que os produz.
+Os artefatos gerados **nao sao versionados** (estao no `.gitignore`). O
+workflow de deploy roda `python scripts/build.py` e publica o resultado; para
+ver o site localmente, rode o build antes de servir `site/`.
+
+## Biblioteca de referencia
+
+`scripts/build_reference.py` monta o conteudo de `/temas/`, `/dicionario/`,
+`/mapas/`, `/lexico/hebraico/` e do "Panorama do livro" (`/ler/<livro>/`). O
+modulo devolve objetos `Page` (url, titulo, descricao, corpo, JSON-LD) e o
+`build.py` escreve cada um com head/nav/footer; assim o modulo nao depende de
+`SITE`/`DATA` e e facil de testar. A frequencia do lexico hebraico e contada a
+partir de `site/data/hebrew-tokens.json` (numeracao de Strong do WLC).
 
 ## Build
 

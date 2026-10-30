@@ -4,6 +4,47 @@ Este arquivo e o caderno de bordo do projeto. Toda alteracao relevante deve
 ser registrada aqui antes do commit, junto com o que foi analisado, o que foi
 mudado, como foi testado e qual commit publicou a mudanca.
 
+## Biblioteca de referencia, panorama dos livros e saida gerada fora do Git - 2026-10-30
+
+Intencao: executar os primeiros itens do plano `docs/PLANO_PLATAFORMA.md`
+(Fase 1 - Fundacao e inicio da Fase 2 - Profundidade de conteudo).
+
+O que foi analisado:
+
+- `/temas/`, `/dicionario/` e `/mapas/` existiam apenas como HTML antigo: os
+  geradores foram removidos na reorganizacao de julho (commit 3b70eda). As
+  paginas tinham navegacao e CSS desatualizados, estavam fora do sitemap, os
+  chips de tema da home e a busca apontavam para `ler/`, e o comentario
+  curado (`commentary.json`) nao aparecia em lugar nenhum.
+- O repositorio passava de 1 GB e versionava ~32 mil arquivos gerados, ja
+  desatualizados em relacao as fontes (o deploy gera tudo a partir delas).
+
+Mudancas:
+
+- Novo `scripts/build_reference.py`: monta `/temas/`, `/dicionario/`,
+  `/mapas/`, `/lexico/hebraico/` (462 palavras com frequencia no WLC,
+  distribuicao por livro e primeiras ocorrencias), o "Panorama do livro" em
+  `/ler/<livro>/` e o bloco "Estude este versiculo" (comentario, palavras do
+  hebraico, dicionario, lugares, temas e link para o panorama).
+- Novo `site/data/book-intros.json` com Genesis, Salmos, Isaias, Joao e
+  Romanos; validacao em `scripts/validate_data.py` (esboco dentro do numero de
+  capitulos, versiculos-chave com texto - atencao a numeracao hebraica).
+- Nova pagina `/sobre/`; rodape com Temas, Lexico hebraico e Sobre.
+- Busca inclui temas (URL correta), dicionario, lugares e lexico.
+- `BASE_URL` aceita a variavel de ambiente `BEC_BASE_URL` (dominio proprio).
+- `.gitignore` passa a ignorar toda a saida do build; arquivos removidos do
+  indice do Git (continuam sendo gerados no deploy).
+- Novo `docs/GUIA_EDITORIAL.md`; plano atualizado.
+
+Como foi testado:
+
+- `python scripts/validate_data.py`, `python scripts/build.py` e
+  `python -m pytest` passando (novos testes de fumaca para biblioteca de
+  referencia, panorama, painel de estudo e validacao dos panoramas).
+- Revisao visual em 390 px e 1280 px (temas, dicionario, mapas, lexico,
+  panorama de Genesis, painel em Genesis 1:1, Sobre), sem rolagem horizontal
+  e sem erros de JavaScript.
+
 ## Cara de app no leitor: gestos, versiculo do dia e ergonomia mobile - 2026-07-13
 
 Intencao: com o alicerce de PWA/estudo maduro, o proximo salto e "sensacao de

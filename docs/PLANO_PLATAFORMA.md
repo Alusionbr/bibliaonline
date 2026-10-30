@@ -214,19 +214,22 @@ Objetivo: base técnica e de marca para escalar sem dívida.
 
 - [ ] **Domínio próprio** (ex.: `bibliaemcontexto.com.br`) com redirecionamento
       301 do `github.io`, atualização de `BASE_URL`, canonical e sitemap.
-- [ ] **Parar de versionar páginas geradas** (`site/ler/`, `site/versiculos/`
-      etc.): o deploy já gera tudo a partir do fonte. Adicionar ao `.gitignore`
-      e, se necessário, limpar o histórico em operação planejada.
+      *Preparado:* o build já aceita `BEC_BASE_URL`; falta escolher e registrar
+      o domínio.
+- [x] **Parar de versionar páginas geradas** (`site/ler/`, `site/versiculos/`
+      etc.): o deploy já gera tudo a partir do fonte. Feito via `.gitignore`.
+      Limpar o histórico antigo (1 GB) continua opcional, em operação planejada.
 - [ ] **Métricas com privacidade** (ferramenta sem cookies, ex.: Plausible ou
       Umami auto-hospedado) + eventos de estudo (abrir capítulo, criar nota,
       concluir dia de plano). Atualizar a página de privacidade.
 - [ ] **Google Search Console + Bing Webmaster**, dados estruturados revisados.
-- [ ] **Páginas institucionais:** `/sobre/`, `/apoie/`, termos de uso,
+- [ ] **Páginas institucionais:** ~~`/sobre/`~~ (feito), `/apoie/`, termos de uso,
       política de privacidade revisada (LGPD), contato.
-- [ ] **Guia de estilo editorial** (tom, citação de fontes, como tratar
+- [x] **Guia de estilo editorial** (tom, citação de fontes, como tratar
       divergências) em `docs/GUIA_EDITORIAL.md`.
 - [ ] **Divisão do `build.py`** em módulos (`build/leitor.py`,
       `build/biblioteca.py`, `build/workspace.py`...) — hoje tem 1.700+ linhas.
+      *Iniciado:* a Biblioteca de referência já vive em `scripts/build_reference.py`.
 
 **Critérios de saída:** domínio no ar, build e deploy sem páginas geradas no
 Git, painel de métricas com 30 dias de dados, guia editorial aprovado.
@@ -235,9 +238,11 @@ Git, painel de métricas com 30 dias de dados, guia editorial aprovado.
 Objetivo: cada capítulo ter pelo menos uma camada de estudo.
 
 - [ ] **Introdução dos 66 livros** (autor, data, destinatários, contexto,
-      esboço, temas, versículos-chave).
-- [ ] **Léxico hebraico público** (`/lexico/hebraico/`) a partir das 462
-      entradas existentes, crescendo para as palavras mais frequentes.
+      esboço, temas, versículos-chave). *5 de 66 feitos:* Gênesis, Salmos,
+      Isaías, João e Romanos (`site/data/book-intros.json`).
+- [x] **Léxico hebraico público** (`/lexico/hebraico/`) a partir das 462
+      entradas existentes, com frequência e ocorrências. Próximo passo: crescer
+      para as palavras mais frequentes ainda sem verbete.
 - [ ] **Léxico grego** com base em dados de domínio público/licença aberta.
 - [ ] **Personagens bíblicos** — 150 principais, com linha do tempo e mapa.
 - [ ] **Lugares** — de 22 para 150, com coordenadas e versículos.
@@ -246,8 +251,9 @@ Objetivo: cada capítulo ter pelo menos uma camada de estudo.
       públicos do tipo Treasury of Scripture Knowledge) adaptada para a
       numeração da Almeida.
 - [ ] **Artigos** — ritmo de 4 por mês, guiados por pesquisa de palavras-chave.
-- [ ] **Painel de estudo no versículo**: originais, dicionário, referências,
-      comentário, lugares e personagens em um só lugar.
+- [x] **Painel de estudo no versículo**: comentário, palavras do hebraico
+      (léxico), dicionário, lugares, temas e panorama do livro em um só bloco
+      ("Estude este versículo"). Personagens entram quando existirem.
 
 **Critérios de saída:** 100% dos livros com introdução, 1.000+ páginas novas de
 biblioteca indexadas, tráfego orgânico 3× o do início da fase.
@@ -484,19 +490,20 @@ Valores aproximados; revisar antes de contratar.
 Ordem sugerida — cada item vira uma issue:
 
 1. Escolher e registrar domínio; configurar DNS e redirecionamento 301.
-2. Mover `BASE_URL` para variável de ambiente no build.
-3. Adicionar páginas geradas ao `.gitignore` e remover do índice do Git
-   (o deploy já gera tudo).
+2. ~~Mover `BASE_URL` para variável de ambiente no build.~~ Feito (`BEC_BASE_URL`).
+3. ~~Adicionar páginas geradas ao `.gitignore` e remover do índice do Git.~~ Feito.
 4. Instalar métricas sem cookies e definir os eventos de estudo.
 5. Search Console + sitemap por seção.
-6. Criar `/sobre/` e `/apoie/` (apoie pode começar só com transparência).
-7. Escrever `docs/GUIA_EDITORIAL.md`.
+6. ~~Criar `/sobre/`~~ (feito) e `/apoie/` (apoie pode começar só com transparência).
+7. ~~Escrever `docs/GUIA_EDITORIAL.md`.~~ Feito.
 8. Dividir `scripts/build.py` em módulos, sem mudar a saída (testes provam).
-9. Publicar `/lexico/hebraico/` com os dados existentes.
-10. Criar esquema JSON para "introdução de livro" e publicar as 5 primeiras
-    (Gênesis, Salmos, Isaías, João, Romanos).
-11. Painel de estudo no versículo (unir originais, dicionário, referências e
-    comentário).
+   Iniciado com `scripts/build_reference.py`.
+9. ~~Publicar `/lexico/hebraico/` com os dados existentes.~~ Feito.
+10. ~~Criar esquema JSON para "introdução de livro" e publicar as 5 primeiras.~~
+    Feito; próximos: Êxodo, Mateus, Marcos, Lucas, Atos, Provérbios.
+11. ~~Painel de estudo no versículo.~~ Feito.
+13. **Novo:** escrever o panorama dos 61 livros restantes, seguindo
+    `docs/GUIA_EDITORIAL.md`.
 12. Criar milestones e labels no GitHub conforme a seção 13.3.
 
 ---
@@ -506,6 +513,7 @@ Ordem sugerida — cada item vira uma issue:
 | Data | Fase | Situação |
 |---|---|---|
 | 2026-10-30 | — | Plano criado. Nenhum item iniciado. |
+| 2026-10-30 | 1 e 2 | Temas, dicionário e atlas voltaram a ser gerados (estavam como HTML antigo fora do build, do sitemap e da busca). Publicados: léxico hebraico (462 palavras), panorama de 5 livros, painel "Estude este versículo", página Sobre, guia editorial. Saída gerada deixou de ser versionada. `BASE_URL` configurável. |
 
 ---
 

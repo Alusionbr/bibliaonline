@@ -32,7 +32,7 @@ Regra de ouro: editar `scripts/*.asset.js`, nunca os `site/assets/*.js` gerados;
 
 ```bash
 pip install -r requirements-dev.txt
-python scripts/build.py     # regenera o site
+python scripts/build.py     # gera o site (as páginas geradas não ficam no Git)
 python -m pytest            # roda os testes
 python -m http.server -d site   # serve localmente
 ```

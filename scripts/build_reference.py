@@ -371,3 +371,79 @@ def book_intro_html(intro, livro, prefix, verses_by_ref):
     {f'<h3>Versículos-chave</h3><div class="related-list">{key_verses}</div>' if key_verses else ""}
     {f'<p class="book-intro-src">Fontes: {fontes}</p>' if fontes else ""}
   </section>"""
+
+
+# ---------- estudo do versículo (painel na página /versiculos/<slug>/) ----------
+@dataclass
+class StudyIndex:
+    """Camadas de estudo indexadas por referência, montadas uma vez por build."""
+    commentary: dict
+    words: dict      # ref -> [(strong, entrada do léxico)]
+    places: dict     # ref -> [lugar]
+    terms: dict      # ref -> [verbete]
+    topics: dict     # ref -> [tema]
+    intros: set      # livros com panorama
+
+
+def study_index(commentary, lexicon, hebrew_tokens, places, glossary, topics, topic_refs, intros):
+    words = {}
+    for ref, toks in (hebrew_tokens or {}).items():
+        seen, found = set(), []
+        for tok in toks:
+            s = strong_of(tok[0]) if tok else ""
+            if s in lexicon and s not in seen:
+                seen.add(s)
+                found.append((s, lexicon[s]))
+        if found:
+            words[ref] = found
+    by_ref = {"places": defaultdict(list), "terms": defaultdict(list), "topics": defaultdict(list)}
+    for p in places:
+        for r in p.get("refs", []):
+            by_ref["places"][r].append(p)
+    for t in glossary:
+        for r in t.get("refs", []):
+            by_ref["terms"][r].append(t)
+    topics_by_slug = {t["slug"]: t for t in topics if t.get("slug")}
+    for slug, refs in (topic_refs or {}).items():
+        if slug in topics_by_slug:
+            for r in refs:
+                by_ref["topics"][r].append(topics_by_slug[slug])
+    return StudyIndex(commentary or {}, words, by_ref["places"], by_ref["terms"], by_ref["topics"],
+                      set(intros or ()))
+
+
+def verse_study_html(ref, livro, study, prefix):
+    """Bloco "Estude este versículo": comentário, palavras do original,
+    dicionário, lugares, temas e panorama do livro. "" se não houver nada."""
+    if study is None:
+        return ""
+    parts = []
+    notes = study.commentary.get(ref, [])
+    if notes:
+        items = "".join(f'<p><b>{esc(n.get("perspectiva", ""))}.</b> {esc(n.get("texto", ""))}</p>' for n in notes)
+        parts.append(f'<div class="vstudy-part"><h3>Comentário</h3>{items}</div>')
+
+    def chips(title, items):
+        if items:
+            parts.append(f'<div class="vstudy-part"><h3>{title}</h3><div class="vstudy-chips">{"".join(items)}</div></div>')
+
+    chips("Palavras do hebraico", [
+        f'<a class="xref-chip" href="{prefix}lexico/hebraico/{num}/" title="{esc(e["pt"])}">'
+        f'<span class="scr-hebrew" dir="rtl" lang="he">{esc(e["he"])}</span> {esc(e["tr"])}</a>'
+        for num, e in study.words.get(ref, [])])
+    chips("No dicionário", [f'<a class="xref-chip" href="{prefix}dicionario/{t["slug"]}/">{esc(t["termo"])}</a>'
+                            for t in study.terms.get(ref, [])])
+    chips("Lugares", [f'<a class="xref-chip" href="{prefix}mapas/{p["slug"]}/">{esc(p["nome"])}</a>'
+                      for p in study.places.get(ref, [])])
+    chips("Temas", [f'<a class="xref-chip" href="{prefix}temas/{t["slug"]}/">{esc(t["titulo"])}</a>'
+                    for t in study.topics.get(ref, [])])
+    if livro in study.intros:
+        parts.append(f'<p class="vstudy-more"><a href="{prefix}ler/{book_slug(livro)}/#panorama">'
+                     f'Panorama de {esc(livro)}: autoria, data, contexto e esboço →</a></p>')
+    if not parts:
+        return ""
+    return f"""
+  <section class="block vstudy">
+    <h2><span class="dot"></span>Estude este versículo</h2>
+    {"".join(parts)}
+  </section>"""

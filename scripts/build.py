@@ -926,7 +926,7 @@ def build_privacy_page():
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
 # ---------- páginas ----------
-def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
+def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None, study=None):
     prefix = "../../"
     title = f"{v['referencia']} — original, tradução e contexto | {SITE_NAME}"
     desc = f"{v['referencia']} ({lang_label(v['idioma'])}): texto original, transliteração, tradução Almeida 1911 e {'comentário rabínico' if v.get('judaismo') else 'origem do texto'}."
@@ -1021,6 +1021,7 @@ def build_verse_page(v, articles_by_slug, prev_v=None, next_v=None):
   <p class="verse-tap-hint">Toque no texto para grifar, anotar, favoritar, ouvir ou compartilhar.</p>
 
   {specimen_block(v)}
+  {build_reference.verse_study_html(v['referencia'], v['livro'], study, prefix)}
   {blocks}
   {kw_html}
   {rel}
@@ -1811,18 +1812,22 @@ def build_site(context):
     build_random_pool(verses)
     build_daily_verses(verses)
 
+    intros = {i["livro"]: i for i in load_opt("book-intros.json", []) if i.get("livro")}
+    study = build_reference.study_index(
+        load_opt("commentary.json", {}), load_opt("hebrew-lexicon.json", {}),
+        load_opt("hebrew-tokens.json", {}), load_opt("places.json", []), load_opt("glossary.json", []),
+        inputs.topics, load_opt("topic-refs.json", {}), intros)
     n = len(verses)
     for i, v in enumerate(verses):
         prev_v = verses[i - 1] if i > 0 else None
         next_v = verses[i + 1] if i < n - 1 else None
-        build_verse_page(v, context.articles_by_slug, prev_v, next_v)
+        build_verse_page(v, context.articles_by_slug, prev_v, next_v, study)
     for article in inputs.articles:
         build_article_page(article)
 
     build_books_index(order, struct)
     build_timeline_page(order, struct)
     n_chapters = 0
-    intros = {i["livro"]: i for i in load_opt("book-intros.json", []) if i.get("livro")}
     for livro in order:
         chapters = struct[livro]
         build_book_page(livro, chapters, order, intros.get(livro), context.verses_by_ref)

@@ -55,6 +55,7 @@ def site(tmp_path, build, monkeypatch):
         }],
         "hebrew-lexicon.json": {"7225": {"he": "רֵאשִׁית", "tr": "reshit", "pt": "princípio, começo"}},
         "hebrew-tokens.json": {"Gênesis 1:1": [["b/7225", "HR/Ncfsa"], ["430", "HNcmpa"]]},
+        "commentary.json": {"Gênesis 1:1": [{"perspectiva": "Contexto", "texto": "Abre a Torá."}]},
         "book-intros.json": [{
             "livro": "Gênesis", "resumo": "O livro das origens.", "autoria": "Tradição mosaica.",
             "data": "Antiga.", "contexto": ["Abre a Torá."],
@@ -698,3 +699,24 @@ def test_panorama_do_livro(site):
     # livro sem panorama não ganha a seção
     joao = (site / "ler" / "joao" / "index.html").read_text("utf-8")
     assert 'id="panorama"' not in joao
+
+
+def test_painel_de_estudo_no_versiculo(site):
+    gen = (site / "versiculos" / "genesis-1-1" / "index.html").read_text("utf-8")
+    assert 'class="block vstudy"' in gen
+    assert "Abre a Torá." in gen                                  # comentário curado
+    assert 'href="../../lexico/hebraico/7225/"' in gen            # palavra do léxico
+    assert 'href="../../mapas/jerusalem/"' in gen                 # lugar
+    assert 'href="../../temas/criacao/"' in gen                   # tema
+    assert 'href="../../ler/genesis/#panorama"' in gen            # panorama do livro
+    # João 1:1 só tem verbete no dicionário: o bloco mostra apenas essa camada
+    joao = (site / "versiculos" / "joao-1-1" / "index.html").read_text("utf-8")
+    assert 'href="../../dicionario/logos/"' in joao
+    assert "Palavras do hebraico" not in joao and "Comentário</h3>" not in joao
+
+
+def test_versiculo_sem_camadas_nao_ganha_painel(build):
+    import build_reference
+    study = build_reference.study_index({}, {}, {}, [], [], [], {}, set())
+    assert build_reference.verse_study_html("Gênesis 1:1", "Gênesis", study, "../../") == ""
+    assert build_reference.verse_study_html("Gênesis 1:1", "Gênesis", None, "../../") == ""

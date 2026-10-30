@@ -1426,3 +1426,11 @@ html.focus-read .reader-companion{display:none}
 .book-themes{margin:0;padding-left:1.1rem;line-height:1.7}
 .book-intro-src{margin:1.2rem 0 0;font-size:.82rem;color:var(--muted)}
 @media(min-width:720px){.book-facts{grid-template-columns:1fr 1fr}}
+.vstudy{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-lg,18px);padding:18px 20px}
+.vstudy h3{font-family:"Inter",sans-serif;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold-deep);margin:1rem 0 .5rem}
+.vstudy-part:first-of-type h3{margin-top:.4rem}
+.vstudy-part p{margin:0 0 .6rem;line-height:1.65}
+.vstudy-chips{display:flex;flex-wrap:wrap;gap:8px}
+.vstudy-chips .scr-hebrew{font-size:1.05rem}
+.vstudy-more{margin:1rem 0 0;font-family:"Inter",sans-serif;font-size:.88rem;font-weight:600}
+.vstudy-more a{text-decoration:none}
