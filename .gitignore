@@ -9,3 +9,45 @@ gcm-trace.log
 .coverage
 
 site/assets/supabase-config.js
+
+# Saída gerada por scripts/build.py. O deploy (.github/workflows/deploy.yml)
+# gera tudo a partir das fontes; rode `python scripts/build.py` localmente.
+site/index.html
+site/404.html
+site/sitemap.xml
+site/robots.txt
+site/manifest.webmanifest
+site/sw.js
+site/assets/app.js
+site/assets/auth.js
+site/assets/core.js
+site/assets/game.js
+site/assets/journey.js
+site/assets/lexicon.js
+site/assets/library.js
+site/assets/report.js
+site/assets/study.js
+site/data/search-index.json
+site/data/random.json
+site/data/daily.json
+site/data/plan-index.json
+site/data/chapter-verses.json
+site/data/tokens/
+site/versiculos/
+site/artigos/
+site/ler/
+site/anotacoes/
+site/estudar/
+site/workspace/
+site/comunidade/
+site/biblioteca/
+site/colecoes/
+site/cadernos/
+site/planos/
+site/privacidade/
+site/sobre/
+site/temas/
+site/dicionario/
+site/mapas/
+site/lexico/
+site/linha-do-tempo/
