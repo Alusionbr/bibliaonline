@@ -51,6 +51,10 @@ Os esquemas e migrações do Supabase estão documentados em `docs/supabase-*.sq
 
 Almeida 1911, Westminster Leningrad Codex e Nestle 1904 — todos em domínio público.
 
+## Plano da plataforma
+
+O plano estratégico completo (visão, roadmap por fases, conteúdo, tecnologia, modelo de negócio, métricas e como dar continuidade) está em [`docs/PLANO_PLATAFORMA.md`](docs/PLANO_PLATAFORMA.md).
+
 ## Diretriz de produto
 
 A Bíblia é o centro; comunidade, biblioteca e workspace existem ao redor do texto. O site não oferece recursos de IA para o usuário final.
