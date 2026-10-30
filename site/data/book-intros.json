@@ -1,0 +1,157 @@
+[
+  {
+    "livro": "Gênesis",
+    "resumo": "O livro das origens: a criação do mundo, a entrada do pecado, o dilúvio e a história de Abraão, Isaque, Jacó e José, a família por meio da qual Deus promete abençoar todas as nações.",
+    "autoria": "A tradição judaica e cristã atribui o Pentateuco a Moisés. Muitos estudiosos modernos veem o livro como resultado de fontes e tradições reunidas e editadas ao longo do tempo.",
+    "data": "Pela visão tradicional, cerca de 1400 a.C.; pela visão crítica, a forma final ganha contorno entre os séculos X e V a.C.",
+    "destinatarios": "O povo de Israel, que precisava conhecer sua origem, a origem do mundo e as promessas feitas aos patriarcas.",
+    "genero": "Narrativa, genealogias e poesia",
+    "contexto": [
+      "Gênesis (em hebraico Bereshit, \"No princípio\") abre a Torá. Ele responde perguntas fundamentais: de onde vem o mundo, por que existe o mal e como Deus age para restaurar a criação.",
+      "O livro se divide em duas partes. Os capítulos 1 a 11 tratam da humanidade como um todo (criação, queda, dilúvio, Babel). Os capítulos 12 a 50 se concentram em uma família, a de Abraão, e na aliança de Deus com ela.",
+      "O texto dialoga com relatos do antigo Oriente Próximo sobre criação e dilúvio, mas apresenta um Deus único, que cria pela palavra e faz o ser humano à sua imagem.",
+      "A expressão hebraica toledot (\"estas são as gerações de\") aparece repetidas vezes e funciona como divisória natural das seções do livro."
+    ],
+    "esboco": [
+      {"de": 1, "ate": 2, "titulo": "Criação do mundo e do ser humano"},
+      {"de": 3, "ate": 5, "titulo": "A queda e suas consequências"},
+      {"de": 6, "ate": 9, "titulo": "O dilúvio e a aliança com Noé"},
+      {"de": 10, "ate": 11, "titulo": "As nações e a torre de Babel"},
+      {"de": 12, "ate": 25, "titulo": "Abraão: chamado, aliança e promessa"},
+      {"de": 25, "ate": 36, "titulo": "Isaque, Jacó e Esaú"},
+      {"de": 37, "ate": 50, "titulo": "José no Egito"}
+    ],
+    "temas": [
+      "Deus como Criador soberano e bom",
+      "A imagem de Deus no ser humano",
+      "Pecado, julgamento e graça",
+      "Aliança e promessa (terra, descendência e bênção)",
+      "A providência de Deus em meio às falhas humanas"
+    ],
+    "versiculos_chave": ["Gênesis 1:1", "Gênesis 1:27", "Gênesis 3:15", "Gênesis 12:3", "Gênesis 15:6", "Gênesis 50:20"],
+    "fontes": ["Westminster Leningrad Codex", "introduções acadêmicas ao Pentateuco"]
+  },
+  {
+    "livro": "Salmos",
+    "resumo": "O livro de orações e cânticos de Israel: 150 poemas que expressam louvor, lamento, confiança, arrependimento e esperança diante de Deus.",
+    "autoria": "Vários autores. Cerca de metade dos salmos traz o nome de Davi no título; outros são atribuídos a Asafe, aos filhos de Corá, a Salomão, a Moisés e a autores anônimos.",
+    "data": "Composição ao longo de muitos séculos, aproximadamente do século X a.C. até o período depois do exílio (século V a.C. ou depois), quando a coleção foi organizada.",
+    "destinatarios": "A comunidade de Israel, para o culto no templo e para a oração pessoal.",
+    "genero": "Poesia hebraica (hinos, lamentos, salmos de sabedoria, reais e de gratidão)",
+    "contexto": [
+      "Em hebraico o livro se chama Tehillim, \"louvores\". Mesmo os salmos de lamento costumam terminar em confiança, o que mostra que reclamar diante de Deus também é uma forma de fé.",
+      "A poesia hebraica não depende de rima, mas de paralelismo: uma linha repete, contrasta ou completa a anterior. Perceber esse paralelismo ajuda muito na interpretação.",
+      "O livro é organizado em cinco partes, cada uma encerrada por uma doxologia (louvor final), talvez em paralelo aos cinco livros da Torá.",
+      "Os títulos dos salmos (autor, ocasião, instruções musicais) são antigos e fazem parte do texto hebraico; na numeração hebraica, eles costumam ser o versículo 1."
+    ],
+    "esboco": [
+      {"de": 1, "ate": 41, "titulo": "Livro I: salmos de Davi, confiança em meio à aflição"},
+      {"de": 42, "ate": 72, "titulo": "Livro II: salmos dos filhos de Corá e de Davi"},
+      {"de": 73, "ate": 89, "titulo": "Livro III: Asafe e a crise da monarquia"},
+      {"de": 90, "ate": 106, "titulo": "Livro IV: o Senhor reina"},
+      {"de": 107, "ate": 150, "titulo": "Livro V: gratidão, peregrinação e louvor final"}
+    ],
+    "temas": [
+      "O reinado de Deus sobre toda a terra",
+      "Oração honesta: louvor e lamento",
+      "A lei do Senhor como caminho de vida",
+      "O rei ungido e a esperança messiânica",
+      "Confiança em meio ao sofrimento"
+    ],
+    "versiculos_chave": ["Salmos 1:1", "Salmos 23:1", "Salmos 46:2", "Salmos 51:12", "Salmos 119:105", "Salmos 150:6"],
+    "fontes": ["Westminster Leningrad Codex", "introduções acadêmicas aos Salmos"]
+  },
+  {
+    "livro": "Isaías",
+    "resumo": "Profecia de julgamento e de consolo: Deus confronta a infidelidade de Judá, anuncia o exílio e promete restauração, um servo sofredor e novos céus e nova terra.",
+    "autoria": "A tradição atribui o livro inteiro ao profeta Isaías, filho de Amoz, de Jerusalém. Muitos estudiosos entendem que os capítulos 40 a 66 vêm de discípulos posteriores, no exílio e depois dele.",
+    "data": "O ministério de Isaías vai de cerca de 740 a 700 a.C. (reis Uzias, Jotão, Acaz e Ezequias). As partes finais, segundo a visão crítica, datam do século VI a.C.",
+    "destinatarios": "Judá e Jerusalém, ameaçadas pela Assíria e depois exiladas na Babilônia.",
+    "genero": "Profecia (oráculos, poesia, narrativa histórica)",
+    "contexto": [
+      "Isaías atuou num tempo de crise: o império assírio avançava, o reino do norte (Israel) caiu em 722 a.C. e Jerusalém foi cercada em 701 a.C.",
+      "O título preferido do profeta para Deus é \"o Santo de Israel\". A visão do capítulo 6, com o trono e os serafins, marca todo o livro.",
+      "A partir do capítulo 40 o tom muda de julgamento para consolo, com o anúncio da volta do exílio e os cânticos do Servo do Senhor (42, 49, 50 e 52 a 53).",
+      "O Novo Testamento cita Isaías mais do que qualquer outro profeta, especialmente as passagens sobre o Emanuel e o Servo sofredor."
+    ],
+    "esboco": [
+      {"de": 1, "ate": 12, "titulo": "Julgamento e esperança para Judá; o Emanuel"},
+      {"de": 13, "ate": 23, "titulo": "Oráculos contra as nações"},
+      {"de": 24, "ate": 27, "titulo": "O julgamento e a festa final de Deus"},
+      {"de": 28, "ate": 35, "titulo": "Ais, confiança e restauração"},
+      {"de": 36, "ate": 39, "titulo": "Ezequias e a Assíria"},
+      {"de": 40, "ate": 55, "titulo": "Consolo: a volta do exílio e o Servo do Senhor"},
+      {"de": 56, "ate": 66, "titulo": "O povo restaurado e os novos céus e nova terra"}
+    ],
+    "temas": [
+      "A santidade de Deus",
+      "Julgamento do pecado e chamado ao arrependimento",
+      "O remanescente fiel",
+      "O Servo sofredor",
+      "Consolo e nova criação"
+    ],
+    "versiculos_chave": ["Isaías 1:18", "Isaías 6:3", "Isaías 7:14", "Isaías 55:8", "Isaías 40:31", "Isaías 53:5"],
+    "fontes": ["Westminster Leningrad Codex", "introduções acadêmicas aos profetas"]
+  },
+  {
+    "livro": "João",
+    "resumo": "O quarto Evangelho apresenta Jesus como o Verbo eterno que se fez carne, por meio de sinais e discursos, para que o leitor creia e tenha vida em seu nome.",
+    "autoria": "A tradição antiga atribui o Evangelho ao apóstolo João, filho de Zebedeu, identificado com o \"discípulo amado\". Alguns estudiosos falam de uma comunidade joanina que deu ao texto sua forma final.",
+    "data": "Geralmente entre 85 e 95 d.C.",
+    "destinatarios": "Cristãos e interessados, judeus e gregos, provavelmente na região de Éfeso.",
+    "genero": "Evangelho (narrativa e discursos)",
+    "contexto": [
+      "João é diferente dos outros três Evangelhos (Mateus, Marcos e Lucas). Ele narra menos episódios e se aprofunda em longos diálogos e discursos de Jesus.",
+      "O prólogo (1:1-18) usa o termo grego logos, \"palavra\" ou \"razão\", conhecido tanto no judaísmo quanto na filosofia grega, para apresentar Jesus.",
+      "O livro é organizado em torno de sete sinais (milagres) e de sete afirmações \"Eu sou\", que lembram o nome de Deus revelado a Moisés.",
+      "O propósito está declarado em 20:31: os sinais foram escritos para que o leitor creia que Jesus é o Cristo, o Filho de Deus."
+    ],
+    "esboco": [
+      {"de": 1, "ate": 1, "titulo": "Prólogo: o Verbo se fez carne"},
+      {"de": 2, "ate": 12, "titulo": "O livro dos sinais"},
+      {"de": 13, "ate": 17, "titulo": "A última ceia e o discurso de despedida"},
+      {"de": 18, "ate": 19, "titulo": "Prisão, julgamento e crucificação"},
+      {"de": 20, "ate": 21, "titulo": "Ressurreição e aparições"}
+    ],
+    "temas": [
+      "Jesus, o Verbo eterno e Filho de Deus",
+      "Crer e ter vida eterna",
+      "Luz e trevas, verdade e mentira",
+      "O Espírito Santo, o Consolador",
+      "O amor como marca dos discípulos"
+    ],
+    "versiculos_chave": ["João 1:1", "João 1:14", "João 3:16", "João 11:25", "João 14:6", "João 20:31"],
+    "fontes": ["Nestle 1904", "introduções acadêmicas ao Novo Testamento"]
+  },
+  {
+    "livro": "Romanos",
+    "resumo": "A carta mais sistemática de Paulo: o evangelho como poder de Deus para salvação de todo o que crê, judeu e grego, pela fé em Cristo.",
+    "autoria": "O apóstolo Paulo, com Tércio como secretário (16:22). A autoria paulina é amplamente aceita.",
+    "data": "Cerca de 56 a 57 d.C., escrita provavelmente em Corinto.",
+    "destinatarios": "A igreja em Roma, formada por cristãos de origem judaica e gentia, que Paulo ainda não conhecia pessoalmente.",
+    "genero": "Carta (epístola)",
+    "contexto": [
+      "Paulo planejava visitar Roma a caminho da Espanha (15:24) e escreveu para apresentar o evangelho que pregava e pedir apoio à missão.",
+      "A igreja de Roma vivia tensões entre judeus e gentios. Por volta de 49 d.C. o imperador Cláudio expulsou judeus de Roma; quando voltaram, encontraram uma igreja de maioria gentia.",
+      "A carta argumenta que todos pecaram, que Deus justifica pela fé e que essa justiça forma um só povo, sem apagar a história de Israel (capítulos 9 a 11).",
+      "Os capítulos finais mostram como o evangelho se torna vida comunitária: amor sincero, respeito às autoridades e acolhimento entre fracos e fortes."
+    ],
+    "esboco": [
+      {"de": 1, "ate": 3, "titulo": "Todos pecaram: a necessidade da justiça de Deus"},
+      {"de": 3, "ate": 5, "titulo": "Justificação pela fé"},
+      {"de": 6, "ate": 8, "titulo": "Nova vida em Cristo e no Espírito"},
+      {"de": 9, "ate": 11, "titulo": "Deus e o povo de Israel"},
+      {"de": 12, "ate": 15, "titulo": "O evangelho vivido em comunidade"},
+      {"de": 16, "ate": 16, "titulo": "Saudações finais"}
+    ],
+    "temas": [
+      "A justiça de Deus revelada no evangelho",
+      "Justificação pela fé",
+      "A vida no Espírito",
+      "Israel e as nações no plano de Deus",
+      "Unidade e amor na igreja"
+    ],
+    "versiculos_chave": ["Romanos 1:16", "Romanos 3:23", "Romanos 5:8", "Romanos 8:1", "Romanos 8:28", "Romanos 12:2"],
+    "fontes": ["Nestle 1904", "introduções acadêmicas ao Novo Testamento"]
+  }
+]

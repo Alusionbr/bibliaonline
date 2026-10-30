@@ -101,3 +101,18 @@ def test_validate_all_pega_dir_e_slug_incoerentes():
 
     assert any("dir esperado para grego" in error for error in errors)
     assert any("slug esperado 'joao-1-1'" in error for error in errors)
+
+
+def test_validate_book_intros_aponta_erros():
+    validate_data = load_validate_data()
+    verses = [{"referencia": "Gênesis 1:1", "livro": "Gênesis", "texto_pt": "No princípio."},
+              {"referencia": "Gênesis 2:1", "livro": "Gênesis", "texto_pt": "Assim foram acabados."}]
+    base = {"livro": "Gênesis", "resumo": "r", "autoria": "a", "data": "d", "contexto": ["c"],
+            "temas": ["t"], "esboco": [{"de": 1, "ate": 2, "titulo": "Criação"}],
+            "versiculos_chave": ["Gênesis 1:1"]}
+    assert validate_data.validate_book_intros([base], verses) == []
+    ruim = dict(base, esboco=[{"de": 1, "ate": 9, "titulo": "x"}], versiculos_chave=["Gênesis 9:9"])
+    errors = validate_data.validate_book_intros([ruim, {"livro": "Atlantida"}], verses)
+    assert any("esboco invalido" in e for e in errors)
+    assert any("versiculo-chave sem texto" in e for e in errors)
+    assert any("campos ausentes" in e for e in errors)

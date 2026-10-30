@@ -129,16 +129,56 @@ def validate_articles(articles):
     return errors
 
 
-def validate_all(verses, articles):
+REQUIRED_BOOK_INTRO_FIELDS = {"livro", "resumo", "autoria", "data", "contexto", "esboco", "temas", "versiculos_chave"}
+
+
+def validate_book_intros(intros, verses):
+    """book-intros.json: panorama exibido em /ler/<livro>/."""
+    errors = []
+    by_ref = {verse.get("referencia"): verse for verse in verses}
+    max_chapter = {}
+    for verse in verses:
+        match = re.search(r"(\d+):\d+", verse.get("referencia", ""))
+        if match:
+            livro = verse.get("livro")
+            max_chapter[livro] = max(max_chapter.get(livro, 0), int(match.group(1)))
+    duplicates = duplicate_values(intros, "livro")
+    if duplicates:
+        errors.append(f"book-intros.json: livros duplicados: {', '.join(duplicates)}")
+    for index, intro in enumerate(intros):
+        livro = intro.get("livro")
+        label = livro or f"item {index}"
+        missing = sorted(REQUIRED_BOOK_INTRO_FIELDS - set(intro))
+        if missing:
+            errors.append(f"book-intros.json:{label}: campos ausentes: {', '.join(missing)}")
+            continue
+        if livro not in max_chapter:
+            errors.append(f"book-intros.json:{label}: livro inexistente")
+            continue
+        for item in intro["esboco"]:
+            de, ate = item.get("de"), item.get("ate", item.get("de"))
+            if not item.get("titulo") or not isinstance(de, int) or not isinstance(ate, int) \
+                    or not 1 <= de <= ate <= max_chapter[livro]:
+                errors.append(f"book-intros.json:{label}: esboco invalido: {item!r}")
+        for ref in intro["versiculos_chave"]:
+            verse = by_ref.get(ref)
+            if not verse or not verse.get("texto_pt"):
+                errors.append(f"book-intros.json:{label}: versiculo-chave sem texto: {ref}")
+    return errors
+
+
+def validate_all(verses, articles, book_intros=()):
     article_slugs = {article.get("slug") for article in articles}
     errors = []
     errors.extend(validate_articles(articles))
     errors.extend(validate_verses(verses, article_slugs))
+    errors.extend(validate_book_intros(book_intros, verses))
     return errors
 
 
 def main():
-    errors = validate_all(load_json("verses.json"), load_json("articles.json"))
+    intros = load_json("book-intros.json") if (DATA / "book-intros.json").exists() else []
+    errors = validate_all(load_json("verses.json"), load_json("articles.json"), intros)
     if errors:
         print("VALIDACAO FALHOU")
         for error in errors:

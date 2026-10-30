@@ -3,6 +3,7 @@
 Este modulo guarda valores de dominio que mudam pouco: URL publica, nome do
 site, ordem canonica dos livros, linha do tempo e links externos.
 """
+import os
 from pathlib import Path
 
 
@@ -10,7 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
 DATA = SITE / "data"
 
-BASE_URL = "https://alusionbr.github.io/bibliaonline"
+# Domínio público do site. Para publicar em outro endereço (ex.: domínio
+# próprio) basta definir BEC_BASE_URL no ambiente do build/deploy.
+BASE_URL = os.environ.get("BEC_BASE_URL", "https://alusionbr.github.io/bibliaonline").rstrip("/")
 SITE_NAME = "Bíblia em Contexto"
 
 SEFARIA = {
@@ -143,4 +146,9 @@ GENERATED_DIRS = (
     "cadernos",
     "planos",
     "privacidade",
+    "sobre",
+    "temas",
+    "dicionario",
+    "mapas",
+    "lexico",
 )

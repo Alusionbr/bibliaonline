@@ -41,6 +41,7 @@ from build_utils import (
     speech_lang,
     verse_sort_key,
 )
+import build_reference
 
 SOURCE_ASSETS = {
     "core.asset.js": "core.js",
@@ -62,6 +63,7 @@ def asset_ver():
         Path(__file__),
         SCRIPTS_DIR / "build_config.py",
         SCRIPTS_DIR / "build_utils.py",
+        SCRIPTS_DIR / "build_reference.py",
         SCRIPTS_DIR / "sw.asset.js",
         *(SCRIPTS_DIR / name for name in SOURCE_ASSETS),
         SITE / "assets" / "styles.css",
@@ -74,6 +76,17 @@ ASSET_VER = asset_ver()
 
 def load(name):
     return json.loads((DATA / name).read_text(encoding="utf-8"))
+
+
+def load_opt(name, default):
+    """JSON opcional de site/data: ausente ou inválido vira `default`."""
+    path = DATA / name
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except ValueError:
+        return default
 
 
 def read_asset(name):
@@ -290,10 +303,13 @@ def footer(prefix):
       </div>
       <div>
         <a href="{prefix}biblioteca/">Biblioteca</a>
+        <a href="{prefix}sobre/">Sobre o projeto</a>
         <a href="{prefix}index.html#fontes">Fontes e licenças</a>
       </div>
       <div>
+        <a href="{prefix}temas/">Temas</a>
         <a href="{prefix}dicionario/">Dicionário</a>
+        <a href="{prefix}lexico/hebraico/">Léxico hebraico</a>
         <a href="{prefix}mapas/">Mapas</a>
         <a href="{prefix}linha-do-tempo/">Linha do tempo</a>
         <a href="{prefix}index.html#artigos">Artigos</a>
@@ -530,7 +546,8 @@ def build_workspace_page():
     explore_cards = action_cards([
         ("Léxico", "Dicionário", "Palavras-chave do hebraico e do grego, com significado.", f"{prefix}dicionario/"),
         ("Geografia", "Mapas", "Lugares bíblicos e os versículos ligados a eles.", f"{prefix}mapas/"),
-        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}index.html#temas"),
+        ("Assuntos", "Temas de estudo", "Ansiedade, fé, perdão e outros pontos de entrada.", f"{prefix}temas/"),
+        ("Hebraico", "Léxico hebraico", "Cada palavra hebraica com significado, frequência e ocorrências.", f"{prefix}lexico/hebraico/"),
         ("Contexto", "Artigos", "Estudos originais sobre palavras, traduções e história do texto.", f"{prefix}index.html#artigos"),
     ])
     body = f"""
@@ -1142,7 +1159,7 @@ def book_jump(prefix, order, current):
     </select>
   </div>"""
 
-def build_book_page(livro, chapters, order):
+def build_book_page(livro, chapters, order, intro=None, verses_by_ref=None):
     prefix = "../../"
     title = f"{livro} — capítulos | {SITE_NAME}"
     desc = f"Leia {livro} capítulo por capítulo: texto no idioma original, transliteração e tradução Almeida 1911."
@@ -1157,6 +1174,7 @@ def build_book_page(livro, chapters, order):
   <p class="read" style="color:var(--muted)">Escolha um capítulo:</p>
   <div class="chips chapter-grid">{chips}
   </div>
+  {build_reference.book_intro_html(intro, livro, prefix, verses_by_ref or {})}
   {study_continue_module(prefix, livro)}
 </main>"""
     out = SITE / "ler" / book_slug(livro) / "index.html"
@@ -1237,6 +1255,10 @@ def build_chapter_page(livro, ch, verses, n_chapters, order):
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
+def topic_url(t, prefix=""):
+    return f"{prefix}temas/{t['slug']}/" if t.get("slug") else f"{prefix}ler/"
+
+
 def build_search_index(verses, articles, topics):
     """Índice de busca em arquivo externo (carregado sob demanda pela home),
     em vez de embutido no index.html — reduz a página de ~20 MB para poucos KB."""
@@ -1253,7 +1275,16 @@ def build_search_index(verses, articles, topics):
                       "url":f"artigos/{a['slug']}/","k":a.get("versiculo","").lower()})
     for t in topics:
         index.append({"t":"Tema","titulo":t["titulo"],"desc":t.get("descricao",""),
-                      "url":"ler/","k":""})
+                      "url":topic_url(t),"k":""})
+    for g in load_opt("glossary.json", []):
+        index.append({"t":"Dicionário","titulo":g["termo"],"desc":g.get("definicao",""),
+                      "url":f"dicionario/{g['slug']}/","k":(g.get("translit","")+" "+g.get("original","")).lower()})
+    for p in load_opt("places.json", []):
+        index.append({"t":"Lugar","titulo":p["nome"],"desc":p.get("descricao",""),
+                      "url":f"mapas/{p['slug']}/","k":p.get("regiao","").lower()})
+    for num, e in load_opt("hebrew-lexicon.json", {}).items():
+        index.append({"t":"Léxico","titulo":f"{e['tr']} ({e['he']})","desc":e.get("pt",""),
+                      "url":f"lexico/hebraico/{num}/","k":f"h{num}"})
     write_file(DATA / "search-index.json", json.dumps(index, ensure_ascii=False))
     return len(index)
 
@@ -1268,7 +1299,7 @@ def build_home(topics, verses, articles, sources, order, struct):
 
     # temas (os livros saíram da home e vivem na seção própria em /ler/)
     chips = "".join(
-        f'<a class="chip" href="ler/"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
+        f'<a class="chip" href="{topic_url(t)}"><span class="gl">{esc(t["icone"])}</span>{esc(t["titulo"])}</a>'
         for t in topics)
 
     n_books = len(order)
@@ -1530,7 +1561,7 @@ def build_annotations_page():
     out.parent.mkdir(parents=True, exist_ok=True)
     write_file(out, head(title, desc, canonical, prefix) + nav(prefix) + body + footer(prefix))
 
-def build_meta(verses, articles, order, struct, plan_slugs=()):
+def build_meta(verses, articles, order, struct, plan_slugs=(), ref_urls=()):
     # sitemap
     # /estudar/ e /comunidade/ viraram redirects (noindex) para o Workspace e
     # por isso ficam fora do sitemap.
@@ -1542,8 +1573,10 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
         f"{BASE_URL}/colecoes/",
         f"{BASE_URL}/cadernos/",
         f"{BASE_URL}/privacidade/",
+        f"{BASE_URL}/sobre/",
         f"{BASE_URL}/linha-do-tempo/",
     ]
+    urls += [f"{BASE_URL}/{url}" for url in ref_urls]
     if plan_slugs:
         urls.append(f"{BASE_URL}/planos/")
         urls += [f"{BASE_URL}/planos/{slug}/" for slug in plan_slugs]
@@ -1581,6 +1614,68 @@ def build_meta(verses, articles, order, struct, plan_slugs=()):
             {"name": "Planos de leitura", "url": "planos/", "description": "Continuar um plano de leitura"},
         ],
     }, ensure_ascii=False, indent=2))
+
+def build_reference_pages(context, topics, articles):
+    """Biblioteca de referência (temas, dicionário, atlas, léxico hebraico).
+    Devolve as URLs relativas para o sitemap."""
+    vbr = context.verses_by_ref
+    pages = (
+        build_reference.topic_pages(topics, load_opt("topic-refs.json", {}), vbr, articles)
+        + build_reference.dictionary_pages(load_opt("glossary.json", []), vbr, articles)
+        + build_reference.atlas_pages(load_opt("places.json", []), vbr)
+        + build_reference.lexicon_pages(load_opt("hebrew-lexicon.json", {}),
+                                        load_opt("hebrew-tokens.json", {}), vbr)
+    )
+    for page in pages:
+        title = f"{page.title} | {SITE_NAME}"
+        write_file(SITE / page.url / "index.html",
+                   head(title, page.description, f"{BASE_URL}/{page.url}", page.prefix, page.jsonld)
+                   + nav(page.prefix) + page.body + footer(page.prefix))
+    return [page.url for page in pages]
+
+
+def build_about_page():
+    prefix = "../"
+    title = f"Sobre o projeto | {SITE_NAME}"
+    desc = "O que é a Bíblia em Contexto, seus princípios, fontes, licenças e como o conteúdo é produzido e revisado."
+    principles = mini_cards([
+        ("Princípio", "A Bíblia no centro", "Toda ferramenta nasce de um versículo e volta para ele."),
+        ("Princípio", "Texto sempre gratuito", "O texto bíblico, os originais e o estudo básico nunca ficam atrás de pagamento."),
+        ("Princípio", "Conteúdo humano", "Explicações, verbetes e artigos são escritos e revisados por pessoas, com fontes declaradas."),
+        ("Princípio", "Privacidade", "Funciona sem conta. Seus dados de estudo são seus: exporte ou apague quando quiser."),
+        ("Princípio", "Contexto honesto", "Quando estudiosos divergem, mostramos as principais posições sem polêmica."),
+        ("Princípio", "Leve e acessível", "Rápido em qualquer celular, com modo offline e leitura confortável."),
+    ])
+    body = f"""
+<main id="main" class="wrap hub-page">
+  <p class="crumb"><a href="{prefix}index.html">Início</a> · Sobre</p>
+  <header class="hub-hero"><p class="eyebrow">Sobre</p><h1>Leia a Bíblia no contexto em que ela foi escrita</h1>
+    <p>A Bíblia em Contexto é uma plataforma de estudo bíblico em português: o texto completo, os idiomas originais (hebraico, aramaico e grego) e as ferramentas para transformar leitura em estudo.</p></header>
+  <section class="hub-section">
+    <div class="section-title"><h2>Princípios</h2><span>O que guia cada decisão</span></div>
+    <div class="study-card-grid">{principles}</div>
+  </section>
+  <section class="hub-section">
+    <div class="section-title"><h2>Textos e fontes</h2><span>Domínio público</span></div>
+    <div class="study-card-grid">{mini_cards([
+      ("Português", "Almeida 1911", "Tradução de João Ferreira de Almeida, edição de domínio público."),
+      ("Hebraico", "Westminster Leningrad Codex", "Texto massorético do Codex de Leningrado, o manuscrito completo mais antigo da Bíblia Hebraica."),
+      ("Grego", "Nestle 1904", "Texto grego do Novo Testamento editado por Eberhard Nestle."),
+    ])}</div>
+    <p class="muted-line">Lista completa de fontes e licenças na <a href="{prefix}index.html#fontes">página inicial</a>.</p>
+  </section>
+  <section class="hub-section">
+    <div class="section-title"><h2>Como o conteúdo é feito</h2><span>Processo editorial</span></div>
+    <div class="study-card-grid">{mini_cards([
+      ("1", "Pesquisa", "Cada texto parte de fontes citadas: léxicos, introduções acadêmicas, atlas e comentários."),
+      ("2", "Revisão", "Temas sensíveis passam por revisão de pessoas de tradições cristãs diferentes."),
+      ("3", "Correção", "Achou um erro? Use o botão de reportar problema em qualquer página."),
+    ])}</div>
+  </section>
+</main>"""
+    write_file(SITE / "sobre" / "index.html",
+               head(title, desc, f"{BASE_URL}/sobre/", prefix) + nav(prefix) + body + footer(prefix))
+
 
 def build_404():
     prefix = ""
@@ -1638,6 +1733,7 @@ class BuildContext:
     order: list
     struct: dict
     articles_by_slug: dict
+    verses_by_ref: dict
 
 
 @dataclass
@@ -1674,6 +1770,7 @@ def prepare_build_context(inputs):
         order=order,
         struct=struct,
         articles_by_slug={a["slug"]: a for a in inputs.articles},
+        verses_by_ref={v["referencia"]: v for v in verses},
     )
 
 
@@ -1725,15 +1822,18 @@ def build_site(context):
     build_books_index(order, struct)
     build_timeline_page(order, struct)
     n_chapters = 0
+    intros = {i["livro"]: i for i in load_opt("book-intros.json", []) if i.get("livro")}
     for livro in order:
         chapters = struct[livro]
-        build_book_page(livro, chapters, order)
+        build_book_page(livro, chapters, order, intros.get(livro), context.verses_by_ref)
         total_caps = max(chapters)
         for ch in sorted(chapters):
             build_chapter_page(livro, ch, chapters[ch], total_caps, order)
             n_chapters += 1
 
-    build_meta(verses, inputs.articles, order, struct, plan_slugs)
+    ref_urls = build_reference_pages(context, inputs.topics, inputs.articles)
+    build_about_page()
+    build_meta(verses, inputs.articles, order, struct, plan_slugs, ref_urls)
     build_404()
     return BuildSummary(
         verses=len(verses),

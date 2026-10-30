@@ -42,7 +42,26 @@ def site(tmp_path, build, monkeypatch):
         "slug": "meu-artigo", "titulo": "Sobre o logos", "resumo": "um resumo",
         "conteudo": [{"h": "Seção", "p": "parágrafo"}],
     }]
-    topics = [{"titulo": "Criação", "icone": "✶", "descricao": "o início"}]
+    topics = [{"slug": "criacao", "titulo": "Criação", "icone": "✶", "descricao": "o início"}]
+    reference = {
+        "topic-refs.json": {"criacao": ["Gênesis 1:1"]},
+        "glossary.json": [{
+            "slug": "logos", "termo": "Logos", "original": "λόγος", "translit": "logos",
+            "idioma": "grego", "dir": "ltr", "definicao": "Palavra, razão.", "refs": ["João 1:1"],
+        }],
+        "places.json": [{
+            "slug": "jerusalem", "nome": "Jerusalém", "tipo": "Cidade", "regiao": "Terra de Israel",
+            "descricao": "Cidade santa.", "lat": 31.77, "lon": 35.21, "refs": ["Gênesis 1:1"],
+        }],
+        "hebrew-lexicon.json": {"7225": {"he": "רֵאשִׁית", "tr": "reshit", "pt": "princípio, começo"}},
+        "hebrew-tokens.json": {"Gênesis 1:1": [["b/7225", "HR/Ncfsa"], ["430", "HNcmpa"]]},
+        "book-intros.json": [{
+            "livro": "Gênesis", "resumo": "O livro das origens.", "autoria": "Tradição mosaica.",
+            "data": "Antiga.", "contexto": ["Abre a Torá."],
+            "esboco": [{"de": 1, "ate": 1, "titulo": "Criação"}],
+            "temas": ["Criação"], "versiculos_chave": ["Gênesis 1:1"],
+        }],
+    }
     sources = [{"nome": "WLC", "licenca": "domínio público", "status": "ok", "url": "https://x"}]
 
     plans = [{
@@ -56,6 +75,8 @@ def site(tmp_path, build, monkeypatch):
     (data_dir / "topics.json").write_text(json.dumps(topics, ensure_ascii=False), "utf-8")
     (data_dir / "sources.json").write_text(json.dumps(sources, ensure_ascii=False), "utf-8")
     (data_dir / "reading-plans.json").write_text(json.dumps(plans, ensure_ascii=False), "utf-8")
+    for name, payload in reference.items():
+        (data_dir / name).write_text(json.dumps(payload, ensure_ascii=False), "utf-8")
 
     monkeypatch.setattr(build, "SITE", site_dir)
     monkeypatch.setattr(build, "DATA", data_dir)
@@ -636,3 +657,44 @@ def test_leitor_conectado_ao_plano(site):
         assert token in app, token
     # o link enganoso "Meu plano" (que levava ao criador, não à leitura) saiu
     assert "🗓 Meu plano" not in cap
+
+
+def test_biblioteca_de_referencia(site):
+    # Temas, dicionário, atlas e léxico hebraico voltam a ser gerados pelo
+    # build (com a navegação atual) e entram no sitemap e na busca.
+    pages = {
+        "temas": "Criação",
+        "temas/criacao": "No princípio criou Deus",
+        "dicionario": "Logos",
+        "dicionario/logos": "λόγος",
+        "mapas": "Terra de Israel",
+        "mapas/jerusalem": "openstreetmap.org",
+        "lexico/hebraico": "reshit",
+        "lexico/hebraico/7225": "Strong H7225",
+        "sobre": "Princípios",
+    }
+    sitemap = (site / "sitemap.xml").read_text("utf-8")
+    for path, text in pages.items():
+        html = (site / path / "index.html").read_text("utf-8")
+        assert text in html, path
+        assert 'class="mobile-primary-nav"' in html, path
+        assert f"/{path}/</loc>" in sitemap, path
+    lex = (site / "lexico" / "hebraico" / "7225" / "index.html").read_text("utf-8")
+    assert "Aparece em <b>1</b> versículo" in lex
+    assert "../../../versiculos/genesis-1-1/" in lex
+    home = (site / "index.html").read_text("utf-8")
+    assert 'href="temas/criacao/"' in home
+    index = json.loads((site / "data" / "search-index.json").read_text("utf-8"))
+    urls = {i["url"] for i in index}
+    for url in ("temas/criacao/", "dicionario/logos/", "mapas/jerusalem/", "lexico/hebraico/7225/"):
+        assert url in urls
+
+
+def test_panorama_do_livro(site):
+    book = (site / "ler" / "genesis" / "index.html").read_text("utf-8")
+    assert 'id="panorama"' in book and "O livro das origens." in book
+    assert 'href="../../ler/genesis/1/"' in book
+    assert "../../versiculos/genesis-1-1/" in book
+    # livro sem panorama não ganha a seção
+    joao = (site / "ler" / "joao" / "index.html").read_text("utf-8")
+    assert 'id="panorama"' not in joao
